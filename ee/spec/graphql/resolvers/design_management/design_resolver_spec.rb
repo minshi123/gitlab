@@ -39,7 +39,7 @@ describe Resolvers::DesignManagement::DesignResolver do
       let(:args) { {} }
 
       it 'raises an error' do
-        expect { resolve_design }.to raise_error(::Gitlab::Graphql::Errors::ArgumentError)
+        expect { resolve_design }.to raise_error(::Gitlab::Graphql::Errors::ArgumentError, /must/)
       end
     end
 
@@ -47,7 +47,7 @@ describe Resolvers::DesignManagement::DesignResolver do
       let(:args) { { filename: first_design.filename, id: GitlabSchema.id_from_object(first_design).to_s } }
 
       it 'raises an error' do
-        expect { resolve_design }.to raise_error(::Gitlab::Graphql::Errors::ArgumentError)
+        expect { resolve_design }.to raise_error(::Gitlab::Graphql::Errors::ArgumentError, /may/)
       end
     end
 

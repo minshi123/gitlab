@@ -12,15 +12,12 @@ module Resolvers
                description: 'Find a design by its filename'
 
       def resolve(filename: nil, id: nil)
-        params = if !filename.present? && !id.present?
-                   error('one of id or filename must be passed')
-                 elsif filename.present? && id.present?
-                   error('only one of id or filename may be passed')
-                 elsif filename.present?
-                   { filenames: [filename] }
-                 else
-                   { ids: [GitlabSchema.parse_gid(id, expected_type: ::DesignManagement::Design).model_id] }
-                 end
+        params = parse_args(filename, id)
+
+        case params
+        when :no_args then error('one of id or filename must be passed')
+        when :both_args then error('only one of id or filename may be passed')
+        end
 
         build_finder(params).execute.first
       end
@@ -45,6 +42,22 @@ module Resolvers
 
       def error(msg)
         raise ::Gitlab::Graphql::Errors::ArgumentError, msg
+      end
+
+      def parse_args(filename, id)
+        (use_filename, _) = provided = [filename, id].map(&:present?)
+
+        return :no_args if provided.none?
+
+        return :both_args if provided.all?
+
+        return { filenames: [filename] } if use_filename
+
+        { ids: [parse_gid(id)] }
+      end
+
+      def parse_gid(gid)
+        GitlabSchema.parse_gid(gid, expected_type: ::DesignManagement::Design).model_id
       end
     end
   end
