@@ -6,32 +6,6 @@ describe "Getting designs related to an issue" do
   include GraphqlHelpers
   include DesignManagementTestHelpers
 
-  class Field
-    include GraphqlHelpers
-
-    attr_reader :name
-
-    def initialize(name, args, subquery)
-      @name, @args, @subquery = name, args, subquery
-    end
-
-    def query
-      "{ #{subquery} }"
-    end
-
-    def subquery
-      query_graphql_field(@name, @args, @subquery.try(:subquery))
-    end
-  end
-
-  class Literal < Field
-    attr_reader :subquery
-
-    def initialize(subquery)
-      @subquery = subquery
-    end
-  end
-
   set(:design) { create(:design, :with_file, versions_count: 1) }
   set(:current_user) { design.project.owner }
   let(:design_query) do
@@ -46,30 +20,24 @@ describe "Getting designs related to an issue" do
     NODE
   end
 
-  let(:project_field) do
-    Field.new('project',
-              { fullPath: design.project.full_path },
-              issue_field)
-  end
+  let(:issue) { design.issue }
+  let(:project) { issue.project }
 
-  let(:issue_field) do
-    Field.new('issue',
-              { iid: design.issue.iid },
-              designs_field)
-  end
+  let(:query) { make_query }
 
-  let(:designs_field) do
-    Field.new('designCollection', {}, Literal.new(design_query))
-  end
+  def make_query(dq = design_query)
+    designs_field = query_graphql_field(:design_collection, {}, dq)
+    issue_field = query_graphql_field(:issue, { iid: issue.iid.to_s }, designs_field)
 
-  let(:query) { project_field.query }
+    graphql_query_for(:project, { fullPath: project.full_path }, issue_field)
+  end
 
   let(:design_collection) do
-    graphql_data[project_field.name][issue_field.name][designs_field.name]
+    graphql_data_at(:project, :issue, :design_collection)
   end
 
   let(:design_response) do
-    design_collection["designs"]["edges"].first["node"]
+    design_collection.dig('designs', 'edges').first["node"]
   end
 
   context "when the feature is not available" do
@@ -100,6 +68,47 @@ describe "Getting designs related to an issue" do
       post_graphql(query, current_user: current_user)
 
       expect(design_response["filename"]).to eq(design.filename)
+    end
+
+    describe 'pagination' do
+      before do
+        create_list(:design, 5, :with_file, issue: issue)
+        project.add_developer(current_user)
+        post_graphql(query, current_user: current_user)
+      end
+
+      let(:issue) { create(:issue) }
+
+      let(:end_cursor) { design_collection.dig('designs', 'pageInfo', 'endCursor') }
+
+      let(:ids) { issue.designs.order(:id).map { |d| global_id_of(d) } }
+
+      let(:query) { make_query(designs_fragment(first: 2)) }
+
+      let(:design_query_fields) { 'pageInfo { endCursor } edges { node { id } }' }
+
+      let(:cursored_query) do
+        make_query(designs_fragment(after: end_cursor))
+      end
+
+      def designs_fragment(params)
+        query_graphql_field(:designs, params, design_query_fields)
+      end
+
+      def response_ids(data = graphql_data)
+        path = %w[project issue designCollection designs edges]
+        data.dig(*path).map { |e| e.dig('node', 'id') }
+      end
+
+      it 'sorts designs for reliable pagination' do
+        expect(response_ids).to match_array(ids.take(2))
+
+        post_graphql(cursored_query, current_user: current_user)
+
+        new_data = JSON.parse(response.body).fetch('data')
+
+        expect(response_ids(new_data)).to match_array(ids.drop(2))
+      end
     end
 
     context "with versions" do

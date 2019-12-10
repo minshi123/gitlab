@@ -11,7 +11,7 @@ describe 'Query.project(fullPath).issue(iid)' do
   let(:current_user) { developer }
 
   let(:project_params) { { 'fullPath' => project.full_path } }
-  let(:issue_params) { { 'iid' => issue.iid } }
+  let(:issue_params) { { 'iid' => issue.iid.to_s } }
   let(:issue_fields) { 'title' }
 
   let(:query) do

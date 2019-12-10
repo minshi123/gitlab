@@ -27,7 +27,8 @@ module Resolvers
           current_user,
           ids: design_ids(ids),
           filenames: filenames,
-          visible_at_version: version(at_version)
+          visible_at_version: version(at_version),
+          order: :id
         ).execute
       end
 

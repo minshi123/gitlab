@@ -17,24 +17,16 @@ describe 'Query.project(fullPath).issue(iid).designCollection.version(sha)' do
   let_it_be(:version) do
     create(:design_version, issue: issue,
            modified_designs: old_version.designs,
-           created_designs: create_list(:design, 2, issue: issue),
-           deleted_designs: create_list(:design, 1, issue: issue))
+           created_designs: create_list(:design, 2, issue: issue))
   end
 
   let(:current_user) { developer }
 
-  let(:query) { graphql_query_for('project', { fullPath: project.full_path }, project_fields) }
-
-  let(:project_fields) do
-    query_graphql_field(:issue, { iid: issue.iid.to_s }, issue_fields)
-  end
-
-  let(:issue_fields) do
-    query_graphql_field(:design_collection, nil, design_collection_fields)
-  end
-
-  let(:design_collection_fields) do
-    query_graphql_field(:version, { sha: version.sha }, version_fields)
+  def query(vq = version_fields)
+    graphql_query_for(:project, { fullPath: project.full_path },
+      query_graphql_field(:issue, { iid: issue.iid.to_s },
+        query_graphql_field(:design_collection, nil,
+          query_graphql_field(:version, { sha: version.sha }, vq))))
   end
 
   let(:post_query) { post_graphql(query, current_user: current_user) }
@@ -69,9 +61,7 @@ describe 'Query.project(fullPath).issue(iid).designCollection.version(sha)' do
   describe 'design_at_version' do
     let(:path) { path_prefix + %w[designAtVersion] }
     let(:design) { issue.designs.visible_at_version(version).to_a.sample }
-    let(:design_at_version) do
-      ::DesignManagement::DesignAtVersion.new(design: design, version: version)
-    end
+    let(:design_at_version) { build(:design_at_version, design: design, version: version) }
 
     let(:version_fields) do
       query_graphql_field(:design_at_version, dav_params, 'id filename')
@@ -121,12 +111,14 @@ describe 'Query.project(fullPath).issue(iid).designCollection.version(sha)' do
   describe 'designs_at_version' do
     let(:path) { path_prefix + %w[designsAtVersion edges] }
     let(:version_fields) do
-      query_graphql_field(:designs_at_version, nil, 'edges { node { id filename } }')
+      query_graphql_field(:designs_at_version, dav_params, 'edges { node { id filename } }')
     end
+
+    let(:dav_params) { nil }
 
     let(:results) do
       issue.designs.visible_at_version(version).map do |d|
-        dav = ::DesignManagement::DesignAtVersion.new(design: d, version: version)
+        dav = build(:design_at_version, design: d, version: version)
         { 'id' => global_id_of(dav), 'filename' => d.filename }
       end
     end
@@ -135,6 +127,71 @@ describe 'Query.project(fullPath).issue(iid).designCollection.version(sha)' do
       post_query
 
       expect(data.pluck('node')).to match_array(results)
+    end
+
+    describe 'filtering' do
+      let(:designs) { issue.designs.sample(3) }
+      let(:filenames) { designs.map(&:filename) }
+      let(:ids) do
+        designs.map { |d| global_id_of(build(:design_at_version, design: d, version: version)) }
+      end
+
+      before do
+        post_query
+      end
+
+      describe 'by filename' do
+        let(:dav_params) { { filenames: filenames } }
+
+        it 'finds the designs by filename' do
+          expect(data.map { |e| e.dig('node', 'id') }).to match_array(ids)
+        end
+      end
+
+      describe 'by design-id' do
+        let(:dav_params) { { ids: designs.map { |d| global_id_of(d) } } }
+
+        it 'finds the designs by id' do
+          expect(data.map { |e| e.dig('node', 'filename') }).to match_array(filenames)
+        end
+      end
+    end
+
+    describe 'pagination' do
+      let(:end_cursor) { graphql_data_at(*path_prefix, :designs_at_version, :page_info, :end_cursor) }
+
+      let(:ids) do
+        ::DesignManagement::Design.visible_at_version(version).order(:id).map do |d|
+          global_id_of(build(:design_at_version, design: d, version: version))
+        end
+      end
+
+      let(:version_fields) do
+        query_graphql_field(:designs_at_version, { first: 2 }, fields)
+      end
+
+      let(:cursored_query) do
+        frag = query_graphql_field(:designs_at_version, { after: end_cursor }, fields)
+        query(frag)
+      end
+
+      let(:fields) { ['pageInfo { endCursor }', 'edges { node { id } }'] }
+
+      def response_values(data = graphql_data)
+        data.dig(*path).map { |e| e.dig('node', 'id') }
+      end
+
+      it 'sorts designs for reliable pagination' do
+        post_graphql(query, current_user: current_user)
+
+        expect(response_values).to match_array(ids.take(2))
+
+        post_graphql(cursored_query, current_user: current_user)
+
+        new_data = JSON.parse(response.body).fetch('data')
+
+        expect(response_values(new_data)).to match_array(ids.drop(2))
+      end
     end
   end
 

@@ -11,6 +11,7 @@ module Resolvers
                as: :sha,
                required: false,
                description: 'The SHA256 of the most recent acceptable version'
+
       argument :earlier_or_equal_to_id, GraphQL::ID_TYPE,
                as: :id,
                required: false,
