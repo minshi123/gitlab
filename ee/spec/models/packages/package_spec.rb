@@ -139,4 +139,33 @@ RSpec.describe Packages::Package, type: :model do
       is_expected.to eq([package])
     end
   end
+
+  describe '.with_temporary_nuget_package' do
+    let!(:package) { create(:nuget_package) }
+
+    subject { described_class.with_temporary_nuget_package }
+
+    it { is_expected.to eq([]) }
+
+    context 'with temporary nuget packages' do
+      let!(:package) { create(:nuget_package, name: Packages::Nuget::CreatePackageService::PACKAGE_NAME) }
+
+      it { is_expected.to eq([package]) }
+    end
+  end
+
+  describe '.not_temporary' do
+    let!(:package1) { create(:nuget_package) }
+    let!(:package2) { create(:npm_package) }
+
+    subject { described_class.not_temporary }
+
+    it { is_expected.to eq([package1, package2]) }
+
+    context 'with temporary packages' do
+      let!(:package1) { create(:nuget_package, name: Packages::Nuget::CreatePackageService::PACKAGE_NAME) }
+
+      it { is_expected.to eq([package2]) }
+    end
+  end
 end
