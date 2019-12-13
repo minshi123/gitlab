@@ -83,3 +83,5 @@
 - repository_update_mirror
 - repository_push_audit_event
 - epics:epics_update_epics_dates
+
+- package_repositories:packages_nuget_extraction
