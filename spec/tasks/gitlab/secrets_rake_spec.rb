@@ -8,12 +8,11 @@ describe 'gitlab:secrets namespace rake task' do
   end
 
   describe 'check' do
+    let!(:user) { create(:user, otp_secret: "test") }
+    let!(:group) { create(:group, runners_token: "test") }
     subject(:rake_task) { run_rake_task('gitlab:secrets:check') }
 
     context 'when encrypted attributes are properly set' do
-      let!(:user) { create(:user, otp_secret: "test") }
-      let!(:group) { create(:group, runners_token: "test") }
-
       it 'detects decryptable secrets' do
         expect { rake_task }.to(
           output(/User: 0 bad, 0 fixed, 1 total.*Group: 0 bad, 0 fixed, 1 total/m).to_stdout)
@@ -21,8 +20,6 @@ describe 'gitlab:secrets namespace rake task' do
     end
 
     context 'when attr_encrypted values are not decrypting' do
-      let!(:user) { create(:user, encrypted_otp_secret: "invalid") }
-
       it 'marks undecryptable values as bad' do
         user.encrypted_otp_secret = "invalid"
         user.save!
@@ -33,8 +30,6 @@ describe 'gitlab:secrets namespace rake task' do
     end
 
     context 'when TokenAuthenticatable values are not decrypting' do
-      let!(:group) { create(:group, runners_token: "test") }
-
       it 'marks undecryptable values as bad' do
         group.runners_token_encrypted = "invalid"
         group.save!
@@ -46,12 +41,11 @@ describe 'gitlab:secrets namespace rake task' do
   end
 
   describe 'fix' do
+    let!(:user) { create(:user, otp_secret: "test") }
+    let!(:group) { create(:group, runners_token: "test") }
     subject(:rake_task) { run_rake_task('gitlab:secrets:fix') }
 
     context 'when encrypted attributes are properly set' do
-      let!(:user) { create(:user, otp_secret: "test") }
-      let!(:group) { create(:group, runners_token: "test") }
-
       it 'detects and does not fix decryptable secrets' do
         expect { rake_task }.to(
           output(/User: 0 bad, 0 fixed, 1 total.*Group: 0 bad, 0 fixed, 1 total/m).to_stdout)
@@ -59,28 +53,44 @@ describe 'gitlab:secrets namespace rake task' do
     end
 
     context 'when attr_encrypted values are not decrypting' do
-      let!(:user) { create(:user, encrypted_otp_secret: "invalid") }
-
       it 'detect and fixes undecryptable values' do
         user.encrypted_otp_secret = "invalid"
         user.save!
 
         expect { rake_task }.to(
           output(/User: 1 bad, 1 fixed, 1 total/).to_stdout)
+
+        user.reload
         expect(user.otp_secret).to eq("")
       end
     end
 
     context 'when TokenAuthenticatable values are not decrypting' do
-      let!(:group) { create(:group, runners_token: "test") }
+      context 'when the unencrypted value is still present' do
+        it 'detects and fixes undecryptable values using encrypted value' do
+          group.runners_token_encrypted = "invalid"
+          group.save!
 
-      it 'detects and fixes undecryptable values' do
-        group.runners_token_encrypted = "invalid"
-        group.save!
+          expect { rake_task }.to(
+            output(/Group: 1 bad, 1 fixed, 1 total/).to_stdout)
 
-        expect { rake_task }.to(
-          output(/Group: 1 bad, 1 fixed, 1 total/).to_stdout)
-        expect(user.runners_token).to eq("")
+          group.reload
+          expect(group.runners_token).to eq("test")
+        end
+      end
+
+      context 'when the unencrypted value is not present' do
+        it 'detects and clears undecryptable values' do
+          group.runners_token_encrypted = "invalid"
+          group.runners_token = nil
+          group.save!
+
+          expect { rake_task }.to(
+            output(/Group: 1 bad, 1 fixed, 1 total/).to_stdout)
+
+          group.reload
+          expect(group.runners_token).not_to eq("test") # actually a new randomly generated token
+        end
       end
     end
   end

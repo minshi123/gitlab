@@ -4,7 +4,7 @@ namespace :gitlab do
     task check: :gitlab_environment do
       Rails.application.eager_load!
 
-      attributes_to_check = Hash.new
+      attributes_to_check = {}
 
       models_with_encrypted_attributes.each do |model|
         attributes_to_check[model] ||= []
@@ -83,11 +83,12 @@ namespace :gitlab do
 
             results[:bad] += 1
 
-            if data[attr].nil?
-              data[attr_encrypted] = nil
-            else
-              data[attr_encrypted] = ::Gitlab::CryptoHelper.aes256_gcm_encrypt(data[attr])
-            end
+            data[attr_encrypted] =
+              if data[attr].nil?
+                nil
+              else
+                ::Gitlab::CryptoHelper.aes256_gcm_encrypt(data[attr])
+              end
 
             results[:fixed] += 1 if data.save
           end
@@ -99,7 +100,7 @@ namespace :gitlab do
       data.public_send(attr)
 
       true
-    rescue OpenSSL::Cipher::CipherError
+    rescue OpenSSL::Cipher::CipherError, TypeError
       false
     end
 
@@ -107,7 +108,7 @@ namespace :gitlab do
       ::Gitlab::CryptoHelper.aes256_gcm_decrypt(data[attr])
 
       true
-    rescue OpenSSL::Cipher::CipherError
+    rescue OpenSSL::Cipher::CipherError, TypeError
       false
     end
 
