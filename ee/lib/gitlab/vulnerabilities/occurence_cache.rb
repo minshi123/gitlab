@@ -14,7 +14,7 @@ module Gitlab
       def fetch
         Rails.cache.fetch(cache_key, force: force, expires_in: 1.day) do
           findings = ::Security::VulnerabilityFindingsFinder
-            .new(vulnerable, params: {project_id: [project_id]})
+            .new(vulnerable, params: { project_id: [project_id] })
             .execute(:with_sha)
 
           ::Vulnerabilities::OccurrenceSerializer
