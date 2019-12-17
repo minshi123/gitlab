@@ -40,7 +40,7 @@ module Gitlab
       def cached_vulnerabilities_findings
         results = []
         project_ids_to_fetch.each do |project_id|
-          results += Gitlab::Vulnerabilities::OccurenceCache.new(vulnerable, project_id).fetch
+          results += Gitlab::Vulnerabilities::OccurenceCache.new(vulnerable, project_id, user).fetch
         end
 
         results
