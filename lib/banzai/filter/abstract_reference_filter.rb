@@ -66,10 +66,6 @@ module Banzai
         match[key] if match.names.include?(key.to_s)
       end
 
-      def symbol_from_match(match)
-        self.class.symbol_from_match(match)
-      end
-
       # Transform a symbol extracted from the text to a meaningful value
       # In most cases these will be integers, so we call #to_i by default
       #
@@ -79,14 +75,10 @@ module Banzai
         symbol.to_i
       end
 
-      def parse_symbol(symbol, match_data)
-        self.class.parse_symbol(symbol, match_data)
-      end
-
       # We assume that most classes are identifying records by ID.
       #
       # This method has the contract that if a string `ref` refers to a
-      # record `record`, then `parse_symbol(ref) == record_identifier(record)`.
+      # record `record`, then `class.parse_symbol(ref) == record_identifier(record)`.
       def record_identifier(record)
         record.id
       end
