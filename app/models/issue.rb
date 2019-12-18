@@ -15,6 +15,7 @@ class Issue < ApplicationRecord
   include ThrottledTouch
   include LabelEventable
   include IgnorableColumns
+  include CompositeId
 
   DueDateStruct                   = Struct.new(:title, :name).freeze
   NoDueDate                       = DueDateStruct.new('No Due Date', '0').freeze
@@ -74,6 +75,24 @@ class Issue < ApplicationRecord
   scope :counts_by_state, -> { reorder(nil).group(:state_id).count }
 
   ignore_column :state, remove_with: '12.7', remove_after: '2019-12-22'
+
+  # An issue can be uniquely identified by project_id and iid
+  # Takes one or more sets of composite IDs, expressed as hash records of
+  # `{project_id: x, iid: y}`.
+  #
+  # e.g:
+  #
+  #   by_composite_id({project_id: 1, iid: 2})
+  #   by_composite_id([]) # returns ActiveRecord::NullRelation
+  #   by_composite_id([
+  #     {project_id: 1, iid: 1},
+  #     {project_id: 2, iid: 1},
+  #     {project_id: 1, iid: 2}
+  #   ])
+  #
+  scope :by_project_id_and_iid, ->(composites) do
+    where_composite(%i[project_id iid], composites)
+  end
 
   after_commit :expire_etag_cache
   after_save :ensure_metrics, unless: :imported?
