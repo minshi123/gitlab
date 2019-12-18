@@ -52,7 +52,7 @@ module Gitlab
       end
 
       def order(vulnerabilities)
-        ordered = vulnerabilities.sort{ |x| x['id'] }.sort_by do |x|
+        ordered = vulnerabilities.sort { |x| x['id'] }.sort_by do |x|
           [
             ::Vulnerabilities::Occurrence::SEVERITY_LEVELS[x['severity']],
             ::Vulnerabilities::Occurrence::CONFIDENCE_LEVELS[x['confidence']]
@@ -73,13 +73,13 @@ module Gitlab
       end
 
       def project_ids_to_fetch
-        project_ids = vulnerable.is_a?(Project) ? [vulnerable.id] : []
+        project_id = vulnerable.is_a?(Project) ? [vulnerable.id] : []
 
-        project_ids += if filter_params.key?('project_id')
-          filter_params[:project_id]
-        else
-          vulnerable.is_a?(Group) ? vulnerable.project_ids_with_security_reports : []
-        end
+        project_id + if filter_params.key?('project_id')
+                       filter_params[:project_id]
+                     else
+                       vulnerable.is_a?(Group) ? vulnerable.project_ids_with_security_reports : []
+                     end
       end
     end
   end
