@@ -37,6 +37,11 @@ module Banzai
         end
       end
 
+      # The default behaviour is `#to_i` - we just pass the hash through.
+      def self.parse_symbol(sha_hash, _match)
+        sha_hash
+      end
+
       def url_for_object(commit, project)
         h = Gitlab::Routing.url_helpers
 
