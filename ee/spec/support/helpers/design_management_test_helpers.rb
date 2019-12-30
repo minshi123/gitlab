@@ -18,6 +18,10 @@ module DesignManagementTestHelpers
     act_on_designs(designs) { ::DesignManagement::Action.modification }
   end
 
+  def url_for_designs(issue)
+    Gitlab::Routing.url_helpers.designs_project_issue_url(issue.project, issue)
+  end
+
   private
 
   def act_on_designs(designs, &block)
