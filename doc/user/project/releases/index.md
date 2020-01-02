@@ -211,6 +211,17 @@ Here is what this object can look like:
 }
 ```
 
+## Release Versioning 
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/194119) in GitLab 12.7 
+
+Release versions are manually assigned by the user. GitLab recommends creating a nomenclature that meets your organization's practices. The nomenclature for release versions should follow a few guidelines: 
+
+  1. Release versions should be unique for each release, Example: v13.0
+  1. Releases that are secondary to a primary release, in the case of a patch, security fix, or hotfix, use a a suffix to a primary release, Example: v13.1
+  1. Release versions allow special characters, such as !,@,#,$,%,^,&,*,(,),_,-,+,={,},[,]
+  1. Release versions do not allow special characters, such as commas, periods, or slashes (/ or \) 
+
 <!-- ## Troubleshooting
 
 Include any troubleshooting steps that you can foresee. If you know beforehand what issues
