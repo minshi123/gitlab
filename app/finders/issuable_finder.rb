@@ -415,7 +415,7 @@ class IssuableFinder
       # These are "helper" params that are required inside the NOT to get the right results. They usually come in
       # at the top-level params, but if they do come in inside the `:not` params, they should take precedence.
       not_helpers = params.slice(*NEGATABLE_PARAMS_HELPER_KEYS).merge(params[:not].slice(*NEGATABLE_PARAMS_HELPER_KEYS))
-      not_param = { key => value }.with_indifferent_access.merge(not_helpers)
+      not_param = { key => value }.with_indifferent_access.merge(not_helpers).merge(not_query: true)
 
       items_to_negate = self.class.new(current_user, not_param).execute
 
@@ -624,7 +624,7 @@ class IssuableFinder
       elsif filter_by_any_label?
         items.any_label
       else
-        items.with_label(label_names, params[:sort])
+        items.with_label(label_names, params[:sort], not_query: not_query?)
       end
 
     items
@@ -672,5 +672,9 @@ class IssuableFinder
 
   def min_access_level
     ProjectFeature.required_minimum_access_level(klass)
+  end
+
+  def not_query?
+    !!params[:not_query]
   end
 end

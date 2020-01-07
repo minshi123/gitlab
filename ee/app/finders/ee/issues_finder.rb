@@ -52,8 +52,13 @@ module EE
     override :by_assignee
     def by_assignee(items)
       if assignees.any?
-        assignees.each do |assignee|
-          items = items.assigned_to(assignee)
+        if not_query?
+          # We want to get all issues where ANY of the users are assigned
+          items = items.assigned_to(assignees)
+        else
+          assignees.each do |assignee|
+            items = items.assigned_to(assignee)
+          end
         end
 
         return items
