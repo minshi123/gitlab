@@ -11,7 +11,12 @@ describe NotificationService, :mailer do
   let(:assignee) { create(:user) }
 
   around do |example|
-    perform_enqueued_jobs do
+    sidekiq_inline = (example.metadata.keys & %i[sidekiq_might_not_need_inline sidekiq_inline]).any?
+    if sidekiq_inline
+      perform_enqueued_jobs do
+        example.run
+      end
+    else
       example.run
     end
   end
@@ -187,26 +192,41 @@ describe NotificationService, :mailer do
   describe 'Keys' do
     describe '#new_key' do
       let(:key_options) { {} }
-      let!(:key) { create(:personal_key, key_options) }
+      let!(:key) { build_stubbed(:personal_key, key_options) }
 
-      it { expect(notification.new_key(key)).to be_truthy }
+      subject { notification.new_key(key) }
 
-      describe 'never emails the ghost user' do
+      it "sends email to key owner" do
+        expect { subject }.to have_enqueued_email(key.id, mail: "new_ssh_key_email")
+      end
+
+      describe "never emails the ghost user" do
         let(:key_options) { { user: User.ghost } }
 
-        it { should_not_email_anyone }
+        it "does not send email to key owner" do
+          expect { subject }.not_to have_enqueued_email(key.id, mail: "new_ssh_key_email")
+        end
       end
     end
   end
 
   describe 'GpgKeys' do
     describe '#new_gpg_key' do
-      let!(:key) { create(:gpg_key) }
+      let(:key_options) { {} }
+      let(:key) { create(:gpg_key, key_options) }
 
-      it { expect(notification.new_gpg_key(key)).to be_truthy }
+      subject { notification.new_gpg_key(key) }
 
-      it 'sends email to key owner' do
-        expect { notification.new_gpg_key(key) }.to change { ActionMailer::Base.deliveries.size }.by(1)
+      it "sends email to key owner" do
+        expect { subject }.to have_enqueued_email(key.id, mail: "new_gpg_key_email")
+      end
+
+      describe "never emails the ghost user" do
+        let(:key_options) { { user: User.ghost } }
+
+        it "does not send email to key owner" do
+          expect { subject }.not_to have_enqueued_email(key.id, mail: "new_gpg_key_email")
+        end
       end
     end
   end
@@ -215,10 +235,10 @@ describe NotificationService, :mailer do
     describe '#access_token_about_to_expire' do
       let_it_be(:user) { create(:user) }
 
-      it 'sends email to the token owner' do
-        expect(notification.access_token_about_to_expire(user)).to be_truthy
+      subject { notification.access_token_about_to_expire(user) }
 
-        should_email user
+      it 'sends email to the token owner' do
+        expect { subject }.to have_enqueued_email(user, mail: "access_token_about_to_expire_email")
       end
     end
   end
@@ -230,6 +250,8 @@ describe NotificationService, :mailer do
       let(:mentioned_issue) { create(:issue, assignees: issue.assignees) }
       let(:author) { create(:user) }
       let(:note) { create(:note_on_issue, author: author, noteable: issue, project_id: issue.project_id, note: '@mention referenced, @unsubscribed_mentioned and @outsider also') }
+
+      subject { notification.new_note(note) }
 
       before do
         build_team(project)
@@ -260,32 +282,23 @@ describe NotificationService, :mailer do
             reset_delivered_emails!
           end
 
-          it do
-            expect(SentNotification).to receive(:record).with(issue, any_args).exactly(10).times
+          it 'sends emails to recipients' do
+            subject
 
-            notification.new_note(note)
-
-            should_email(@u_watcher)
-            should_email(note.noteable.author)
-            should_email(note.noteable.assignees.first)
-            should_email(@u_custom_global)
-            should_email(@u_mentioned)
-            should_email(@subscriber)
-            should_email(@watcher_and_subscriber)
-            should_email(@subscribed_participant)
-            should_email(@u_custom_off)
-            should_email(@unsubscribed_mentioned)
-            should_not_email(@u_guest_custom)
-            should_not_email(@u_guest_watcher)
-            should_not_email(note.author)
-            should_not_email(@u_participating)
-            should_not_email(@u_disabled)
-            should_not_email(@unsubscriber)
-            should_not_email(@u_outsider_mentioned)
-            should_not_email(@u_lazy_participant)
+            expect_delivery_jobs_count(10)
+            expect_enqueud_email(@u_watcher.id, note.id, nil, mail: "note_issue_email")
+            expect_enqueud_email(note.noteable.author.id, note.id, nil, mail: "note_issue_email")
+            expect_enqueud_email(note.noteable.assignees.first.id, note.id, nil, mail: "note_issue_email")
+            expect_enqueud_email(@u_custom_global.id, note.id, nil, mail: "note_issue_email")
+            expect_enqueud_email(@u_mentioned.id, note.id, "mentioned", mail: "note_issue_email")
+            expect_enqueud_email(@subscriber.id, note.id, "subscribed", mail: "note_issue_email")
+            expect_enqueud_email(@watcher_and_subscriber.id, note.id, "subscribed", mail: "note_issue_email")
+            expect_enqueud_email(@subscribed_participant.id, note.id, "subscribed", mail: "note_issue_email")
+            expect_enqueud_email(@u_custom_off.id, note.id, nil, mail: "note_issue_email")
+            expect_enqueud_email(@unsubscribed_mentioned.id, note.id, "mentioned", mail: "note_issue_email")
           end
 
-          it "emails the note author if they've opted into notifications about their activity" do
+          it "emails the note author if they've opted into notifications about their activity", :sidekiq_might_not_need_inline do
             note.author.notified_of_own_activity = true
 
             notification.new_note(note)
@@ -294,7 +307,7 @@ describe NotificationService, :mailer do
             expect(find_email_for(note.author)).to have_header('X-GitLab-NotificationReason', 'own_activity')
           end
 
-          it_behaves_like 'project emails are disabled' do
+          it_behaves_like 'project emails are disabled', check_delivery_jobs_queue: true do
             let(:notification_target)  { note }
             let(:notification_trigger) { notification.new_note(note) }
           end
@@ -302,21 +315,21 @@ describe NotificationService, :mailer do
 
         it 'filters out "mentioned in" notes' do
           mentioned_note = SystemNoteService.cross_reference(mentioned_issue, issue, issue.author)
+          reset_delivered_emails!
 
-          expect(Notify).not_to receive(:note_issue_email)
           notification.new_note(mentioned_note)
+
+          expect_no_delivery_jobs
         end
 
         context 'participating' do
           context 'by note' do
             before do
-              reset_delivered_emails!
               note.author = @u_lazy_participant
               note.save
-              notification.new_note(note)
             end
 
-            it { should_not_email(@u_lazy_participant) }
+            it { expect { subject }.not_to have_enqueued_email(@u_lazy_participant.id, note.id, mail: "note_issue_email") }
           end
         end
       end
@@ -335,7 +348,7 @@ describe NotificationService, :mailer do
         end
 
         shared_examples 'new note notifications' do
-          it do
+          it 'sends notifications', :sidekiq_might_not_need_inline do
             notification.new_note(note)
 
             should_email(note.noteable.author)
@@ -359,7 +372,7 @@ describe NotificationService, :mailer do
 
         it_behaves_like 'new note notifications'
 
-        it_behaves_like 'project emails are disabled' do
+        it_behaves_like 'project emails are disabled', check_delivery_jobs_queue: true do
           let(:notification_target)  { note }
           let(:notification_trigger) { notification.new_note(note) }
         end
@@ -378,13 +391,13 @@ describe NotificationService, :mailer do
 
             notification.new_note(note)
 
-            should_email(user)
+            expect_enqueud_email(user.id, note.id, nil, mail: "note_issue_email")
           end
         end
       end
     end
 
-    context 'confidential issue note' do
+    context 'confidential issue note', :sidekiq_might_not_need_inline do
       let(:project) { create(:project, :public) }
       let(:author) { create(:user) }
       let(:assignee) { create(:user) }
@@ -441,7 +454,7 @@ describe NotificationService, :mailer do
       end
     end
 
-    context 'issue note mention' do
+    context 'issue note mention', :sidekiq_might_not_need_inline do
       let(:project) { create(:project, :public) }
       let(:issue) { create(:issue, project: project, assignees: [assignee]) }
       let(:mentioned_issue) { create(:issue, assignees: issue.assignees) }
@@ -507,7 +520,7 @@ describe NotificationService, :mailer do
       end
     end
 
-    context 'project snippet note' do
+    context 'project snippet note', :sidekiq_might_not_need_inline do
       let!(:project) { create(:project, :public) }
       let(:snippet) { create(:project_snippet, project: project, author: create(:user)) }
       let(:author) { create(:user) }
@@ -551,7 +564,7 @@ describe NotificationService, :mailer do
       end
     end
 
-    context 'personal snippet note' do
+    context 'personal snippet note', :sidekiq_might_not_need_inline do
       let(:snippet) { create(:personal_snippet, :public, author: @u_snippet_author) }
       let(:note)    { create(:note_on_personal_snippet, noteable: snippet, note: '@mentioned note', author: @u_note_author) }
 
@@ -600,7 +613,7 @@ describe NotificationService, :mailer do
       end
     end
 
-    context 'commit note' do
+    context 'commit note', :sidekiq_might_not_need_inline do
       let(:project) { create(:project, :public, :repository) }
       let(:note) { create(:note_on_commit, project: project) }
 
@@ -659,7 +672,7 @@ describe NotificationService, :mailer do
       end
     end
 
-    context "merge request diff note" do
+    context "merge request diff note", :sidekiq_might_not_need_inline do
       let(:project) { create(:project, :repository) }
       let(:user) { create(:user) }
       let(:merge_request) { create(:merge_request, source_project: project, assignees: [user], author: create(:user)) }
@@ -691,7 +704,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe '#send_new_release_notifications' do
+  describe '#send_new_release_notifications', :sidekiq_might_not_need_inline do
     context 'when recipients for a new release exist' do
       let(:release) { create(:release) }
 
@@ -712,7 +725,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe 'Participating project notification settings have priority over group and global settings if available' do
+  describe 'Participating project notification settings have priority over group and global settings if available', :sidekiq_might_not_need_inline do
     let!(:group) { create(:group) }
     let!(:maintainer) { group.add_owner(create(:user, username: 'maintainer')).user }
     let!(:user1) { group.add_developer(create(:user, username: 'user_with_project_and_custom_setting')).user }
@@ -770,7 +783,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe 'Issues' do
+  describe 'Issues', :sidekiq_might_not_need_inline do
     let(:group) { create(:group) }
     let(:project) { create(:project, :public, namespace: group) }
     let(:another_project) { create(:project, :public, namespace: group) }
@@ -1423,7 +1436,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe 'Merge Requests' do
+  describe 'Merge Requests', :sidekiq_might_not_need_inline do
     let(:group) { create(:group) }
     let(:project) { create(:project, :public, :repository, namespace: group) }
     let(:another_project) { create(:project, :public, namespace: group) }
@@ -1898,7 +1911,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe 'Projects' do
+  describe 'Projects', :sidekiq_might_not_need_inline do
     let(:project) { create(:project) }
 
     before do
@@ -1989,7 +2002,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe 'GroupMember' do
+  describe 'GroupMember', :sidekiq_might_not_need_inline do
     let(:added_user) { create(:user) }
 
     describe '#new_access_request' do
@@ -2075,7 +2088,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe 'ProjectMember' do
+  describe 'ProjectMember', :sidekiq_might_not_need_inline do
     let(:project) { create(:project) }
     let(:added_user) { create(:user) }
 
@@ -2236,7 +2249,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  context 'guest user in private project' do
+  context 'guest user in private project', :sidekiq_might_not_need_inline do
     let(:private_project) { create(:project, :private) }
     let(:guest) { create(:user) }
     let(:developer) { create(:user) }
@@ -2291,7 +2304,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe 'Pipelines' do
+  describe 'Pipelines', :sidekiq_might_not_need_inline do
     describe '#pipeline_finished' do
       let(:project) { create(:project, :public, :repository) }
       let(:u_member) { create(:user) }
@@ -2507,7 +2520,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe 'Pages domains' do
+  describe 'Pages domains', :sidekiq_might_not_need_inline do
     let_it_be(:project, reload: true) { create(:project) }
     let_it_be(:domain, reload: true) { create(:pages_domain, project: project) }
     let_it_be(:u_blocked) { create(:user, :blocked) }
@@ -2560,7 +2573,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  context 'Auto DevOps notifications' do
+  context 'Auto DevOps notifications', :sidekiq_might_not_need_inline do
     describe '#autodevops_disabled' do
       let(:owner) { create(:user) }
       let(:namespace) { create(:namespace, owner: owner) }
@@ -2584,7 +2597,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  describe 'Repository cleanup' do
+  describe 'Repository cleanup', :sidekiq_might_not_need_inline do
     let(:user) { create(:user) }
     let(:project) { create(:project) }
 
@@ -2615,7 +2628,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  context 'Remote mirror notifications' do
+  context 'Remote mirror notifications', :sidekiq_might_not_need_inline do
     describe '#remote_mirror_update_failed' do
       let(:project) { create(:project) }
       let(:remote_mirror) { create(:remote_mirror, project: project) }
@@ -2653,7 +2666,7 @@ describe NotificationService, :mailer do
     end
   end
 
-  context 'with external authorization service' do
+  context 'with external authorization service', :sidekiq_might_not_need_inline do
     let(:issue) { create(:issue) }
     let(:project) { issue.project }
     let(:note) { create(:note, noteable: issue, project: project) }
