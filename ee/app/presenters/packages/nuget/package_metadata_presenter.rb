@@ -4,31 +4,24 @@ module Packages
   module Nuget
     class PackageMetadataPresenter
       include API::Helpers::RelatedResourcesHelpers
+      include API::Helpers::Packages::Nuget::MetadataPresenterHelpers
 
       attr_reader :package
 
       def initialize(package)
-        raise ArgumentError unless package.npm?
-
         @package = package
       end
 
       def json_url
+        json_url_for(package)
       end
 
-      def nuget_package_url
+      def archive_url
+        archive_url_for(package)
       end
 
       def catalog_entry
-        {
-          package_name: package.name,
-          package_version: package.version,
-          json_url: json_url,
-          nuget_package_url: nuget_package_url,
-          authors: '',
-          dependencies: [],
-          summary: ''
-        }
+        catalog_entry_for(package)
       end
     end
   end
