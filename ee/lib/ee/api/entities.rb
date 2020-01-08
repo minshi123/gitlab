@@ -865,20 +865,9 @@ module EE
           expose :resources
         end
 
-        class PackagesMetadata < Grape::Entity
-          expose :count
-          expose :items do
-            expose :json_url, as: :@id
-            expose :lower_version, as: :lower
-            expose :upper_version, as: :upper
-            expose :packages_count, as: :count
-            expose :packages, as: :items, using: EE::API::Entities::Nuget::PackageMetadata
-          end
-        end
-
         class PackageMetadata < Grape::Entity
           expose :json_url, as: :@id
-          expose :nuget_package_url, as: :packageContent
+          expose :archive_url, as: :packageContent
           expose :catalog_entry, as: :catalogEntry do
             expose :json_url, as: :@id
             expose :authors
@@ -887,6 +876,17 @@ module EE
             expose :package_version, as: :version
             expose :nuget_package_url, as: :packageContent
             expose :summary
+          end
+        end
+
+        class PackagesMetadata < Grape::Entity
+          expose :count
+          expose :items do
+            expose :json_url, as: :@id
+            expose :lower_version, as: :lower
+            expose :upper_version, as: :upper
+            expose :packages_count, as: :count
+            expose :packages, as: :items, using: EE::API::Entities::Nuget::PackageMetadata
           end
         end
       end
