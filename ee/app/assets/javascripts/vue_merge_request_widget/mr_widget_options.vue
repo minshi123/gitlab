@@ -44,7 +44,7 @@ export default {
     },
     shouldRenderCodeQuality() {
       const { codeclimate } = this.mr || {};
-      return codeclimate && codeclimate.head_path && codeclimate.base_path;
+      return codeclimate && codeclimate.head_path;
     },
     shouldRenderLicenseReport() {
       const { licenseManagement } = this.mr;
@@ -174,6 +174,12 @@ export default {
       };
     },
     fetchCodeQuality() {
+      if (!this.mr.codeclimate.base_path) {
+        this.isLoadingCodequality = false;
+        this.loadingCodequalityFailed = true;
+        return;
+      }
+
       const { head_path, base_path } = this.mr.codeclimate;
 
       this.isLoadingCodequality = true;
