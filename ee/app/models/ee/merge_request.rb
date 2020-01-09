@@ -52,6 +52,10 @@ module EE
           true
         end
       end
+
+      scope :order_review_time_desc, -> do
+        joins(:metrics).order(Arel.sql("merge_request_metrics.first_comment_at ASC NULLS LAST"))
+      end
     end
 
     class_methods do
@@ -62,6 +66,24 @@ module EE
       # This is an ActiveRecord scope in CE
       def with_api_entity_associations
         super.preload(:blocking_merge_requests)
+      end
+
+      def sort_by_attribute(method, *args)
+        if method == 'review_time_desc'
+          order_review_time_desc
+        else
+          super
+        end
+      end
+
+      # Includes table keys in group by clause when sorting
+      # preventing errors in postgres
+      #
+      # Returns an array of arel columns
+      def grouping_columns(sort)
+        grouping_columns = super
+        grouping_columns << ::MergeRequest::Metrics.arel_table[:first_comment_at] if sort == 'review_time_desc'
+        grouping_columns
       end
     end
 
