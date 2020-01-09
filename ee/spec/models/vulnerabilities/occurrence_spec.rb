@@ -319,12 +319,24 @@ describe Vulnerabilities::Occurrence do
   end
 
   describe '.batch_count_by_project_and_severity' do
+    let(:pipeline) { create(:ci_pipeline, :success, project: project) }
     let(:project) { create(:project) }
 
     it 'fetches a vulnerability count for the given project and severity' do
-      create(:vulnerabilities_occurrence, project: project, severity: :high)
+      create(:vulnerabilities_occurrence, pipelines: [pipeline], project: project, severity: :high)
 
       count = described_class.batch_count_by_project_and_severity(project.id, 'high')
+
+      expect(count).to be(1)
+    end
+
+    it 'only returns vulnerabilities from the latest successful pipeline' do
+      old_pipeline = create(:ci_pipeline, :success, project: project)
+      latest_pipeline = create(:ci_pipeline, :success, project: project)
+      create(:vulnerabilities_occurrence, pipelines: [old_pipeline], project: project, severity: :critical)
+      create(:vulnerabilities_occurrence, pipelines: [latest_pipeline], project: project, severity: :critical)
+
+      count = described_class.batch_count_by_project_and_severity(project.id, 'critical')
 
       expect(count).to be(1)
     end
@@ -339,8 +351,10 @@ describe Vulnerabilities::Occurrence do
       projects = create_list(:project, 2)
 
       projects.each do |project|
-        create(:vulnerabilities_occurrence, project: project, severity: :high)
-        create(:vulnerabilities_occurrence, project: project, severity: :low)
+        pipeline = create(:ci_pipeline, :success, project: project)
+
+        create(:vulnerabilities_occurrence, pipelines: [pipeline], project: project, severity: :high)
+        create(:vulnerabilities_occurrence, pipelines: [pipeline], project: project, severity: :low)
       end
 
       projects_and_severities = [
@@ -358,8 +372,8 @@ describe Vulnerabilities::Occurrence do
     end
 
     it 'does not include dismissed vulnerabilities in the counts' do
-      create(:vulnerabilities_occurrence, project: project, severity: :high)
-      dismissed_vulnerability = create(:vulnerabilities_occurrence, project: project, severity: :high)
+      create(:vulnerabilities_occurrence, pipelines: [pipeline], project: project, severity: :high)
+      dismissed_vulnerability = create(:vulnerabilities_occurrence, pipelines: [pipeline], project: project, severity: :high)
       create(
         :vulnerability_feedback,
         project: project,
