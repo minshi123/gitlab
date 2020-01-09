@@ -12,9 +12,8 @@ import { createStore } from '~/monitoring/stores';
 import * as types from '~/monitoring/stores/mutation_types';
 import { setupComponentStore, propsData } from '../init_utils';
 import {
-  metricsGroupsAPIResponse,
+  metricsDashboardPayload,
   mockedQueryResultPayload,
-  mockApiEndpoint,
   environmentData,
   dashboardGitResponse,
 } from '../mock_data';
@@ -31,6 +30,9 @@ describe('Dashboard', () => {
     wrapper = shallowMount(Dashboard, {
       localVue,
       propsData: { ...propsData, ...props },
+      methods: {
+        fetchData: jest.fn(),
+      },
       store,
       ...options,
     });
@@ -40,6 +42,9 @@ describe('Dashboard', () => {
     wrapper = mount(Dashboard, {
       localVue,
       propsData: { ...propsData, ...props },
+      methods: {
+        fetchData: jest.fn(),
+      },
       store,
       ...options,
     });
@@ -53,19 +58,14 @@ describe('Dashboard', () => {
   afterEach(() => {
     if (wrapper) {
       wrapper.destroy();
+      wrapper = null;
     }
     mock.restore();
   });
 
   describe('no metrics are available yet', () => {
     beforeEach(() => {
-      mock.onGet(mockApiEndpoint).reply(statusCodes.OK, metricsGroupsAPIResponse);
-
       createShallowWrapper({}, { attachToDocument: true });
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('shows the environment selector', () => {
@@ -75,15 +75,9 @@ describe('Dashboard', () => {
 
   describe('no data found', () => {
     beforeEach(done => {
-      mock.onGet(mockApiEndpoint).reply(statusCodes.OK, metricsGroupsAPIResponse);
-
       createShallowWrapper({}, { attachToDocument: true });
 
       wrapper.vm.$nextTick(done);
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('shows the environment selector dropdown', () => {
@@ -92,12 +86,8 @@ describe('Dashboard', () => {
   });
 
   describe('request information to the server', () => {
-    beforeEach(() => {
-      mock.onGet(mockApiEndpoint).reply(200, metricsGroupsAPIResponse);
-    });
-
     it('shows up a loading state', done => {
-      createShallowWrapper({ hasMetrics: true }, { attachToDocument: true });
+      createShallowWrapper({ hasMetrics: true }, { attachToDocument: true, methods: {} });
 
       wrapper.vm
         .$nextTick()
@@ -157,18 +147,12 @@ describe('Dashboard', () => {
 
   describe('when all requests have been commited by the store', () => {
     beforeEach(() => {
-      mock.onGet(mockApiEndpoint).reply(statusCodes.OK, metricsGroupsAPIResponse);
-
       createMountedWrapper(
         { hasMetrics: true },
         { attachToDocument: true, stubs: ['graph-group', 'panel-type'] },
       );
 
       setupComponentStore(wrapper);
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('renders the environments dropdown with a number of environments', done => {
@@ -221,7 +205,7 @@ describe('Dashboard', () => {
 
     wrapper.vm.$store.commit(
       `monitoringDashboard/${types.RECEIVE_METRICS_DATA_SUCCESS}`,
-      metricsGroupsAPIResponse,
+      metricsDashboardPayload,
     );
     wrapper.vm.$store.commit(
       `monitoringDashboard/${types.RECEIVE_METRIC_RESULT_SUCCESS}`,
@@ -260,8 +244,6 @@ describe('Dashboard', () => {
 
   describe('when one of the metrics is missing', () => {
     beforeEach(done => {
-      mock.onGet(mockApiEndpoint).reply(200, metricsGroupsAPIResponse);
-
       createShallowWrapper({ hasMetrics: true }, { attachToDocument: true });
       setupComponentStore(wrapper);
 
@@ -291,20 +273,12 @@ describe('Dashboard', () => {
     const findDraggablePanels = () => wrapper.findAll('.js-draggable-panel');
     const findRearrangeButton = () => wrapper.find('.js-rearrange-button');
 
-    beforeEach(() => {
-      mock.onGet(mockApiEndpoint).reply(statusCodes.OK, metricsGroupsAPIResponse);
-    });
-
     beforeEach(done => {
       createShallowWrapper({ hasMetrics: true }, { attachToDocument: true });
 
       setupComponentStore(wrapper);
 
       wrapper.vm.$nextTick(done);
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('wraps vuedraggable', () => {
@@ -345,7 +319,7 @@ describe('Dashboard', () => {
 
         it('metrics can be swapped', done => {
           const firstDraggable = findDraggables().at(0);
-          const mockMetrics = [...metricsGroupsAPIResponse.panel_groups[1].panels];
+          const mockMetrics = [...metricsDashboardPayload.panel_groups[1].panels];
 
           const firstTitle = mockMetrics[0].title;
           const secondTitle = mockMetrics[1].title;
@@ -397,10 +371,6 @@ describe('Dashboard', () => {
       wrapper.vm.$nextTick(done);
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it('renders correctly', () => {
       expect(wrapper.isVueInstance()).toBe(true);
       expect(wrapper.exists()).toBe(true);
@@ -411,8 +381,6 @@ describe('Dashboard', () => {
     const findEditLink = () => wrapper.find('.js-edit-link');
 
     beforeEach(done => {
-      mock.onGet(mockApiEndpoint).reply(statusCodes.OK, metricsGroupsAPIResponse);
-
       createShallowWrapper({ hasMetrics: true }, { attachToDocument: true });
 
       wrapper.vm.$store.commit(
@@ -420,10 +388,6 @@ describe('Dashboard', () => {
         dashboardGitResponse,
       );
       wrapper.vm.$nextTick(done);
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('is not present for the default dashboard', () => {
@@ -448,8 +412,6 @@ describe('Dashboard', () => {
 
   describe('Dashboard dropdown', () => {
     beforeEach(() => {
-      mock.onGet(mockApiEndpoint).reply(200, metricsGroupsAPIResponse);
-
       createMountedWrapper(
         { hasMetrics: true },
         { attachToDocument: true, stubs: ['graph-group', 'panel-type'] },
@@ -476,8 +438,6 @@ describe('Dashboard', () => {
 
   describe('external dashboard link', () => {
     beforeEach(() => {
-      mock.onGet(mockApiEndpoint).reply(200, metricsGroupsAPIResponse);
-
       createMountedWrapper(
         {
           hasMetrics: true,
@@ -513,15 +473,9 @@ describe('Dashboard', () => {
     const clipboardText = () => link().element.dataset.clipboardText;
 
     beforeEach(done => {
-      mock.onGet(mockApiEndpoint).reply(200, metricsGroupsAPIResponse);
-
       createShallowWrapper({ hasMetrics: true, currentDashboard }, { attachToDocument: true });
 
       setTimeout(done);
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('adds a copy button to the dropdown', () => {

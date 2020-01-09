@@ -24,7 +24,7 @@ import {
   deploymentData,
   environmentData,
   metricsDashboardResponse,
-  metricsGroupsAPIResponse,
+  metricsDashboardPayload,
   dashboardGitResponse,
 } from '../mock_data';
 
@@ -441,7 +441,7 @@ describe('Monitoring store actions', () => {
     beforeEach(() => {
       state = storeState();
       [metric] = metricsDashboardResponse.dashboard.panel_groups[0].panels[0].metrics;
-      [data] = metricsGroupsAPIResponse.panel_groups[0].panels[0].metrics;
+      [data] = metricsDashboardPayload.panel_groups[0].panels[0].metrics;
     });
 
     it('commits result', done => {

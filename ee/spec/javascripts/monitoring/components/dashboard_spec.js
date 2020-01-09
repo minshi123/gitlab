@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { GlModal, GlButton } from '@gitlab/ui';
 import Dashboard from 'ee/monitoring/components/dashboard.vue';
 import {
-  metricsGroupsAPIResponse,
+  metricsDashboardPayload,
   mockApiEndpoint,
   mockedQueryResultPayload,
   environmentData,
@@ -52,7 +52,7 @@ describe('Dashboard', () => {
 
     store = createStore();
     mock = new MockAdapter(axios);
-    mock.onGet(mockApiEndpoint).reply(200, metricsGroupsAPIResponse);
+    mock.onGet(mockApiEndpoint).reply(200, metricsDashboardPayload);
     Component = localVue.extend(Dashboard);
   });
 
@@ -63,7 +63,7 @@ describe('Dashboard', () => {
   function setupComponentStore(component) {
     component.vm.$store.commit(
       `monitoringDashboard/${types.RECEIVE_METRICS_DATA_SUCCESS}`,
-      metricsGroupsAPIResponse,
+      metricsDashboardPayload,
     );
     component.vm.$store.commit(
       `monitoringDashboard/${types.RECEIVE_METRIC_RESULT_SUCCESS}`,

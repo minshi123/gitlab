@@ -1,6 +1,6 @@
 import * as types from '~/monitoring/stores/mutation_types';
 import {
-  metricsGroupsAPIResponse,
+  metricsDashboardPayload,
   mockedEmptyResult,
   mockedQueryResultPayload,
   mockedQueryResultPayloadCoresTotal,
@@ -22,7 +22,7 @@ export const propsData = {
   emptyNoDataSvgPath: '/path/to/no-data.svg',
   emptyNoDataSmallSvgPath: '/path/to/no-data-small.svg',
   emptyUnableToConnectSvgPath: '/path/to/unable-to-connect.svg',
-  environmentsEndpoint: '/root/hello-prometheus/environments/35',
+  environmentsEndpoint: '/root/hello-prometheus/-/environments.json',
   currentEnvironmentName: 'production',
   customMetricsAvailable: false,
   customMetricsPath: '',
@@ -32,7 +32,7 @@ export const propsData = {
 export const setupComponentStore = wrapper => {
   wrapper.vm.$store.commit(
     `monitoringDashboard/${types.RECEIVE_METRICS_DATA_SUCCESS}`,
-    metricsGroupsAPIResponse,
+    metricsDashboardPayload,
   );
 
   // Load 3 panels to the dashboard, one with an empty result
