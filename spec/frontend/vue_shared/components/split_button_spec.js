@@ -88,7 +88,7 @@ describe('SplitButton', () => {
 
     const addChangeEventHandler = () => {
       changeEventHandler = jest.fn();
-      wrapper.vm.$once('change', () => changeEventHandler());
+      wrapper.vm.$once('change', item => changeEventHandler(item));
     };
 
     it('defaults to first actionItems event', () => {
@@ -111,7 +111,7 @@ describe('SplitButton', () => {
       addChangeEventHandler();
 
       return selectItem(1).then(() => {
-        expect(changeEventHandler).toHaveBeenCalled();
+        expect(changeEventHandler).toHaveBeenCalledWith(mockActionItems[1]);
       });
     });
   });
