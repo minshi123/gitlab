@@ -1262,7 +1262,7 @@ describe User, :do_not_mock_admin_mode do
     let(:user) { double }
 
     it 'filters by active users by default' do
-      expect(described_class).to receive(:active).and_return([user])
+      expect(described_class).to receive(:active_with_ghost).and_return([user])
 
       expect(described_class.filter_items(nil)).to include user
     end

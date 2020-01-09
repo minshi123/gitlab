@@ -471,7 +471,7 @@ class User < ApplicationRecord
       when 'deactivated'
         deactivated
       else
-        active
+        active_with_ghost
       end
     end
 
