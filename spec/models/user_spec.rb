@@ -633,6 +633,16 @@ describe User, :do_not_mock_admin_mode do
         end
       end
     end
+
+    describe '.active_with_ghost' do
+      let_it_be(:user1) { create(:user, :external) }
+      let_it_be(:user2) { create(:user, state: 'blocked') }
+      let_it_be(:user3) { create(:user, ghost: true) }
+
+      it 'returns active users with ghost users as well' do
+        expect(described_class.active_with_ghost).to match_array([user1, user3])
+      end
+    end
   end
 
   describe "Respond to" do
