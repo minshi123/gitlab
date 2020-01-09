@@ -438,6 +438,14 @@ describe('ee merge request widget options', () => {
           done();
         }, 0);
       });
+
+      it('should render a help icon with more information', done => {
+        setTimeout(() => {
+          expect(vm.$el.querySelector('.js-codequality-widget .btn-help')).not.toBeNull();
+          expect(vm.codequalityPopover.title).toBe('Base pipeline codequality artifact not found');
+          done();
+        }, 0);
+      });
     });
 
     describe('with codeclimate comparison worker rejection', () => {

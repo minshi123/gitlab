@@ -102,6 +102,23 @@ export default {
 
       return text.join('');
     },
+    codequalityPopover() {
+      const { codeclimate } = this.mr || {};
+      if (codeclimate && !codeclimate.base_path) {
+        return {
+          title: s__('ciReport|Base pipeline codequality artifact not found'),
+          content: sprintf(
+            s__('ciReport|%{linkStartTag}Learn more about codequality reports %{linkEndTag}'),
+            {
+              linkStartTag: `<a href="${this.mr.codequalityHelpPath}" target="_blank" rel="noopener noreferrer">`,
+              linkEndTag: '<i class="fa fa-external-link" aria-hidden="true"></i></a>',
+            },
+            false,
+          ),
+        };
+      }
+      return {};
+    },
 
     performanceText() {
       const { improved, degraded } = this.mr.performanceMetrics;
@@ -257,6 +274,7 @@ export default {
         :resolved-issues="mr.codeclimateMetrics.resolvedIssues"
         :has-issues="hasCodequalityIssues"
         :component="$options.componentNames.CodequalityIssueBody"
+        :popover-options="codequalityPopover"
         class="js-codequality-widget mr-widget-border-top mr-report"
       />
       <report-section
