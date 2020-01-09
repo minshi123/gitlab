@@ -112,6 +112,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     namespace :security do
       resource :dashboard, only: [:show], controller: :dashboard
       resources :vulnerable_projects, only: [:index]
+      resources :unscanned_projects, only: [:index]
 
       resources :vulnerability_findings, only: [:index] do
         collection do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-shared_examples 'instance security dashboard JSON endpoint' do
+shared_examples 'security dashboard JSON endpoint' do
   context 'when the user is authenticated' do
     let(:security_application_controller_user) { create(:user) }
 
@@ -10,6 +10,10 @@ shared_examples 'instance security dashboard JSON endpoint' do
       stub_licensed_features(security_dashboard: true)
 
       login_as(security_application_controller_user)
+
+      if vulnerable.present?
+        vulnerable.add_developer(security_application_controller_user)
+      end
     end
 
     it 'responds with success' do
