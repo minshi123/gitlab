@@ -43,6 +43,9 @@ describe IssuesFinder do
           end
 
           it_behaves_like 'assignee NOT username filter' do
+            before do
+              issue2.assignees = [user2]
+            end
             let(:params) { { not: { assignee_username: [user.username, user2.username] } } }
             let(:expected_issuables) { [issue3, issue4] }
           end

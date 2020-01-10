@@ -20,6 +20,9 @@ end
 
 shared_examples 'assignee NOT username filter' do
   it 'returns issuables not assigned to those users' do
+    pp params
+    pp [issue1, issue2, issue3, issue4]
+    pp issuables.map {|i| i.assignees }
     expect(issuables).to contain_exactly(*expected_issuables)
   end
 end
