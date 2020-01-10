@@ -11388,10 +11388,10 @@ msgstr ""
 msgid "MergeRequest|Error loading full diff. Please try again."
 msgstr ""
 
-msgid "MergeRequest|Filter files or search with %{modifier_key}+p"
+msgid "MergeRequest|No files found"
 msgstr ""
 
-msgid "MergeRequest|No files found"
+msgid "MergeRequest|Search files (%{modifier_key}p)"
 msgstr ""
 
 msgid "Merged"
@@ -11664,6 +11664,9 @@ msgid "Modal|Cancel"
 msgstr ""
 
 msgid "Modal|Close"
+msgstr ""
+
+msgid "Modified"
 msgstr ""
 
 msgid "Modified in this version"
@@ -21316,6 +21319,9 @@ msgid "already shared with this group"
 msgstr ""
 
 msgid "among other things"
+msgstr ""
+
+msgid "and"
 msgstr ""
 
 msgid "archived"

@@ -30,7 +30,7 @@ describe('diff_stats', () => {
         .filter(c => c.attributes('name') === name)
         .at(0).element.parentNode;
 
-    const additions = findIcon('file-addition');
+    const additions = findIcon('plus');
     const deletions = findIcon('file-deletion');
     const filesChanged = findIcon('doc-code');
 

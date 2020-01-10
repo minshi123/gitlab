@@ -133,7 +133,7 @@ describe 'Merge request > User sees versions', :js do
       )
       expect(page).to have_content '4 Files'
 
-      additions_content = page.find('.diff-stats.is-compare-versions-header .diff-stats-group svg.ic-file-addition')
+      additions_content = page.find('.diff-stats.is-compare-versions-header .diff-stats-group svg.ic-plus')
                               .ancestor('.diff-stats-group').text
       deletions_content = page.find('.diff-stats.is-compare-versions-header .diff-stats-group svg.ic-file-deletion')
                               .ancestor('.diff-stats-group').text
@@ -159,7 +159,7 @@ describe 'Merge request > User sees versions', :js do
     end
 
     it 'show diff between new and old version' do
-      additions_content = page.find('.diff-stats.is-compare-versions-header .diff-stats-group svg.ic-file-addition')
+      additions_content = page.find('.diff-stats.is-compare-versions-header .diff-stats-group svg.ic-plus')
                               .ancestor('.diff-stats-group').text
       deletions_content = page.find('.diff-stats.is-compare-versions-header .diff-stats-group svg.ic-file-deletion')
                               .ancestor('.diff-stats-group').text
