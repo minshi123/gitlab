@@ -68,9 +68,9 @@
         = sprite_icon('stop')
         = s_('Environments|Stop')
     - if can?(current_user, :update_environment, @environment) && @environment.stopped?
-        = button_tag class: 'btn btn-danger', type: 'button', data: { toggle: 'modal',
-          target: '#delete-environment-modal' } do
-          = s_('Environments|Delete')
+      = button_tag class: 'btn btn-danger', type: 'button', data: { toggle: 'modal',
+        target: '#delete-environment-modal' } do
+        = s_('Environments|Delete')
 
 .environments-container
   - if @deployments.blank?
