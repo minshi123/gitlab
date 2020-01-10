@@ -15,6 +15,8 @@ import ActionsComponent from './environment_actions.vue';
 import ExternalUrlComponent from './environment_external_url.vue';
 import MonitoringButtonComponent from './environment_monitoring.vue';
 import PinComponent from './environment_pin.vue';
+import StopComponent from './environment_stop.vue';
+import DeleteComponent from './environment_delete.vue';
 import RollbackComponent from './environment_rollback.vue';
 import StopComponent from './environment_stop.vue';
 import TerminalButtonComponent from './environment_terminal_button.vue';
@@ -33,6 +35,8 @@ export default {
     Icon,
     MonitoringButtonComponent,
     PinComponent,
+    StopComponent,
+    DeleteComponent,
     RollbackComponent,
     StopComponent,
     TerminalButtonComponent,
@@ -110,6 +114,15 @@ export default {
      */
     canStopEnvironment() {
       return this.model && this.model.can_stop;
+    },
+
+    /**
+     * Returns whether the environment can be deleted.
+     *
+     * @returns {Boolean}
+     */
+    canDeleteEnvironment() {
+      return this.model && !this.model.can_stop && this.model.can_update && this.model.delete_path;
     },
 
     /**
@@ -485,6 +498,7 @@ export default {
         this.externalURL ||
         this.monitoringUrl ||
         this.canStopEnvironment ||
+        this.canDeleteEnvironment ||
         this.canRetry
       );
     },
@@ -680,6 +694,8 @@ export default {
         />
 
         <stop-component v-if="canStopEnvironment" :environment="model" />
+
+        <delete-component v-if="canDeleteEnvironment" :environment="model" />
       </div>
     </div>
   </div>
