@@ -333,12 +333,24 @@ describe Vulnerabilities::Occurrence do
     it 'only returns vulnerabilities from the latest successful pipeline' do
       old_pipeline = create(:ci_pipeline, :success, project: project)
       latest_pipeline = create(:ci_pipeline, :success, project: project)
+      latest_failed_pipeline = create(:ci_pipeline, :failed, project: project)
       create(:vulnerabilities_occurrence, pipelines: [old_pipeline], project: project, severity: :critical)
-      create(:vulnerabilities_occurrence, pipelines: [latest_pipeline], project: project, severity: :critical)
+      create(
+        :vulnerabilities_occurrence,
+        pipelines: [latest_failed_pipeline],
+        project: project,
+        severity: :critical
+      )
+      create_list(
+        :vulnerabilities_occurrence, 2,
+        pipelines: [latest_pipeline],
+        project: project,
+        severity: :critical
+      )
 
       count = described_class.batch_count_by_project_and_severity(project.id, 'critical')
 
-      expect(count).to be(1)
+      expect(count).to be(2)
     end
 
     it 'returns 0 when there are no vulnerabilities for that severity level' do

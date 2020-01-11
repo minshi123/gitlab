@@ -161,7 +161,6 @@ module Vulnerabilities
 
     def self.batch_count_by_project_and_severity(project_id, severity)
       BatchLoader.for(project_id: project_id, severity: severity).batch(default_value: 0) do |items, loader|
-        project_ids = items.map { |i| i[:project_id] }.uniq
         severities = items.map { |i| i[:severity] }.uniq
 
         latest_pipelines = Ci::Pipeline
@@ -172,7 +171,6 @@ module Vulnerabilities
         counts = for_pipelines(latest_pipelines)
           .undismissed
           .by_severities(severities)
-          .by_projects(project_ids)
           .group(:project_id, :severity)
           .count
 
