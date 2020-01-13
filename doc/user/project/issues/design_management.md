@@ -70,7 +70,7 @@ Designs cannot be added if the issue has been moved, or its
 
 ## Viewing designs
 
-Images on the Design Management page can be enlarged by clicking on them.
+Images on the Design Management page can be enlarged by clicking on them. You can navigate through designs clicking on navigation buttons in the top right corner or with <kbd>Left</kbd>/<kbd>Right</kbd> keyboard buttons.
 
 The number of comments on a design — if any — is listed to the right
 of the design filename. Clicking on this number enlarges the design

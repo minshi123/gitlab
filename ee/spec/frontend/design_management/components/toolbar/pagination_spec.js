@@ -59,7 +59,6 @@ describe('Design management pagination component', () => {
     });
 
     it('routes to previous design on Left button', () => {
-      console.log(wrapper.vm.currentIndex);
       Mousetrap.trigger('left');
       expect(push).toHaveBeenCalledWith({
         name: 'design',
