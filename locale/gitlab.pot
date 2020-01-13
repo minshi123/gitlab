@@ -15682,6 +15682,12 @@ msgstr ""
 msgid "Review"
 msgstr ""
 
+msgid "Review App|View app"
+msgstr ""
+
+msgid "Review App|View latest app"
+msgstr ""
+
 msgid "Review the process for configuring service providers in your identity provider — in this case, GitLab is the \"service provider\" or \"relying party\"."
 msgstr ""
 
@@ -20510,6 +20516,9 @@ msgstr ""
 msgid "View the documentation"
 msgstr ""
 
+msgid "View the latest successful deployment to this environment"
+msgstr ""
+
 msgid "Viewing commit"
 msgstr ""
 
@@ -20562,6 +20571,9 @@ msgid "VisualReviewApp|Copy merge request ID"
 msgstr ""
 
 msgid "VisualReviewApp|Copy script"
+msgstr ""
+
+msgid "VisualReviewApp|Enable Review App"
 msgstr ""
 
 msgid "VisualReviewApp|Enable Visual Reviews"

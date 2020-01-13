@@ -31,7 +31,6 @@ describe('Deployment View App button', () => {
   });
 
   describe('text', () => {
-
     it('renders text as passed', () => {
       expect(wrapper.find(ReviewAppLink).text()).toContain(appButtonText.text);
     });
