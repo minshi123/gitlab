@@ -281,6 +281,20 @@ from processing any requests for the given application or environment.
 To permanently disable it, you must [uninstall](#uninstalling-applications) and
 reinstall your Ingress application for the changes to take effect.
 
+##### Viewing Web Application Firewall traffic
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/14707) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.8.
+
+You can view Web Application Firewall traffic by navigating to your project's
+**Security & Compliance > Threat Monitoring** page.
+
+From there, you can see tracked over time:
+* the total amount of traffic to your application
+* the proportion of traffic that is considered anomalous by the Web Application
+  Firewall
+
+![Threat Monitoring](img/threat_monitoring_v12_8.png)
+
 ### JupyterHub
 
 > - Introduced in GitLab 11.0 for project-level clusters.
