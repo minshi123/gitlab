@@ -1,9 +1,13 @@
 <script>
+import { GlTooltipDirective } from '@gitlab/ui';
 import Icon from '~/vue_shared/components/icon.vue';
 
 export default {
   components: {
     Icon,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     cssClass: {
@@ -23,6 +27,8 @@ export default {
 </script>
 <template>
   <a
+    v-gl-tooltip
+    :title="display.tooltip"
     :href="link"
     target="_blank"
     rel="noopener noreferrer nofollow"

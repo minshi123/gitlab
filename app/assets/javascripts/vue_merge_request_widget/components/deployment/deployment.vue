@@ -1,5 +1,4 @@
 <script>
-import { GlTooltipDirective } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import DeploymentInfo from './deployment_info.vue';
 import DeploymentViewButton from './deployment_view_button.vue';
@@ -14,9 +13,6 @@ export default {
     DeploymentInfo,
     DeploymentStopButton,
     DeploymentViewButton,
-  },
-  directives: {
-    GlTooltip: GlTooltipDirective,
   },
   props: {
     deployment: {
@@ -47,7 +43,7 @@ export default {
     appButtonText() {
       return {
         text: this.hasPreviousDeployment ? s__('Review App|View app') : s__('Review App|View latest app'),
-        tooltip: __('View the latest successful deployment to this environment'),
+        tooltip: this.hasPreviousDeployment ? __('View the latest successful deployment to this environment') : '',
       }
     },
     canBeManuallyDeployed() {
