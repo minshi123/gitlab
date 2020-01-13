@@ -43,7 +43,7 @@ describe('Deployment View App button', () => {
       });
 
       it('shows View Previous app', () => {
-        expect(wrapper.find(ReviewAppLink).text()).toContain('View previous app');
+        expect(wrapper.find(ReviewAppLink).text()).toContain('View latest app');
       });
     });
   });
