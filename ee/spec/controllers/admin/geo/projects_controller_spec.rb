@@ -16,7 +16,7 @@ describe Admin::Geo::ProjectsController, :geo do
     context 'without a valid license' do
       it 'redirects to license page with a flash message' do
         expect(subject).to redirect_to(admin_license_path)
-        expect(flash[:alert]).to include('You need a different license to use Geo replication')
+        expect(flash[:tip]).to include('Manage your license')
       end
     end
   end

@@ -679,6 +679,9 @@ msgstr ""
 msgid "<strong>Deletes</strong> source branch"
 msgstr ""
 
+msgid "<svg class=\"s16 gl-alert-icon gl-alert-icon-no-title\"><use xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"/assets/icons.svg#%{icon}\"></use></svg> <p class=\"ml-4 mb-0\">This GitLab instance is licensed at the <span class=\"text-capitalize\">%{license}</span> tier. Geo is only available for users who have at least a Premium license.<br />%{license_link}</p>"
+msgstr ""
+
 msgid "A 'Runner' is a process which runs a job. You can set up as many Runners as you need."
 msgstr ""
 
@@ -10965,6 +10968,9 @@ msgstr ""
 msgid "Manage two-factor authentication"
 msgstr ""
 
+msgid "Manage your license"
+msgstr ""
+
 msgid "Manifest"
 msgstr ""
 
@@ -20942,9 +20948,6 @@ msgid "You must set up incoming email before it becomes active."
 msgstr ""
 
 msgid "You need a different license to enable FileLocks feature"
-msgstr ""
-
-msgid "You need a different license to use Geo replication."
 msgstr ""
 
 msgid "You need git-lfs version %{min_git_lfs_version} (or greater) to continue. Please visit https://git-lfs.github.com"

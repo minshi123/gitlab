@@ -8,7 +8,7 @@ describe Admin::Geo::NodesController do
     end
 
     it 'displays a flash message' do
-      expect(controller).to set_flash[:alert].to('You need a different license to use Geo replication.')
+      expect(controller).to set_flash[:tip].to include('Manage your license')
     end
   end
 
@@ -34,7 +34,7 @@ describe Admin::Geo::NodesController do
       it 'displays a flash message' do
         go
 
-        expect(flash[flash_type]).to match(message)
+        expect(flash[flash_type]).to include(message)
       end
     end
 
@@ -47,7 +47,7 @@ describe Admin::Geo::NodesController do
         allow(Gitlab::Geo).to receive(:license_allows?).and_return(true)
       end
 
-      it_behaves_like 'no flash message', :alert
+      it_behaves_like 'no flash message', :tip
     end
 
     context 'without add-on license available' do
@@ -55,7 +55,7 @@ describe Admin::Geo::NodesController do
         allow(Gitlab::Geo).to receive(:license_allows?).and_return(false)
       end
 
-      it_behaves_like 'with flash message', :alert, 'You need a different license to use Geo replication'
+      it_behaves_like 'with flash message', :tip, 'Manage your license'
 
       it 'does not redirects to the license page' do
         go

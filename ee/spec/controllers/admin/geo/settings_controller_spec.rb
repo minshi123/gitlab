@@ -10,22 +10,24 @@ describe Admin::Geo::SettingsController, :geo do
 
   before do
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
+    sign_in(admin)
   end
 
   shared_examples 'license required' do
     context 'without a valid license' do
-      it 'redirects to license page with a flash message' do
-        expect(subject).to redirect_to(admin_license_path)
-        expect(flash[:alert]).to include('You need a different license to use Geo replication')
+      it 'displays a flash message' do
+        get :show
+        expect(flash[:tip]).to include('Manage your license')
+      end
+
+      it 'does not redirect to the license page' do
+        get :show
+        expect(response).not_to redirect_to(admin_license_path)
       end
     end
   end
 
   describe '#show' do
-    before do
-      sign_in(admin)
-    end
-
     subject { get :show }
 
     it_behaves_like 'license required'
@@ -45,10 +47,6 @@ describe Admin::Geo::SettingsController, :geo do
   end
 
   describe '#update' do
-    before do
-      sign_in(admin)
-    end
-
     String test_value = '1.0.0.0/0, ::/0'
 
     context 'with a valid license' do

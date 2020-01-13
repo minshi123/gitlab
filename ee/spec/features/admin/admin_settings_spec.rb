@@ -33,7 +33,7 @@ describe 'Admin updates EE-only settings' do
 
         visit admin_geo_settings_path
 
-        expect(page).to have_content 'You need a different license to use Geo replication'
+        expect(page).to have_content 'Manage your license'
       end
     end
   end
