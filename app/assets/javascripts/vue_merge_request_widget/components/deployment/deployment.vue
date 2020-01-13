@@ -42,8 +42,8 @@ export default {
   computed: {
     appButtonText() {
       return {
-        text: this.hasPreviousDeployment ? s__('Review App|View app') : s__('Review App|View latest app'),
-        tooltip: this.hasPreviousDeployment ? __('View the latest successful deployment to this environment') : '',
+        text: this.isCurrent ? s__('Review App|View app') : s__('Review App|View latest app'),
+        tooltip: this.isCurrent ? __('View the latest successful deployment to this environment') : '',
       }
     },
     canBeManuallyDeployed() {
@@ -57,9 +57,6 @@ export default {
     },
     hasExternalUrls() {
       return Boolean(this.deployment.external_url && this.deployment.external_url_formatted);
-    },
-    hasPreviousDeployment() {
-      return Boolean(!this.isCurrent && this.deployment.deployed_at);
     },
     isCurrent() {
       return this.computedDeploymentStatus === SUCCESS;

@@ -3,6 +3,11 @@ import DeploymentViewButton from '~/vue_merge_request_widget/components/deployme
 import ReviewAppLink from '~/vue_merge_request_widget/components/review_app_link.vue';
 import deploymentMockData from './deployment_mock_data';
 
+const appButtonText = {
+  text: 'View app',
+  tooltip: 'View the latest successful deployment to this environment',
+};
+
 describe('Deployment View App button', () => {
   let wrapper;
 
@@ -16,7 +21,7 @@ describe('Deployment View App button', () => {
     factory({
       propsData: {
         deployment: deploymentMockData,
-        isCurrent: true,
+        appButtonText,
       },
     });
   });
@@ -26,25 +31,9 @@ describe('Deployment View App button', () => {
   });
 
   describe('text', () => {
-    describe('when app is current', () => {
-      it('shows View app', () => {
-        expect(wrapper.find(ReviewAppLink).text()).toContain('View app');
-      });
-    });
 
-    describe('when app is not current', () => {
-      beforeEach(() => {
-        factory({
-          propsData: {
-            deployment: deploymentMockData,
-            isCurrent: false,
-          },
-        });
-      });
-
-      it('shows View Previous app', () => {
-        expect(wrapper.find(ReviewAppLink).text()).toContain('View latest app');
-      });
+    it('renders text as passed', () => {
+      expect(wrapper.find(ReviewAppLink).text()).toContain(appButtonText.text);
     });
   });
 
@@ -53,7 +42,7 @@ describe('Deployment View App button', () => {
       factory({
         propsData: {
           deployment: { ...deploymentMockData, changes: null },
-          isCurrent: false,
+          appButtonText,
         },
       });
     });
@@ -68,7 +57,7 @@ describe('Deployment View App button', () => {
       factory({
         propsData: {
           deployment: { ...deploymentMockData, changes: [deploymentMockData.changes[0]] },
-          isCurrent: false,
+          appButtonText,
         },
       });
     });
@@ -91,7 +80,7 @@ describe('Deployment View App button', () => {
       factory({
         propsData: {
           deployment: deploymentMockData,
-          isCurrent: false,
+          appButtonText,
         },
       });
     });
