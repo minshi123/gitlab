@@ -1,4 +1,5 @@
 <script>
+import Mousetrap from 'mousetrap';
 import { s__, sprintf } from '~/locale';
 import PaginationButton from './pagination_button.vue';
 import allDesignsMixin from '../../mixins/all_designs';
@@ -36,6 +37,26 @@ export default {
       if (!this.designsCount) return null;
 
       return this.designs[this.currentIndex + 1];
+    },
+  },
+  mounted() {
+    Mousetrap.bind('left', () => this.navigateToDesign(this.previousDesign));
+    Mousetrap.bind('right', () => this.navigateToDesign(this.nextDesign));
+  },
+  beforeDestroy() {
+    Mousetrap.unbind(['left', 'right'], this.navigateToDesign);
+  },
+  methods: {
+    navigateToDesign(design) {
+      const newRoute = design
+        ? {
+            name: 'design',
+            params: { id: design.filename },
+            query: this.$route.query,
+          }
+        : {};
+
+      this.$router.push(newRoute);
     },
   },
 };
