@@ -1,5 +1,6 @@
 <script>
-import Mousetrap from 'mousetrap';
+/* global Mousetrap */
+import 'mousetrap';
 import { s__, sprintf } from '~/locale';
 import PaginationButton from './pagination_button.vue';
 import allDesignsMixin from '../../mixins/all_designs';
@@ -55,7 +56,6 @@ export default {
             query: this.$route.query,
           }
         : {};
-
       this.$router.push(newRoute);
     },
   },
