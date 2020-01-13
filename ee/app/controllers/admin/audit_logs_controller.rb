@@ -3,8 +3,11 @@
 class Admin::AuditLogsController < Admin::ApplicationController
   include AuditEvents::EnforcesValidDateParams
   include AuditEvents::AuditLogsParams
+  include SortingHelper
+  include SortingPreference
 
   before_action :check_license_admin_audit_log_available!
+  before_action :set_sorting
 
   PER_PAGE = 25
 
@@ -18,6 +21,8 @@ class Admin::AuditLogsController < Admin::ApplicationController
                 Project.find_by_id(audit_logs_params[:entity_id])
               when 'Group'
                 Namespace.find_by_id(audit_logs_params[:entity_id])
+              when 'Sort'
+                nil
               else
                 nil
               end
@@ -31,5 +36,10 @@ class Admin::AuditLogsController < Admin::ApplicationController
 
   def check_license_admin_audit_log_available!
     render_404 unless License.feature_available?(:admin_audit_log)
+  end
+
+  def set_sorting
+    params[:sort] = set_sort_order
+    @sort = params[:sort]
   end
 end

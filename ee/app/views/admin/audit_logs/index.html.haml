@@ -55,6 +55,11 @@
 
         = submit_tag _('Search'), class: 'btn'
 
+-# TODO: Get utility styles or move to stylesheet
+.top-area.scrolling-tabs-container{ style: "height: 3rem; justify-content: flex-end;" }
+  .nav-controls
+    = render 'admin/audit_logs/sort_dropdown'
+
 - if @events.present?
   %table#events-table.table
     %thead

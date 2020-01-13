@@ -207,6 +207,18 @@ module SortingHelper
     }.merge(issuable_sort_option_overrides)
   end
 
+  def audit_logs_sort_order_hash
+    {
+      sort_value_author           => sort_title_author,
+      sort_value_object           => sort_title_object,
+      sort_value_action           => sort_title_action,
+      sort_value_target           => sort_title_target,
+      sort_value_ip_address       => sort_title_ip_address,
+      sort_value_oldest_created   => sort_title_oldest_created,
+      sort_value_recently_created => sort_title_recently_created
+    }
+  end
+
   def issuable_sort_option_title(sort_value)
     sort_value = issuable_sort_option_overrides[sort_value] || sort_value
 
@@ -416,6 +428,26 @@ module SortingHelper
     s_('SortOptions|Expired date')
   end
 
+  def sort_title_author
+    s_('SortOptions|Author')
+  end
+
+  def sort_title_object
+    s_('SortOptions|Object name')
+  end
+
+  def sort_title_action
+    s_('SortOptions|Action')
+  end
+
+  def sort_title_target
+    s_('SortOptions|Target')
+  end
+
+  def sort_title_ip_address
+    s_('SortOptions|IP Address')
+  end
+
   # Values.
   def sort_value_access_level_asc
     'access_level_asc'
@@ -575,5 +607,25 @@ module SortingHelper
 
   def sort_value_expire_date
     'expired_asc'
+  end
+
+  def sort_value_author
+    'author_asc'
+  end
+
+  def sort_value_object
+    'object_asc'
+  end
+
+  def sort_value_action
+    'action_asc'
+  end
+
+  def sort_value_target
+    'target_asc'
+  end
+
+  def sort_value_ip_address
+    'ip_address_asc'
   end
 end
