@@ -25,7 +25,6 @@ describe('Design management pagination component', () => {
         $router,
         $route,
       },
-      attachToDocument: true,
     });
   }
 
