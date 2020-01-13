@@ -9,6 +9,21 @@ module Serverless
     belongs_to :creator, class_name: 'User', optional: true
 
     validates :pages_domain, :knative, :uuid, presence: true
-    validates :uuid, uniqueness: true, length: { is: 14 }
+    validates :uuid, uniqueness: true, length: { is: Gitlab::Serverless::Domain::UUID_LENGTH }
+
+    before_validation :set_uuid, on: :create
+
+    private
+
+    def set_uuid
+      self.uuid = generate_unique_uuid
+    end
+
+    def generate_unique_uuid
+      3.times do
+        uuid = Gitlab::Serverless::Domain.generate_uuid
+        return uuid unless self.class.exists?(uuid)
+      end
+    end
   end
 end
