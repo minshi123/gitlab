@@ -1,5 +1,6 @@
 <script>
 import { GlTooltipDirective } from '@gitlab/ui';
+import { __, s__ } from '~/locale';
 import DeploymentInfo from './deployment_info.vue';
 import DeploymentViewButton from './deployment_view_button.vue';
 import DeploymentStopButton from './deployment_stop_button.vue';
@@ -43,6 +44,12 @@ export default {
     },
   },
   computed: {
+    appButtonText() {
+      return {
+        text: this.hasPreviousDeployment ? s__('Review App|View app') : s__('Review App|View latest app'),
+        tooltip: __('View the latest successful deployment to this environment'),
+      }
+    },
     canBeManuallyDeployed() {
       return this.computedDeploymentStatus === MANUAL_DEPLOY;
     },
@@ -89,7 +96,7 @@ export default {
             <!-- show appropriate version of review app button  -->
             <deployment-view-button
               v-if="hasExternalUrls"
-              :is-current="isCurrent"
+              :appButtonText="appButtonText"
               :deployment="deployment"
               :show-visual-review-app="showVisualReviewApp"
               :visual-review-app-metadata="visualReviewAppMeta"
