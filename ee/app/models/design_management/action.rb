@@ -4,6 +4,8 @@ module DesignManagement
   class Action < ApplicationRecord
     self.table_name = "#{DesignManagement.table_name_prefix}designs_versions"
 
+    mount_uploader :file, DesignManagement::DesignUploader
+
     belongs_to :design, class_name: "DesignManagement::Design", inverse_of: :actions
     belongs_to :version, class_name: "DesignManagement::Version", inverse_of: :actions
 
