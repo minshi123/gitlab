@@ -91,7 +91,7 @@ export default {
             <!-- show appropriate version of review app button  -->
             <deployment-view-button
               v-if="hasExternalUrls"
-              :appButtonText="appButtonText"
+              :app-button-text="appButtonText"
               :deployment="deployment"
               :show-visual-review-app="showVisualReviewApp"
               :visual-review-app-metadata="visualReviewAppMeta"
