@@ -1,7 +1,7 @@
 /* eslint-disable import/no-commonjs, no-new */
 
 import $ from 'jquery';
-import _ from 'underscore';
+import _ from 'lodash';
 import MockAdapter from 'axios-mock-adapter';
 import '~/behaviors/markdown/render_gfm';
 import { createSpyObj } from 'helpers/jest_helpers';

@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _ from 'lodash';
 import { trimText } from 'helpers/text_helper';
 import { shallowMount } from '@vue/test-utils';
 import { GlLink } from '@gitlab/ui';

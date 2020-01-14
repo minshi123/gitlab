@@ -1,6 +1,6 @@
 /* global ListAssignee, ListLabel, ListIssue */
 import { mount } from '@vue/test-utils';
-import _ from 'underscore';
+import _ from 'lodash';
 import '~/boards/models/label';
 import '~/boards/models/assignee';
 import '~/boards/models/issue';
