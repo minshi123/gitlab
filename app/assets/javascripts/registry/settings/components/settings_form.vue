@@ -61,7 +61,7 @@ export default {
     nameRegexState() {
       return this.name_regex ? this.name_regex.length <= NAME_REGEX_LENGTH : null;
     },
-    formIsValid() {
+    formIsInvalid() {
       return this.nameRegexState === false;
     },
   },
@@ -165,7 +165,7 @@ export default {
           <gl-button
             ref="save-button"
             type="submit"
-            :disabled="formIsValid"
+            :disabled="formIsInvalid"
             variant="success"
             class="d-block"
           >
