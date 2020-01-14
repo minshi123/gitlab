@@ -7875,11 +7875,6 @@ msgstr ""
 msgid "Fetching licenses failed. You are not permitted to perform this action."
 msgstr ""
 
-msgid "File"
-msgid_plural "Files"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "File added"
 msgstr ""
 
@@ -11391,7 +11386,7 @@ msgstr ""
 msgid "MergeRequest|No files found"
 msgstr ""
 
-msgid "MergeRequest|Search files (%{modifier_key}p)"
+msgid "MergeRequest|Search files (%{modifier_key}P)"
 msgstr ""
 
 msgid "Merged"
@@ -11664,9 +11659,6 @@ msgid "Modal|Cancel"
 msgstr ""
 
 msgid "Modal|Close"
-msgstr ""
-
-msgid "Modified"
 msgstr ""
 
 msgid "Modified in this version"
@@ -21747,6 +21739,11 @@ msgstr ""
 
 msgid "failed to dismiss associated finding(id=%{finding_id}): %{message}"
 msgstr ""
+
+msgid "file"
+msgid_plural "files"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "finding is not found or is already attached to a vulnerability"
 msgstr ""

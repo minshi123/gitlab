@@ -1,9 +1,7 @@
 <script>
-import Icon from '~/vue_shared/components/icon.vue';
 import { n__ } from '~/locale';
 
 export default {
-  components: { Icon },
   props: {
     addedLines: {
       type: Number,
@@ -39,24 +37,21 @@ export default {
     }"
   >
     <div v-if="diffFilesLength !== null" class="diff-stats-group">
-      <strong class="text-secondary">{{ diffFilesLength }} {{ filesText }}</strong>
+      <span class="text-secondary bold">{{ diffFilesLength }} {{ filesText }}</span>
     </div>
     <div
       class="diff-stats-group cgreen d-flex align-items-center"
-      :class="[isCompareVersionsHeader ? 'font-weight-bold' : null]"
+      :class="[isCompareVersionsHeader ? 'bold' : null]"
     >
-      <icon name="plus" class="diff-stats-icon" :size="12" />
-      <!-- <span>+</span> -->
-      <span>{{ addedLines }}</span>
+      <span>+</span>
+      <span class="js-file-addition-line">{{ addedLines }}</span>
     </div>
     <div
       class="diff-stats-group cred d-flex align-items-center"
-      :class="[isCompareVersionsHeader ? 'font-weight-bold' : null]"
+      :class="[isCompareVersionsHeader ? 'bold' : null]"
     >
-      <!-- SAM: change this to the minus icon when added -->
-      <icon name="file-deletion" class="diff-stats-icon" :size="12" />
-      <!-- <span>-</span> -->
-      <span>{{ removedLines }}</span>
+      <span>-</span>
+      <span class="js-file-deletion-line">{{ removedLines }}</span>
     </div>
   </div>
 </template>

@@ -6,7 +6,6 @@ import { polyfillSticky } from '~/lib/utils/sticky';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import Icon from '~/vue_shared/components/icon.vue';
 import FileIcon from '~/vue_shared/components/file_icon.vue';
-import ChangedFileIcon from '~/vue_shared/components/changed_file_icon.vue';
 import { truncateSha } from '~/lib/utils/text_utility';
 import { __, s__, sprintf } from '~/locale';
 import { diffViewerModes } from '~/ide/constants';
@@ -23,7 +22,6 @@ export default {
     Icon,
     FileIcon,
     DiffStats,
-    ChangedFileIcon,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -234,13 +232,6 @@ export default {
       v-if="!diffFile.submodule && addMergeRequestButtons"
       class="file-actions d-none d-sm-flex align-items-center"
     >
-      <changed-file-icon
-        :file="changedFile"
-        :size="16"
-        :show-changed-status="true"
-        class="mr-2"
-        :show-staged-icon="true"
-      />
       <diff-stats :added-lines="diffFile.added_lines" :removed-lines="diffFile.removed_lines" />
       <div class="btn-group" role="group">
         <template v-if="diffFile.blob && diffFile.blob.readable_text">

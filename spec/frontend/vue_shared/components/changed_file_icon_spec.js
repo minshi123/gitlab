@@ -7,7 +7,6 @@ const stagedFile = () => ({ changed: false, staged: true });
 const changedAndStagedFile = () => ({ changed: true, staged: true });
 const newFile = () => ({ changed: true, tempFile: true });
 const unchangedFile = () => ({ changed: false, tempFile: false, staged: false, deleted: false });
-const deletedFile = () => ({ deleted: true });
 
 describe('Changed file icon', () => {
   let wrapper;
@@ -32,7 +31,6 @@ describe('Changed file icon', () => {
   const findIconName = () => findIcon().props('name');
   const findIconClasses = () => findIcon().classes();
   const findTooltipText = () => wrapper.attributes('title');
-  const findChangedStatus = () => wrapper.find('.js-changed-status');
 
   it('with isCentered true, adds center class', () => {
     factory({
@@ -58,28 +56,12 @@ describe('Changed file icon', () => {
     expect(findTooltipText()).toBeFalsy();
   });
 
-  it('with showChangedStatus true, does show modification status text', () => {
-    factory({
-      showChangedStatus: true,
-    });
-
-    expect(findChangedStatus().exists()).toBe(true);
-  });
-
-  it('with showChangedStatus false, does show modification status text', () => {
-    factory({
-      showChangedStatus: false,
-    });
-
-    expect(findChangedStatus().exists()).toBe(false);
-  });
-
   describe.each`
     file                      | iconName                 | tooltipText                           | desc
-    ${changedFile()}          | ${'file-modified'}       | ${'Unstaged modification'}            | ${'with file changed'}
+    ${changedFile()}          | ${'file-modified-solid'} | ${'Unstaged modification'}            | ${'with file changed'}
     ${stagedFile()}           | ${'file-modified-solid'} | ${'Staged modification'}              | ${'with file staged'}
-    ${changedAndStagedFile()} | ${'file-modified'}       | ${'Unstaged and staged modification'} | ${'with file changed and staged'}
-    ${newFile()}              | ${'file-addition'}       | ${'Unstaged addition'}                | ${'with file new'}
+    ${changedAndStagedFile()} | ${'file-modified-solid'} | ${'Unstaged and staged modification'} | ${'with file changed and staged'}
+    ${newFile()}              | ${'file-addition-solid'} | ${'Unstaged addition'}                | ${'with file new'}
   `('$desc', ({ file, iconName, tooltipText }) => {
     beforeEach(() => {
       factory({ file });
@@ -133,24 +115,5 @@ describe('Changed file icon', () => {
     });
 
     expect(findIconName()).toEqual(iconName);
-  });
-
-  describe('with various modification states', () => {
-    it.each`
-      context                      | file                      | statusText
-      ${'file changed'}            | ${changedFile()}          | ${'Modified'}
-      ${'file staged'}             | ${stagedFile()}           | ${'Modified'}
-      ${'file changed and staged'} | ${changedAndStagedFile()} | ${'Modified'}
-      ${'file added'}              | ${newFile()}              | ${'Added'}
-      ${'file unchanged'}          | ${unchangedFile()}        | ${'Modified'}
-      ${'file deleted'}            | ${deletedFile()}          | ${'Deleted'}
-    `('when $context it should display "$statusText" text', ({ file, statusText }) => {
-      factory({
-        file,
-        showChangedStatus: true,
-      });
-
-      expect(findChangedStatus().text()).toEqual(statusText);
-    });
   });
 });
