@@ -4,7 +4,7 @@ require 'slack-notifier'
 
 module ChatMessage
   class BaseMessage
-    RELATIVE_LINK_REGEX = /!\[.*\]\((\/uploads\/.*)\)/.freeze
+    RELATIVE_LINK_REGEX = /!\[[^\]]*\]\((\/uploads\/[^\)]*)\)/.freeze
 
     attr_reader :markdown
     attr_reader :user_full_name
