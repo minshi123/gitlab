@@ -102,4 +102,3 @@ nuget source Add -Name "GitLab" -Source "https//gitlab.example/api/v4/projects/1
    ![Visual Studio NuGet source added](img/visual_studio_nuget_source_added.png)
 
 In case of any warning, please make sure that the **Location**, **Username** and **Password** are correct.
-
