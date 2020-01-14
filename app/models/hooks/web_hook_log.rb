@@ -23,6 +23,14 @@ class WebHookLog < ApplicationRecord
     response_status =~ /^2/
   end
 
+  def response_status_label
+    if response_status == WebHookService::InternalErrorResponse::ERROR_MESSAGE
+      s_('Error')
+    else
+      response_status
+    end
+  end
+
   private
 
   def obfuscate_basic_auth
