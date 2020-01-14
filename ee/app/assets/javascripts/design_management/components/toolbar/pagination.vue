@@ -1,7 +1,6 @@
 <script>
 /* global Mousetrap */
 import 'mousetrap';
-import _ from 'underscore';
 import { s__, sprintf } from '~/locale';
 import PaginationButton from './pagination_button.vue';
 import allDesignsMixin from '../../mixins/all_designs';
@@ -50,7 +49,7 @@ export default {
   },
   methods: {
     navigateToDesign(design) {
-      if (!_.isEmpty(design)) {
+      if (design) {
         this.$router.push({
           name: 'design',
           params: { id: design.filename },
