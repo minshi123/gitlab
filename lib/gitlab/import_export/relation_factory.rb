@@ -362,7 +362,7 @@ module Gitlab
       end
 
       def unique_relation?
-        strong_memoize(:_unique_relation) do
+        strong_memoize(:unique_relation) do
           project_foreign_key.present? &&
             (has_unique_index_on_project_fk? || uses_project_fk_as_primary_key?)
         end
@@ -371,23 +371,20 @@ module Gitlab
       def has_unique_index_on_project_fk?
         cache = cached_has_unique_index_on_project_fk
         table_name = relation_class.table_name
+        return cache[table_name] if cache.has_key?(table_name)
 
-        if cache.has_key?(table_name)
-          cache[table_name]
-        else
-          index_exists =
-            ActiveRecord::Base.connection.index_exists?(
-              relation_class.table_name,
-              project_foreign_key,
-              unique: true)
+        index_exists =
+          ActiveRecord::Base.connection.index_exists?(
+            relation_class.table_name,
+            project_foreign_key,
+            unique: true)
 
-          cache[table_name] = index_exists
-        end
+        cache[table_name] = index_exists
       end
 
       # Avoid unnecessary DB requests
       def cached_has_unique_index_on_project_fk
-        @cached_has_unique_index_on_project_fk ||= {}
+        Thread.current[:cached_has_unique_index_on_project_fk] ||= {}
       end
 
       def uses_project_fk_as_primary_key?
