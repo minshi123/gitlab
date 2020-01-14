@@ -37,10 +37,11 @@ describe Packages::Nuget::PackagesMetadataPresenter do
 
       item[:packages].each do |pkg|
         expect(pkg).to be_a Hash
-        expect(pkg).to be_a Hash
-        %i[json_url archive_url package_name package_version].each { |field| expect(pkg[field]).not_to be_blank }
-        %i[authors summary].each { |field| expect(pkg[field]).to be_blank }
-        expect(pkg[:dependencies]).to eq []
+        %i[json_url archive_url catalog_entry].each { |field| expect(pkg[field]).not_to be_blank }
+        catalog_entry = pkg[:catalog_entry]
+        %i[json_url archive_url package_name package_version].each { |field| expect(catalog_entry[field]).not_to be_blank }
+        %i[authors summary].each { |field| expect(catalog_entry[field]).to be_blank }
+        expect(catalog_entry[:dependencies]).to eq []
       end
     end
   end
