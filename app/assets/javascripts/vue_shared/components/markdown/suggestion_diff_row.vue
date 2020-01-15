@@ -8,6 +8,9 @@ export default {
     },
   },
   computed: {
+    displayAsCell() {
+      return !(this.line.rich_text || this.line.text);
+    },
     lineType() {
       return this.line.type;
     },
@@ -23,7 +26,7 @@ export default {
     <td class="diff-line-num new_line border-top-0 border-bottom-0" :class="lineType">
       {{ line.new_line }}
     </td>
-    <td class="line_content d-table-cell" :class="lineType">
+    <td class="line_content" :class="[{ 'd-table-cell': displayAsCell }, lineType]">
       <span v-if="line.rich_text" v-html="line.rich_text"></span>
       <span v-else-if="line.text">{{ line.text }}</span>
     </td>
