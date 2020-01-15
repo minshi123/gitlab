@@ -49,7 +49,7 @@ export default {
       return `${this.job.runner.description} (#${this.job.runner.id})`;
     },
     retryButtonClass() {
-      let className = 'js-retry-button btn btn-retry';
+      let className = 'js-retry-button btn btn-retry qa-btn-retry';
       className +=
         this.job.status && this.job.recoverable ? ' btn-primary' : ' btn-inverted-secondary';
       return className;

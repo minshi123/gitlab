@@ -3,7 +3,7 @@
 require 'digest/sha1'
 
 module QA
-  context 'Release', :docker, quarantine: 'https://gitlab.com/gitlab-org/gitlab/issues/196047' do
+  context 'Release', :docker do
     describe 'Git clone using a deploy key' do
       before do
         Flow::Login.sign_in
@@ -86,6 +86,7 @@ module QA
           Page::Project::Pipeline::Show.perform(&:click_on_first_job)
 
           Page::Project::Job::Show.perform do |job|
+            job.retry!
             expect(job).to be_successful
             expect(job.output).to include(sha1sum)
           end

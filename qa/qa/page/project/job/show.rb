@@ -13,6 +13,10 @@ module QA::Page
         element :pipeline_path
       end
 
+      view 'app/assets/javascripts/jobs/components/sidebar.vue' do
+        element :btn_retry
+      end
+
       def successful?(timeout: 60)
         raise "Timed out waiting for the build trace to load" unless loaded?
         raise "Timed out waiting for the status to be a valid completed state" unless completed?(timeout: timeout)
@@ -31,6 +35,11 @@ module QA::Page
         end
 
         result
+      end
+
+      def retry!
+        return if successful?
+        click_element :btn_retry
       end
 
       private
