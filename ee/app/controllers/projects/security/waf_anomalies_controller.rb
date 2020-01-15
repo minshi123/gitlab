@@ -16,10 +16,9 @@ module Projects
         result = anomaly_summary_service.execute
 
         respond_to do |format|
-          if result[:status] == :success
-            format.json { render status: :ok, json: result }
-          else
-            format.json { render status: :bad_request, json: result }
+          format.json do
+            status = result[:status] == :success ? :ok : :bad_request
+            render status: status, json: result
           end
         end
       end
