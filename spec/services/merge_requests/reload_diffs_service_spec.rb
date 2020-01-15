@@ -32,6 +32,14 @@ describe MergeRequests::ReloadDiffsService, :use_clean_rails_memory_store_cachin
       subject.execute
     end
 
+    it 'calls MergeRequests::LinkLfsObjectsService#execute' do
+      expect_next_instance_of(MergeRequests::LinkLfsObjectsService) do |service|
+        expect(service).to receive(:execute)
+      end
+
+      subject.execute
+    end
+
     context 'cache clearing' do
       context 'using Gitlab::Diff::DeprecatedHighlightCache' do
         before do

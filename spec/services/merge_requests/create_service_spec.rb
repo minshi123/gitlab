@@ -483,8 +483,8 @@ describe MergeRequests::CreateService, :clean_gitlab_redis_shared_state do
           expect(merge_request).to be_persisted
         end
 
-        it 'calls LfsObjectsProjects::BulkCreateService#execute', :sidekiq_might_not_need_inline do
-          expect_next_instance_of(LfsObjectsProjects::BulkCreateService) do |service|
+        it 'calls MergeRequests::LinkLfsObjectsService#execute', :sidekiq_inline do
+          expect_next_instance_of(MergeRequests::LinkLfsObjectsService) do |service|
             expect(service).to receive(:execute)
           end
 

@@ -11,6 +11,7 @@ module MergeRequests
       old_diff_refs = merge_request.diff_refs
       new_diff = merge_request.create_merge_request_diff
 
+      link_lfs_objects
       clear_cache(new_diff)
       update_diff_discussion_positions(old_diff_refs)
     end
@@ -18,6 +19,10 @@ module MergeRequests
     private
 
     attr_reader :merge_request, :current_user
+
+    def link_lfs_objects
+      LinkLfsObjectsService.new(merge_request.target_project).execute(merge_request)
+    end
 
     def update_diff_discussion_positions(old_diff_refs)
       new_diff_refs = merge_request.diff_refs
