@@ -13,12 +13,12 @@ describe 'Project > Settings > CI/CD > Container registry tag expiration policy'
     end
 
     it 'section is available' do
-      settings_block = find('#js-registry-polcies')
+      settings_block = find('#js-registry-policies')
       expect(settings_block).to have_text 'Container Registry tag expiration policy'
     end
 
     it 'Save expiration policy submit the form', :js do
-      within '#js-registry-polcies' do
+      within '#js-registry-policies' do
         within '.card-body' do
           click_button(class: 'gl-toggle')
           select('7 days until tags are automatically removed', from: 'expiration-policy-interval')
