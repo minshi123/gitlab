@@ -84,6 +84,13 @@ describe Banzai::Pipeline::GfmPipeline do
         refs.to_md
       end
 
+      let_it_be(:markdown_one_issue) do
+        refs = References.new(project)
+        i = refs.append(:issue, project: project)
+        1000.times { refs.append(:design, issue: i, project: project) }
+        refs.to_md
+      end
+
       let_it_be(:markdown_no_designs) do
         refs = References.new(project)
         projects = [project] + Array.new(9).map { create(:project, :repository) }
@@ -113,6 +120,12 @@ describe Banzai::Pipeline::GfmPipeline do
 
         context 'when there are no designs referenced' do
           let(:input_text) { markdown_no_designs }
+
+          it_behaves_like 'acceptable performance'
+        end
+
+        context 'when there are designs, but only one issue' do
+          let(:input_text) { markdown_one_issue }
 
           it_behaves_like 'acceptable performance'
         end
