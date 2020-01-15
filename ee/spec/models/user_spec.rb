@@ -97,7 +97,7 @@ describe User do
       end
     end
 
-    describe '.active_with_bots' do
+    describe '.active_without_ghosts' do
       let_it_be(:user1) { create(:user, :external) }
       let_it_be(:user2) { create(:user, state: 'blocked') }
       let_it_be(:user3) { create(:user, ghost: true) }
@@ -105,7 +105,7 @@ describe User do
       let_it_be(:user5) { create(:user, state: 'blocked', bot_type: 'support_bot') }
 
       it 'returns all active users including active bots but ghost users' do
-        expect(described_class.active_with_bots).to match_array([user1, user4])
+        expect(described_class.active_without_ghosts).to match_array([user1, user4])
       end
     end
   end
