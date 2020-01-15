@@ -23,10 +23,9 @@ export default {
     <td class="diff-line-num new_line border-top-0 border-bottom-0" :class="lineType">
       {{ line.new_line }}
     </td>
-    <td class="line_content" :class="lineType">
+    <td class="line_content d-table-cell" :class="lineType">
       <span v-if="line.rich_text" v-html="line.rich_text"></span>
       <span v-else-if="line.text">{{ line.text }}</span>
-      <span v-else>&#8203;</span>
     </td>
   </tr>
 </template>
