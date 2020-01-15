@@ -16,7 +16,6 @@ describe RemoveCreationsInGitlabSubscriptionHistories, :migration do
 
     gitlab_subscription = gitlab_subscriptions.create!
     gitlab_subscription_histories.create! change_type: GITLAB_SUBSCRIPTION_CREATED,
-                                          seats: 13,
                                           gitlab_subscription_id: gitlab_subscription.id
     gitlab_subscription_histories.create! change_type: GITLAB_SUBSCRIPTION_UPDATED,
                                           seats: 13,
@@ -35,8 +34,7 @@ describe RemoveCreationsInGitlabSubscriptionHistories, :migration do
     allow(Gitlab).to receive(:com?).and_return(false)
 
     gitlab_subscription = gitlab_subscriptions.create!
-    gitlab_subscription_histories.create! change_type: GITLAB_SUBSCRIPTION_DESTROYED,
-                                          seats: 21,
+    gitlab_subscription_histories.create! change_type: GITLAB_SUBSCRIPTION_CREATED,
                                           gitlab_subscription_id: gitlab_subscription.id
 
     expect { migrate! }.not_to change { gitlab_subscription_histories.count }
