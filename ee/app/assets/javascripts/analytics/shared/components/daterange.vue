@@ -1,5 +1,17 @@
 <script>
 import { GlDaterangePicker } from '@gitlab/ui';
+import dateFormat from 'dateformat';
+import { getDayDifference } from '~/lib/utils/datetime_utility';
+import createFlash, { hideFlash } from '~/flash';
+import { __, sprintf } from '~/locale';
+import { DATE_RANGE_LIMIT, dateFormats } from '../constants';
+
+const removeNotice = () => {
+  const flashEl = document.querySelector('.flash-notice');
+  if (flashEl) {
+    hideFlash(flashEl);
+  }
+};
 
 export default {
   components: {
@@ -33,7 +45,25 @@ export default {
         return { startDate: this.startDate, endDate: this.endDate };
       },
       set({ startDate, endDate }) {
-        this.$emit('change', { startDate, endDate });
+        removeNotice();
+        const numberOfDays = getDayDifference(startDate, endDate);
+
+        if (numberOfDays < DATE_RANGE_LIMIT) this.$emit('change', { startDate, endDate });
+        else {
+          createFlash(
+            sprintf(
+              __(
+                'Date range has not been applied as it exceeds %{dateRangeLimit} days. Showing data from %{startDate} until %{endDate}',
+              ),
+              {
+                dateRangeLimit: DATE_RANGE_LIMIT,
+                startDate: dateFormat(this.startDate, dateFormats.defaultDate),
+                endDate: dateFormat(this.endDate, dateFormats.defaultDate),
+              },
+            ),
+            'notice',
+          );
+        }
       },
     },
   },

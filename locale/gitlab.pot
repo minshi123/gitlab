@@ -5729,6 +5729,9 @@ msgstr ""
 msgid "Date picker"
 msgstr ""
 
+msgid "Date range has not been applied as it exceeds %{dateRangeLimit} days. Showing data from %{startDate} until %{endDate}"
+msgstr ""
+
 msgid "DayTitle|F"
 msgstr ""
 
