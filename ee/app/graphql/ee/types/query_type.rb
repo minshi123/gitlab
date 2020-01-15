@@ -5,13 +5,16 @@ module EE
     module QueryType
       extend ActiveSupport::Concern
 
+      # The design management context object needs to implement #issue
+      DesignManagementObject = Struct.new(:issue)
+
       prepended do
         field :design_management, ::Types::DesignManagementType,
               null: false,
               description: 'Fields related to design management'
 
         def design_management
-          Object.new
+          DesignManagementObject.new(nil)
         end
       end
     end
