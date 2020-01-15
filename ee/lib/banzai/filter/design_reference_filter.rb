@@ -3,6 +3,8 @@
 module Banzai
   module Filter
     class DesignReferenceFilter < AbstractReferenceFilter
+      include Gitlab::Allowable
+
       Identifier = Struct.new(:issue_iid, :filename, keyword_init: true)
 
       # This filter must be enabled by setting the following flags:
@@ -19,13 +21,13 @@ module Banzai
       end
 
       def parent_records(project, identifiers)
-        filenames_by_issue_iid = identifiers
-          .group_by(&:issue_iid)
-          .transform_values { |vs| vs.map(&:filename) }
+        return [] unless can?(current_user, :read_design, project)
 
-        issues(project, filenames_by_issue_iid.keys).flat_map do |issue|
-          designs(issue, filenames_by_issue_iid[issue.iid])
-        end
+        iids      = identifiers.map(&:issue_iid).to_set
+        filenames = identifiers.map(&:filename).to_set
+        issues = issues(project, iids)
+
+        designs(issues, filenames).select { |d| identifiers.include?(record_identifier(d)) }
       end
 
       def parent_type
@@ -50,17 +52,20 @@ module Banzai
       end
 
       def self.parse_symbol(raw, match_data)
-        filename = if efn = match_data[:escaped_filename]
-                     efn.gsub(/(\\ \\ | \\ ")/x) { |x| x[1] }
-                   elsif b64_name = match_data[:base_64_encoded_name]
-                     Base64.decode64(b64_name)
-                   elsif name = match_data[:simple_file_name]
-                     name
-                   else
-                     raise "Unexpected name format: #{raw}"
-                   end
-
+        filename = parse_filename(raw, match_data)
         Identifier.new(filename: filename, issue_iid: match_data[:issue].to_i)
+      end
+
+      def self.parse_filename(raw, match_data)
+        if efn = match_data[:escaped_filename]
+          efn.gsub(/(\\ \\ | \\ ")/x) { |x| x[1] }
+        elsif b64_name = match_data[:base_64_encoded_name]
+          Base64.decode64(b64_name)
+        elsif name = match_data[:simple_file_name]
+          name
+        else
+          raise "Unexpected name format: #{raw}"
+        end
       end
 
       def record_identifier(design)
@@ -69,9 +74,8 @@ module Banzai
 
       private
 
-      def designs(issue, filenames)
-        DesignManagement::DesignsFinder.new(issue, current_user, filenames: filenames)
-          .execute
+      def designs(issues, filenames)
+        DesignManagement::Design.on_issue(issues).with_filename(filenames).for_reference
       end
 
       def issues(project, iids)

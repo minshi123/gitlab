@@ -278,11 +278,15 @@ describe Banzai::Filter::DesignReferenceFilter do
   end
 
   describe 'performance' do
-    let(:design_c) { create(:design, :with_versions, issue: issue) }
-    let(:design_d) { create(:design, :with_versions, issue: issue_b) }
+    let!(:design_c) { create(:design, :with_versions, issue: issue) }
+    let!(:design_d) { create(:design, :with_versions, issue: issue_b) }
+    let!(:design_e) { create(:design, :with_versions, project: x_project_design.project) }
 
-    it 'is linear in the number of issues each design refers to' do
-      single_reference = "Design #{design_a.to_reference}"
+    it 'is (basically) linear in the number of projects each design refers to' do
+      one_ref_per_project = <<~MD
+      Design #{design_a.to_reference}, #{x_project_design.to_reference(project)}
+      MD
+
       multiple_references = <<~MD
       Designs:
        * #{design_a.to_reference}
@@ -290,12 +294,14 @@ describe Banzai::Filter::DesignReferenceFilter do
        * #{design_c.to_reference}
        * #{design_d.to_reference}
        * #{x_project_design.to_reference(project)}
+       * #{design_e.to_reference(project)}
        * #1[not a valid reference.gif]
       MD
 
-      baseline = ActiveRecord::QueryRecorder.new { process(single_reference) }
+      baseline = ActiveRecord::QueryRecorder.new { process(one_ref_per_project) }
 
-      expect { process(multiple_references) }.not_to exceed_query_limit(3 * baseline.count)
+      # Currently not certain what these extra 5 queries are (35 vs 30)
+      expect { process(multiple_references) }.not_to exceed_query_limit(5 + baseline.count)
     end
   end
 end
