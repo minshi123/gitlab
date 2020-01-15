@@ -153,12 +153,7 @@ describe 'admin Geo Nodes', :js, :geo do
     it 'updates an existing Geo Node' do
       geo_node.update(primary: true)
 
-      visit admin_geo_nodes_path
-      wait_for_requests
-
-      page.within(find('.geo-node-actions', match: :first)) do
-        page.click_link('Edit')
-      end
+      visit edit_admin_geo_node_path(geo_node)
 
       fill_in 'URL', with: 'http://newsite.com'
       fill_in 'Internal URL', with: 'http://internal-url.com'
@@ -233,12 +228,7 @@ describe 'admin Geo Nodes', :js, :geo do
       end
 
       it '`/edit` uses the Vue form instead of the HAML partial' do
-        visit admin_geo_nodes_path
-        wait_for_requests
-
-        page.within(find('.geo-node-actions', match: :first)) do
-          page.click_link('Edit')
-        end
+        visit edit_admin_geo_node_path(geo_node)
 
         expect(page).to have_css(".geo-node-form-container")
         expect(page).not_to have_css(".js-geo-node-form")
@@ -258,12 +248,7 @@ describe 'admin Geo Nodes', :js, :geo do
       end
 
       it '`/edit` uses the HAML partial instead of the Vue form' do
-        visit admin_geo_nodes_path
-        wait_for_requests
-
-        page.within(find('.geo-node-actions', match: :first)) do
-          page.click_link('Edit')
-        end
+        visit edit_admin_geo_node_path(geo_node)
 
         expect(page).not_to have_css(".geo-node-form-container")
         expect(page).to have_css(".js-geo-node-form")

@@ -14,7 +14,7 @@ export default () => {
     },
 
     render(createElement) {
-      return createElement('geo-node-form-app', {});
+      return createElement('geo-node-form-app');
     },
   });
 };
