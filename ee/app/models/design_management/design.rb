@@ -56,6 +56,7 @@ module DesignManagement
     end
 
     scope :with_filename, -> (filenames) { where(filename: filenames) }
+    scope :on_issue, ->(issue) { where(issue_id: issue) }
 
     # Scope called by our REST API to avoid N+1 problems
     scope :with_api_entity_associations, -> { preload(:issue) }

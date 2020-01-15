@@ -5,11 +5,11 @@ require 'spec_helper'
 describe DesignManagement::Design do
   include DesignManagementTestHelpers
 
-  set(:issue) { create(:issue) }
-  set(:design1) { create(:design, :with_versions, issue: issue, versions_count: 1) }
-  set(:design2) { create(:design, :with_versions, issue: issue, versions_count: 1) }
-  set(:design3) { create(:design, :with_versions, issue: issue, versions_count: 1) }
-  set(:deleted_design) { create(:design, :with_versions, deleted: true) }
+  let_it_be(:issue) { create(:issue) }
+  let_it_be(:design1) { create(:design, :with_versions, issue: issue, versions_count: 1) }
+  let_it_be(:design2) { create(:design, :with_versions, issue: issue, versions_count: 1) }
+  let_it_be(:design3) { create(:design, :with_versions, issue: issue, versions_count: 1) }
+  let_it_be(:deleted_design) { create(:design, :with_versions, deleted: true) }
 
   describe 'relations' do
     it { is_expected.to belong_to(:project) }
@@ -155,6 +155,18 @@ describe DesignManagement::Design do
         expect(
           described_class.with_filename([design1, design2].map(&:filename))
         ).to contain_exactly(design1, design2)
+      end
+    end
+
+    describe '.on_issue' do
+      it 'returns correct designs when passed a single issue' do
+        expect(described_class.on_issue(issue)).to match_array(issue.designs)
+      end
+
+      it 'returns correct designs when passed an Array of issues' do
+        expect(
+          described_class.on_issue([issue, deleted_design.issue])
+        ).to contain_exactly(design1, design2, design3, deleted_design)
       end
     end
 
