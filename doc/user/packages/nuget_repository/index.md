@@ -1,13 +1,13 @@
 # GitLab NuGet Repository **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/20050) in [GitLab Premium](https://about.gitlab.com/pricing/) 12.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/20050) in [GitLab Premium](https://about.gitlab.com/pricing/) 12.8.
+
+CAUTION: **Work in progress**
+This feature is in development, sections on uploading and installing packages will be coming soon, please follow along and help us make sure we're building the right solution for you in the [NuGet issue](https://gitlab.com/gitlab-org/gitlab/issues/20050).
 
 With the GitLab NuGet Repository, every project can have its own space to store NuGet packages.
 
 The GitLab NuGet Repository works with either [nuget CLI](https://www.nuget.org/) or [Visual Studio](https://visualstudio.microsoft.com/vs/).
-
-CAUTION: **Work in progress**
-This feature is in development, sections on uploading and installing packages will be coming soon, please follow along and help us make sure we're building the right solution for you in the [NuGet issue](https://gitlab.com/gitlab-org/gitlab/issues/20050).
 
 ## Setting up your development environment
 
