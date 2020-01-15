@@ -49,6 +49,17 @@ module QA
           config.define_derived_metadata(file_path: %r{/qa/specs/features/}) do |metadata|
             metadata[:type] = :feature
           end
+
+          # We don't want to enter the infinite loop of calling `Runtime::Release.perform_before_hooks`
+          # when we're currently running this method (since `QA::Runtime::Browser.visit` is called from there).
+          unless $performing_before_hooks
+            config.before(:suite) do
+              ##
+              # Perform before hooks, which are different for CE and EE
+              #
+              Runtime::Release.perform_before_hooks
+            end
+          end
         end
 
         Capybara.server_port = 9887 + ENV['TEST_ENV_NUMBER'].to_i
