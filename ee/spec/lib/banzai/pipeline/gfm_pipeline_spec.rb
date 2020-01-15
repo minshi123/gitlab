@@ -49,7 +49,7 @@ describe Banzai::Pipeline::GfmPipeline do
   end
 
   describe 'performance impact of design reference filter' do
-    describe 'processing 1000 mixed notes' do
+    describe 'processing 1000 references' do
       include RSpec::Benchmark::Matchers
 
       class References
@@ -84,6 +84,21 @@ describe Banzai::Pipeline::GfmPipeline do
         refs.to_md
       end
 
+      let_it_be(:markdown_one_project) do
+        refs = References.new(project)
+        projects = [project]
+        projects.each do |p|
+          p.add_developer(current_user)
+          100.times do
+            i = refs.append(:issue, project: p)
+            9.times do
+              refs.append(:design, issue: i, project: p)
+            end
+          end
+        end
+        refs.to_md
+      end
+
       let_it_be(:markdown_one_issue) do
         refs = References.new(project)
         i = refs.append(:issue, project: project)
@@ -107,12 +122,12 @@ describe Banzai::Pipeline::GfmPipeline do
         end
 
         it 'can process the text in a reasonable length of time' do
-          expect { process_doc(input_text) }.to perform_under(1500).ms
+          expect { process_doc(input_text) }.to perform_under(2000).ms
         end
       end
 
       shared_examples_for 'acceptable pipeline performance' do
-        context 'when there are designs referenced' do
+        context 'when there are many designs and many issues referenced' do
           let(:input_text) { markdown }
 
           it_behaves_like 'acceptable performance'
@@ -126,6 +141,12 @@ describe Banzai::Pipeline::GfmPipeline do
 
         context 'when there are designs, but only one issue' do
           let(:input_text) { markdown_one_issue }
+
+          it_behaves_like 'acceptable performance'
+        end
+
+        context 'when there mixed designs and issues, but only one project' do
+          let(:input_text) { markdown_one_project }
 
           it_behaves_like 'acceptable performance'
         end
