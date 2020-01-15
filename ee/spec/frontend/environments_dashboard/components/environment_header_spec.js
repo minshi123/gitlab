@@ -43,7 +43,7 @@ describe('Environment Header', () => {
     });
 
     it('renders a link to the external app', () => {
-      expect(wrapper.find(ReviewAppLink).attributes('link')).toBe(
+      expect(wrapper.find(ReviewAppLink).attributes('href')).toBe(
         propsData.environment.external_url,
       );
     });

@@ -6924,9 +6924,6 @@ msgstr ""
 msgid "Enter zen mode"
 msgstr ""
 
-msgid "EnviornmentDashboard|You are looking at the last updated environment"
-msgstr ""
-
 msgid "Environment"
 msgstr ""
 
@@ -6943,6 +6940,9 @@ msgid "EnvironmentDashboard|API"
 msgstr ""
 
 msgid "EnvironmentDashboard|Created through the Deployment API"
+msgstr ""
+
+msgid "EnvironmentDashboard|You are looking at the last updated environment"
 msgstr ""
 
 msgid "Environments"

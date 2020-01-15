@@ -44,7 +44,7 @@ export default {
     tooltip: '',
   },
   tooltips: {
-    information: s__('EnviornmentDashboard|You are looking at the last updated environment'),
+    information: s__('EnvironmentDashboard|You are looking at the last updated environment'),
   },
 };
 </script>
