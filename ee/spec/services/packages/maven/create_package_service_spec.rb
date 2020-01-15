@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-describe Packages::CreateMavenPackageService do
+describe Packages::Maven::CreatePackageService do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
   let(:app_name) { 'my-app'.freeze }
