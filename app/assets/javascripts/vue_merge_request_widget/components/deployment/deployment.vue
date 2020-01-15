@@ -44,8 +44,8 @@ export default {
       return {
         text: this.isCurrent ? s__('Review App|View app') : s__('Review App|View latest app'),
         tooltip: this.isCurrent
-          ? __('View the latest successful deployment to this environment')
-          : '',
+          ? ''
+          : __('View the latest successful deployment to this environment'),
       };
     },
     canBeManuallyDeployed() {
