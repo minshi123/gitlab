@@ -181,38 +181,17 @@ describe Banzai::Filter::DesignReferenceFilter do
         it_behaves_like 'a no-op filter'
       end
 
-      it 'links to the design' do
-        expect(doc.css('a').first.attr('href'))
-          .to eq url_for_design(design)
-      end
+      context 'the user has permission' do
+        it 'produces a good link', :aggregate_failures do
+          link = doc.css('a').first
 
-      it 'includes a title attribute' do
-        expect(doc.css('a').first.attr('title')).to eq(design.filename)
-      end
-
-      it 'includes default classes' do
-        expect(doc.css('a').first.attr('class')).to eq('gfm gfm-design has-tooltip')
-      end
-
-      it 'includes a data-project attribute' do
-        link = doc.css('a').first
-
-        expect(link).to have_attribute('data-project')
-        expect(link.attr('data-project')).to eq project.id.to_s
-      end
-
-      it 'includes a data-issue attribute' do
-        link = doc.css('a').first
-
-        expect(link).to have_attribute('data-issue')
-        expect(link.attr('data-issue')).to eq issue.id.to_s
-      end
-
-      it 'includes a data-original attribute' do
-        link = doc.css('a').first
-
-        expect(link).to have_attribute('data-original')
-        expect(link.attr('data-original')).to eq reference
+          expect(link.attr('href')).to eq(url_for_design(design))
+          expect(link.attr('title')).to eq(design.filename)
+          expect(link.attr('class')).to eq('gfm gfm-design has-tooltip')
+          expect(link.attr('data-project')).to eq(project.id.to_s)
+          expect(link.attr('data-issue')).to eq(issue.id.to_s)
+          expect(link.attr('data-original')).to eq(reference)
+        end
       end
 
       context 'the filename needs to be escaped' do
@@ -227,11 +206,8 @@ describe Banzai::Filter::DesignReferenceFilter do
         let(:filename) { %Q{#{xss}.png} }
         let(:design) { create(:design, :with_versions, filename: filename, issue: issue) }
 
-        it 'leaves the text as is' do
+        it 'leaves the text as is, but escapes the title', :aggregate_failures do
           expect(doc.text).to eq(input_text)
-        end
-
-        it 'escapes the title' do
           expect(doc.css('a').first.attr('title')).to eq(design.filename)
         end
       end
