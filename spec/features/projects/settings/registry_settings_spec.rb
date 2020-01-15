@@ -12,7 +12,7 @@ describe 'Project > Settings > CI/CD > Container registry tag expiration policy'
       visit project_settings_ci_cd_path(project)
     end
 
-    it 'section is availabe' do
+    it 'section is available' do
       settings_block = find('#js-registry-polcies')
       expect(settings_block).to have_text 'Container Registry tag expiration policy'
     end
