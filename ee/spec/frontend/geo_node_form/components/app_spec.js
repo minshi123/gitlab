@@ -1,15 +1,11 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import GeoNodeFormApp from 'ee/geo_node_form/components/app.vue';
-
-const localVue = createLocalVue();
 
 describe('GeoNodeFormApp', () => {
   let wrapper;
 
   const createComponent = () => {
-    wrapper = shallowMount(GeoNodeFormApp, {
-      localVue,
-    });
+    wrapper = shallowMount(GeoNodeFormApp);
   };
 
   afterEach(() => {
