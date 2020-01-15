@@ -20442,9 +20442,6 @@ msgstr ""
 msgid "View Documentation"
 msgstr ""
 
-msgid "View app"
-msgstr ""
-
 msgid "View blame prior to this change"
 msgstr ""
 
@@ -20499,9 +20496,6 @@ msgid "View log"
 msgstr ""
 
 msgid "View open merge request"
-msgstr ""
-
-msgid "View previous app"
 msgstr ""
 
 msgid "View project"
