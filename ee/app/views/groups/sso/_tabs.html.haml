@@ -1,0 +1,6 @@
+%ul.nav-links.new-session-tabs.nav-tabs.nav{ role: 'tablist' }
+  %li.nav-item{ role: 'presentation' }
+    %a.nav-link.active{ href: '#register-pane', role: 'tab', data: { toggle: 'tab' }} Register
+  - if current_user && current_user.email == resource.email
+    %li.nav-item{ role: 'presentation' }
+      %a.nav-link{ href: '#authorize-pane', role: 'tab', data: { toggle: 'tab' }} Authorize

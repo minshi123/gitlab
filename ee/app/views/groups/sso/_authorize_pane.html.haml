@@ -1,0 +1,8 @@
+#authorize-pane.login-box.tab-pane.rounded{ role: 'tabpanel' }
+  .login-body
+    = form_tag(group_authorize_managed_account_path(@unauthenticated_group), html: { class: "user gl-show-field-errors", "aria-live" => "assertive" }) do
+      .d-flex.flex-column.align-items-center.mt3.mx3
+        %p.text-center=_("Alternative you can give up control over your account by transferring ownership of it to the %{group_name} group.") % { group_name: @group_name }
+      .submit-container
+        = button_to _("Transfer ownership"), '#', class: 'btn btn-remove js-confirm-danger', data: { 'confirm-danger-message' => "ablah" }
+= render 'shared/confirm_modal', phrase: current_user.name
