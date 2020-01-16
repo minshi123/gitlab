@@ -12,7 +12,7 @@ class Projects::HooksController < Projects::ApplicationController
   layout "project_settings"
 
   def index
-    redirect_to project_settings_integrations_path(@project)
+    redirect_to project_settings_webhooks_path(@project)
   end
 
   def create
@@ -24,7 +24,7 @@ class Projects::HooksController < Projects::ApplicationController
       flash[:alert] = @hook.errors.full_messages.join.html_safe
     end
 
-    redirect_to project_settings_integrations_path(@project)
+    redirect_to project_settings_webhooks_path(@project)
   end
 
   def edit
@@ -33,7 +33,7 @@ class Projects::HooksController < Projects::ApplicationController
   def update
     if hook.update(hook_params)
       flash[:notice] = _('Hook was successfully updated.')
-      redirect_to project_settings_integrations_path(@project)
+      redirect_to project_settings_webhooks_path(@project)
     else
       render 'edit'
     end
@@ -50,7 +50,7 @@ class Projects::HooksController < Projects::ApplicationController
   def destroy
     hook.destroy
 
-    redirect_to project_settings_integrations_path(@project), status: :found
+    redirect_to project_settings_webhooks_path(@project), status: :found
   end
 
   private

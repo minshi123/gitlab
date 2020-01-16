@@ -652,6 +652,9 @@ module ProjectsHelper
       project_members#index
       integrations#show
       services#edit
+      webhooks#show
+      hooks#edit
+      hook_logs#show
       repository#show
       ci_cd#show
       operations#show
