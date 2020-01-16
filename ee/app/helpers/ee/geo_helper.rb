@@ -65,6 +65,15 @@ module EE
       )
     end
 
+    def node_json(node)
+      node_data = {
+        node: node,
+        namespace_ids: node.namespace_ids
+      }
+
+      node_data.to_json
+    end
+
     def status_loading_icon
       icon "spinner spin fw", class: 'js-geo-node-loading'
     end
