@@ -2,6 +2,8 @@
 
 require 'digest/sha1'
 
+require 'pry'
+
 module QA
   context 'Release', :docker do
     describe 'Git clone using a deploy key' do
@@ -46,11 +48,15 @@ module QA
 
           deploy_key_name = "DEPLOY_KEY_#{key.name}_#{key.bits}"
 
-          Resource::CiVariable.fabricate_via_browser_ui! do |resource|
-            resource.project = @project
-            resource.key = deploy_key_name
-            resource.value = key.private_key
-            resource.masked = false
+          make_ci_variable(deploy_key_name, key)
+
+          unless variable_created?
+            Support::Retrier.retry_until(max_attempts: 2, sleep_interval: 1) do
+              remove_variable(deploy_key_name)
+              make_ci_variable(deploy_key_name, key)
+
+              variable_created?
+            end
           end
 
           gitlab_ci = <<~YAML
@@ -86,10 +92,33 @@ module QA
           Page::Project::Pipeline::Show.perform(&:click_on_first_job)
 
           Page::Project::Job::Show.perform do |job|
-            job.retry!
             expect(job).to be_successful
             expect(job.output).to include(sha1sum)
           end
+        end
+
+        def make_ci_variable(key_name, key)
+          Resource::CiVariable.fabricate_via_browser_ui! do |resource|
+            resource.project = @project
+            resource.key = key_name
+            resource.value = key.private_key
+            resource.masked = false
+          end
+          sleep 1
+        end
+
+        def variable_created?
+          api_client = Runtime::API::Client.new(:gitlab)
+          request = Runtime::API::Request.new(api_client, "/projects/#{@project.id}/variables")
+          get request.url
+
+          return if (json_body.empty? || json_body.first[:value].empty?)
+
+          !(json_body.first[:value].empty?)
+        end
+
+        def remove_variable(key_name)
+          Page::Project::Settings::CiVariables.perform(&:remove_variable)
         end
       end
     end

@@ -38,7 +38,6 @@ module QA::Page
       end
 
       def retry!
-        return if successful?
         click_element :btn_retry
       end
 
