@@ -57,6 +57,14 @@ describe GroupMembersFinder, '#execute' do
     expect(result.to_a).to match_array([member1])
   end
 
+  it 'returns array if inherited only relation is requested on root group' do
+    group.add_developer(user2)
+
+    result = described_class.new(group).execute(include_relations: [:inherited])
+
+    expect(result).not_to be_nil
+  end
+
   it 'returns members for descendant groups if requested' do
     member1 = group.add_maintainer(user2)
     member2 = group.add_maintainer(user1)
