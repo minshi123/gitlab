@@ -90,22 +90,22 @@ describe GroupMembersFinder, '#execute' do
   it 'returns nothing if search only in inherited relation' do
     group.add_maintainer(user2)
     group.add_developer(user3)
-    member = group.add_maintainer(user1)
+    group.add_maintainer(user1)
 
     result = described_class.new(group).execute(include_relations: [:inherited], params: { search: user1.name })
 
     expect(result.to_a).to match_array([])
   end
 
-  it 'returns searched member if search only in inherited relation' do
+  it 'returns searched member only from nested_group if search only in inherited relation' do
     group.add_maintainer(user2)
     group.add_developer(user3)
-    group.add_maintainer(user1)
-    member = nested_group.add_maintainer(create(:user, name: user1.name))
+    nested_group.add_maintainer(create(:user, name: user1.name))
+    member = group.add_maintainer(user1)
 
-    result = described_class.new(group).execute(include_relations: [:inherited], params: { search: user1.name })
+    result = described_class.new(nested_group).execute(include_relations: [:inherited], params: { search: user1.name })
 
-    expect(result.to_a).to match_array([])
+    expect(result.to_a).to contain_exactly(member)
   end
 
   it 'returns members with two-factor auth if requested by owner' do
