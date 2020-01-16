@@ -1,3 +1,4 @@
+import produce from 'immer';
 import createFlash from '~/flash';
 import { extractCurrentDiscussion, extractDesign } from './design_management_utils';
 import {
@@ -10,14 +11,17 @@ import {
 const deleteDesignsFromStore = (store, query, selectedDesigns) => {
   const data = store.readQuery(query);
 
-  const changedDesigns = data.project.issue.designCollection.designs.edges.filter(
-    ({ node }) => !selectedDesigns.includes(node.filename),
-  );
-  data.project.issue.designCollection.designs.edges = [...changedDesigns];
+  const nextState = produce(data, draftState => {
+    const changedDesigns = data.project.issue.designCollection.designs.edges.filter(
+      ({ node }) => !selectedDesigns.includes(node.filename),
+    );
+    /* eslint no-param-reassign: ["error", { "props": false }] */
+    draftState.project.issue.designCollection.designs.edges = [...changedDesigns];
+  });
 
   store.writeQuery({
     ...query,
-    data,
+    data: nextState,
   });
 };
 
@@ -32,16 +36,15 @@ const addNewVersionToStore = (store, query, version) => {
   if (!version) return;
 
   const data = store.readQuery(query);
-  const newEdge = { node: version, __typename: 'DesignVersionEdge' };
 
-  data.project.issue.designCollection.versions.edges = [
-    newEdge,
-    ...data.project.issue.designCollection.versions.edges,
-  ];
+  const nextState = produce(data, draftState => {
+    const newEdge = { node: version, __typename: 'DesignVersionEdge' };
+    draftState.project.issue.designCollection.versions.edges.unshift(newEdge);
+  });
 
   store.writeQuery({
     ...query,
-    data,
+    data: nextState,
   });
 };
 
