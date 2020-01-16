@@ -84,6 +84,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           end
 
           resource :operations, only: [:show, :update]
+          resource :webhooks, only: [:show]
           resource :integrations, only: [:show]
 
           resource :repository, only: [:show], controller: :repository do
