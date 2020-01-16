@@ -248,9 +248,8 @@ class Deployment < ApplicationRecord
   end
 
   def valid_ref
-    return if project&.commit(ref)
-
-    errors.add(:ref, _('The branch or tag does not exist'))
+    errors.add(:ref, _('The branch or tag does not exist')) unless project&.commit(ref)
+    errors.add(:ref, _('is not valid')) unless Gitlab::GitRefValidator.validate(ref)
   end
 
   private

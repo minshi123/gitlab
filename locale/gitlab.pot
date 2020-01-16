@@ -22071,6 +22071,9 @@ msgstr ""
 msgid "is not an email you own"
 msgstr ""
 
+msgid "is not valid"
+msgstr ""
+
 msgid "is too long (%{current_value}). The maximum size is %{max_size}."
 msgstr ""
 
