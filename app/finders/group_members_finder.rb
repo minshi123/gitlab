@@ -36,9 +36,10 @@ class GroupMembersFinder < UnionFinder
       relations << descendant_members
     end
 
+    return GroupMember.none if relations.empty?
+
     members = find_union(relations, GroupMember)
-    members = filter_members(members, params) if members
-    members || GroupMember.none
+    filter_members(members, params)
   end
   # rubocop: enable CodeReuse/ActiveRecord
 

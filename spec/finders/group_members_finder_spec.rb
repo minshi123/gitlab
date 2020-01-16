@@ -57,7 +57,7 @@ describe GroupMembersFinder, '#execute' do
     expect(result.to_a).to match_array([member1])
   end
 
-  it 'returns array if inherited only relation is requested on root group' do
+  it 'does not return nil if `inherited only` relation is requested on root group' do
     group.add_developer(user2)
 
     result = described_class.new(group).execute(include_relations: [:inherited])
@@ -103,7 +103,7 @@ describe GroupMembersFinder, '#execute' do
     nested_group.add_maintainer(create(:user, name: user1.name))
     member = group.add_maintainer(user1)
 
-    result = described_class.new(nested_group).execute(include_relations: [:inherited], params: { search: user1.name })
+    result = described_class.new(nested_group).execute(include_relations: [:inherited], params: { search: member.user.name })
 
     expect(result.to_a).to contain_exactly(member)
   end
