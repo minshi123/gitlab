@@ -83,7 +83,7 @@ describe 'User activates Jira', :js do
     end
   end
 
-  describe 'user sets Jira Service but sets it to disabled' do
+  describe 'user disables the Jira Service' do
     before do
       click_link('Jira')
       fill_form(disabled: true)

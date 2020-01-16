@@ -85,7 +85,7 @@ describe 'User activates issue tracker', :js do
       end
     end
 
-    describe 'user sets the service but sets it to disabled' do
+    describe 'user disables the service' do
       before do
         click_link(tracker)
 
