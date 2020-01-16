@@ -49,7 +49,7 @@ export default {
       return `${this.job.runner.description} (#${this.job.runner.id})`;
     },
     retryButtonClass() {
-      let className = 'js-retry-button btn btn-retry qa-btn-retry';
+      let className = 'js-retry-button btn btn-retry';
       className +=
         this.job.status && this.job.recoverable ? ' btn-primary' : ' btn-inverted-secondary';
       return className;
@@ -119,6 +119,7 @@ export default {
               :class="retryButtonClass"
               :href="job.retry_path"
               data-method="post"
+              data-qa-selector="btn_retry"
               rel="nofollow"
               >{{ __('Retry') }}</gl-link
             >
