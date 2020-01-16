@@ -56,11 +56,26 @@ module Packages
 
         full_path = case service_type
                     when :download
-                      "#{base_path}/download"
+                      api_v4_projects_packages_nuget_download_package_name_package_filename_path(
+                        {
+                          id: project.id,
+                          package_name: nil,
+                          package_version: nil,
+                          package_filename: nil
+                        },
+                        true
+                      )
                     when :search
                       "#{base_path}/query"
                     when :metadata
-                      "#{base_path}/metadata"
+                      api_v4_projects_packages_nuget_metadata_package_name_package_version_path(
+                        {
+                          id: project.id,
+                          package_name: nil,
+                          package_version: nil
+                        },
+                        true
+                      )
                     when :publish
                       base_path
                     end

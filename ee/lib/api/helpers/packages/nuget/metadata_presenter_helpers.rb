@@ -13,16 +13,30 @@ module API
           private
 
           def json_url_for(package)
-            # TODO NUGET: use grape api helper when wildcard support is available.
-            path = "#{base_path_for(package)}/metadata/#{package.name}/#{package.version}.json"
+            path = api_v4_projects_packages_nuget_metadata_package_name_package_version_path(
+              {
+                id: package.project.id,
+                package_name: package.name,
+                package_version: package.version,
+                format: '.json'
+              },
+              true
+            )
 
             expose_url(path)
           end
 
           def archive_url_for(package)
             filename_service = ::Packages::Nuget::PackageFilenameService.new(package.name, package.version)
-            # TODO NUGET: use grape api helper when wildcard support is available.
-            path = "#{base_path_for(package)}/download/#{package.name}/#{package.version}/#{filename_service.execute}"
+            path = api_v4_projects_packages_nuget_download_package_name_package_filename_path(
+              {
+                id: package.project.id,
+                package_name: package.name,
+                package_version: package.version,
+                package_filename: filename_service.execute
+              },
+              true
+            )
 
             expose_url(path)
           end
