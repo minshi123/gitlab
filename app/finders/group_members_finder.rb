@@ -37,7 +37,8 @@ class GroupMembersFinder < UnionFinder
     end
 
     members = find_union(relations, GroupMember)
-    filter_members(members, params)
+    members = filter_members(members, params) if members
+    members
   end
   # rubocop: enable CodeReuse/ActiveRecord
 
