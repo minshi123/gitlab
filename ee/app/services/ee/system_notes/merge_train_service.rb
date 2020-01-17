@@ -53,7 +53,7 @@ module EE
 
         ##
         # TODO: Abort message should be sent by the system, not a particular user.
-        # See https://gitlab.com/gitlab-org/gitlab-foss/issues/63187.
+        # See https://gitlab.com/gitlab-org/gitlab/issues/29467.
         create_note(NoteSummary.new(noteable, project, author, body, action: 'merge'))
       end
     end
