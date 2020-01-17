@@ -13,7 +13,7 @@ class Gitlab::Seeder::LicenseFile
 
       ::License.create!(data_file: file)
     else
-      puts "Skipped. Given file path #{ENV[flag]} is not a file."
+      puts "Skipped. Given file path is not a file."
     end
   end
 end
@@ -23,9 +23,8 @@ Gitlab::Seeder.quiet do
 
   if ENV[flag]
     seeder = Gitlab::Seeder::LicenseFile.new(ENV[flag])
-    seeder.seed!
 
-    puts "Seeded License file from #{ENV[flag]}."
+    puts "Seeded License file from #{ENV[flag]}." if seeder.seed!
   else
     puts "Skipped. Use the `#{flag}` environment variable to seed the license file of the given path."
   end
