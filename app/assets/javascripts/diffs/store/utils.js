@@ -217,30 +217,33 @@ function diffFileUniqueId(file) {
   return `${file.content_sha}-${file.file_hash}`;
 }
 
-function combineDiffFilesWithPriorFiles(files, prior = []) {
-  files.forEach(file => {
-    const id = diffFileUniqueId(file);
-    const oldMatch = prior.find(oldFile => diffFileUniqueId(oldFile) === id);
+function combineDiffFilesWithPriorFiles(files, prior = [], batched) {
+  const authoritative = batched ? prior : files;
+  const overwrite = batched ? files : prior;
 
-    if (oldMatch) {
+  authoritative.forEach(file => {
+    const id = diffFileUniqueId(file);
+    const match = overwrite.find(matchedFile => diffFileUniqueId(matchedFile) === id);
+
+    if (match) {
       const missingInline = !file.highlighted_diff_lines;
       const missingParallel = !file.parallel_diff_lines;
 
       if (missingInline) {
         Object.assign(file, {
-          highlighted_diff_lines: oldMatch.highlighted_diff_lines,
+          highlighted_diff_lines: match.highlighted_diff_lines,
         });
       }
 
       if (missingParallel) {
         Object.assign(file, {
-          parallel_diff_lines: oldMatch.parallel_diff_lines,
+          parallel_diff_lines: match.parallel_diff_lines,
         });
       }
     }
   });
 
-  return files;
+  return authoritative;
 }
 
 function ensureBasicDiffFileLines(file) {
@@ -318,8 +321,8 @@ function finalizeDiffFile(file) {
   return file;
 }
 
-export function prepareDiffData(diffData, priorFiles) {
-  return combineDiffFilesWithPriorFiles(diffData.diff_files, priorFiles)
+export function prepareDiffData({ diff, priorFiles, batched = false } = {}) {
+  return combineDiffFilesWithPriorFiles(diff.diff_files, priorFiles, batched)
     .map(ensureBasicDiffFileLines)
     .map(prepareDiffFileLines)
     .map(finalizeDiffFile);
