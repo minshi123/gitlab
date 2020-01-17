@@ -1,8 +1,20 @@
 <script>
 import { mapActions, mapState } from 'vuex';
-import { GlFormGroup, GlToggle, GlFormSelect, GlFormTextarea, GlButton, GlCard } from '@gitlab/ui';
+import {
+  GlFormGroup,
+  GlToggle,
+  GlFormSelect,
+  GlFormTextarea,
+  GlButton,
+  GlCard,
+  GlLoadingIcon,
+} from '@gitlab/ui';
 import { s__, __, sprintf } from '~/locale';
-import { NAME_REGEX_LENGTH } from '../constants';
+import {
+  NAME_REGEX_LENGTH,
+  UPDATE_SETTINGS_ERROR_MESSAGE,
+  UPDATE_SETTINGS_SUCCESS_MESSAGE,
+} from '../constants';
 import { mapComputed } from '~/vuex_shared/bindings';
 
 export default {
@@ -13,13 +25,14 @@ export default {
     GlFormTextarea,
     GlButton,
     GlCard,
+    GlLoadingIcon,
   },
   labelsConfig: {
     cols: 3,
     align: 'right',
   },
   computed: {
-    ...mapState(['formOptions']),
+    ...mapState(['formOptions', 'isLoading']),
     ...mapComputed(
       [
         'enabled',
@@ -64,15 +77,23 @@ export default {
     formIsInvalid() {
       return this.nameRegexState === false;
     },
+    disableSubmitButton() {
+      return this.formIsInvalid || this.isLoading;
+    },
   },
   methods: {
     ...mapActions(['resetSettings', 'saveSettings']),
+    submit() {
+      this.saveSettings()
+        .then(() => this.$toast.show(UPDATE_SETTINGS_SUCCESS_MESSAGE, { type: 'success' }))
+        .catch(() => this.$toast.show(UPDATE_SETTINGS_ERROR_MESSAGE, { type: 'error' }));
+    },
   },
 };
 </script>
 
 <template>
-  <form ref="form-element" @submit.prevent="saveSettings" @reset.prevent="resetSettings">
+  <form ref="form-element" @submit.prevent="submit" @reset.prevent="resetSettings">
     <gl-card>
       <template #header>
         {{ s__('ContainerRegistry|Tag expiration policy') }}
@@ -159,17 +180,18 @@ export default {
       </template>
       <template #footer>
         <div class="d-flex justify-content-end">
-          <gl-button ref="cancel-button" type="reset" class="mr-2 d-block">{{
+          <gl-button ref="cancel-button" type="reset" class="mr-2 d-block" :disabled="isLoading">{{
             __('Cancel')
           }}</gl-button>
           <gl-button
             ref="save-button"
             type="submit"
-            :disabled="formIsInvalid"
+            :disabled="disableSubmitButton"
             variant="success"
-            class="d-block"
+            class="d-flex justify-content-center align-items-center js-no-auto-disable"
           >
             {{ __('Save expiration policy') }}
+            <gl-loading-icon v-if="isLoading" class="ml-2" />
           </gl-button>
         </div>
       </template>

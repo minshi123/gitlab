@@ -1,13 +1,13 @@
-import Vuex from 'vuex';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import stubChildren from 'helpers/stub_children';
 import component from '~/registry/settings/components/settings_form.vue';
 import { createStore } from '~/registry/settings/store/';
-import { NAME_REGEX_LENGTH } from '~/registry/settings/constants';
+import {
+  NAME_REGEX_LENGTH,
+  UPDATE_SETTINGS_ERROR_MESSAGE,
+  UPDATE_SETTINGS_SUCCESS_MESSAGE,
+} from '~/registry/settings/constants';
 import { stringifiedFormOptions } from '../mock_data';
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
 
 describe('Settings Form', () => {
   let wrapper;
@@ -20,14 +20,21 @@ describe('Settings Form', () => {
   const findCancelButton = () => wrapper.find({ ref: 'cancel-button' });
   const findSaveButton = () => wrapper.find({ ref: 'save-button' });
   const findForm = () => wrapper.find({ ref: 'form-element' });
+  const findLoadingIcon = (w = wrapper) => w.find({ name: 'gl-loading-icon-stub' });
 
   const mountComponent = (options = {}) => {
-    saveSpy = jest.fn();
     resetSpy = jest.fn();
+    saveSpy = jest.fn().mockResolvedValue();
     wrapper = mount(component, {
       stubs: {
         ...stubChildren(component),
         GlCard: false,
+        GlLoadingIcon: { name: 'gl-loading-icon-stub', template: '<svg></svg>' },
+      },
+      mocks: {
+        $toast: {
+          show: jest.fn(),
+        },
       },
       store,
       methods: {
@@ -120,9 +127,45 @@ describe('Settings Form', () => {
       expect(findSaveButton().attributes('type')).toBe('submit');
     });
 
-    it('form submit event call the appropriate function', () => {
-      form.trigger('submit');
-      expect(saveSpy).toHaveBeenCalled();
+    describe('when isLoading is true', () => {
+      beforeEach(() => {
+        mountComponent({ computed: { isLoading: () => true } });
+      });
+
+      it('submit button is disabled and shows a spinner', () => {
+        const button = findSaveButton();
+        expect(button.attributes('disabled')).toBeTruthy();
+        expect(findLoadingIcon(button)).toExist();
+      });
+      it('cancel button is disabled', () => {
+        expect(findCancelButton().attributes('disabled')).toBeTruthy();
+      });
+    });
+
+    describe('form submit event ', () => {
+      it('calls the appropriate function', () => {
+        form.trigger('submit');
+        expect(saveSpy).toHaveBeenCalled();
+      });
+
+      it('show a success toast when submit succeed', () => {
+        form.trigger('submit');
+        return wrapper.vm.$nextTick().then(() => {
+          expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(UPDATE_SETTINGS_SUCCESS_MESSAGE, {
+            type: 'success',
+          });
+        });
+      });
+
+      it('show a error toast when submit fails', () => {
+        wrapper.vm.saveSettings = jest.fn().mockRejectedValue();
+        form.trigger('submit');
+        return wrapper.vm.$nextTick().then(() => {
+          expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(UPDATE_SETTINGS_ERROR_MESSAGE, {
+            type: 'error',
+          });
+        });
+      });
     });
   });
 
