@@ -7,7 +7,10 @@ module ErrorTracking
     def perform
       response = fetch
 
-      update_related_issue unless parse_errors(response).present?
+      unless parse_errors(response).present?
+        update_related_issue
+        clear_cache
+      end
 
       response
     end
@@ -24,6 +27,10 @@ module ErrorTracking
       return unless issue
 
       @closed_issue = close_and_create_note(issue)
+    end
+
+    def clear_cache
+      project_error_tracking_setting.clear_cache('list_issues')
     end
 
     def close_and_create_note(issue)
