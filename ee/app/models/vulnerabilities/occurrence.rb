@@ -138,14 +138,14 @@ module Vulnerabilities
       return 'dismissed' if dismissal_feedback.present?
       return 'opened' unless Feature.enabled?(:first_class_vulnerabilities, project)
 
-      if vulnerability.nil?
-        'opened'
-      elsif vulnerability.resolved?
+      if vulnerability&.resolved?
         'resolved'
-      elsif vulnerability.closed? # fail-safe check for cases when dismissal feedback was lost or was not created
+      elsif vulnerability&.closed? # fail-safe check for cases when dismissal feedback was lost or was not created
         'dismissed'
-      else
+      elsif vulnerability&.confirmed?
         'confirmed'
+      else
+        'opened'
       end
     end
 
