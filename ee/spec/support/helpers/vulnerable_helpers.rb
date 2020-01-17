@@ -14,20 +14,7 @@ module VulnerableHelpers
     when Namespace
       create(:project, namespace: vulnerable)
     when ApplicationInstance
-      create(:project)
-    else
-      raise BadVulnerableError
-    end
-  end
-
-  def as_external_vulnerable_project(vulnerable)
-    case vulnerable
-    when Project
-      create(:project)
-    when Namespace
-      create(:project)
-    when ApplicationInstance
-      nil
+      Project.find(vulnerable.project_ids_with_security_reports.first)
     else
       raise BadVulnerableError
     end
