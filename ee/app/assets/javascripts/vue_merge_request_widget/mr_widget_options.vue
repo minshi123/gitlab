@@ -191,17 +191,20 @@ export default {
       };
     },
     fetchCodeQuality() {
-      if (!this.mr.codeclimate.base_path) {
+      const { codeclimate } = this.mr || {};
+
+      if (!codeclimate.base_path) {
         this.isLoadingCodequality = false;
         this.loadingCodequalityFailed = true;
         return;
       }
 
-      const { head_path, base_path } = this.mr.codeclimate;
-
       this.isLoadingCodequality = true;
 
-      Promise.all([this.service.fetchReport(head_path), this.service.fetchReport(base_path)])
+      Promise.all([
+        this.service.fetchReport(codeclimate.head_path),
+        this.service.fetchReport(codeclimate.base_path),
+      ])
         .then(values =>
           this.mr.compareCodeclimateMetrics(
             values[0],
