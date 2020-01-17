@@ -3,7 +3,7 @@
 module VulnerableHelpers
   class BadVulnerableError < StandardError
     def message
-      'The given vulnerable must be either `Project`, `Namespace`, or `ApplicationInstance`'
+      'The given vulnerable must be either `Project`, `Namespace`, or `InstanceSecurityDashboard`'
     end
   end
 
@@ -13,7 +13,7 @@ module VulnerableHelpers
       vulnerable
     when Namespace
       create(:project, namespace: vulnerable)
-    when ApplicationInstance
+    when InstanceSecurityDashboard
       Project.find(vulnerable.project_ids_with_security_reports.first)
     else
       raise BadVulnerableError

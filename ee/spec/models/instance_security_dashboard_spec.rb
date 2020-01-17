@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe ApplicationInstance do
+describe InstanceSecurityDashboard do
   let(:project) { create(:project) }
   let(:pipeline) { create(:ci_pipeline) }
 

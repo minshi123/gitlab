@@ -89,12 +89,12 @@ describe Gitlab::Vulnerabilities::History do
       end
     end
 
-    context 'when given an ApplicationInstance' do
+    context 'when given an InstanceSecurityDashboard' do
       it_behaves_like 'the history cache when given an expected Vulnerable' do
         let(:group) { create(:group) }
         let(:project1) { create(:project, :public, namespace: group) }
         let(:project2) { create(:project, :public, namespace: group) }
-        let(:vulnerable) { ApplicationInstance.new(project_ids: [project1.id, project2.id]) }
+        let(:vulnerable) { InstanceSecurityDashboard.new(project_ids: [project1.id, project2.id]) }
       end
     end
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ApplicationInstance
+class InstanceSecurityDashboard
   extend ActiveModel::Naming
   include ::Vulnerable
 
