@@ -4,9 +4,7 @@ import * as types from './mutation_types';
 export const setInitialState = ({ commit }, data) => commit(types.SET_INITIAL_STATE, data);
 export const updateSettings = ({ commit }, data) => commit(types.UPDATE_SETTINGS, data);
 export const toggleLoading = ({ commit }) => commit(types.TOGGLE_LOADING);
-export const receiveSettingsSuccess = ({ commit }, data = {}) => {
-  commit(types.SET_SETTINGS, data);
-};
+export const receiveSettingsSuccess = ({ commit }, data = {}) => commit(types.SET_SETTINGS, data);
 export const resetSettings = ({ commit }) => commit(types.RESET_SETTINGS);
 
 export const fetchSettings = ({ dispatch, state }) => {
