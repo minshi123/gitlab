@@ -58,43 +58,37 @@ const addDiscussionCommentToStore = (store, createNote, query, queryVariables, d
     variables: queryVariables,
   });
 
-  const design = extractDesign(data);
-  const currentDiscussion = extractCurrentDiscussion(design.discussions, discussionId);
-  currentDiscussion.node.notes.edges = [
-    ...currentDiscussion.node.notes.edges,
-    {
+  const newData = produce(data, draftData => {
+    const design = extractDesign(data);
+    const currentDiscussion = extractCurrentDiscussion(design.discussions, discussionId);
+    currentDiscussion.node.notes.edges.push({
       __typename: 'NoteEdge',
       node: createNote.note,
-    },
-  ];
+    });
 
-  design.notesCount += 1;
-  if (
-    !design.issue.participants.edges.some(
-      participant => participant.node.username === createNote.note.author.username,
-    )
-  ) {
-    design.issue.participants.edges = [
-      ...design.issue.participants.edges,
-      {
+    if (
+      !design.issue.participants.edges.some(
+        participant => participant.node.username === createNote.note.author.username,
+      )
+    ) {
+      design.issue.participants.edges.push({
         __typename: 'UserEdge',
         node: {
           // eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings
           __typename: 'User',
           ...createNote.note.author,
         },
-      },
-    ];
-  }
+      });
+    }
+
+    draftData.design = design;
+    draftData.design.notesCount += 1;
+  });
+
   store.writeQuery({
     query,
     variables: queryVariables,
-    data: {
-      ...data,
-      design: {
-        ...design,
-      },
-    },
+    data: newData,
   });
 };
 
@@ -103,6 +97,7 @@ const addImageDiffNoteToStore = (store, createImageDiffNote, query, variables) =
     query,
     variables,
   });
+
   const newDiscussion = {
     __typename: 'DiscussionEdge',
     node: {
