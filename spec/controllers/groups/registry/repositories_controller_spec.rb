@@ -17,6 +17,8 @@ describe Groups::Registry::RepositoriesController do
   context 'GET #index' do
     context 'when container registry is enabled' do
       it 'show index page' do
+        expect(Gitlab::Tracking).not_to receive(:event)
+
         get :index, params: {
             group_id: group
         }
@@ -37,8 +39,6 @@ describe Groups::Registry::RepositoriesController do
         project = create(:project, group: group)
         repo = create(:container_repository, project: project)
 
-        expect(Gitlab::Tracking).not_to receive(:event)
-
         get :index, params: {
           group_id: group,
           format: :json
@@ -56,7 +56,8 @@ describe Groups::Registry::RepositoriesController do
         expect(Gitlab::Tracking).to receive(:event).with(anything, 'list_repositories', {})
 
         get :index, params: {
-          group_id: group
+          group_id: group,
+          format: :json
         }
       end
     end

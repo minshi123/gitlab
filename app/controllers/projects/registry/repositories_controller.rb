@@ -8,9 +8,11 @@ module Projects
 
       def index
         respond_to do |format|
-          format.html { track_event(:list_repositories) }
+          format.html
           format.json do
             @images = project.container_repositories
+
+            track_event(:list_repositories)
 
             render json: ContainerRepositoriesSerializer
               .new(project: project, current_user: current_user)
