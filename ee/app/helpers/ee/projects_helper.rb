@@ -6,9 +6,13 @@ module EE
 
     override :sidebar_projects_paths
     def sidebar_projects_paths
-      super + %w[
-        projects/insights#show
-      ]
+      if ::Feature.enabled?(:analytics_pages_under_project_analytics_sidebar, @project)
+        super
+      else
+        super + %w[
+          projects/insights#show
+        ]
+      end
     end
 
     override :sidebar_settings_paths
@@ -59,7 +63,7 @@ module EE
         nav_tabs << :packages
       end
 
-      if ::Feature.enabled?(:code_review_analytics, project, default_enabled: true)
+      if ::Feature.enabled?(:code_review_analytics, project, default_enabled: true) && can?(current_user, :read_code_review_analytics, project)
         nav_tabs << :code_review
       end
 

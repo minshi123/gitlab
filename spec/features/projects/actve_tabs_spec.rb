@@ -7,6 +7,8 @@ describe 'Project active tab' do
   let(:project) { create(:project, :repository) }
 
   before do
+    stub_feature_flags(analytics_pages_under_project_analytics_sidebar: { enabled: false, thing: project })
+
     project.add_maintainer(user)
     sign_in(user)
   end
@@ -134,6 +136,32 @@ describe 'Project active tab' do
 
       it_behaves_like 'page has active tab', 'Settings'
       it_behaves_like 'page has active sub tab', 'Repository'
+    end
+  end
+
+  context 'when `analytics_pages_under_project_analytics_sidebar` feature flag is enabled' do
+    before do
+      stub_feature_flags(analytics_pages_under_project_analytics_sidebar: { enabled: true, thing: project })
+    end
+
+    context 'on project Analytics' do
+      before do
+        visit charts_project_graph_path(project, 'master')
+      end
+
+      context 'on project Analytics/Repository Analytics' do
+        it_behaves_like 'page has active tab', _('Analytics')
+        it_behaves_like 'page has active sub tab', _('Repository Analytics')
+      end
+
+      context 'on project Analytics/Cycle Analytics' do
+        before do
+          click_tab(_('Cycle Analytics'))
+        end
+
+        it_behaves_like 'page has active tab', _('Analytics')
+        it_behaves_like 'page has active sub tab', _('Cycle Analytics')
+      end
     end
   end
 end
