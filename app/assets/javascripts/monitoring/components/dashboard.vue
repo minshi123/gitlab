@@ -370,7 +370,8 @@ export default {
           >
             <gl-dropdown
               id="monitor-environments-dropdown"
-              class="mb-0 d-flex js-environments-dropdown"
+              ref="monitorEnvironmentsDropdown"
+              class="mb-0 d-flex"
               toggle-class="dropdown-menu-toggle"
               :text="currentEnvironmentName"
               :disabled="environments.length === 0"

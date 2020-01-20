@@ -47,6 +47,9 @@ describe('Dashboard', () => {
     });
   };
 
+  const findEnvironmentsDropdown = () => wrapper.find({ ref: 'monitorEnvironmentsDropdown' });
+  const findAllEnvironmentsDropdownItems = () => findEnvironmentsDropdown().findAll(GlDropdownItem);
+
   beforeEach(() => {
     store = createStore();
     mock = new MockAdapter(axios);
@@ -71,7 +74,7 @@ describe('Dashboard', () => {
     });
 
     it('shows the environment selector', () => {
-      expect(wrapper.vm.$el.querySelector('.js-environments-dropdown')).toBeTruthy();
+      expect(findEnvironmentsDropdown().exists()).toBe(true);
     });
   });
 
@@ -89,7 +92,7 @@ describe('Dashboard', () => {
     });
 
     it('shows the environment selector dropdown', () => {
-      expect(wrapper.vm.$el.querySelector('.js-environments-dropdown')).toBeTruthy();
+      expect(findEnvironmentsDropdown().exists()).toBe(true);
     });
   });
 
@@ -123,7 +126,7 @@ describe('Dashboard', () => {
         .$nextTick()
         .then(() => {
           expect(wrapper.vm.showEmptyState).toEqual(false);
-          expect(wrapper.vm.$el.querySelector('.prometheus-panel')).toEqual(null);
+          expect(wrapper.findAll('.prometheus-panel').length).toEqual(0);
 
           done();
         })
@@ -168,9 +171,7 @@ describe('Dashboard', () => {
       wrapper.vm
         .$nextTick()
         .then(() => {
-          const environmentDropdownItems = wrapper
-            .find('.js-environments-dropdown')
-            .findAll(GlDropdownItem);
+          const environmentDropdownItems = findAllEnvironmentsDropdownItems();
 
           expect(wrapper.vm.environments.length).toEqual(environmentData.length);
           expect(environmentDropdownItems.length).toEqual(wrapper.vm.environments.length);
@@ -192,10 +193,7 @@ describe('Dashboard', () => {
       wrapper.vm
         .$nextTick()
         .then(() => {
-          const environmentDropdownItems = wrapper
-            .find('.js-environments-dropdown')
-            .findAll(GlDropdownItem);
-          const activeItem = environmentDropdownItems.wrappers.filter(itemWrapper =>
+          const activeItem = findAllEnvironmentsDropdownItems().wrappers.filter(itemWrapper =>
             itemWrapper.find('.active').exists(),
           );
 
@@ -221,11 +219,7 @@ describe('Dashboard', () => {
     wrapper.vm
       .$nextTick()
       .then(() => {
-        const environmentDropdownItems = wrapper
-          .find('.js-environments-dropdown')
-          .findAll(GlDropdownItem);
-
-        expect(environmentDropdownItems.length).toEqual(0);
+        expect(findAllEnvironmentsDropdownItems().length).toEqual(0);
         done();
       })
       .catch(done.fail);
