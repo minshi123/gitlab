@@ -3,6 +3,7 @@
 shared_examples 'log import failure' do |importable_column|
   it 'tracks error' do
     extra = {
+              action: action,
               relation_key: relation_key,
               relation_index: relation_index,
               retry_count: retry_count
@@ -11,7 +12,7 @@ shared_examples 'log import failure' do |importable_column|
 
     expect(Gitlab::ErrorTracking).to receive(:track_exception).with(exception, extra)
 
-    subject.log_import_failure(relation_key, relation_index, exception, retry_count)
+    subject.log_import_failure(action, relation_key, relation_index, exception, retry_count)
   end
 
   it 'saves data to ImportFailure' do
@@ -21,6 +22,7 @@ shared_examples 'log import failure' do |importable_column|
 
     aggregate_failures do
       expect(import_failure[importable_column]).to eq(importable.id)
+      expect(import_failure.action).to eq(action)
       expect(import_failure.relation_key).to eq(relation_key)
       expect(import_failure.relation_index).to eq(relation_index)
       expect(import_failure.exception_class).to eq('StandardError')

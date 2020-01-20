@@ -6,6 +6,7 @@ describe Gitlab::ImportExport::ImportFailureService do
   let(:importable) { create(:project, :builds_enabled, :issues_disabled, name: 'project', path: 'project') }
   let(:label) { create(:label) }
   let(:subject) { described_class.new(importable) }
+  let(:action) { "save_relation" }
   let(:relation_key) { "labels" }
   let(:relation_index) { 0 }
 
@@ -15,7 +16,7 @@ describe Gitlab::ImportExport::ImportFailureService do
     let(:correlation_id) { 'my-correlation-id' }
     let(:retry_count) { 2 }
     let(:log_import_failure) do
-      subject.log_import_failure(relation_key, relation_index, exception, retry_count)
+      subject.log_import_failure(action, relation_key, relation_index, exception, retry_count)
     end
 
     before do
@@ -44,7 +45,7 @@ describe Gitlab::ImportExport::ImportFailureService do
 
   describe '#with_retry' do
     let(:perform_retry) do
-      subject.with_retry(relation_key, relation_index) do
+      subject.with_retry(action, relation_key, relation_index) do
         label.save!
       end
     end
@@ -60,7 +61,7 @@ describe Gitlab::ImportExport::ImportFailureService do
           end
 
           it 'retries and logs import failure once with correct params' do
-            expect(subject).to receive(:log_import_failure).with(relation_key, relation_index, instance_of(exception), 1).once
+            expect(subject).to receive(:log_import_failure).with(action, relation_key, relation_index, instance_of(exception), 1).once
 
             perform_retry
           end
@@ -85,7 +86,7 @@ describe Gitlab::ImportExport::ImportFailureService do
             maximum_retry_count.times do |index|
               retry_count = index + 1
 
-              expect(subject).to receive(:log_import_failure).with(relation_key, relation_index, instance_of(exception), retry_count)
+              expect(subject).to receive(:log_import_failure).with(action, relation_key, relation_index, instance_of(exception), retry_count)
             end
 
             expect { perform_retry }.to raise_exception(exception)
