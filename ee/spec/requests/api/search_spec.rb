@@ -116,8 +116,24 @@ describe API::Search do
       end
 
       context 'when elasticsearch is enabled', :elastic do
-        it_behaves_like 'elasticsearch enabled' do
-          let(:endpoint) { '/search' }
+        context 'when elasticsearch limiting is on' do
+          before do
+            stub_ee_application_setting(elasticsearch_limit_indexing: true)
+          end
+
+          it_behaves_like 'elasticsearch enabled' do
+            let(:endpoint) { '/search' }
+          end
+        end
+
+        context 'when elasticsearch limiting is off' do
+          before do
+            stub_ee_application_setting(elasticsearch_limit_indexing: false)
+          end
+
+          it_behaves_like 'elasticsearch enabled' do
+            let(:endpoint) { '/search' }
+          end
         end
       end
     end
@@ -132,8 +148,24 @@ describe API::Search do
       end
 
       context 'when elasticsearch is enabled', :elastic do
-        it_behaves_like 'elasticsearch enabled' do
-          let(:endpoint) { "/groups/#{group.id}/-/search" }
+        context 'when elasticsearch limiting is on' do
+          before do
+            stub_ee_application_setting(elasticsearch_limit_indexing: true)
+          end
+
+          it_behaves_like 'elasticsearch enabled' do
+            let(:endpoint) { "/groups/#{group.id}/-/search" }
+          end
+        end
+
+        context 'when elasticsearch limiting is off' do
+          before do
+            stub_ee_application_setting(elasticsearch_limit_indexing: false)
+          end
+
+          it_behaves_like 'elasticsearch enabled' do
+            let(:endpoint) { '/search' }
+          end
         end
       end
     end
