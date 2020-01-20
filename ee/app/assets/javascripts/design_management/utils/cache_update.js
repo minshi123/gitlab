@@ -38,12 +38,10 @@ const addNewVersionToStore = (store, query, version) => {
 
   const data = store.readQuery(query);
 
+  const newVersion = { node: version, __typename: 'DesignVersionEdge' };
+
   const newData = produce(data, draftData => {
-    const newEdge = { node: version, __typename: 'DesignVersionEdge' };
-    draftData.project.issue.designCollection.versions.edges = [
-      newEdge,
-      ...draftData.project.issue.designCollection.versions.edges,
-    ];
+    draftData.project.issue.designCollection.versions.edges.unshift(newVersion);
   });
 
   store.writeQuery({
@@ -58,8 +56,17 @@ const addDiscussionCommentToStore = (store, createNote, query, queryVariables, d
     variables: queryVariables,
   });
 
+  const newParticipant = {
+    __typename: 'UserEdge',
+    node: {
+      // eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings
+      __typename: 'User',
+      ...createNote.note.author,
+    },
+  };
+
   const newData = produce(data, draftData => {
-    const design = extractDesign(data);
+    const design = extractDesign(draftData);
     const currentDiscussion = extractCurrentDiscussion(design.discussions, discussionId);
     currentDiscussion.node.notes.edges.push({
       __typename: 'NoteEdge',
@@ -71,14 +78,7 @@ const addDiscussionCommentToStore = (store, createNote, query, queryVariables, d
         participant => participant.node.username === createNote.note.author.username,
       )
     ) {
-      design.issue.participants.edges.push({
-        __typename: 'UserEdge',
-        node: {
-          // eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings
-          __typename: 'User',
-          ...createNote.note.author,
-        },
-      });
+      design.issue.participants.edges.push(newParticipant);
     }
 
     draftData.design = design;
@@ -118,8 +118,17 @@ const addImageDiffNoteToStore = (store, createImageDiffNote, query, variables) =
     },
   };
 
+  const newParticipant = {
+    __typename: 'UserEdge',
+    node: {
+      // eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings
+      __typename: 'User',
+      ...createImageDiffNote.note.author,
+    },
+  };
+
   const newData = produce(data, draftData => {
-    const design = extractDesign(data);
+    const design = extractDesign(draftData);
     design.discussions.edges.push(newDiscussion);
 
     if (
@@ -127,14 +136,7 @@ const addImageDiffNoteToStore = (store, createImageDiffNote, query, variables) =
         participant => participant.node.username === createImageDiffNote.note.author.username,
       )
     ) {
-      design.issue.participants.edges.push({
-        __typename: 'UserEdge',
-        node: {
-          // eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings
-          __typename: 'User',
-          ...createImageDiffNote.note.author,
-        },
-      });
+      design.issue.participants.edges.push(newParticipant);
     }
 
     draftData.design = design;
