@@ -171,12 +171,14 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
       namespace :security do
         resources :dashboard, only: [:show, :index], controller: :dashboard
         resource :configuration, only: [:show], controller: :configuration
-
+        
         resources :vulnerability_findings, only: [:index] do
           collection do
             get :summary
           end
         end
+        
+        get :vulnerability_list, controller: :dashboard
       end
 
       resources :vulnerability_feedback, only: [:index, :create, :update, :destroy], constraints: { id: /\d+/ }
