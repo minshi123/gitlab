@@ -79,7 +79,7 @@ module Gitlab
 
         save_id_mapping(relation_key, data_hash, relation_object)
       rescue => e
-        import_failure_service.log_import_failure(relation_key, relation_index, e)
+        import_failure_service.log_import_failure('process_relation_item!', relation_key, relation_index, e)
       end
 
       def import_failure_service
