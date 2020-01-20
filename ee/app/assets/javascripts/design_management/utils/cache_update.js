@@ -190,11 +190,13 @@ const addNewDesignToStore = (store, designManagementUpload, query) => {
     },
   };
 
-  data.project.issue.designCollection = updatedDesigns;
+  const newData = produce(data, draftData => {
+    draftData.project.issue.designCollection = updatedDesigns;
+  });
 
   store.writeQuery({
     ...query,
-    data,
+    data: newData,
   });
 };
 
