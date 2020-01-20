@@ -73,7 +73,7 @@ module Gitlab
 
         relation_object.assign_attributes(importable_class_sym => @importable)
 
-        import_failure_service.with_retry(relation_key, relation_index) do
+        import_failure_service.with_retry('relation_object.save!', relation_key, relation_index) do
           relation_object.save!
         end
 
