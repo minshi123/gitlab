@@ -52,6 +52,8 @@ describe Projects::Registry::RepositoriesController do
           end
 
           it 'json has a list of projects' do
+            expect(Gitlab::Tracking).not_to receive(:event)
+
             go_to_index(format: :json)
 
             expect(response).to have_gitlab_http_status(:ok)

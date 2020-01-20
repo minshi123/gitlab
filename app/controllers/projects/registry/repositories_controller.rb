@@ -7,12 +7,11 @@ module Projects
       before_action :ensure_root_container_repository!, only: [:index]
 
       def index
-        @images = project.container_repositories
-        track_event(:list_repositories)
-
         respond_to do |format|
-          format.html
+          format.html { track_event(:list_repositories) }
           format.json do
+            @images = project.container_repositories
+
             render json: ContainerRepositoriesSerializer
               .new(project: project, current_user: current_user)
               .represent(@images)

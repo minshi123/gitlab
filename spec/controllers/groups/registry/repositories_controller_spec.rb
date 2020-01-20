@@ -37,6 +37,8 @@ describe Groups::Registry::RepositoriesController do
         project = create(:project, group: group)
         repo = create(:container_repository, project: project)
 
+        expect(Gitlab::Tracking).not_to receive(:event)
+
         get :index, params: {
           group_id: group,
           format: :json

@@ -7,10 +7,8 @@ module Groups
       before_action :feature_flag_group_container_registry_browser!
 
       def index
-        track_event(:list_repositories)
-
         respond_to do |format|
-          format.html
+          format.html { track_event(:list_repositories) }
           format.json do
             @images = group.container_repositories.with_api_entity_associations
 
