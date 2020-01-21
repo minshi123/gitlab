@@ -25,10 +25,12 @@ import GroupEmptyState from './group_empty_state.vue';
 import DashboardsDropdown from './dashboards_dropdown.vue';
 
 import TrackEventDirective from '~/vue_shared/directives/track_event';
-import { getTimeDiff, getAddMetricTrackingOptions } from '../utils';
+import { getAddMetricTrackingOptions } from '../utils';
+import { getTimeRange } from './date_time_picker/date_time_picker_lib';
+
 import { metricStates } from '../constants';
 
-const defaultTimeDiff = getTimeDiff();
+const defaultTimeDiff = getTimeRange();
 
 export default {
   components: {
