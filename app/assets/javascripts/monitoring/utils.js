@@ -1,26 +1,3 @@
-import { secondsToMilliseconds } from '~/lib/utils/datetime_utility';
-
-// TODO I suspect this could be removed from here, but it still shows in embed.vue
-export const getTimeDiff = timeWindow => {
-  const secondsIn = {
-    thirtyMinutes: 60 * 30,
-    threeHours: 60 * 60 * 3,
-    eightHours: 60 * 60 * 8,
-    oneDay: 60 * 60 * 24 * 1,
-    threeDays: 60 * 60 * 24 * 3,
-    oneWeek: 60 * 60 * 24 * 7 * 1,
-  };
-
-  const end = Math.floor(Date.now() / 1000); // convert milliseconds to seconds
-  const difference = secondsIn[timeWindow] || secondsIn.eightHours;
-  const start = end - difference;
-
-  return {
-    start: new Date(secondsToMilliseconds(start)).toISOString(),
-    end: new Date(secondsToMilliseconds(end)).toISOString(),
-  };
-};
-
 /**
  * This method is used to validate if the graph data format for a chart component
  * that needs a time series as a response from a prometheus query (query_range) is
