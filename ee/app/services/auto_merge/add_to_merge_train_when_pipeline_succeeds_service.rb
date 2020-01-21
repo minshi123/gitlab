@@ -13,7 +13,7 @@ module AutoMerge
 
       merge_train_service = AutoMerge::MergeTrainService.new(project, merge_request.merge_user)
 
-      return abort(merge_request) unless merge_train_service.available_for?(merge_request)
+      return abort(merge_request, 'Merge train service is not available for this merge request') unless merge_train_service.available_for?(merge_request)
 
       merge_train_service.execute(merge_request)
     end

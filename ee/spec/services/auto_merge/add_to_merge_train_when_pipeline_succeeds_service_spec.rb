@@ -61,7 +61,11 @@ describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
         end
 
         it 'aborts auto merge' do
-          expect(service).to receive(:abort).once
+          expect(service).to receive(:abort).once.and_call_original
+
+          expect(SystemNoteService)
+            .to receive(:abort_add_to_merge_train_when_pipeline_succeeds).once
+            .with(merge_request, project, user, 'Merge train service is not available for this merge request')
 
           subject
         end
