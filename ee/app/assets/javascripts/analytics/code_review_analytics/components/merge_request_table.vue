@@ -3,7 +3,7 @@ import { escape } from 'underscore';
 import { mapState } from 'vuex';
 import { __, sprintf, n__ } from '~/locale';
 import { getTimeago } from '~/lib/utils/datetime_utility';
-import { GlTable, GlLink, GlIcon, GlAvatarLink, GlAvatar } from '@gitlab/ui';
+import { GlTable, GlLink, GlIcon, GlAvatarLink, GlAvatar, GlTooltipDirective } from '@gitlab/ui';
 
 export default {
   name: 'MergeRequestTable',
@@ -13,6 +13,9 @@ export default {
     GlIcon,
     GlAvatarLink,
     GlAvatar,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   computed: {
     ...mapState(['mergeRequests']),
@@ -112,7 +115,7 @@ export default {
     </template>
 
     <template #author="{ value }">
-      <gl-avatar-link target="blank" :href="value.web_url">
+      <gl-avatar-link v-gl-tooltip target="blank" :href="value.web_url" :title="value.name">
         <gl-avatar :size="24" :src="value.avatar_url" :entity-name="value.name" />
       </gl-avatar-link>
     </template>
