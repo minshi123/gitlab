@@ -42,7 +42,7 @@ class Packages::Package < ApplicationRecord
   scope :with_temporary_nuget_package, -> { where(package_type: :nuget, name: Packages::Nuget::CreatePackageService::PACKAGE_NAME) }
 
   scope :has_version, -> { where.not(version: nil) }
-  scope :not_temporary, -> { where.not(id: with_temporary_nuget_package) }
+  scope :processed, -> { where.not(id: with_temporary_nuget_package) }
   scope :preload_files, -> { preload(:package_files) }
   scope :last_of_each_version, -> { where(id: all.select('MAX(id) AS id').group(:version)) }
 

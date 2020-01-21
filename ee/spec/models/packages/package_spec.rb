@@ -154,11 +154,11 @@ RSpec.describe Packages::Package, type: :model do
     end
   end
 
-  describe '.not_temporary' do
+  describe '.processed' do
     let!(:package1) { create(:nuget_package) }
     let!(:package2) { create(:npm_package) }
 
-    subject { described_class.not_temporary }
+    subject { described_class.processed }
 
     it { is_expected.to eq([package1, package2]) }
 

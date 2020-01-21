@@ -18,14 +18,16 @@ module Packages
 
         return unless valid_inputs?
 
-        package_file.update!(package_file_params)
+        package_file.transaction do
+          package_file.update!(package_file_params)
 
-        if existing_package_id
-          package_to_destroy = package_from_package_file
-          package_file.update_column(:package_id, existing_package_id)
-          package_to_destroy.destroy!
-        else
-          package_from_package_file.update!(package_params)
+          if existing_package_id
+            package_to_destroy = package_from_package_file
+            package_file.update_column(:package_id, existing_package_id)
+            package_to_destroy.destroy!
+          else
+            package_from_package_file.update!(package_params)
+          end
         end
       end
 
@@ -37,6 +39,7 @@ module Packages
 
       def existing_package_id
         project_from_package_file.packages
+                                 .nuget
                                  .with_name(package_name_from_metadata)
                                  .with_version(package_version_from_metadata)
                                  .pluck_primary_key
@@ -59,22 +62,14 @@ module Packages
       end
 
       def package_params
-        empty_hash_if_blank_values(
+        empty_hash_if_all_values_blank(
           name: package_name_from_metadata,
           version: package_version_from_metadata
         )
       end
 
       def package_file_params
-        empty_hash_if_blank_values(file_name: filename_from_metadata)
-      end
-
-      def metadata
-        strong_memoize(:metadata) do
-          metadata_extraction_service.execute
-        rescue ArgumentError
-          EMPTY_HASH
-        end
+        empty_hash_if_all_values_blank(file_name: filename_from_metadata)
       end
 
       def package_name_from_metadata
@@ -85,25 +80,26 @@ module Packages
         metadata[:package_version]
       end
 
-      def filename_from_metadata
-        package_filename_service.execute
-
-      rescue ArgumentError
-        nil
+      def metadata
+        strong_memoize(:metadata) do
+          ::Packages::Nuget::MetadataExtractionService.new(package_file_id).execute
+        rescue ArgumentError
+          # invalid package archive, can't read metadata from it
+          EMPTY_HASH
+        end
       end
 
-      def empty_hash_if_blank_values(hash)
+      def filename_from_metadata
+        ::Packages::Nuget::PackageFilenameService.new(
+          package_name_from_metadata,
+          package_version_from_metadata
+        ).execute
+      end
+
+      def empty_hash_if_all_values_blank(hash)
         return EMPTY_HASH if hash.values.all?(&:blank?)
 
         hash
-      end
-
-      def metadata_extraction_service
-        ::Packages::Nuget::MetadataExtractionService.new(package_file_id)
-      end
-
-      def package_filename_service
-        ::Packages::Nuget::PackageFilenameService.new(package_name_from_metadata, package_version_from_metadata)
       end
     end
   end

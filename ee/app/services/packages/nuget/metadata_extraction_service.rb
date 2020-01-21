@@ -35,8 +35,8 @@ module Packages
 
       def valid_package_file?
         package_file &&
-          package_file&.package&.nuget? &&
-          package_file&.size != 0.bytes
+          package_file.package&.nuget? &&
+          package_file.size != 0.bytes
       end
 
       def extract_metadata(file)
