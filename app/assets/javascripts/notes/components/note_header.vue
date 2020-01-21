@@ -69,7 +69,7 @@ export default {
         type="button"
         @click="handleToggle"
       >
-        <i :class="toggleChevronClass" class="fa" aria-hidden="true"></i>
+        <i ref="chevronIcon" :class="toggleChevronClass" class="fa" aria-hidden="true"></i>
         {{ __('Toggle thread') }}
       </button>
     </div>
@@ -90,7 +90,7 @@ export default {
     <span class="note-headline-light note-headline-meta">
       <span class="system-note-message"> <slot></slot> </span>
       <template v-if="createdAt">
-        <span class="system-note-separator">
+        <span ref="actionText" class="system-note-separator">
           <template v-if="actionText">{{ actionText }}</template>
         </span>
         <a
