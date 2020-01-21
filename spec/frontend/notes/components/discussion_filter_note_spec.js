@@ -9,21 +9,22 @@ describe('DiscussionFilterNote component', () => {
     wrapper = shallowMount(DiscussionFilterNote);
   };
 
+  beforeEach(() => {
+    createComponent();
+  });
+
   afterEach(() => {
     wrapper.destroy();
     wrapper = null;
   });
 
   it('timelineContent renders a string containing instruction for switching feed type', () => {
-    createComponent();
-
     expect(wrapper.find({ ref: 'timelineContent' }).html()).toBe(
       "<div>You're only seeing <b>other activity</b> in the feed. To add a comment, switch to one of the following options.</div>",
     );
   });
 
   it('emits `dropdownSelect` event with 0 parameter on clicking Show all activity button', () => {
-    createComponent();
     jest.spyOn(eventHub, '$emit').mockImplementation(() => {});
     wrapper.find({ ref: 'showAllActivity' }).vm.$emit('click');
 
@@ -31,7 +32,6 @@ describe('DiscussionFilterNote component', () => {
   });
 
   it('emits `dropdownSelect` event with 1 parameter on clicking Show comments only button', () => {
-    createComponent();
     jest.spyOn(eventHub, '$emit').mockImplementation(() => {});
     wrapper.find({ ref: 'showComments' }).vm.$emit('click');
 
