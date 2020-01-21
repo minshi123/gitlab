@@ -12,7 +12,7 @@ module Gitlab
         @association = importable.association(:import_failures)
       end
 
-      def with_retry(action, relation_key, relation_index)
+      def with_retry(action, relation_key = nil, relation_index = nil)
         on_retry = -> (exception, retry_count, *_args) do
           log_import_failure(action, relation_key, relation_index, exception, retry_count)
         end
@@ -24,7 +24,7 @@ module Gitlab
 
       def log_import_failure(action, relation_key, relation_index, exception, retry_count = 0)
         extra = {
-            action: action,
+          action: action,
           relation_key: relation_key,
           relation_index: relation_index,
           retry_count: retry_count
