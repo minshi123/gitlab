@@ -39,7 +39,7 @@ class Gitlab::Seeder::ContainerImages
   def initialize_tmp_dir
     @tmp_dir = Dir.mktmpdir('gitlab_seeder_container_images')
 
-    File.open(File.join(@tmp_dir, 'Dockerfile'), 'w+') { |f| f.write(DOCKER_FILE_CONTENTS) }
+    File.write(File.join(@tmp_dir, 'Dockerfile'), DOCKER_FILE_CONTENTS)
   end
 end
 
