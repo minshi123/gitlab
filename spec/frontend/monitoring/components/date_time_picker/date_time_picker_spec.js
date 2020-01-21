@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils';
 import DateTimePicker from '~/monitoring/components/date_time_picker/date_time_picker.vue';
-import { timeWindows } from '~/monitoring/constants';
+import { defaultTimeWindows } from '~/monitoring/components/date_time_picker/date_time_picker_lib';
 
-const timeWindowsCount = Object.keys(timeWindows).length;
+const timeWindowsCount = Object.entries(defaultTimeWindows).length;
 const start = '2019-10-10T07:00:00.000Z';
 const end = '2019-10-13T07:00:00.000Z';
 const selectedTimeWindowText = `3 days`;
@@ -25,7 +25,6 @@ describe('DateTimePicker', () => {
   const createComponent = props => {
     dateTimePicker = mount(DateTimePicker, {
       propsData: {
-        timeWindows,
         start,
         end,
         ...props,

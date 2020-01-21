@@ -1,8 +1,16 @@
-import dateformat from 'dateformat';
-import { secondsIn, dateTimePickerRegex, dateFormats } from './constants';
 import { secondsToMilliseconds } from '~/lib/utils/datetime_utility';
 
+// TODO I suspect this could be removed from here, but it still shows in embed.vue
 export const getTimeDiff = timeWindow => {
+  const secondsIn = {
+    thirtyMinutes: 60 * 30,
+    threeHours: 60 * 60 * 3,
+    eightHours: 60 * 60 * 8,
+    oneDay: 60 * 60 * 24 * 1,
+    threeDays: 60 * 60 * 24 * 3,
+    oneWeek: 60 * 60 * 24 * 7 * 1,
+  };
+
   const end = Math.floor(Date.now() / 1000); // convert milliseconds to seconds
   const difference = secondsIn[timeWindow] || secondsIn.eightHours;
   const start = end - difference;
@@ -12,56 +20,6 @@ export const getTimeDiff = timeWindow => {
     end: new Date(secondsToMilliseconds(end)).toISOString(),
   };
 };
-
-export const getTimeWindow = ({ start, end }) =>
-  Object.entries(secondsIn).reduce((acc, [timeRange, value]) => {
-    if (new Date(end) - new Date(start) === secondsToMilliseconds(value)) {
-      return timeRange;
-    }
-    return acc;
-  }, null);
-
-export const isDateTimePickerInputValid = val => dateTimePickerRegex.test(val);
-
-export const truncateZerosInDateTime = datetime => datetime.replace(' 00:00:00', '');
-
-/**
- * The URL params start and end need to be validated
- * before passing them down to other components.
- *
- * @param {string} dateString
- */
-export const isValidDate = dateString => {
-  try {
-    // dateformat throws error that can be caught.
-    // This is better than using `new Date()`
-    if (dateString && dateString.trim()) {
-      dateformat(dateString, 'isoDateTime');
-      return true;
-    }
-    return false;
-  } catch (e) {
-    return false;
-  }
-};
-
-/**
- * Convert the input in Time picker component to ISO date.
- *
- * @param {string} val
- * @returns {string}
- */
-export const stringToISODate = val =>
-  dateformat(new Date(val.replace(/-/g, '/')), dateFormats.dateTimePicker.ISODate, true);
-
-/**
- * Convert the ISO date received from the URL to string
- * for the Time picker component.
- *
- * @param {Date} date
- * @returns {string}
- */
-export const ISODateToString = date => dateformat(date, dateFormats.dateTimePicker.stringDate);
 
 /**
  * This method is used to validate if the graph data format for a chart component
