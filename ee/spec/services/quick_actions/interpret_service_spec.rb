@@ -35,6 +35,20 @@ describe QuickActions::InterpretService do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     context 'assign command' do
+      shared_examples 'assigning a already assigned user' do
+        before do
+          target.assignees = [user]
+        end
+
+        it 'excludes already assigned user' do
+          # target.update!(assignee_ids: [user.id])
+
+          note = "/assign @#{user.username} @#{user2.username}"
+          _, updates, message = service.execute(note, target)
+          expect(message).to eq("Assigned @#{user2.username}. @#{user.username} already assigned.")
+        end
+      end
+
       context 'Issue' do
         it 'fetches assignees and populates them if content contains /assign' do
           issue.update!(assignee_ids: [user.id, user2.id])
@@ -52,6 +66,10 @@ describe QuickActions::InterpretService do
 
             expect(updates[:assignee_ids]).to match_array([user2.id, user3.id])
           end
+        end
+
+        it_behaves_like 'assigning a already assigned user' do
+          let(:target) { issue }
         end
       end
 
@@ -89,11 +107,27 @@ describe QuickActions::InterpretService do
             end
           end
         end
+
+        it_behaves_like 'assigning a already assigned user' do
+          let(:target) { merge_request }
+        end
       end
     end
 
     context 'unassign command' do
       let(:content) { '/unassign' }
+
+      shared_examples 'unassigning a not assigned user' do
+        before do
+          target.assignees = [user]
+        end
+
+        it 'excludes already assigned user' do
+          note = "/unassign @#{user2.username}"
+          _, updates, message = service.execute(note, target)
+          expect(message).to eq("@#{user2.username} already unassigned.")
+        end
+      end
 
       context 'Issue' do
         it 'unassigns user if content contains /unassign @user' do
@@ -118,6 +152,10 @@ describe QuickActions::InterpretService do
           _, updates = service.execute("/assign @#{user3.username}\n/unassign", issue)
 
           expect(updates[:assignee_ids]).to be_empty
+        end
+
+        it_behaves_like 'unassigning a not assigned user' do
+          let(:target) { issue }
         end
       end
 
@@ -154,6 +192,10 @@ describe QuickActions::InterpretService do
               expect(updates[:assignee_ids]).to be_empty
             end
           end
+        end
+
+        it_behaves_like 'unassigning a not assigned user' do
+          let(:target) { merge_request }
         end
       end
     end

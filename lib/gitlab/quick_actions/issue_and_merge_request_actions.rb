@@ -28,14 +28,23 @@ module Gitlab
             next
           end
 
+          existing_assignees = quick_action_target.assignees
+          new_assignees = users
+
+          already_assigned_users = existing_assignees & new_assignees
+          new_assignees = new_assignees - existing_assignees
+
           if quick_action_target.allows_multiple_assignees?
-            @updates[:assignee_ids] ||= quick_action_target.assignees.map(&:id)
-            @updates[:assignee_ids] += users.map(&:id)
+            @updates[:assignee_ids] ||= existing_assignees.map(&:id)
+            @updates[:assignee_ids] += new_assignees.map(&:id)
           else
             @updates[:assignee_ids] = [users.first.id]
           end
 
-          @execution_message[:assign] = _('Assigned %{assignee_users_sentence}.') % { assignee_users_sentence: assignee_users_sentence(users) }
+          new_assignees_message = _('Assigned %{assignee_users_sentence}.') % { assignee_users_sentence: assignee_users_sentence(new_assignees) } unless new_assignees.empty?
+          already_assigned_users_message = _('%{assignee_users_sentence} already assigned.') % { assignee_users_sentence: assignee_users_sentence(already_assigned_users) } unless already_assigned_users.empty?
+
+          @execution_message[:assign] = [new_assignees_message, already_assigned_users_message].compact.join(' ')
         end
 
         desc do
@@ -52,8 +61,12 @@ module Gitlab
         end
         execution_message do |users = nil|
           assignees = assignees_for_removal(users)
-          _("Removed %{assignee_text} %{assignee_references}.") %
-            { assignee_text: 'assignee'.pluralize(assignees.size), assignee_references: assignees.map(&:to_reference).to_sentence }
+          if assignees.empty? && !users.empty?
+            _("%{user_references} already unassigned.") % { user_references: users.map(&:to_reference).to_sentence }
+          else
+            _("Removed %{assignee_text} %{assignee_references}.") %
+              { assignee_text: 'assignee'.pluralize(assignees.size), assignee_references: assignees.map(&:to_reference).to_sentence }
+          end
         end
         params do
           quick_action_target.allows_multiple_assignees? ? '@user1 @user2' : ''

@@ -232,28 +232,94 @@ describe Notes::QuickActionsService do
     end
   end
 
-  context 'Issue assignees' do
-    describe '/assign' do
-      let(:project) { create(:project) }
-      let(:maintainer) { create(:user).tap { |u| project.add_maintainer(u) } }
-      let(:assignee) { create(:user) }
-      let(:service) { described_class.new(project, maintainer) }
-      let(:note) { create(:note_on_issue, note: note_text, project: project) }
+  describe '/assign' do
+    let(:project) { create(:project) }
+    let(:maintainer) { create(:user) }
+    let(:assignee) { create(:user) }
+    let(:service) { described_class.new(project, maintainer) }
+    let(:note_text) { %(/assign @#{assignee.username} @#{maintainer.username}\n) }
 
-      let(:note_text) do
-        %(/assign @#{assignee.username} @#{maintainer.username}\n")
-      end
-
+    shared_examples 'assigning a already assigned user' do
       before do
-        project.add_maintainer(maintainer)
-        project.add_maintainer(assignee)
+        target.assignees = [assignee]
       end
 
       it 'adds multiple assignees from the list' do
-        _, update_params = service.execute(note)
+        _, update_params, message = service.execute(note)
+
+        expect(message).to eq("Assigned @#{maintainer.username}. @#{assignee.username} already assigned.")
+        expect { service.apply_updates(update_params, note) }.not_to raise_error
+      end
+    end
+
+    before do
+      project.add_maintainer(maintainer)
+      project.add_maintainer(assignee)
+    end
+
+    context 'Issue assignees' do
+      let(:note) { create(:note_on_issue, note: note_text, project: project) }
+
+      it 'adds multiple assignees from the list' do
+        _, update_params, message = service.execute(note)
         service.apply_updates(update_params, note)
 
+        expect(message).to eq("Assigned @#{maintainer.username} and @#{assignee.username}.")
         expect(note.noteable.assignees.count).to eq(2)
+      end
+
+      it_behaves_like 'assigning a already assigned user' do
+        let(:target) { note.noteable }
+      end
+    end
+
+    context 'MergeRequest' do
+      let(:note) { create(:note_on_merge_request, note: note_text, project: project) }
+
+      it_behaves_like 'assigning a already assigned user' do
+        let(:target) { note.noteable }
+      end
+    end
+  end
+
+  describe '/unassign' do
+    let(:project) { create(:project) }
+    let(:maintainer) { create(:user) }
+    let(:assignee) { create(:user) }
+    let(:note_text) { %(/unassign @#{maintainer.username}\n) }
+
+    let(:service) { described_class.new(project, maintainer) }
+
+    before do
+      project.add_maintainer(maintainer)
+    end
+
+    shared_examples 'unassigning a not assigned user' do
+      before do
+        target.assignees = [assignee]
+      end
+
+      it 'adds multiple assignees from the list' do
+        _, update_params, message = service.execute(note)
+
+        expect(message).to eq("@#{maintainer.username} already unassigned.")
+        expect { service.apply_updates(update_params, note) }.not_to raise_error
+      end
+    end
+
+    context 'Issue assignees' do
+      let(:note) { create(:note_on_issue, note: note_text, project: project) }
+
+      it_behaves_like 'unassigning a not assigned user' do
+        let(:target) { note.noteable }
+      end
+    end
+
+    context 'MergeRequest' do
+      let(:note) { create(:note_on_merge_request, note: note_text, project: project) }
+
+      it_behaves_like 'unassigning a not assigned user' do
+        let(:target) { note.noteable }
       end
     end
   end
