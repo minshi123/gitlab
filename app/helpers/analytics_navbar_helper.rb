@@ -11,7 +11,30 @@ module AnalyticsNavbarHelper
     ].compact
   end
 
+  def group_analytics_navbar_links(group, current_user)
+    [
+      contribution_analytics_navbar_link(group, current_user)
+    ].compact
+  end
+
   private
+
+  def contribution_analytics_navbar_link(group, current_user)
+    return unless Feature.enabled?(:analytics_pages_under_group_analytics_sidebar, group)
+    return unless group_sidebar_link?(:contribution_analytics)
+
+    title = _('Contribution Analytics')
+    path = 'groups/contribution_analytics#show'
+    link = group_contribution_analytics_path(group)
+
+    content = nav_link(path: path) do
+      link_to link, title: title, data: { placement: 'right', qa_selector: 'contribution_analytics_link' } do
+        content_tag(:span, title)
+      end
+    end
+    
+    { path: path, content: content, link: link, title: title }
+  end
 
   def cycle_analytics_navbar_link(project, current_user)
     return unless Feature.enabled?(:analytics_pages_under_project_analytics_sidebar, project)
