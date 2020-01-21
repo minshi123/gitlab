@@ -17,7 +17,17 @@ describe MicrosoftTeams::Notifier do
         text: '[#1 Awesome issue](http://localhost/namespace2/gitlabhq/issues/1)',
         image: 'http://someimage.com'
       },
-      attachments: 'please fix'
+      attachments: <<~EOS.chomp
+        [ddd0f15a](http://gitlab.com/gitlab-org/gitlab-test/commit/ddd0f15ae83993f5cb66a927a28673882e99100b): Merge branch 'po-fix-test-env-path' into 'master'<br/>
+        <br/>
+        Correct test_env.rb path for adding branch<br/>
+        <br/>
+        See merge request gitlab-org/gitlab-test!38 - Stan Hu<br/>
+        <br/>
+        [2d1db523](http://localhost:3000/gitlab-org/gitlab-test/commit/2d1db523e11e777e49377cfb22d368deec3f0793): Correct test_env.rb path for adding branch<br/>
+         - Paul Okstad<br/>
+        <br/>
+      EOS
     }
   end
 
@@ -31,13 +41,16 @@ describe MicrosoftTeams::Notifier do
           'activityImage' => 'http://someimage.com'
         },
         {
-          'title' => 'Details',
-          'facts' => [
-            {
-              'name' => 'Attachments',
-              'value' => 'please fix'
-            }
-          ]
+          text: <<~EOS.chomp
+            [ddd0f15a](http://gitlab.com/gitlab-org/gitlab-test/commit/ddd0f15ae83993f5cb66a927a28673882e99100b): Merge branch 'po-fix-test-env-path' into 'master'
+
+            Correct test_env.rb path for adding branch
+
+            See merge request gitlab-org/gitlab-test!38 - Stan Hu
+
+            [2d1db523](http://localhost:3000/gitlab-org/gitlab-test/commit/2d1db523e11e777e49377cfb22d368deec3f0793): Correct test_env.rb path for adding branch
+             - Paul Okstad
+          EOS
         }
       ],
       'title' => 'JohnDoe4/project2',
