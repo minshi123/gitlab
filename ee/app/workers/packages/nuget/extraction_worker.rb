@@ -62,14 +62,14 @@ module Packages
       end
 
       def package_params
-        empty_hash_if_all_values_blank(
+        empty_hash_if_values_blank(
           name: package_name_from_metadata,
           version: package_version_from_metadata
         )
       end
 
       def package_file_params
-        empty_hash_if_all_values_blank(file_name: filename_from_metadata)
+        empty_hash_if_values_blank(file_name: filename_from_metadata)
       end
 
       def package_name_from_metadata
@@ -96,10 +96,10 @@ module Packages
         ).execute
       end
 
-      def empty_hash_if_all_values_blank(hash)
-        return EMPTY_HASH if hash.values.all?(&:blank?)
+      def empty_hash_if_values_blank(hash)
+        return hash if hash.values.any?(&:present?)
 
-        hash
+        EMPTY_HASH
       end
     end
   end
