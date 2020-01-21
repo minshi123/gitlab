@@ -7,4 +7,8 @@ class ApplicationInstance
   def all_pipelines
     ::Ci::Pipeline.all
   end
+
+  def flipper_id
+    self.class
+  end
 end
