@@ -14,11 +14,12 @@ import {
 import PanelType from 'ee_else_ce/monitoring/components/panel_type.vue';
 import { s__ } from '~/locale';
 import createFlash from '~/flash';
-import Icon from '~/vue_shared/components/icon.vue';
 import { getParameterValues, mergeUrlParams, redirectTo } from '~/lib/utils/url_utility';
 import invalidUrl from '~/lib/utils/invalid_url';
+import Icon from '~/vue_shared/components/icon.vue';
+import { getTimeRange } from '~/vue_shared/components/date_time_picker/date_time_picker_lib';
+import DateTimePicker from '~/vue_shared/components/date_time_picker/date_time_picker.vue';
 
-import DateTimePicker from './date_time_picker/date_time_picker.vue';
 import GraphGroup from './graph_group.vue';
 import EmptyState from './empty_state.vue';
 import GroupEmptyState from './group_empty_state.vue';
@@ -26,11 +27,10 @@ import DashboardsDropdown from './dashboards_dropdown.vue';
 
 import TrackEventDirective from '~/vue_shared/directives/track_event';
 import { getAddMetricTrackingOptions } from '../utils';
-import { getTimeRange } from './date_time_picker/date_time_picker_lib';
 
 import { metricStates } from '../constants';
 
-const defaultTimeDiff = getTimeRange();
+const defaultTimeRange = getTimeRange();
 
 export default {
   components: {
@@ -186,8 +186,8 @@ export default {
     return {
       state: 'gettingStarted',
       formIsValid: null,
-      startDate: getParameterValues('start')[0] || defaultTimeDiff.start,
-      endDate: getParameterValues('end')[0] || defaultTimeDiff.end,
+      startDate: getParameterValues('start')[0] || defaultTimeRange.start,
+      endDate: getParameterValues('end')[0] || defaultTimeRange.end,
       hasValidDates: true,
       isRearrangingPanels: false,
     };
@@ -280,8 +280,8 @@ export default {
           'Metrics|Link contains an invalid time window, please verify the link to see the requested time range.',
         ),
       );
-      this.startDate = defaultTimeDiff.start;
-      this.endDate = defaultTimeDiff.end;
+      this.startDate = defaultTimeRange.start;
+      this.endDate = defaultTimeRange.end;
     },
 
     generateLink(group, title, yLabel) {
