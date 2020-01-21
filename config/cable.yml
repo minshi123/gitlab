@@ -1,0 +1,9 @@
+development:
+  adapter: redis
+  url: unix:/Users/engwan/Projects/gdk/redis/redis.socket
+  channel_prefix: gitlab_production
+
+test:
+  adapter: redis
+  url: unix:/Users/engwan/Projects/gdk/redis/redis.socket
+  channel_prefix: gitlab_test
