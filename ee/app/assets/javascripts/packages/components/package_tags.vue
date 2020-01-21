@@ -22,6 +22,11 @@ export default {
       required: true,
       default: () => [],
     },
+    hideLabel: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     tagCount() {
@@ -49,8 +54,10 @@ export default {
 
 <template>
   <div class="d-flex align-items-center">
-    <gl-icon name="labels" class="append-right-8" />
-    <strong class="append-right-8 js-tags-count">{{ n__('%d tag', '%d tags', tagCount) }}</strong>
+    <div v-if="!hideLabel" ref="tagLabel" class="d-flex align-items-center">
+      <gl-icon name="labels" class="append-right-8" />
+      <strong class="append-right-8 js-tags-count">{{ n__('%d tag', '%d tags', tagCount) }}</strong>
+    </div>
     <gl-badge
       v-for="(tag, index) in tagsToRender"
       :key="index"
@@ -66,6 +73,7 @@ export default {
       v-gl-tooltip
       variant="light"
       :title="moreTagsTooltip"
+      class="d-none d-md-block"
       ><gl-sprintf message="+%{tags} more">
         <template #tags>
           {{ moreTagsDisplay }}

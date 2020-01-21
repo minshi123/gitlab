@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
-import PackageTags from 'ee/packages/details/components/package_tags.vue';
-import { mockTags } from '../../mock_data';
+import PackageTags from 'ee/packages/components/package_tags.vue';
+import { mockTags } from '../mock_data';
 
 describe('PackageTags', () => {
   let wrapper;
@@ -16,11 +16,26 @@ describe('PackageTags', () => {
     });
   }
 
+  const tagLabel = () => wrapper.find({ ref: 'tagLabel' });
   const tagBadges = () => wrapper.findAll({ ref: 'tagBadge' });
   const moreBadge = () => wrapper.find({ ref: 'moreBadge' });
 
   afterEach(() => {
     if (wrapper) wrapper.destroy();
+  });
+
+  describe('tag label', () => {
+    it('shows the tag label by default', () => {
+      createComponent();
+
+      expect(tagLabel().exists()).toBe(true);
+    });
+
+    it('hides when hideLabel prop is set to true', () => {
+      createComponent(mockTags, { hideLabel: true });
+
+      expect(tagLabel().exists()).toBe(false);
+    });
   });
 
   it('renders the correct number of tags', () => {
