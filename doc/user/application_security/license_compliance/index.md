@@ -64,8 +64,6 @@ The following languages and package managers are supported.
 | Rust       | [cargo](https://crates.io) ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types))|[License Finder](https://github.com/pivotal/LicenseFinder)|
 | PHP        | [composer](https://getcomposer.org/) ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types))|[License Finder](https://github.com/pivotal/LicenseFinder)|
 
-\* .NET Framework is supported via the [mono project](https://www.mono-project.com/). Windows specific dependencies are not supported at this time.
-
 ## Requirements
 
 To run a License Compliance scanning job, you need GitLab Runner with the
