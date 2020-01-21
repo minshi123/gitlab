@@ -393,7 +393,7 @@ class MergeRequest < ApplicationRecord
   def to_reference(from = nil, full: false)
     reference = "#{self.class.reference_prefix}#{iid}"
 
-    "#{project.to_reference(from, full: full)}#{reference}"
+    "#{project.to_reference_base(from, full: full)}#{reference}"
   end
 
   def commits(limit: nil)

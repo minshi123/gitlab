@@ -532,16 +532,17 @@ describe Project do
     it { is_expected.to delegate_method(:last_pipeline).to(:commit).with_arguments(allow_nil: true) }
   end
 
-  describe '#to_reference_with_postfix' do
-    it 'returns the full path with reference_postfix' do
+  describe '#to_reference' do
+    it 'returns the reference_base with reference_postfix' do
       namespace = create(:namespace, path: 'sample-namespace')
       project = create(:project, path: 'sample-project', namespace: namespace)
+      base = project.to_reference_base
 
-      expect(project.to_reference_with_postfix).to eq 'sample-namespace/sample-project>'
+      expect(project.to_reference_with_postfix).to eq("#{base}>")
     end
   end
 
-  describe '#to_reference' do
+  describe '#to_reference_base' do
     let(:owner)     { create(:user, name: 'Gitlab') }
     let(:namespace) { create(:namespace, path: 'sample-namespace', owner: owner) }
     let(:project)   { create(:project, path: 'sample-project', namespace: namespace) }

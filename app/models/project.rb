@@ -1056,15 +1056,16 @@ class Project < ApplicationRecord
     end
   end
 
-  def to_reference_with_postfix
-    "#{to_reference(full: true)}#{self.class.reference_postfix}"
+  def to_reference(from = nil, full: false)
+    base = to_reference_base(from, full: full, never_nil: true)
+    "#{base}#{self.class.reference_postfix}"
   end
 
   # `from` argument can be a Namespace or Project.
-  def to_reference(from = nil, full: false)
+  def to_reference_base(from = nil, full: false, never_nil: false)
     if full || cross_namespace_reference?(from)
       full_path
-    elsif cross_project_reference?(from)
+    elsif never_nil || cross_project_reference?(from)
       path
     end
   end
