@@ -19,6 +19,10 @@ module MetricsDashboard
       result[:all_dashboards] = all_dashboards
     end
 
+    if project_for_dashboard
+      result[:pod_logs_path] = project_logs_path(project_for_dashboard)
+    end
+
     respond_to do |format|
       if result.nil?
         format.json { continue_polling_response }
@@ -79,7 +83,7 @@ module MetricsDashboard
   def dashboard_success_response(result)
     {
       status: :ok,
-      json: result.slice(:all_dashboards, :dashboard, :status)
+      json: result.slice(:all_dashboards, :dashboard, :pod_logs_path, :status)
     }
   end
 
