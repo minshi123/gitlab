@@ -1,13 +1,9 @@
 <script>
-import { GlButton } from '@gitlab/ui';
 import ClipboardButton from '../../vue_shared/components/clipboard_button.vue';
-import Icon from '~/vue_shared/components/icon.vue';
 
 export default {
   components: {
-    Icon,
-    GlButton,
-    ClipboardButton,
+    ClipboardButton
   },
   props: {
     uri: {
@@ -26,13 +22,5 @@ export default {
       :title="s__('ServerlessURL|Copy URL')"
       class="input-group-text js-clipboard-btn"
     />
-    <gl-button
-      :href="uri"
-      target="_blank"
-      rel="noopener noreferrer nofollow"
-      class="input-group-text btn btn-default"
-    >
-      <icon name="external-link" />
-    </gl-button>
   </div>
 </template>
