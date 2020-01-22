@@ -5822,7 +5822,7 @@ type SentryDetailedError {
   gitlabCommitPath: String
 
   """
-  ID of Gitlab Issue
+  URL of Gitlab Issue
   """
   gitlabIssue: String
 
@@ -5884,7 +5884,7 @@ type SentryDetailedError {
   """
   Tags associated with the Sentry Error
   """
-  tags: String
+  tags: String!
 
   """
   Title of the error

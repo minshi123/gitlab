@@ -87,9 +87,9 @@ module Types
             description: 'Path to the GitLab page for the GitLab commit attributed to the error'
       field :gitlab_issue, GraphQL::STRING_TYPE,
             null: true,
-            description: 'ID of Gitlab Issue'
+            description: 'URL of Gitlab Issue'
       field :tags, GraphQL::STRING_TYPE,
-            null: true,
+            null: false,
             description: 'Tags associated with the Sentry Error'
 
       def first_seen
