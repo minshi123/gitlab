@@ -24,6 +24,13 @@ module QA
 
       def self.method_missing(name, *args)
         self.new.strategy.public_send(name, *args)
+      rescue
+        saved = Capybara::Screenshot.screenshot_and_save_page
+
+        QA::Runtime::Logger.error("Screenshot: #{saved[:image]}") if saved&.key?(:image)
+        QA::Runtime::Logger.error("HTML capture: #{saved[:html]}") if saved&.key?(:html)
+
+        raise
       end
     end
   end
