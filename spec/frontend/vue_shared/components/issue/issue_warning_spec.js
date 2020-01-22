@@ -1,5 +1,4 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlLink } from '@gitlab/ui';
 import IssueWarning from '~/vue_shared/components/issue/issue_warning.vue';
 import Icon from '~/vue_shared/components/icon.vue';
 
