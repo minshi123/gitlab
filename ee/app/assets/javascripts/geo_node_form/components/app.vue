@@ -18,9 +18,7 @@ export default {
 
 <template>
   <article class="geo-node-form-container">
-    <h3 class="page-title">
-      <span>{{ node ? 'Edit' : 'New' }}</span> {{ __('Geo Node') }}
-    </h3>
+    <h3 class="page-title">{{ __(`${node ? 'Edit' : 'New'} Geo Node`) }}</h3>
     <geo-node-form :node="node" />
   </article>
 </template>

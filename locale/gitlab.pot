@@ -8370,9 +8370,6 @@ msgstr ""
 msgid "Geo Designs"
 msgstr ""
 
-msgid "Geo Node"
-msgstr ""
-
 msgid "Geo Nodes"
 msgstr ""
 

@@ -22,15 +22,14 @@ describe('GeoNodeFormCapacities', () => {
   const findGeoNodeFormCapacitiesContainer = () =>
     wrapper.find('.geo-node-form-capacities-container');
   const findGeoNodeFormRepositoryCapacityField = () =>
-    findGeoNodeFormCapacitiesContainer().find('#node-repository-capacity-field');
-  const findGeoNodeFormFileCapacityField = () =>
-    findGeoNodeFormCapacitiesContainer().find('#node-file-capacity-field');
+    wrapper.find('#node-repository-capacity-field');
+  const findGeoNodeFormFileCapacityField = () => wrapper.find('#node-file-capacity-field');
   const findGeoNodeFormVerificationCapacityField = () =>
-    findGeoNodeFormCapacitiesContainer().find('#node-verification-capacity-field');
+    wrapper.find('#node-verification-capacity-field');
   const findGeoNodeFormContainerRepositoryCapacityField = () =>
-    findGeoNodeFormCapacitiesContainer().find('#node-container-repository-capacity-field');
+    wrapper.find('#node-container-repository-capacity-field');
   const findGeoNodeFormReverificationIntervalField = () =>
-    findGeoNodeFormCapacitiesContainer().find('#node-reverification-interval-field');
+    wrapper.find('#node-reverification-interval-field');
 
   describe('template', () => {
     it('renders Geo Node Form Capacities Container', () => {
@@ -57,27 +56,33 @@ describe('GeoNodeFormCapacities', () => {
           createComponent();
         });
 
-        it(`${showRepoCapacity ? 'show' : 'hide'} Repository Capacity Field`, () => {
+        it(`it ${showRepoCapacity ? 'shows' : 'hides'} the Repository Capacity Field`, () => {
           expect(findGeoNodeFormRepositoryCapacityField().exists()).toBe(showRepoCapacity);
         });
 
-        it(`${showFileCapacity ? 'show' : 'hide'} File Capacity Field`, () => {
+        it(`it ${showFileCapacity ? 'shows' : 'hides'} the File Capacity Field`, () => {
           expect(findGeoNodeFormFileCapacityField().exists()).toBe(showFileCapacity);
         });
 
-        it(`${showVerificationCapacity ? 'show' : 'hide'} Verification Capacity Field`, () => {
+        it(`it ${
+          showVerificationCapacity ? 'shows' : 'hides'
+        } the Verification Capacity Field`, () => {
           expect(findGeoNodeFormVerificationCapacityField().exists()).toBe(
             showVerificationCapacity,
           );
         });
 
-        it(`${showContainerCapacity ? 'show' : 'hide'} Container Repository Capacity Field`, () => {
+        it(`it ${
+          showContainerCapacity ? 'shows' : 'hides'
+        } the Container Repository Capacity Field`, () => {
           expect(findGeoNodeFormContainerRepositoryCapacityField().exists()).toBe(
             showContainerCapacity,
           );
         });
 
-        it(`${showReverificationInterval ? 'show' : 'hide'} Reverification Interval Field`, () => {
+        it(`it ${
+          showReverificationInterval ? 'shows' : 'hides'
+        } the Reverification Interval Field`, () => {
           expect(findGeoNodeFormReverificationIntervalField().exists()).toBe(
             showReverificationInterval,
           );

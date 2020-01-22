@@ -62,37 +62,41 @@ export default {
           __('This is a primary node')
         }}</gl-form-checkbox>
       </gl-form-group>
-      <gl-form-group
-        v-if="nodeData.primary"
-        :label="__('Internal URL (optional)')"
-        label-for="node-internal-url-field"
-        :description="
-          __(
-            'The URL defined on the primary node that secondary nodes should use to contact it. Defaults to URL',
-          )
-        "
-      >
-        <gl-form-input id="node-internal-url-field" v-model="nodeData.internalUrl" type="text" />
-      </gl-form-group>
+      <template v-if="nodeData.primary">
+        <gl-form-group
+          :label="__('Internal URL (optional)')"
+          label-for="node-internal-url-field"
+          :description="
+            __(
+              'The URL defined on the primary node that secondary nodes should use to contact it. Defaults to URL',
+            )
+          "
+        >
+          <gl-form-input id="node-internal-url-field" v-model="nodeData.internalUrl" type="text" />
+        </gl-form-group>
+      </template>
       <geo-node-form-capacities :node-data="nodeData" />
-      <gl-form-group
-        v-if="!nodeData.primary"
-        :label="__('Object Storage replication')"
-        label-for="node-object-storage-field"
-        :description="
-          __(
-            'If enabled, and if object storage is enabled, GitLab will handle Object Storage replication using Geo',
-          )
-        "
-      >
-        <gl-form-checkbox id="node-object-storage-field" v-model="nodeData.syncObjectStorage">{{
-          __('Allow this secondary node to replicate content on Object Storage')
-        }}</gl-form-checkbox>
-      </gl-form-group>
+      <template v-if="!nodeData.primary">
+        <gl-form-group
+          :label="__('Object Storage replication')"
+          label-for="node-object-storage-field"
+          :description="
+            __(
+              'If enabled, and if object storage is enabled, GitLab will handle Object Storage replication using Geo',
+            )
+          "
+        >
+          <gl-form-checkbox id="node-object-storage-field" v-model="nodeData.syncObjectStorage">{{
+            __('Allow this secondary node to replicate content on Object Storage')
+          }}</gl-form-checkbox>
+        </gl-form-group>
+      </template>
     </section>
     <section class="d-flex align-items-center mt-4">
-      <gl-button variant="success">{{ __('Save') }}</gl-button>
-      <gl-button class="ml-auto" @click="redirect">{{ __('Cancel') }}</gl-button>
+      <gl-button id="node-save-button" variant="success">{{ __('Save') }}</gl-button>
+      <gl-button id="node-cancel-button" class="ml-auto" @click="redirect">{{
+        __('Cancel')
+      }}</gl-button>
     </section>
   </form>
 </template>

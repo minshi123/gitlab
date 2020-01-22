@@ -20,8 +20,8 @@ describe('GeoNodeFormCore', () => {
   });
 
   const findGeoNodeFormCoreContainer = () => wrapper.find('.form-row');
-  const findGeoNodeFormNameField = () => findGeoNodeFormCoreContainer().find('#node-name-field');
-  const findGeoNodeFormUrlField = () => findGeoNodeFormCoreContainer().find('#node-url-field');
+  const findGeoNodeFormNameField = () => wrapper.find('#node-name-field');
+  const findGeoNodeFormUrlField = () => wrapper.find('#node-url-field');
 
   describe('template', () => {
     beforeEach(() => {

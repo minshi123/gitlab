@@ -13,27 +13,23 @@ export default () => {
     components: {
       GeoNodeFormApp,
     },
-    data() {
+    data() {},
+
+    render(createElement) {
       const {
         dataset: { nodeData },
       } = this.$options.el;
 
-      let jsonNodeData;
+      let node;
       if (nodeData) {
-        jsonNodeData = JSON.parse(nodeData);
-        jsonNodeData = convertObjectPropsToCamelCase(jsonNodeData, { deep: true });
-        jsonNodeData = { ...jsonNodeData.node, namespaceIds: jsonNodeData.namespaceIds };
+        node = JSON.parse(nodeData);
+        node = convertObjectPropsToCamelCase(node, { deep: true });
+        node = { ...node.node, namespaceIds: node.namespaceIds };
       }
 
-      return {
-        node: jsonNodeData,
-      };
-    },
-
-    render(createElement) {
       return createElement('geo-node-form-app', {
         props: {
-          node: this.node,
+          node,
         },
       });
     },

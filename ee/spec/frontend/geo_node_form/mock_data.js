@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/prefer-default-export
 export const MOCK_NODE = {
+  id: 1,
   name: 'Mock Node',
   url: 'https://mock_node.gitlab.com',
   primary: false,

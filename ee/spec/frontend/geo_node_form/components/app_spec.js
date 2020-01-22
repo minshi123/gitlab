@@ -21,8 +21,8 @@ describe('GeoNodeFormApp', () => {
   });
 
   const findGeoNodeFormContainer = () => wrapper.find('.geo-node-form-container');
-  const findGeoNodeFormTitle = () => findGeoNodeFormContainer().find('.page-title');
-  const findGeoForm = () => findGeoNodeFormContainer().find(GeoNodeForm);
+  const findGeoNodeFormTitle = () => wrapper.find('.page-title');
+  const findGeoForm = () => wrapper.find(GeoNodeForm);
 
   describe('render', () => {
     beforeEach(() => {

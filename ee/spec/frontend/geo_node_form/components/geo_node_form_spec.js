@@ -27,14 +27,12 @@ describe('GeoNodeForm', () => {
   });
 
   const findGeoNodeFormContainer = () => wrapper.find('form');
-  const findGeoNodeFormCoreField = () => findGeoNodeFormContainer().find(GeoNodeFormCore);
-  const findGeoNodePrimaryField = () => findGeoNodeFormContainer().find('#node-primary-field');
-  const findGeoNodeInternalUrlField = () =>
-    findGeoNodeFormContainer().find('#node-internal-url-field');
-  const findGeoNodeFormCapacitiesField = () =>
-    findGeoNodeFormContainer().find(GeoNodeFormCapacities);
-  const findGeoNodeObjectStorageField = () =>
-    findGeoNodeFormContainer().find('#node-object-storage-field');
+  const findGeoNodeFormCoreField = () => wrapper.find(GeoNodeFormCore);
+  const findGeoNodePrimaryField = () => wrapper.find('#node-primary-field');
+  const findGeoNodeInternalUrlField = () => wrapper.find('#node-internal-url-field');
+  const findGeoNodeFormCapacitiesField = () => wrapper.find(GeoNodeFormCapacities);
+  const findGeoNodeObjectStorageField = () => wrapper.find('#node-object-storage-field');
+  const findGeoNodeCancelButton = () => wrapper.find('#node-cancel-button');
 
   describe('template', () => {
     beforeEach(() => {
@@ -63,23 +61,23 @@ describe('GeoNodeForm', () => {
           wrapper.vm.nodeData.primary = primaryNode;
         });
 
-        it(`${showCore ? 'show' : 'hide'} Core Field`, () => {
+        it(`it ${showCore ? 'shows' : 'hides'} the Core Field`, () => {
           expect(findGeoNodeFormCoreField().exists()).toBe(showCore);
         });
 
-        it(`${showPrimary ? 'show' : 'hide'} Primary Field`, () => {
+        it(`it ${showPrimary ? 'show' : 'hide'} the Primary Field`, () => {
           expect(findGeoNodePrimaryField().exists()).toBe(showPrimary);
         });
 
-        it(`${showInternalUrl ? 'show' : 'hide'} Internal URL Field`, () => {
+        it(`it ${showInternalUrl ? 'shows' : 'hides'} the Internal URL Field`, () => {
           expect(findGeoNodeInternalUrlField().exists()).toBe(showInternalUrl);
         });
 
-        it(`${showCapacities ? 'show' : 'hide'} Capacities Field`, () => {
+        it(`it ${showCapacities ? 'shows' : 'hides'} the Capacities Field`, () => {
           expect(findGeoNodeFormCapacitiesField().exists()).toBe(showCapacities);
         });
 
-        it(`${showObjectStorage ? 'show' : 'hide'} Object Storage Field`, () => {
+        it(`it ${showObjectStorage ? 'shows' : 'hides'} the Object Storage Field`, () => {
           expect(findGeoNodeObjectStorageField().exists()).toBe(showObjectStorage);
         });
       },
@@ -92,8 +90,8 @@ describe('GeoNodeForm', () => {
         createComponent();
       });
 
-      it('calls visitUrl', () => {
-        wrapper.vm.redirect();
+      it('calls visitUrl when cancel is clicked', () => {
+        findGeoNodeCancelButton().vm.$emit('click');
         expect(visitUrl).toHaveBeenCalled();
       });
     });
@@ -106,8 +104,8 @@ describe('GeoNodeForm', () => {
         createComponent();
       });
 
-      it('sets nodeData to the prop.node', () => {
-        expect(wrapper.vm.nodeData).toEqual(propsData.node);
+      it('sets nodeData to the correct node', () => {
+        expect(wrapper.vm.nodeData.id).toBe(propsData.node.id);
       });
     });
 
@@ -119,7 +117,7 @@ describe('GeoNodeForm', () => {
 
       it('sets nodeData to the default node data', () => {
         expect(wrapper.vm.nodeData).not.toBeNull();
-        expect(wrapper.vm.nodeData).not.toEqual(MOCK_NODE);
+        expect(wrapper.vm.nodeData.id).not.toBe(MOCK_NODE.id);
       });
     });
   });
