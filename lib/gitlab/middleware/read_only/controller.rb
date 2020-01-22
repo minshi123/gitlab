@@ -24,6 +24,10 @@ module Gitlab
           'projects/compare' => %w{create}
         }.freeze
 
+        WHITELISTED_LOGIN_ROUTES = {
+          'sessions' => %w{create destroy}
+        }
+
         GRAPHQL_URL = '/api/graphql'
 
         def initialize(app, env)
@@ -85,7 +89,7 @@ module Gitlab
 
         # Overridden in EE module
         def whitelisted_routes
-          grack_route? || internal_route? || lfs_route? || compare_git_revisions_route? || sidekiq_route? || sign_out_route?|| graphql_query?
+          grack_route? || internal_route? || lfs_route? || compare_git_revisions_route? || sidekiq_route? || login_route?|| graphql_query?
         end
 
         def grack_route?
@@ -118,8 +122,11 @@ module Gitlab
           WHITELISTED_GIT_LFS_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
         end
 
-        def sign_out_route?
-          request.path.start_with?("#{relative_url}/users/sign_out")
+        def login_route?
+          # Calling route_hash may be expensive. Only do it if we think there's a possible match
+          return false unless request.post? && request.path.end_with?('/users/sign_in', '/users/sign_out')
+
+          WHITELISTED_LOGIN_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
         end
 
         def sidekiq_route?

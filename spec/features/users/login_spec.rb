@@ -825,4 +825,21 @@ describe 'Login' do
       end
     end
   end
+
+  context 'on a read-only instance' do
+    let(:user) { create(:user) }
+
+    before do
+      allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+    end
+
+    it 'allows login' do
+      expect(authentication_metrics)
+        .to increment(:user_authenticated_counter)
+
+      gitlab_sign_in(user)
+
+      expect(current_path).to eq root_path
+    end
+  end
 end
