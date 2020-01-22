@@ -25,7 +25,8 @@ module Gitlab
         }.freeze
 
         WHITELISTED_LOGIN_ROUTES = {
-          'sessions' => %w{create destroy}
+          'sessions' => %w{create destroy},
+          'admin/sessions' => %w{create}
         }
 
         GRAPHQL_URL = '/api/graphql'
@@ -124,7 +125,7 @@ module Gitlab
 
         def login_route?
           # Calling route_hash may be expensive. Only do it if we think there's a possible match
-          return false unless request.post? && request.path.end_with?('/users/sign_in', '/users/sign_out')
+          return false unless request.post? && request.path.end_with?('/users/sign_in', '/users/sign_out', '/admin/session')
 
           WHITELISTED_LOGIN_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
         end
