@@ -13,5 +13,6 @@ mutation uploadDesign($files: [Upload!]!, $projectPath: ID!, $iid: ID!) {
         }
       }
     }
+    errors
   }
 }
