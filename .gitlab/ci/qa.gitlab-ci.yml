@@ -52,6 +52,7 @@ qa:internal:
 qa:selectors:
   extends: .qa-job-base
   script:
+    - '[ "$FOSS_ONLY" = "1" ] && rm -rf ee/'
     - bundle exec bin/qa Test::Sanity::Selectors
 
 qa:selectors-foss:
