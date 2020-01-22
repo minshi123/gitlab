@@ -5882,7 +5882,7 @@ type SentryDetailedError {
   status: SentryErrorStatus!
 
   """
-  Tags associated with the Sentry Error.
+  Tags associated with the Sentry Error
   """
   tags: String
 

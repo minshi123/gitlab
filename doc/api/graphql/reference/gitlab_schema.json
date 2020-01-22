@@ -16058,7 +16058,7 @@
             },
             {
               "name": "tags",
-              "description": "Tags associated with the Sentry Error.",
+              "description": "Tags associated with the Sentry Error",
               "args": [
 
               ],
