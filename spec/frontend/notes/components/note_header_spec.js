@@ -12,10 +12,10 @@ const actions = {
 describe('NoteHeader component', () => {
   let wrapper;
 
-  const findActionsWrapper = () => wrapper.find('.discussion-actions');
+  const findActionsWrapper = () => wrapper.find({ ref: 'discussionActions' });
   const findChevronIcon = () => wrapper.find({ ref: 'chevronIcon' });
   const findActionText = () => wrapper.find({ ref: 'actionText' });
-  const findTimestamp = () => wrapper.find('.note-timestamp');
+  const findTimestamp = () => wrapper.find({ ref: 'noteTimestamp' });
 
   const createComponent = props => {
     wrapper = shallowMount(NoteHeader, {

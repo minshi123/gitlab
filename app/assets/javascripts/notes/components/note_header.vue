@@ -63,7 +63,7 @@ export default {
 
 <template>
   <div class="note-header-info">
-    <div v-if="includeToggle" class="discussion-actions">
+    <div v-if="includeToggle" ref="discussionActions" class="discussion-actions">
       <button
         class="note-action-button discussion-toggle-button js-vue-toggle-button"
         type="button"
@@ -94,6 +94,7 @@ export default {
           <template v-if="actionText">{{ actionText }}</template>
         </span>
         <a
+          ref="noteTimestamp"
           :href="noteTimestampLink"
           class="note-timestamp system-note-separator"
           @click="updateTargetNoteHash"
