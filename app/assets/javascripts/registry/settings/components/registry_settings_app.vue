@@ -44,7 +44,7 @@ export default {
     <gl-alert v-else ref="alert" :dismissible="false">
       {{
         __(
-          'Currently Container Registry tag expiration policy is not available for projects created before GitLab version 12.8',
+          'Currently, the Container Registry tag expiration feature is not available for projects created before GitLab version 12.8.',
         )
       }}
     </gl-alert>
