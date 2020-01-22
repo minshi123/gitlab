@@ -6,6 +6,7 @@ module QA
       extend self
 
       def extend_autoloads!
+        require "qa/ce/strategy"
         require 'qa/ee'
       end
 

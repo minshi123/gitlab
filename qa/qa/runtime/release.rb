@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'capybara/rspec'
+require 'capybara-screenshot/rspec'
+
 module QA
   module Runtime
     ##
