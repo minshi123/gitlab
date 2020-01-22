@@ -3,7 +3,15 @@ import { escape } from 'underscore';
 import { mapState } from 'vuex';
 import { __, sprintf, n__ } from '~/locale';
 import { getTimeago } from '~/lib/utils/datetime_utility';
-import { GlTable, GlLink, GlIcon, GlAvatarLink, GlAvatar, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlTable,
+  GlLink,
+  GlIcon,
+  GlAvatarLink,
+  GlAvatar,
+  GlAvatarsInline,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 
 export default {
   name: 'MergeRequestTable',
@@ -13,6 +21,7 @@ export default {
     GlIcon,
     GlAvatarLink,
     GlAvatar,
+    GlAvatarsInline,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -36,6 +45,19 @@ export default {
 
       return __('< 1 hour');
     },
+    getApproverAvatars(approvers) {
+      return approvers.map(approver => {
+        const avatar = {
+          src: approver.avatar_url,
+          href: approver.web_url,
+          tooltip: this.getUserTooltipTitle(approver),
+        };
+        return avatar;
+      });
+    },
+    getUserTooltipTitle(user) {
+      return `${user.name} (@${user.username})`;
+    },
   },
   tableHeaderFields: [
     {
@@ -48,6 +70,11 @@ export default {
       key: 'review_time',
       label: __('Review time'),
       class: 'text-right',
+      tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
+    },
+    {
+      key: 'approved_by',
+      label: __('Approvers'),
       tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
     },
     {
@@ -115,9 +142,34 @@ export default {
     </template>
 
     <template #author="{ value }">
-      <gl-avatar-link v-gl-tooltip target="blank" :href="value.web_url" :title="value.name">
+      <gl-avatar-link
+        v-gl-tooltip
+        target="blank"
+        :href="value.web_url"
+        :title="getUserTooltipTitle(value)"
+      >
         <gl-avatar :size="24" :src="value.avatar_url" :entity-name="value.name" />
       </gl-avatar-link>
+    </template>
+
+    <template #approved_by="{ value }">
+      <template v-if="value && value.length">
+        <gl-avatars-inline
+          collapsed
+          :avatars="getApproverAvatars(value)"
+          :max-visible="2"
+          :avatar-size="24"
+        >
+          <template #avatar="{ avatar }">
+            <gl-avatar-link v-gl-tooltip target="blank" :href="avatar.href" :title="avatar.tooltip">
+              <gl-avatar :src="avatar.src" :size="24" />
+            </gl-avatar-link>
+          </template>
+        </gl-avatars-inline>
+      </template>
+      <template v-else>
+        &ndash;
+      </template>
     </template>
 
     <template #diff_stats="{ value }">
