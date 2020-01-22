@@ -19,9 +19,11 @@ export function setUpdatingIgnoreStatus({ commit }, updating) {
 export function updateStatus({ commit }, { endpoint, redirectUrl, status }) {
   return service
     .updateErrorStatus(endpoint, status)
-    .then(() => {
-      if (redirectUrl) visitUrl(redirectUrl);
+    .then(resp => {
       commit(types.SET_ERROR_STATUS, status);
+      if (redirectUrl) visitUrl(redirectUrl);
+
+      return resp.data.result;
     })
     .catch(() => createFlash(__('Failed to update issue status')))
     .finally(() => {

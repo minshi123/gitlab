@@ -2,7 +2,7 @@
 import { mapActions, mapGetters, mapState } from 'vuex';
 import dateFormat from 'dateformat';
 import createFlash from '~/flash';
-import { GlButton, GlFormInput, GlLink, GlLoadingIcon, GlBadge } from '@gitlab/ui';
+import { GlButton, GlFormInput, GlLink, GlLoadingIcon, GlBadge, GlAlert, GlSprintf } from '@gitlab/ui';
 import { __, sprintf, n__ } from '~/locale';
 import LoadingButton from '~/vue_shared/components/loading_button.vue';
 import Icon from '~/vue_shared/components/icon.vue';
@@ -25,6 +25,8 @@ export default {
     Icon,
     Stacktrace,
     GlBadge,
+    GlAlert,
+    GlSprintf,
   },
   directives: {
     TrackEvent: TrackEventDirective,
@@ -88,6 +90,9 @@ export default {
     return {
       GQLerror: null,
       issueCreationInProgress: false,
+      issueResolved: false,
+      isAlertVisible: false,
+      closedIssueId: null,
     };
   },
   computed: {
@@ -155,6 +160,9 @@ export default {
     resolveBtnLabel() {
       return this.errorStatus !== 'resolved' ? __('Resolve') : __('Unresolve');
     },
+    alertMsg() {
+      return sprintf(__('The associated issue #%{issueNum} has been closed by resolving this error'), { issueNum: this.closedIssueId });
+    },
   },
   mounted() {
     this.startPollingDetails(this.issueDetailsPath);
@@ -175,7 +183,13 @@ export default {
     updateResolveStatus() {
       this.setUpdatingResolveStatus(true);
       const status = this.errorStatus === 'resolved' ? 'unresolved' : 'resolved';
-      this.updateStatus({ endpoint: this.issueUpdatePath, status });
+      this.updateStatus({ endpoint: this.issueUpdatePath, status })
+        .then(res => {
+          this.closedIssueId = res.closed_issue_iid;
+          if (this.closedIssueId) {
+            this.isAlertVisible = true;
+          }
+        });
     },
     formatDate(date) {
       return `${this.timeFormatted(date)} (${dateFormat(date, 'UTC:yyyy-mm-dd h:MM:ssTT Z')})`;
@@ -190,6 +204,8 @@ export default {
       <gl-loading-icon :size="3"/>
     </div>
     <div v-else-if="showDetails" class="error-details">
+      <gl-alert v-if="isAlertVisible" @dismiss="isAlertVisible = false">{{alertMsg}}</gl-alert>
+
       <div class="top-area align-items-center justify-content-between py-3">
         <span v-if="!loadingStacktrace && stacktrace" v-html="reported"></span>
         <div class="d-inline-flex">
