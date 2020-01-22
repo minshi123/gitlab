@@ -40,11 +40,11 @@ export default {
         }}
       </li>
     </ul>
-    <settings-form v-if="!isDisabled" ref="settings-form" />
-    <gl-alert v-else ref="alert" :dismissible="false">
+    <settings-form v-if="!isDisabled" />
+    <gl-alert v-else :dismissible="false">
       {{
-        __(
-          'Currently, the Container Registry tag expiration feature is not available for projects created before GitLab version 12.8.',
+        s__(
+          'ContainerRegistry|Currently, the Container Registry tag expiration feature is not available for projects created before GitLab version 12.8.',
         )
       }}
     </gl-alert>

@@ -4969,6 +4969,9 @@ msgstr ""
 msgid "ContainerRegistry|Copy push command"
 msgstr ""
 
+msgid "ContainerRegistry|Currently, the Container Registry tag expiration feature is not available for projects created before GitLab version 12.8."
+msgstr ""
+
 msgid "ContainerRegistry|Docker connection error"
 msgstr ""
 
@@ -5560,9 +5563,6 @@ msgid "CurrentUser|Settings"
 msgstr ""
 
 msgid "CurrentUser|Start a Gold trial"
-msgstr ""
-
-msgid "Currently, the Container Registry tag expiration feature is not available for projects created before GitLab version 12.8."
 msgstr ""
 
 msgid "Custom CI configuration path"

@@ -1,5 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlAlert } from '@gitlab/ui';
 import component from '~/registry/settings/components/registry_settings_app.vue';
+import SettingsForm from '~/registry/settings/components/settings_form.vue';
 import { createStore } from '~/registry/settings/store/';
 import { SET_IS_DISABLED } from '~/registry/settings/store/mutation_types';
 import { FETCH_SETTINGS_ERROR_MESSAGE } from '~/registry/settings/constants';
@@ -8,8 +10,8 @@ describe('Registry Settings App', () => {
   let wrapper;
   let store;
 
-  const findSettingsComponent = () => wrapper.find({ ref: 'settings-form' });
-  const findAlert = () => wrapper.find({ ref: 'alert' });
+  const findSettingsComponent = () => wrapper.find(SettingsForm);
+  const findAlert = () => wrapper.find(GlAlert);
 
   const mountComponent = ({ dispatchMock = 'mockResolvedValue', isDisabled = false } = {}) => {
     store = createStore();
