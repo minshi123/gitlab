@@ -20,7 +20,6 @@ describe('Sentry common store actions', () => {
     mock.restore();
     createFlash.mockClear();
   });
-
   describe('updateStatus', () => {
     const endpoint = '123/stacktrace';
     const redirectUrl = '/list';
@@ -34,12 +33,16 @@ describe('Sentry common store actions', () => {
         {},
         [
           {
-            payload: true,
+            payload: 'resolved',
+            type: types.SET_ERROR_STATUS,
+          },
+          {
+            payload: false,
             type: types.SET_UPDATING_RESOLVE_STATUS,
           },
           {
             payload: false,
-            type: 'SET_UPDATING_RESOLVE_STATUS',
+            type: types.SET_UPDATING_IGNORE_STATUS,
           },
         ],
         [],
@@ -58,12 +61,12 @@ describe('Sentry common store actions', () => {
         {},
         [
           {
-            payload: true,
+            payload: false,
             type: types.SET_UPDATING_RESOLVE_STATUS,
           },
           {
             payload: false,
-            type: types.SET_UPDATING_RESOLVE_STATUS,
+            type: types.SET_UPDATING_IGNORE_STATUS,
           },
         ],
         [],
@@ -72,6 +75,40 @@ describe('Sentry common store actions', () => {
           expect(createFlash).toHaveBeenCalledTimes(1);
           done();
         },
+      );
+    });
+  });
+
+  describe('setUpdatingResolveStatus', () => {
+    it('should handle successful status update', () => {
+      testAction(
+        actions.setUpdatingResolveStatus,
+        true,
+        {},
+        [
+          {
+            payload: true,
+            type: types.SET_UPDATING_RESOLVE_STATUS,
+          },
+        ],
+        [],
+      );
+    });
+  });
+
+  describe('setUpdatingIgnoreStatus', () => {
+    it('should handle successful status update', () => {
+      testAction(
+        actions.setUpdatingIgnoreStatus,
+        false,
+        {},
+        [
+          {
+            payload: false,
+            type: types.SET_UPDATING_IGNORE_STATUS,
+          },
+        ],
+        [],
       );
     });
   });

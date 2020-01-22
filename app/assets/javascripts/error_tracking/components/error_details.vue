@@ -79,6 +79,7 @@ export default {
       result(res) {
         if (res.data.project?.sentryDetailedError) {
           this.$apollo.queries.GQLerror.stopPolling();
+          this.setStatus(this.GQLerror.status);
         }
       },
     },
@@ -97,6 +98,7 @@ export default {
       'stacktraceData',
       'updatingResolveStatus',
       'updatingIgnoreStatus',
+      'errorStatus',
     ]),
     ...mapGetters('details', ['stacktrace']),
     reported() {
@@ -147,20 +149,33 @@ export default {
     errorLevel() {
       return sprintf(__('level: %{level}'), { level: this.error.tags.level });
     },
+    ignoreBtnLabel() {
+      return this.errorStatus !== 'ignored' ? __('Ignore') : __('Unignore');
+    },
+    resolveBtnLabel() {
+      return this.errorStatus !== 'resolved' ? __('Resolve') : __('Unresolve');
+    },
   },
   mounted() {
     this.startPollingDetails(this.issueDetailsPath);
     this.startPollingStacktrace(this.issueStackTracePath);
   },
   methods: {
-    ...mapActions('details', ['startPollingDetails', 'startPollingStacktrace', 'updateStatus']),
+    ...mapActions('details', ['startPollingDetails', 'startPollingStacktrace', 'updateStatus', 'setStatus', 'setUpdatingResolveStatus', 'setUpdatingIgnoreStatus']),
     trackClickErrorLinkToSentryOptions,
     createIssue() {
       this.issueCreationInProgress = true;
       this.$refs.sentryIssueForm.submit();
     },
-    updateIssueStatus(status) {
-      this.updateStatus({ endpoint: this.issueUpdatePath, redirectUrl: this.listPath, status });
+    updateIgnoreStatus() {
+      this.setUpdatingIgnoreStatus(true);
+      const status = this.errorStatus === 'ignored' ? 'unresolved' : 'ignored';
+      this.updateStatus({ endpoint: this.issueUpdatePath, status });
+    },
+    updateResolveStatus() {
+      this.setUpdatingResolveStatus(true);
+      const status = this.errorStatus === 'resolved' ? 'unresolved' : 'resolved';
+      this.updateStatus({ endpoint: this.issueUpdatePath, status });
     },
     formatDate(date) {
       return `${this.timeFormatted(date)} (${dateFormat(date, 'UTC:yyyy-mm-dd h:MM:ssTT Z')})`;
@@ -172,22 +187,22 @@ export default {
 <template>
   <div>
     <div v-if="$apollo.queries.GQLerror.loading || loading" class="py-3">
-      <gl-loading-icon :size="3" />
+      <gl-loading-icon :size="3"/>
     </div>
     <div v-else-if="showDetails" class="error-details">
       <div class="top-area align-items-center justify-content-between py-3">
         <span v-if="!loadingStacktrace && stacktrace" v-html="reported"></span>
         <div class="d-inline-flex">
           <loading-button
-            :label="__('Ignore')"
+            :label="ignoreBtnLabel"
             :loading="updatingIgnoreStatus"
-            @click="updateIssueStatus('ignored')"
+            @click="updateIgnoreStatus"
           />
           <loading-button
             class="btn-outline-info ml-2"
-            :label="__('Resolve')"
+            :label="resolveBtnLabel"
             :loading="updatingResolveStatus"
-            @click="updateIssueStatus('resolved')"
+            @click="updateResolveStatus"
           />
           <gl-button
             v-if="error.gitlab_issue"
@@ -204,14 +219,14 @@ export default {
             method="POST"
             class="d-inline-block ml-2"
           >
-            <gl-form-input class="hidden" name="issue[title]" :value="issueTitle" />
-            <input name="issue[description]" :value="issueDescription" type="hidden" />
+            <gl-form-input class="hidden" name="issue[title]" :value="issueTitle"/>
+            <input name="issue[description]" :value="issueDescription" type="hidden"/>
             <gl-form-input
               :value="GQLerror.sentryId"
               class="hidden"
               name="issue[sentry_issue_attributes][sentry_issue_identifier]"
             />
-            <gl-form-input :value="csrfToken" class="hidden" name="authenticity_token" />
+            <gl-form-input :value="csrfToken" class="hidden" name="authenticity_token"/>
             <loading-button
               v-if="!error.gitlab_issue"
               class="btn-success"
@@ -229,10 +244,10 @@ export default {
         </tooltip-on-truncate>
         <template v-if="error.tags">
           <gl-badge v-if="error.tags.level" variant="danger" class="rounded-pill mr-2"
-            >{{ errorLevel }}
+          >{{ errorLevel }}
           </gl-badge>
           <gl-badge v-if="error.tags.logger" variant="light" class="rounded-pill"
-            >{{ error.tags.logger }}
+          >{{ error.tags.logger }}
           </gl-badge>
         </template>
         <ul>
@@ -257,7 +272,7 @@ export default {
               target="_blank"
             >
               <span class="text-truncate">{{ GQLerror.externalUrl }}</span>
-              <icon name="external-link" class="ml-1 flex-shrink-0" />
+              <icon name="external-link" class="ml-1 flex-shrink-0"/>
             </gl-link>
           </li>
           <li v-if="GQLerror.firstReleaseShortVersion">
@@ -287,12 +302,12 @@ export default {
         </ul>
 
         <div v-if="loadingStacktrace" class="py-3">
-          <gl-loading-icon :size="3" />
+          <gl-loading-icon :size="3"/>
         </div>
 
         <template v-if="showStacktrace">
           <h3 class="my-4">{{ __('Stack trace') }}</h3>
-          <stacktrace :entries="stacktrace" />
+          <stacktrace :entries="stacktrace"/>
         </template>
       </div>
     </div>
