@@ -15721,6 +15721,24 @@
               "deprecationReason": null
             },
             {
+              "name": "externalBaseUrl",
+              "description": "External Base URL of the Sentry Instance",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "externalUrl",
               "description": "External URL of the error",
               "args": [
@@ -15827,6 +15845,20 @@
             {
               "name": "gitlabCommitPath",
               "description": "Path to the GitLab page for the GitLab commit attributed to the error",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "gitlabIssue",
+              "description": "ID of Gitlab Issue",
               "args": [
 
               ],
@@ -16020,6 +16052,20 @@
                   "name": "SentryErrorStatus",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "tags",
+              "description": "Tags associated with the Sentry Error.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null

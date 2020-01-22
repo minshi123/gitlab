@@ -40,6 +40,9 @@ module Types
       field :culprit, GraphQL::STRING_TYPE,
             null: false,
             description: "Culprit of the error"
+      field :external_base_url, GraphQL::STRING_TYPE,
+            null: false,
+            description: "External Base URL of the Sentry Instance"
       field :external_url, GraphQL::STRING_TYPE,
             null: false,
             description: "External URL of the error"
@@ -82,6 +85,12 @@ module Types
       field :gitlab_commit_path, GraphQL::STRING_TYPE,
             null: true,
             description: "Path to the GitLab page for the GitLab commit attributed to the error"
+      field :gitlab_issue, GraphQL::STRING_TYPE,
+            null: true,
+            description: "ID of Gitlab Issue"
+      field :tags, GraphQL::STRING_TYPE,
+            null: true,
+            description: "Tags associated with the Sentry Error."
 
       def first_seen
         DateTime.parse(object.first_seen)

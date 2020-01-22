@@ -5782,6 +5782,11 @@ type SentryDetailedError {
   culprit: String!
 
   """
+  External Base URL of the Sentry Instance
+  """
+  externalBaseUrl: String!
+
+  """
   External URL of the error
   """
   externalUrl: String!
@@ -5815,6 +5820,11 @@ type SentryDetailedError {
   Path to the GitLab page for the GitLab commit attributed to the error
   """
   gitlabCommitPath: String
+
+  """
+  ID of Gitlab Issue
+  """
+  gitlabIssue: String
 
   """
   ID (global ID) of the error
@@ -5870,6 +5880,11 @@ type SentryDetailedError {
   Status of the error
   """
   status: SentryErrorStatus!
+
+  """
+  Tags associated with the Sentry Error.
+  """
+  tags: String
 
   """
   Title of the error
