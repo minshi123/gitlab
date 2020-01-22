@@ -85,7 +85,7 @@ module Gitlab
 
         # Overridden in EE module
         def whitelisted_routes
-          grack_route? || internal_route? || lfs_route? || compare_git_revisions_route? || sidekiq_route? || graphql_query?
+          grack_route? || internal_route? || lfs_route? || compare_git_revisions_route? || sidekiq_route? || sign_out_route?|| graphql_query?
         end
 
         def grack_route?
@@ -116,6 +116,10 @@ module Gitlab
           end
 
           WHITELISTED_GIT_LFS_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
+        end
+
+        def sign_out_route?
+          request.path.start_with?("#{relative_url}/users/sign_out")
         end
 
         def sidekiq_route?
