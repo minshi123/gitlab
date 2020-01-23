@@ -16718,6 +16718,9 @@ msgstr ""
 msgid "SecurityDashboard|Add projects"
 msgstr ""
 
+msgid "SecurityDashboard|Change status"
+msgstr ""
+
 msgid "SecurityDashboard|Confidence"
 msgstr ""
 
@@ -21168,6 +21171,27 @@ msgid "VulnerabilityChart|%{formattedStartDate} to today"
 msgstr ""
 
 msgid "VulnerabilityChart|Severity"
+msgstr ""
+
+msgid "VulnerabilityManagement|A true-positive and will fix"
+msgstr ""
+
+msgid "VulnerabilityManagement|Confirm"
+msgstr ""
+
+msgid "VulnerabilityManagement|Dismiss"
+msgstr ""
+
+msgid "VulnerabilityManagement|Resolved"
+msgstr ""
+
+msgid "VulnerabilityManagement|Something went wrong, could not update vulnerability state."
+msgstr ""
+
+msgid "VulnerabilityManagement|Verified as fixed or mitigated"
+msgstr ""
+
+msgid "VulnerabilityManagement|Will not fix or a false-positive"
 msgstr ""
 
 msgid "Vulnerability|Class"
