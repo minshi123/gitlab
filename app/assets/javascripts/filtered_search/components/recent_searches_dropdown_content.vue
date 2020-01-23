@@ -69,15 +69,16 @@ export default {
         :key="`processed-items-${index}`"
       >
         <button
+          ref="dropdownItemButton"
           type="button"
-          class="filtered-search-history-dropdown-item"
+          class="filtered-search-history-dropdown-item js-dropdown-button"
           @click="onItemActivated(item.text)"
         >
           <span>
             <span
               v-for="(token, tokenIndex) in item.tokens"
               :key="`dropdown-token-${tokenIndex}`"
-              class="filtered-search-history-dropdown-token"
+              class="filtered-search-history-dropdown-token js-dropdown-token"
             >
               <span class="name">{{ token.prefix }}</span>
               <span class="name">{{ token.operator }}</span>

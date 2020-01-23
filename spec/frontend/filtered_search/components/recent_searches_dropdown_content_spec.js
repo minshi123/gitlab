@@ -83,14 +83,14 @@ describe('Recent Searches Dropdown Content', () => {
       expect(
         findDropdownItems()
           .at(1)
-          .findAll('.filtered-search-history-dropdown-token'),
+          .findAll('.js-dropdown-token'),
       ).toHaveLength(2);
     });
 
     it('emits recentSearchesItemSelected on dropdown item click', () => {
       findDropdownItems()
         .at(0)
-        .find('.filtered-search-history-dropdown-item')
+        .find('.js-dropdown-button')
         .trigger('click');
 
       expect(onRecentSearchesItemSelectedSpy).toHaveBeenCalledWith('foo');
