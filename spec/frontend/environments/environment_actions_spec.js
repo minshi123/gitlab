@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import mountComponent from 'spec/helpers/vue_mount_component_helper';
-import { TEST_HOST } from 'spec/test_constants';
+import mountComponent from 'helpers/vue_mount_component_helper';
+import { TEST_HOST } from 'helpers/test_constants';
 import eventHub from '~/environments/event_hub';
 import EnvironmentActions from '~/environments/components/environment_actions.vue';
 
