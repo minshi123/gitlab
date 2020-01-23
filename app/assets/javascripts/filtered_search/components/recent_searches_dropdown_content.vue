@@ -69,7 +69,6 @@ export default {
         :key="`processed-items-${index}`"
       >
         <button
-          ref="dropdownItemButton"
           type="button"
           class="filtered-search-history-dropdown-item js-dropdown-button"
           @click="onItemActivated(item.text)"
