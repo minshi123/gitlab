@@ -31,7 +31,7 @@ get familiar with the package naming convention.
 ## Getting started
 
 This section will cover installing NPM (or Yarn) and building a package for your
-Javascript project. This is a quickstart if you are new to NPM packages. If you
+JavaScript project. This is a quickstart if you are new to NPM packages. If you
 are already using NPM and understand how to build your own packages, move on to
 the [next section](#authenticating-to-the-gitlab-npm-registry).
 
@@ -46,7 +46,9 @@ running:
 ```sh
 npm --version
 ```
+
 You should see the NPM version printed in the output:
+
 ```
 6.10.3
 ```
@@ -62,21 +64,25 @@ Once installed, you can verify that Yarn is available with the following command
 ```sh
 yarn --version
 ```
+
 You should see the version printed like so:
+
 ```
 1.19.1
 ```
 
 ### Creating a project
 
-Understanding how to create a full Javascript project is outside the scope of
+Understanding how to create a full JavaScript project is outside the scope of
 this guide but you can initialize a new empty package by creating and navigating
 to an empty directory and using the following command:
 
 ```sh
 npm init
 ```
+
 Or if you're using Yarn:
+
 ```sh
 yarn init
 ```
@@ -238,7 +244,7 @@ Registry.
 ## Installing a package
 
 NPM packages are commonly installed using the the `npm` or `yarn` commands
-inside a Javascript project. If you haven't already, you will need to set the
+inside a JavaScript project. If you haven't already, you will need to set the
 URL for scoped packages. You can do this with the following command:
 
 ```sh
@@ -255,7 +261,9 @@ package:
 ```sh
 npm install @my-project-scope/my-package
 ```
+
 Or if you're using Yarn:
+
 ```sh
 yarn add @my-project-scope/my-package
 ```
