@@ -107,11 +107,11 @@ describe('EnvironmentActions Component', () => {
     });
 
     it('displays the remaining time in the dropdown', () => {
-      expect(findDropdownItem(scheduledJobAction)).toContainText('24:00:00');
+      expect(findDropdownItem(scheduledJobAction).innerHTML).toContain('24:00:00');
     });
 
     it('displays 00:00:00 for expired jobs in the dropdown', () => {
-      expect(findDropdownItem(expiredJobAction)).toContainText('00:00:00');
+      expect(findDropdownItem(expiredJobAction).innerHTML).toContain('00:00:00');
     });
   });
 });
