@@ -13,6 +13,8 @@ const getters = {
 describe('Issue placeholder note component', () => {
   let wrapper;
 
+  const findNote = () => wrapper.find({ ref: 'note' });
+
   const createComponent = (isIndividual = false) => {
     wrapper = shallowMount(IssuePlaceholderNote, {
       localVue,
@@ -37,5 +39,17 @@ describe('Issue placeholder note component', () => {
     createComponent();
 
     expect(wrapper.element).toMatchSnapshot();
+  });
+
+  it('does not add "discussion" class to individual notes', () => {
+    createComponent(true);
+
+    expect(findNote().classes()).not.toContain('discussion');
+  });
+
+  it('adds "discussion" class to non-individual notes', () => {
+    createComponent();
+
+    expect(findNote().classes()).toContain('discussion');
   });
 });
