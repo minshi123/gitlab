@@ -80,14 +80,14 @@ describe('EnvironmentActions Component', () => {
     };
 
     beforeEach(() => {
-      spyOn(Date, 'now').and.callFake(() => new Date('2063-04-04T00:42:00Z').getTime());
+      jest.spyOn(Date, 'now').mockImplementation(() => new Date('2063-04-04T00:42:00Z').getTime());
       vm = mountComponent(Component, { actions: [scheduledJobAction, expiredJobAction] });
     });
 
     it('emits postAction event after confirming', () => {
-      const emitSpy = jasmine.createSpy('emit');
+      const emitSpy = jest.fn();
       eventHub.$on('postAction', emitSpy);
-      spyOn(window, 'confirm').and.callFake(() => true);
+      jest.spyOn(window, 'confirm').mockImplementation(() => true);
 
       findDropdownItem(scheduledJobAction).click();
 
@@ -96,9 +96,9 @@ describe('EnvironmentActions Component', () => {
     });
 
     it('does not emit postAction event if confirmation is cancelled', () => {
-      const emitSpy = jasmine.createSpy('emit');
+      const emitSpy = jest.fn();
       eventHub.$on('postAction', emitSpy);
-      spyOn(window, 'confirm').and.callFake(() => false);
+      jest.spyOn(window, 'confirm').mockImplementation(() => false);
 
       findDropdownItem(scheduledJobAction).click();
 
