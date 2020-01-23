@@ -16,7 +16,12 @@ describe Gitlab::ImportExport::ImportFailureService do
     let(:correlation_id) { 'my-correlation-id' }
     let(:retry_count) { 2 }
     let(:log_import_failure) do
-      subject.log_import_failure(action, relation_key, relation_index, exception, retry_count)
+      subject.log_import_failure(
+        source: action,
+        relation_key: relation_key,
+        relation_index: relation_index,
+        exception: exception,
+        retry_count: retry_count)
     end
 
     before do
@@ -61,7 +66,12 @@ describe Gitlab::ImportExport::ImportFailureService do
           end
 
           it 'retries and logs import failure once with correct params' do
-            expect(subject).to receive(:log_import_failure).with(action, relation_key, relation_index, instance_of(exception), 1).once
+            expect(subject).to receive(:log_import_failure).with(
+                source: action,
+                relation_key: relation_key,
+                relation_index: relation_index,
+                exception: instance_of(exception),
+                retry_count: 1).once
 
             perform_retry
           end
@@ -86,7 +96,12 @@ describe Gitlab::ImportExport::ImportFailureService do
             maximum_retry_count.times do |index|
               retry_count = index + 1
 
-              expect(subject).to receive(:log_import_failure).with(action, relation_key, relation_index, instance_of(exception), retry_count)
+              expect(subject).to receive(:log_import_failure).with(
+                  source: action,
+                  relation_key: relation_key,
+                  relation_index: relation_index,
+                  exception: instance_of(exception),
+                  retry_count: retry_count)
             end
 
             expect { perform_retry }.to raise_exception(exception)
