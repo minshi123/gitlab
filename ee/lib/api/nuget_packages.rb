@@ -112,7 +112,7 @@ module API
           forbidden!
         end
         put 'authorize' do
-          authorize_workhorse!(subject: authorized_user_project, has_length: false)
+          authorize_workhorse!(authorized_user_project, has_length: false)
         end
       end
     end

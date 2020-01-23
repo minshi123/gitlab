@@ -14,7 +14,7 @@ describe Packages::Nuget::CreatePackageService do
       package = Packages::Package.last
 
       expect(package).to be_valid
-      expect(package.name).to eq(Packages::Nuget::CreatePackageService::PACKAGE_NAME)
+      expect(package.name).to eq(Packages::Nuget::CreatePackageService::TEMPORARY_PACKAGE_NAME)
       expect(package.version).to start_with(Packages::Nuget::CreatePackageService::PACKAGE_VERSION)
       expect(package.package_type).to eq('nuget')
     end
@@ -26,7 +26,7 @@ describe Packages::Nuget::CreatePackageService do
       package = Packages::Package.last
 
       expect(package).to be_valid
-      expect(package.name).to eq(Packages::Nuget::CreatePackageService::PACKAGE_NAME)
+      expect(package.name).to eq(Packages::Nuget::CreatePackageService::TEMPORARY_PACKAGE_NAME)
       expect(package.version).to start_with(Packages::Nuget::CreatePackageService::PACKAGE_VERSION)
       expect(package.package_type).to eq('nuget')
     end

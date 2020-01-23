@@ -31,7 +31,7 @@ module API
         authorize_read_package!(subject)
       end
 
-      def authorize_workhorse!(subject: user_project, has_length: true, maximum_size: MAX_PACKAGE_FILE_SIZE)
+      def authorize_workhorse!(subject = user_project, has_length: true, maximum_size: MAX_PACKAGE_FILE_SIZE)
         authorize_upload!(subject)
 
         Gitlab::Workhorse.verify_api_request!(headers)

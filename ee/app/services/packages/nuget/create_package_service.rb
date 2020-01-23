@@ -3,12 +3,12 @@
 module Packages
   module Nuget
     class CreatePackageService < BaseService
-      PACKAGE_NAME = 'NuGet.Temporary.Package'
+      TEMPORARY_PACKAGE_NAME = 'NuGet.Temporary.Package'
       PACKAGE_VERSION = '0.0.0'
 
       def execute
         project.packages.nuget.create!(
-          name: PACKAGE_NAME,
+          name: TEMPORARY_PACKAGE_NAME,
           version: "#{PACKAGE_VERSION}-#{uuid}"
         )
       end
