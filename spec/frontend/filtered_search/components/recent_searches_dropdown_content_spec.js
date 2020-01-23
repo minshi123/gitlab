@@ -107,7 +107,6 @@ describe('Recent Searches Dropdown Content', () => {
     beforeEach(() => {
       createComponent({
         isLocalStorageAvailable: true,
-        items: [],
       });
     });
 
