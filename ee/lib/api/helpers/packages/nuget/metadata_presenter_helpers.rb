@@ -27,13 +27,12 @@ module API
           end
 
           def archive_url_for(package)
-            filename_service = ::Packages::Nuget::PackageFilenameService.new(package.name, package.version)
-            path = api_v4_projects_packages_nuget_download_package_name_package_filename_path(
+            path = api_v4_projects_packages_nuget_download_package_name_package_version_package_filename_path(
               {
                 id: package.project.id,
                 package_name: package.name,
                 package_version: package.version,
-                package_filename: filename_service.execute
+                package_filename: package.package_files.last.file_name
               },
               true
             )

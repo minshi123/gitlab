@@ -56,7 +56,7 @@ module Packages
 
         full_path = case service_type
                     when :download
-                      api_v4_projects_packages_nuget_download_package_name_package_filename_path(
+                      api_v4_projects_packages_nuget_download_package_name_package_version_package_filename_path(
                         {
                           id: project.id,
                           package_name: nil,

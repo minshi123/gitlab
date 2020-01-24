@@ -57,7 +57,7 @@ module API
         unauthorized!
       end
 
-      def find_packages
+      def find_packages!
         packages = ::Packages::Nuget::PackagesFinder.new(project: authorized_user_project, package_name: params[:package_name])
                                                         .execute
 
@@ -66,7 +66,7 @@ module API
         packages
       end
 
-      def find_package
+      def find_package!
         package = ::Packages::Nuget::PackagesFinder.new(project: authorized_user_project, package_name: params[:package_name], package_version: params[:package_version])
                                                    .first
 
@@ -150,7 +150,7 @@ module API
             detail 'This feature was introduced in GitLab 12.7'
           end
           get 'index', format: :json do
-            present ::Packages::Nuget::PackagesMetadataPresenter.new(find_packages),
+            present ::Packages::Nuget::PackagesMetadataPresenter.new(find_packages!),
                     with: EE::API::Entities::Nuget::PackagesMetadata
           end
 
@@ -161,7 +161,7 @@ module API
             requires :package_version, type: String, desc: 'The NuGet package version', regexp: API::NO_SLASH_URL_PART_REGEX
           end
           get '*package_version', format: :json do
-            present ::Packages::Nuget::PackageMetadataPresenter.new(find_package),
+            present ::Packages::Nuget::PackageMetadataPresenter.new(find_package!),
                     with: EE::API::Entities::Nuget::PackageMetadata
           end
         end
@@ -179,7 +179,7 @@ module API
             detail 'This feature was introduced in GitLab 12.8'
           end
           get 'index', format: :json do
-            present ::Packages::Nuget::PackageVersionsPresenter.new(find_packages),
+            present ::Packages::Nuget::PackageVersionsPresenter.new(find_packages!),
                     with: EE::API::Entities::Nuget::PackagesVersions
           end
 
@@ -190,8 +190,12 @@ module API
             requires :package_version, type: String, desc: 'The NuGet package version', regexp: API::NO_SLASH_URL_PART_REGEX
             requires :package_filename, type: String, desc: 'The NuGet package filename', regexp: API::NO_SLASH_URL_PART_REGEX
           end
-          get ':package_version/*package_filename' do
-            not_found!('package not found') # TODO NUGET API: not implemented yet.
+          get '*package_version/*package_filename', format: :nupkg do
+            filename = "#{params[:package_filename]}.#{params[:format]}"
+            package_file = ::Packages::PackageFileFinder.new(find_package!, filename)
+                                                        .execute!
+
+            present_carrierwave_file!(package_file.file)
           end
         end
       end

@@ -15,6 +15,7 @@ module Packages
       def execute
         packages.has_version
                 .processed
+                .preload_files
       end
 
       private

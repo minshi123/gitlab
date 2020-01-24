@@ -253,6 +253,28 @@ shared_examples 'process nuget download versions request' do |user_type, status,
   end
 end
 
+shared_examples 'process nuget download content request' do |user_type, status, add_member = true|
+  context "for user type #{user_type}" do
+    before do
+      project.send("add_#{user_type}", user) if add_member && user_type != :anonymous
+    end
+
+    it_behaves_like 'returning response status', status
+
+    it 'returns a valid package archive' do
+      subject
+
+      expect(response.content_type.to_s).to eq('application/octet-stream')
+    end
+
+    context 'with invalid format' do
+      let(:url) { "/projects/#{project.id}/packages/nuget/download/#{package.name}/#{package.version}/#{package.name}.#{package.version}.xls" }
+
+      it_behaves_like 'rejects nuget packages access', :anonymous, :not_found
+    end
+  end
+end
+
 shared_examples 'rejects nuget access with invalid project id' do
   context 'with a project id with invalid integers' do
     using RSpec::Parameterized::TableSyntax
