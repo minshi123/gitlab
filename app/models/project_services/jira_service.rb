@@ -205,14 +205,14 @@ class JiraService < IssueTrackerService
     nil
   end
 
+  private
+
   def test_settings
     return unless client_url.present?
 
     # Test settings by getting the project
     jira_request { client.ServerInfo.all.attrs }
   end
-
-  private
 
   def can_cross_reference?(noteable)
     case noteable
