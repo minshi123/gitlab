@@ -21,6 +21,14 @@ describe EmailsOnPushService do
     end
   end
 
+  context 'when properties is missing branches_to_be_notified' do
+    subject { described_class.new(properties: {}) }
+
+    it 'sets the default value to all' do
+      expect(subject.branches_to_be_notified).to eq('all')
+    end
+  end
+
   context 'project emails' do
     let(:push_data) { { object_kind: 'push' } }
     let(:project)   { create(:project, :repository) }
