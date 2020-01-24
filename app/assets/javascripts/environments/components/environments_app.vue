@@ -99,7 +99,7 @@ export default {
       <tabs :tabs="tabs" scope="environments" @onChangeTab="onChangeTab" />
 
       <div class="nav-controls">
-        <enable-review-app-button />
+        <enable-review-app-button v-if="state.reviewAppDetails.can_setup_review_app" />
         <a v-if="canCreateEnvironment && !isLoading" :href="newEnvironmentPath" class="btn btn-success">
           {{ s__('Environments|New environment') }}
         </a>
