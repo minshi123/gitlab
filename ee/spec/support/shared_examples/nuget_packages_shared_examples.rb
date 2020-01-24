@@ -223,6 +223,36 @@ shared_examples 'process nuget upload' do |user_type, status, add_member = true|
   end
 end
 
+shared_examples 'process nuget download versions request' do |user_type, status, add_member = true|
+  context "for user type #{user_type}" do
+    before do
+      project.send("add_#{user_type}", user) if add_member && user_type != :anonymous
+    end
+
+    it_behaves_like 'returning response status', status
+
+    it 'returns a valid json response' do
+      subject
+
+      expect(response.content_type.to_s).to eq('application/json')
+      expect(json_response).to be_a(Hash)
+      expect(json_response['versions']).to match_array(packages.map(&:version).sort)
+    end
+
+    it 'returns a valid nuget service index json' do
+      subject
+
+      expect(json_response).to match_schema('public_api/v4/packages/nuget/download_versions', dir: 'ee')
+    end
+
+    context 'with invalid format' do
+      let(:url) { "/projects/#{project.id}/packages/nuget/download/#{package_name}/index.xls" }
+
+      it_behaves_like 'rejects nuget packages access', :anonymous, :not_found
+    end
+  end
+end
+
 shared_examples 'rejects nuget access with invalid project id' do
   context 'with a project id with invalid integers' do
     using RSpec::Parameterized::TableSyntax

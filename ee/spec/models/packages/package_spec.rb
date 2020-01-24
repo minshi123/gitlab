@@ -168,4 +168,24 @@ RSpec.describe Packages::Package, type: :model do
       it { is_expected.to eq([package2]) }
     end
   end
+
+  describe '.pluck_names' do
+    let_it_be(:package1) { create(:nuget_package) }
+    let_it_be(:package2) { create(:npm_package) }
+    let_it_be(:package3) { create(:npm_package) }
+
+    subject { described_class.pluck_names.sort }
+
+    it { is_expected.to match_array([package1, package2, package3].map(&:name).sort) }
+  end
+
+  describe '.pluck_versions' do
+    let_it_be(:package1) { create(:nuget_package) }
+    let_it_be(:package2) { create(:npm_package) }
+    let_it_be(:package3) { create(:npm_package) }
+
+    subject { described_class.pluck_versions.sort }
+
+    it { is_expected.to match_array([package1, package2, package3].map(&:version).sort) }
+  end
 end
