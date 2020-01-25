@@ -1,0 +1,10 @@
+.gl-fix-select2 select.select2 {
+  display: block !important;
+  width: 1px;
+  height: 1px;
+  z-index: -1;
+  opacity: 0;
+  margin: -3px auto 0;
+  backround: none;
+  border: none;
+}
