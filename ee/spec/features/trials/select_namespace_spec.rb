@@ -19,10 +19,12 @@ describe 'Trial Select Namespace', :js do
         visit select_trials_path
         wait_for_all_requests
 
+        choose :for_company_yes
         select2 '0', from: '#namespace_id'
       end
 
       it 'shows the new group name input' do
+        expect(page).to have_content('Is this GitLab trial for your company?')
         expect(page).to have_field('New Group Name')
       end
 
@@ -99,11 +101,13 @@ describe 'Trial Select Namespace', :js do
         visit select_trials_path
         wait_for_all_requests
 
+        choose :for_company_yes
         select2 user.namespace.id, from: '#namespace_id'
       end
 
       context 'without trial plan' do
         it 'does not show the new group name input' do
+          expect(page).to have_content('Is this GitLab trial for your company?')
           expect(page).not_to have_field('New Group Name')
         end
 

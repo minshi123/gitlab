@@ -10,6 +10,19 @@
 
 = form_tag apply_trials_path, method: :post do
   .form-group
+    = label_tag :for_company, _('Is this GitLab trial for your company?')
+    .d-flex.justify-content-start
+      .prepend-left-20
+        = radio_button_tag :for_company, :yes, false, required: true
+        = label_tag :for_company_yes  do
+          .option-title
+            = _('Yes')
+      .prepend-left-64
+        = radio_button_tag :for_company, :no, false, required: true
+        = label_tag :for_company_no  do
+          .option-title
+            = _('No')
+  .form-group
     = label_tag :namespace_id, _('This subscription is for'), for: :namespace_id, class: 'col-form-label'
     = select_tag :namespace_id, namespace_options_for_select, class: 'select2', required: true
   #group_name.form-group.hidden
