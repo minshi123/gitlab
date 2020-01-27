@@ -2,7 +2,12 @@ import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { newDate, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import createGqClient from '~/lib/graphql';
 
-export const gqClient = createGqClient();
+export const gqClient = createGqClient(
+  {},
+  {
+    fetchPolicy: 'no-cache',
+  },
+);
 
 /**
  * Updates provided `epic` object with necessary props
