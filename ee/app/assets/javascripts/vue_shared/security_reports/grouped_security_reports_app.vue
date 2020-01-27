@@ -330,7 +330,7 @@ export default {
           :summary="groupedContainerScanningText"
           :status-icon="containerScanningStatusIcon"
           :popover-options="containerScanningPopover"
-          class="js-sast-container"
+          class="js-container-scanning"
           data-qa-selector="container_scan_report"
         />
 

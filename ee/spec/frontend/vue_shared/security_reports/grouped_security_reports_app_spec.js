@@ -220,7 +220,7 @@ describe('Grouped security reports app', () => {
 
       it('has the success icon for fixed vulnerabilities', () => {
         const icon = wrapper.vm.$el.querySelector(
-          '.js-sast-container~.js-plain-element .ic-status_success_borderless',
+          '.js-container-scanning~.js-plain-element .ic-status_success_borderless',
         );
 
         expect(icon).not.toBeNull();
