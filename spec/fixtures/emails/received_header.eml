@@ -1,0 +1,80 @@
+Received: from exchhy01.example.com (10.0.12.157) by exchhy02.example.com
+ (10.0.12.158) with Microsoft SMTP Server (TLS) id 15.0.1395.4 via Mailbox
+ Transport; Wed, 22 Jan 2020 15:56:46 -0500
+Received: from exchhy01.example.com (10.0.12.157) by exchhy01.example.com
+ (10.0.12.157) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 22 Jan
+ 2020 15:56:44 -0500
+Received: from emgwy2.example.com (160.91.254.10) by exchhy01.example.com
+ (10.0.12.157) with Microsoft SMTP Server (TLS) id 15.0.1395.4 via Frontend
+ Transport; Wed, 22 Jan 2020 15:56:44 -0500
+Received: from emgwyext1.example.com (emgwyext1.example.com [10.0.177.164])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by emgwy2.example.com (Postfix) with ESMTPS id 482yPm32dlz2SmtH
+	for <gitlab+test-group-test-project-29-issue-@example.com>; Wed, 22 Jan 2020 15:56:44 -0500 (EST)
+Received: from ipss1-snip.is.centurylink.net (ipss1-snip.is.centurylink.net [65.153.203.170])
+	by emgwyext1.example.com (Postfix) with ESMTP id 482yPm2QhYzlqymC
+	for <gitlab+test-group-test-project-29-issue-@example.com>; Wed, 22 Jan 2020 15:56:44 -0500 (EST)
+Received: from fireeye01.example.com (unknown [10.0.177.140])
+	by ipss1-snip.is.centurylink.net (Postfix) with ESMTP id 0FA0F121C0002
+	for <gitlab+test-group-test-project-29-issue-@example.com>; Wed, 22 Jan 2020 20:56:44 +0000 (GMT)
+Received: from localhost.localdomain (localhost [127.0.0.1])
+	by fireeye01.example.com (Postfix) with SMTP id 482yPm03z1z1ZwW9
+	for <gitlab+test-group-test-project-29-issue-@example.com>; Wed, 22 Jan 2020 15:56:44 -0500 (EST)
+Received: from mta02.example.com (mta02.example.com [10.0.177.136])
+	by fireeye01.example.com (Postfix) with ESMTPS id 482yPh2JYTz1ZwZC
+	for <gitlab+test-group-test-project-29-issue-@example.com>; Wed, 22 Jan 2020 15:56:40 -0500 (EST)
+Received-SPF: Pass (mta02.example.com: domain of username@source.from
+  designates 10.2.40.134 as permitted sender)
+  identity=mailfrom; client-ip=10.2.40.134;
+  receiver=mta02.example.com; envelope-from="username@source.from";
+  x-sender="username@source.from"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  ip4:10.1.106.36 ip4:10.1.106.40 ip4:10.2.40.0/24 ~all"
+Received-SPF: Pass (mta02.example.com: domain of
+  postmaster@mail-40134.source.from designates 10.2.40.134
+  as permitted sender) identity=helo; client-ip=10.2.40.134;
+  receiver=mta02.example.com; envelope-from="username@source.from";
+  x-sender="postmaster@mail-40134.source.from";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 ip4:10.2.40.134 ~all"
+Authentication-Results: mta02.example.com; spf=Pass smtp.mailfrom=username@source.from; spf=Pass smtp.helo=postmaster@mail-40134.source.from; dkim=pass (signature verified) header.i=@source.from; dmarc=pass (p=reject dis=none) d=source.from
+IronPort-SDR: [SNIP]
+Subject: [EXTERNAL] Test 123
+IronPort-PHdr: [SNIP]
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: [SNIP]
+X-IPAS-Result: [SNIP]
+X-IronPort-AV: E=Sophos;i="5.60,350,1274139600"; 
+   d="scan'208";a="84585154"
+X-IronPort-Outbreak-Status: No, level 0, Unknown - Unknown
+Received: from mail-4.source.from ([10.2.40.134])
+  by mta02.example.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2020 15:56:38 -0500
+Date: Wed, 22 Jan 2020 20:56:30 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=source.from;
+	s=sourcefrom; t=1579726596;
+	bh=k13fyF4mZv46lYZajzIh32Lx2ZqWZxXea8NBq6qTJnk=;
+	h=Date:To:From:Reply-To:Subject:Feedback-ID:From;
+	b=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
+To: servicedesktest-pe <servicedesktest-pe@example.com>
+X-FireEye: Clean
+From: username Lname <username@source.from>
+Reply-To: username Lname <username@source.from>
+Message-ID: <[SNIP]@source.from>
+Feedback-ID: [SNIP]:Ext:SourceFrom
+Content-Type: multipart/alternative;
+	boundary="b1_e41f9d3df8d3f1e188b18ad09e279a77"
+X-Spam-Status: No, score=0.8 required=7.0 tests=ALL_TRUSTED,BAYES_40,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
+	PDS_TONAME_EQ_TOLOCAL_SHORT shortcircuit=no autolearn=no
+	autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sourcefrom
+X-Qwest-Proxy-Host: snip.centurylink.net
+X-Qwest-Process-Uuid: [SNIP]
+X-Qwest-Status: aaaaaaaaaaaaaaaa
+Return-Path: username@source.from
+X-MS-Exchange-Organization-Network-Message-Id: [SNIP]
+X-MS-Exchange-Organization-AVStamp-Enterprise: 1.0
+X-MS-Exchange-Organization-AuthSource: exchhy01.example.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+MIME-Version: 1.0

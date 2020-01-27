@@ -37,6 +37,12 @@ describe Gitlab::Email::Receiver do
     end
   end
 
+    context 'when in a Received header' do
+      let(:email_raw) { fixture_file('emails/received_header.eml') }
+
+      it_behaves_like 'correctly finds the mail key'
+    end
+
   context "when we cannot find a capable handler" do
     let(:email_raw) { fixture_file('emails/valid_reply.eml').gsub(mail_key, "!!!") }
 
