@@ -78,3 +78,7 @@ X-MS-Exchange-Organization-AVStamp-Enterprise: 1.0
 X-MS-Exchange-Organization-AuthSource: exchhy01.example.com
 X-MS-Exchange-Organization-AuthAs: Anonymous
 MIME-Version: 1.0
+
+subject line test
+
+body text to make sure the email has contents
