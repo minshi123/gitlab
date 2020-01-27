@@ -9,7 +9,12 @@ import { dateInWords, parsePikadayDate } from '~/lib/utils/datetime_utility';
 
 import { dateTypes } from '../constants';
 
-const gqClient = createGqClient();
+const gqClient = createGqClient(
+  {},
+  {
+    fetchPolicy: 'no-cache',
+  },
+);
 
 const triggerDocumentEvent = (eventName, eventParam) => {
   $(document).trigger(eventName, eventParam);
