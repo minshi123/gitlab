@@ -51,8 +51,8 @@ class EnvironmentEntity < Grape::Entity
     environment.available? && can?(current_user, :stop_environment, environment)
   end
 
-  expose :can_update do |environment|
-    !environment.available? && can?(current_user, :update_environment, environment)
+  expose :can_delete do |environment|
+    can_user_update_environment(current_user, @environment)?
   end
 
   private

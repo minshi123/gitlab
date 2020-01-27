@@ -39,4 +39,8 @@ module EnvironmentsHelper
       "external-dashboard-url" => project.metrics_setting_external_dashboard_url
     }
   end
+
+  def can_user_update_environment(user, environment) {
+    can?(user, :update_environment, environment) && environment.stopped?
+  }
 end
