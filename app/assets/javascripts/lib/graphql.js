@@ -32,5 +32,10 @@ export default (resolvers = {}, config = {}) => {
     }),
     resolvers,
     assumeImmutableResults: config.assumeImmutableResults,
+    defaultOptions: {
+      query: {
+        fetchPolicy: config.fetchPolicy || 'cache-first',
+      },
+    },
   });
 };
