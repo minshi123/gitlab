@@ -1,4 +1,5 @@
 <script>
+import { GlButton } from '@gitlab/ui';
 import envrionmentsAppMixin from 'ee_else_ce/environments/mixins/environments_app_mixin';
 import Flash from '~/flash';
 import { s__ } from '~/locale';
@@ -15,6 +16,7 @@ export default {
     ConfirmRollbackModal,
     emptyState,
     EnableReviewAppButton,
+    GlButton,
     StopEnvironmentModal,
   },
 
@@ -99,10 +101,10 @@ export default {
       <tabs :tabs="tabs" scope="environments" @onChangeTab="onChangeTab" />
 
       <div class="nav-controls">
-        <enable-review-app-button v-if="state.reviewAppDetails.can_setup_review_app" />
-        <a v-if="canCreateEnvironment && !isLoading" :href="newEnvironmentPath" class="btn btn-success">
+        <enable-review-app-button v-if="state.reviewAppDetails.can_setup_review_app" class="mr-2" />
+        <gl-button v-if="canCreateEnvironment && !isLoading" :href="newEnvironmentPath" class="btn btn-success">
           {{ s__('Environments|New environment') }}
-        </a>
+        </gl-button>
       </div>
     </div>
 
