@@ -18,7 +18,6 @@ import PinComponent from './environment_pin.vue';
 import StopComponent from './environment_stop.vue';
 import DeleteComponent from './environment_delete.vue';
 import RollbackComponent from './environment_rollback.vue';
-import StopComponent from './environment_stop.vue';
 import TerminalButtonComponent from './environment_terminal_button.vue';
 
 /**
