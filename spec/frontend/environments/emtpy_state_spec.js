@@ -16,19 +16,17 @@ describe('environments empty state', () => {
         propsData: {
           newPath: 'foo',
           canCreateEnvironment: true,
-          helpPath: 'bar'
-        }
+          helpPath: 'bar',
+        },
       });
     });
 
     it('renders empty state and new environment button', () => {
       expect(vm.find('.js-blank-state-title').text()).toEqual(
-        'You don\'t have any environments right now'
+        "You don't have any environments right now",
       );
 
-      expect(vm.find('.js-new-environment-button').attributes('href')).toEqual(
-        'foo'
-      );
+      expect(vm.find('.js-new-environment-button').attributes('href')).toEqual('foo');
     });
   });
 
@@ -38,14 +36,14 @@ describe('environments empty state', () => {
         propsData: {
           newPath: 'foo',
           canCreateEnvironment: false,
-          helpPath: 'bar'
-        }
+          helpPath: 'bar',
+        },
       });
     });
 
     it('renders empty state without new button', () => {
       expect(vm.find('.js-blank-state-title').text()).toEqual(
-        'You don\'t have any environments right now'
+        "You don't have any environments right now",
       );
 
       expect(vm.find('.js-new-environment-button').exists()).toBe(false);
