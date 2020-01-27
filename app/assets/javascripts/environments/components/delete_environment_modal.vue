@@ -57,13 +57,13 @@ export default {
     <template slot="header">
       <h4 class="modal-title d-flex mw-100">
         {{ __('Delete') }}
-        <span v-gl-tooltip :title="environment.name" class="text-truncate ml-1 mr-1 flex-fill">{{
+        <span v-gl-tooltip :title="environment.name" class="text-truncate mx-1 flex-fill">{{
           environment.name
         }}</span>
         ?
       </h4>
     </template>
 
-    <p v-html="confirmDeleteMessage"></p>
+    <p>{{ confirmDeleteMessage }}</p>
   </gl-modal>
 </template>
