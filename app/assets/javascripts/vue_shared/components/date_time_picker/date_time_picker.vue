@@ -1,13 +1,14 @@
 <script>
 import { GlButton, GlDropdown, GlDropdownItem, GlFormGroup } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
+
+import { convertToFixedRange, isEqualTimeRanges, findTimeRange } from '~/lib/utils/datetime_range';
+
 import Icon from '~/vue_shared/components/icon.vue';
 import DateTimePickerInput from './date_time_picker_input.vue';
 import {
-  defaultTimeWindows,
+  defaultTimeRanges,
   isValidDate,
-  getTimeRange,
-  getTimeWindowKey,
   stringToISODate,
   ISODateToString,
   truncateZerosInDateTime,
@@ -15,7 +16,7 @@ import {
 } from './date_time_picker_lib';
 
 const events = {
-  apply: 'apply',
+  input: 'input',
   invalid: 'invalid',
 };
 
@@ -29,24 +30,23 @@ export default {
     GlDropdownItem,
   },
   props: {
-    start: {
-      type: String,
-      required: true,
-    },
-    end: {
-      type: String,
-      required: true,
-    },
-    timeWindows: {
+    value: {
       type: Object,
       required: false,
-      default: () => defaultTimeWindows,
+      default: () => defaultTimeRanges.find(tr => tr.default),
+    },
+    options: {
+      type: Array,
+      required: false,
+      default: () => defaultTimeRanges,
     },
   },
   data() {
+    const { startTime, endTime } = convertToFixedRange(this.value);
     return {
-      startDate: this.start,
-      endDate: this.end,
+      timeRange: this.value,
+      startDate: startTime,
+      endDate: endTime,
     };
   },
   computed: {
@@ -67,6 +67,7 @@ export default {
       set(val) {
         // Attempt to set a formatted date if possible
         this.startDate = isDateTimePickerInputValid(val) ? stringToISODate(val) : val;
+        this.value = null;
       },
     },
     endInput: {
@@ -76,19 +77,24 @@ export default {
       set(val) {
         // Attempt to set a formatted date if possible
         this.endDate = isDateTimePickerInputValid(val) ? stringToISODate(val) : val;
+        this.value = null;
       },
     },
 
     timeWindowText() {
-      const timeWindow = getTimeWindowKey({ start: this.start, end: this.end }, this.timeWindows);
-      if (timeWindow) {
-        return this.timeWindows[timeWindow].label;
-      } else if (isValidDate(this.start) && isValidDate(this.end)) {
+      const fullTimeRange = findTimeRange(this.value, this.options);
+      if (fullTimeRange) {
+        return fullTimeRange.label;
+      }
+
+      const { startTime, endTime } = this.value;
+      if (isValidDate(startTime) && isValidDate(endTime)) {
         return sprintf(__('%{start} to %{end}'), {
-          start: this.formatDate(this.start),
-          end: this.formatDate(this.end),
+          start: this.formatDate(startTime),
+          end: this.formatDate(endTime),
         });
       }
+
       return '';
     },
   },
@@ -102,21 +108,26 @@ export default {
     formatDate(date) {
       return truncateZerosInDateTime(ISODateToString(date));
     },
-    setTimeWindow(key) {
-      const { start, end } = getTimeRange(key, this.timeWindows);
-      this.startDate = start;
-      this.endDate = end;
-
-      this.apply();
-    },
     closeDropdown() {
       this.$refs.dropdown.hide();
     },
-    apply() {
-      this.$emit(events.apply, {
-        start: this.startDate,
-        end: this.endDate,
+
+    isTimeRangeActive(option) {
+      return isEqualTimeRanges(option, this.value);
+    },
+
+    setQuickRange(option) {
+      this.value = option;
+
+      this.$emit(events.input, this.value);
+    },
+    setFixedRange() {
+      this.value = convertToFixedRange({
+        startTime: this.startDate,
+        endTime: this.endDate,
       });
+
+      this.$emit(events.input, this.value);
     },
   },
 };
@@ -146,7 +157,7 @@ export default {
         </div>
         <gl-form-group>
           <gl-button @click="closeDropdown">{{ __('Cancel') }}</gl-button>
-          <gl-button variant="success" :disabled="!isValid" @click="apply()">
+          <gl-button variant="success" :disabled="!isValid" @click="setFixedRange()">
             {{ __('Apply') }}
           </gl-button>
         </gl-form-group>
@@ -155,19 +166,20 @@ export default {
         <template #label>
           <span class="gl-pl-5">{{ __('Quick range') }}</span>
         </template>
+
         <gl-dropdown-item
-          v-for="(timeWindow, key) in timeWindows"
-          :key="key"
-          :active="timeWindow.label === timeWindowText"
+          v-for="(option, index) in options"
+          :key="index"
+          :active="isOptionActive(option)"
           active-class="active"
-          @click="setTimeWindow(key)"
+          @click="setQuickRange(option)"
         >
           <icon
             name="mobile-issue-close"
             class="align-bottom"
-            :class="{ invisible: timeWindow.label !== timeWindowText }"
+            :class="{ invisible: !isTimeRangeActive(timeRangeOption) }"
           />
-          {{ timeWindow.label }}
+          {{ timeRangeOption.label }}
         </gl-dropdown-item>
       </gl-form-group>
     </div>

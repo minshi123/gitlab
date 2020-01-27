@@ -1,3 +1,4 @@
+import { pick, isEqual } from 'lodash';
 import { secondsToMilliseconds } from './datetime_utility';
 
 const MINIMUM_DATE = new Date(0);
@@ -169,8 +170,8 @@ export function getRangeType(range) {
  * type Direction = 'before' | 'after'; // Direction of time
  *
  * type FixedRange = {
- *   start: ISO8601;
- *   end: ISO8601;
+ *   startTime: ISO8601;
+ *   endTime: ISO8601;
  *   label: string;
  * }
  *
@@ -196,8 +197,30 @@ export function getRangeType(range) {
  * type DateTimeRange = FixedRange | AnchoredRange | RollingRange | OpenRange;
  *
  *
- * @returns An object with a fixed startTime and endTime that
- * corresponds to the input time.
+ * @returns An object with a fixed `startTime` and `endTime`
+ * in ISO format that corresponds to the input time range.
  */
 export const convertToFixedRange = dateTimeRange =>
   handlers[getRangeType(dateTimeRange)](dateTimeRange);
+
+const properties = ['startTime', 'endTime', 'anchor', 'duration', 'direction'];
+
+export const isEqualTimeRanges = (timeRange, other) => {
+  const tr1 = pick(timeRange, properties);
+  const tr2 = pick(other, properties);
+  return isEqual(tr1, tr2);
+};
+
+export const findTimeRange = (timeRange, timeRanges) =>
+  timeRanges.find(element => isEqualTimeRanges(element, timeRange));
+
+// TODO Improve this implementation
+// TODO This might move locally to the dashboard.vue component or to the monitor utils
+export const serializeTimeRange = dateTimeRange => {
+  const params = pick(dateTimeRange, properties);
+  return JSON.stringify(params);
+};
+
+// TODO Improve this implementation
+// TODO This might move locally to the dashboard.vue component or to the monitor utils
+export const deserializeTimeRange = string => pick(JSON.parse(string), properties);

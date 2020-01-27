@@ -114,3 +114,35 @@ export const datePickerTimeWindows = {
     seconds: 60 * 60 * 24 * 7 * 2,
   },
 };
+
+export const datePickerTimeRanges = [
+  {
+    label: __('30 minutes'),
+    duration: { seconds: 60 * 30 },
+  },
+  {
+    label: __('3 hours'),
+    duration: { seconds: 60 * 60 * 3 },
+  },
+  {
+    label: __('8 hours'),
+    duration: { seconds: 60 * 60 * 8 },
+    default: true,
+  },
+  {
+    label: __('1 day'),
+    duration: { seconds: 60 * 60 * 24 * 1 },
+  },
+  {
+    label: __('3 days'),
+    duration: { seconds: 60 * 60 * 24 * 3 },
+  },
+  {
+    label: __('1 week'),
+    duration: { seconds: 60 * 60 * 24 * 7 * 1 },
+  },
+  {
+    label: __('2 weeks'),
+    duration: { seconds: 60 * 60 * 24 * 7 * 2 },
+  },
+];

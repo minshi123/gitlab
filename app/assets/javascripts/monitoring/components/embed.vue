@@ -2,8 +2,10 @@
 import { mapActions, mapState, mapGetters } from 'vuex';
 import PanelType from 'ee_else_ce/monitoring/components/panel_type.vue';
 import { getParameterValues, removeParams } from '~/lib/utils/url_utility';
-import { sidebarAnimationDuration } from '../constants';
-import { getTimeRange } from '~/vue_shared/components/date_time_picker/date_time_picker_lib';
+import { sidebarAnimationDuration, datePickerTimeRanges } from '../constants';
+// import { getTimeRange } from '~/vue_shared/components/date_time_picker/date_time_picker_lib';
+
+const getDefaultTimeRange = () => datePickerTimeRanges.find(tr => tr.default);
 
 let sidebarMutationObserver;
 
@@ -18,9 +20,10 @@ export default {
     },
   },
   data() {
-    const defaultRange = getTimeRange();
-    const start = getParameterValues('start', this.dashboardUrl)[0] || defaultRange.start;
-    const end = getParameterValues('end', this.dashboardUrl)[0] || defaultRange.end;
+    const defaultRange = getDefaultTimeRange();
+    // TODO Fix these parameters
+    const start = getParameterValues('start', this.dashboardUrl)[0] || defaultRange.startTime;
+    const end = getParameterValues('end', this.dashboardUrl)[0] || defaultRange.endTime;
 
     const params = {
       start,
