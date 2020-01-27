@@ -1,3 +1,6 @@
+import { getParameterValues, mergeUrlParams } from '~/lib/utils/url_utility';
+import { convertToFixedRange, serializeTimeRange, deserializeTimeRange } from '~/lib/utils/datetime_range';
+
 /**
  * This method is used to validate if the graph data format for a chart component
  * that needs a time series as a response from a prometheus query (query_range) is
@@ -90,6 +93,30 @@ export const graphDataValidatorForAnomalyValues = graphData => {
     graphData.metrics &&
     graphData.metrics.length === anomalySeriesCount &&
     graphDataValidatorForValues(false, graphData)
+  );
+};
+
+/**
+ *
+ * @returns The time range defined by the current URL / `window.location.search`
+ */
+export const urlParamsToTimeRange = () => {
+  if (getParameterValues('time_range')[0]) {
+    return deserializeTimeRange(getParameterValues('time_range')[0]);
+  } else if (getParameterValues('start')[0] && getParameterValues('end')[0]) {
+    // `start` and `end` are still here for backwards compatibility
+    return convertToFixedRange({
+      startTime: getParameterValues('start')[0],
+      endTime: getParameterValues('end')[0],
+    });
+  }
+  return null;
+};
+
+export const timeRangeToUrlParams = timeRange => {
+  return mergeUrlParams(
+    { 'time_range': serializeTimeRange(timeRange) },
+    window.location.href,
   );
 };
 

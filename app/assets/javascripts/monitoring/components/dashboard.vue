@@ -16,10 +16,10 @@ import PanelType from 'ee_else_ce/monitoring/components/panel_type.vue';
 import { s__ } from '~/locale';
 import createFlash from '~/flash';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { getParameterValues, mergeUrlParams, redirectTo } from '~/lib/utils/url_utility';
+import { mergeUrlParams, redirectTo } from '~/lib/utils/url_utility';
 import invalidUrl from '~/lib/utils/invalid_url';
+import { convertToFixedRange } from '~/lib/utils/datetime_range';
 import Icon from '~/vue_shared/components/icon.vue';
-import { getTimeRange } from '~/vue_shared/components/date_time_picker/date_time_picker_lib';
 import DateTimePicker from '~/vue_shared/components/date_time_picker/date_time_picker.vue';
 
 import GraphGroup from './graph_group.vue';
@@ -28,11 +28,8 @@ import GroupEmptyState from './group_empty_state.vue';
 import DashboardsDropdown from './dashboards_dropdown.vue';
 
 import TrackEventDirective from '~/vue_shared/directives/track_event';
-import { getAddMetricTrackingOptions } from '../utils';
-
-import { datePickerTimeWindows, metricStates } from '../constants';
-
-const defaultTimeRange = getTimeRange();
+import { getAddMetricTrackingOptions, urlParamsToTimeRange, timeRangeToUrlParams } from '../utils';
+import { defaultTimeRange, timeRanges, metricStates } from '../constants';
 
 export default {
   components: {
@@ -190,10 +187,9 @@ export default {
     return {
       state: 'gettingStarted',
       formIsValid: null,
-      startDate: getParameterValues('start')[0] || defaultTimeRange.start,
-      endDate: getParameterValues('end')[0] || defaultTimeRange.end,
+      selectedTimeRange: urlParamsToTimeRange() || defaultTimeRange,
       hasValidDates: true,
-      datePickerTimeWindows,
+      timeRanges,
       isRearrangingPanels: false,
     };
   },
@@ -252,9 +248,11 @@ export default {
     if (!this.hasMetrics) {
       this.setGettingStartedEmptyState();
     } else {
+      const { startTime, endTime } = convertToFixedRange(this.selectedTimeRange);
+
       this.fetchData({
-        start: this.startDate,
-        end: this.endDate,
+        start: startTime,
+        end: endTime,
       });
     }
   },
@@ -279,8 +277,8 @@ export default {
       });
     },
 
-    onDateTimePickerApply(params) {
-      redirectTo(mergeUrlParams(params, window.location.href));
+    onDateTimePickerInput(timeRange) {
+      redirectTo(timeRangeToUrlParams(timeRange));
     },
     onDateTimePickerInvalid() {
       createFlash(
@@ -288,8 +286,8 @@ export default {
           'Metrics|Link contains an invalid time window, please verify the link to see the requested time range.',
         ),
       );
-      this.startDate = defaultTimeRange.start;
-      this.endDate = defaultTimeRange.end;
+      // Switch to default time range instead
+      this.selectedTimeRange = defaultTimeRange;
     },
 
     generateLink(group, title, yLabel) {
@@ -428,10 +426,9 @@ export default {
           >
             <date-time-picker
               ref="dateTimePicker"
-              :start="startDate"
-              :end="endDate"
-              :time-windows="datePickerTimeWindows"
-              @apply="onDateTimePickerApply"
+              :value="selectedTimeRange"
+              :options="timeRanges"
+              @input="onDateTimePickerInput"
               @invalid="onDateTimePickerInvalid"
             />
           </gl-form-group>
