@@ -338,7 +338,7 @@ export default {
           v-if="containerScanning.newIssues.length || containerScanning.resolvedIssues.length"
           :unresolved-issues="containerScanning.newIssues"
           :resolved-issues="containerScanning.resolvedIssues"
-          :component="$options.componentNames.SastContainerIssueBody"
+          :component="$options.componentNames.ContainerScanningIssueBody"
           class="report-block-group-list"
         />
       </template>
