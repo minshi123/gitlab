@@ -3,6 +3,7 @@ import { isUndefined } from 'underscore';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import Filters from './filters.vue';
+import ProjectScanning from './project_scanning.vue';
 import SecurityDashboardTable from './security_dashboard_table.vue';
 import VulnerabilityChart from './vulnerability_chart.vue';
 import VulnerabilityCountList from './vulnerability_count_list.vue';
@@ -13,6 +14,7 @@ export default {
   components: {
     Filters,
     IssueModal,
+    ProjectScanning,
     SecurityDashboardTable,
     VulnerabilityChart,
     VulnerabilityCountList,
@@ -157,8 +159,10 @@ export default {
         <vulnerability-chart v-if="shouldShowChart" class="mb-3" />
         <vulnerability-severity
           v-if="shouldShowVulnerabilitySeverities"
+          class="mb-3"
           :endpoint="vulnerableProjectsEndpoint"
         />
+        <project-scanning />
       </aside>
     </div>
 
