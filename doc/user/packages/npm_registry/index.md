@@ -99,15 +99,16 @@ configure GitLab as a remote registry.
 ## Authenticating to the GitLab NPM Registry
 
 If a project is private or you want to upload an NPM package to GitLab,
-credentials will need to be provided for authentication. Support is available for [OAuth tokens](../../../api/oauth2.md#resource-owner-password-credentials-flow) or [personal access tokens](../../profile/personal_access_tokens.md).
+credentials will need to be provided for authentication. [Personal access tokens](../../profile/personal_access_tokens.md)
+are preferred, but support is available for [OAuth tokens](../../../api/oauth2.md#resource-owner-password-credentials-flow).
 
 CAUTION: **2FA is only supported with personal access tokens:**
 If you have 2FA enabled, you need to use a [personal access token](../../profile/personal_access_tokens.md) with OAuth headers with the scope set to `api`. Standard OAuth tokens won't be able to authenticate to the GitLab NPM Registry.
 
-### Authenticating with an OAuth token
+### Authenticating with a personal access token
 
-To authenticate with an [OAuth token](../../../api/oauth2.md#resource-owner-password-credentials-flow)
-or [personal access token](../../profile/personal_access_tokens.md), set your NPM configuration:
+To authenticate with a [personal access token](../../profile/personal_access_tokens.md),
+set your NPM configuration:
 
 ```bash
 # Set URL for your scoped packages.
@@ -124,7 +125,7 @@ npm config set '//gitlab.com/api/v4/packages/npm/:_authToken' "<your_token>"
 ```
 
 Replace `<your_project_id>` with your project ID which can be found on the home page
-of your project and `<your_token>` with your OAuth or personal access token.
+of your project and `<your_token>` with your personal access token.
 
 If you have a self-hosted GitLab installation, replace `gitlab.com` with your
 domain name.
@@ -271,7 +272,7 @@ yarn add @my-project-scope/my-package
 ## Removing a package
 
 In the packages view of your project page, you can delete packages by clicking
-the red trash icons or by clicking the `delete` button on the package details
+the red trash icons or by clicking the **Delete** button on the package details
 page.
 
 ## Publishing a package with CI/CD
@@ -313,11 +314,11 @@ info If you think this is a bug, please open a bug report with the information p
 info Visit https://yarnpkg.com/en/docs/cli/install for documentation about this command
 ```
 
-In this case, try adding this to your `.npmrc` file (and replace `<your_oauth_token>`
-with your OAuth or personal access token):
+In this case, try adding this to your `.npmrc` file (and replace `<your_token>`
+with your personal access token):
 
 ```text
-//gitlab.com/api/v4/projects/:_authToken=<your_oauth_token>
+//gitlab.com/api/v4/projects/:_authToken=<your_token>
 ```
 
 ### `npm publish` targets default NPM registry (`registry.npmjs.org`)
@@ -341,8 +342,8 @@ should look like:
 And the `.npmrc` file should look like:
 
 ```ini
-//gitlab.com/api/v4/projects/<your_project_id>/packages/npm/:_authToken=<your_oauth_token>
-//gitlab.com/api/v4/packages/npm/:_authToken=<your_oauth_token>
+//gitlab.com/api/v4/projects/<your_project_id>/packages/npm/:_authToken=<your_token>
+//gitlab.com/api/v4/packages/npm/:_authToken=<your_token>
 @foo:registry=https://gitlab.com/api/v4/packages/npm/
 ```
 
