@@ -122,7 +122,7 @@ export default {
      * @returns {Boolean}
      */
     canDeleteEnvironment() {
-      return this.model && !this.model.can_stop && this.model.can_update && this.model.delete_path;
+      return this.model && this.model.can_update && this.model.delete_path;
     },
 
     /**
