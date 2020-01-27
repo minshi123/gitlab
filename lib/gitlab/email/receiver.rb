@@ -67,7 +67,8 @@ module Gitlab
       def key_from_additional_headers(mail)
         find_key_from_references(mail) ||
           find_key_from_delivered_to_header(mail) ||
-          find_key_from_envelope_to_header(mail)
+          find_key_from_envelope_to_header(mail) || 
+          find_key_from_received_header(mail)
       end
 
       def ensure_references_array(references)
@@ -99,6 +100,13 @@ module Gitlab
 
       def find_key_from_envelope_to_header(mail)
         Array(mail[:envelope_to]).find do |header|
+          key = Gitlab::IncomingEmail.key_from_address(header.value)
+          break key if key
+        end
+      end
+
+      def find_key_from_received_header(mail)
+        Array(mail[:received]).find do |header|
           key = Gitlab::IncomingEmail.key_from_address(header.value)
           break key if key
         end
