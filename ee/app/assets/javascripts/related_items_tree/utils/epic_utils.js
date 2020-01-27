@@ -3,7 +3,12 @@ import createGqClient from '~/lib/graphql';
 
 import { ChildType } from '../constants';
 
-export const gqClient = createGqClient();
+export const gqClient = createGqClient(
+  {},
+  {
+    fetchPolicy: 'no-cache',
+  },
+);
 
 /**
  * Returns a numeric representation of item
