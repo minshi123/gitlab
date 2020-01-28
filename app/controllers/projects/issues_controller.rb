@@ -98,6 +98,7 @@ class Projects::IssuesController < Projects::ApplicationController
       merge_request_to_resolve_discussions_of: params[:merge_request_to_resolve_discussions_of],
       discussion_to_resolve: params[:discussion_to_resolve]
     )
+    create_params[:sentry_issue_attributes][:project_id] = project.id if create_params[:sentry_issue_attributes][:sentry_issue_identifier]
 
     service = Issues::CreateService.new(project, current_user, create_params)
     @issue = service.execute
