@@ -1,51 +1,39 @@
-import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
-import emptyState from '~/environments/components/empty_state.vue';
+import EmptyState from '~/environments/components/empty_state.vue';
 
 describe('environments empty state', () => {
-  const Component = Vue.extend(emptyState);
   let vm;
+
+  beforeEach(() => {
+    vm = shallowMount(EmptyState, {
+      propsData: {
+        newPath: 'foo',
+        canCreateEnvironment: true,
+        helpPath: 'bar',
+      },
+    });
+  });
 
   afterEach(() => {
     vm.destroy();
   });
 
-  describe('With permissions', () => {
-    beforeEach(() => {
-      vm = shallowMount(Component, {
-        propsData: {
-          newPath: 'foo',
-          canCreateEnvironment: true,
-          helpPath: 'bar',
-        },
-      });
-    });
-
-    it('renders empty state and new environment button', () => {
-      expect(vm.find('.js-blank-state-title').text()).toEqual(
-        "You don't have any environments right now",
-      );
-
-      expect(vm.find('.js-new-environment-button').attributes('href')).toEqual('foo');
-    });
+  it('renders the empty state', () => {
+    expect(vm.find('.js-blank-state-title').text()).toEqual(
+      "You don't have any environments right now",
+    );
   });
 
-  describe('Without permission', () => {
+  it('renders the new environment button', () => {
+    expect(vm.find('.js-new-environment-button').attributes('href')).toEqual('foo');
+  });
+
+  describe('without permission', () => {
     beforeEach(() => {
-      vm = shallowMount(Component, {
-        propsData: {
-          newPath: 'foo',
-          canCreateEnvironment: false,
-          helpPath: 'bar',
-        },
-      });
+      vm.setProps({ canCreateEnvironment: false });
     });
 
-    it('renders empty state without new button', () => {
-      expect(vm.find('.js-blank-state-title').text()).toEqual(
-        "You don't have any environments right now",
-      );
-
+    it('does not render the new environment button', () => {
       expect(vm.find('.js-new-environment-button').exists()).toBe(false);
     });
   });
