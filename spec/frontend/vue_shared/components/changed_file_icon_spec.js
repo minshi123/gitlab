@@ -3,7 +3,7 @@ import ChangedFileIcon from '~/vue_shared/components/changed_file_icon.vue';
 import Icon from '~/vue_shared/components/icon.vue';
 
 const changedFile = () => ({ changed: true });
-const stagedFile = () => ({ changed: false, staged: true });
+const stagedFile = () => ({ changed: true, staged: true });
 const newFile = () => ({ changed: true, tempFile: true });
 const unchangedFile = () => ({ changed: false, tempFile: false, staged: false, deleted: false });
 
