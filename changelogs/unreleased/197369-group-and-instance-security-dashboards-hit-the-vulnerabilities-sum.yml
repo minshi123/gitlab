@@ -1,0 +1,5 @@
+---
+title: Skip summary endpoint for certain security dashboards
+merge_request: 23757
+author:
+type: fixed
