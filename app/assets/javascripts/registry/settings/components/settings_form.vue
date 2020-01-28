@@ -10,6 +10,7 @@ import {
   GlLoadingIcon,
 } from '@gitlab/ui';
 import { s__, __, sprintf } from '~/locale';
+import Tracking from '~/tracking';
 import {
   NAME_REGEX_LENGTH,
   UPDATE_SETTINGS_ERROR_MESSAGE,
@@ -27,6 +28,7 @@ export default {
     GlCard,
     GlLoadingIcon,
   },
+  mixins: [Tracking.mixin()],
   labelsConfig: {
     cols: 3,
     align: 'right',
@@ -83,10 +85,20 @@ export default {
     isSubmitButtonDisabled() {
       return this.formIsInvalid || this.isLoading;
     },
+    tracking() {
+      return {
+        label: 'docker_container_retention_and_expiration_policies',
+      };
+    },
   },
   methods: {
     ...mapActions(['resetSettings', 'saveSettings']),
+    reset() {
+      this.track('reset_form');
+      this.resetSettings();
+    },
     submit() {
+      this.track('submit_form');
       this.saveSettings()
         .then(() => this.$toast.show(UPDATE_SETTINGS_SUCCESS_MESSAGE, { type: 'success' }))
         .catch(() => this.$toast.show(UPDATE_SETTINGS_ERROR_MESSAGE, { type: 'error' }));
@@ -96,7 +108,7 @@ export default {
 </script>
 
 <template>
-  <form ref="form-element" @submit.prevent="submit" @reset.prevent="resetSettings">
+  <form ref="form-element" @submit.prevent="submit" @reset.prevent="reset">
     <gl-card>
       <template #header>
         {{ s__('ContainerRegistry|Tag expiration policy') }}
