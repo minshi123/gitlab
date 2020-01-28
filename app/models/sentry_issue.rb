@@ -6,6 +6,8 @@ class SentryIssue < ApplicationRecord
   validates :issue, uniqueness: true, presence: true
   validates :sentry_issue_identifier, presence: true
 
+  validates_uniqueness_of :sentry_issue_identifier, scope: :issue_id
+
   after_create_commit :enqueue_sentry_sync_job
 
   def self.for_project_and_identifier(project, identifier)
