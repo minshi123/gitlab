@@ -16,8 +16,8 @@ export default {
     state.enableAdvancedQuerying = enableAdvancedQuerying;
   },
   /** Time Range data */
-  [types.SET_TIME_WINDOW](state, timeWindowKey) {
-    state.timeWindow.current = timeWindowKey;
+  [types.SET_TIME_RANGE](state, timeRange) {
+    state.timeRange.current = timeRange;
   },
 
   /** Environments data */
