@@ -49,7 +49,7 @@ export default {
       return `${this.changedIcon} float-left d-block`;
     },
     tooltipTitle() {
-      if (!this.showTooltip) return undefined;
+      if (!this.showTooltip || !this.file.changed) return undefined;
 
       const type = this.file.tempFile ? 'addition' : 'modification';
 
