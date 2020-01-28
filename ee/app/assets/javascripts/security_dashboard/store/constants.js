@@ -35,3 +35,10 @@ export const DASHBOARD_TYPES = {
   GROUP: 'group',
   INSTANCE: 'instance',
 };
+
+export const PROJECT_SCANNING_DAY_RANGES = [
+  { description: s__('securityDashboard|5 or more days'), minDays: 5, maxDays: 15 },
+  { description: s__('securityDashboard|15 or more days'), minDays: 15, maxDays: 30 },
+  { description: s__('securityDashboard|30 or more days'), minDays: 30, maxDays: 60 },
+  { description: s__('securityDashboard|60 or more days'), minDays: 60, maxDays: Infinity },
+];

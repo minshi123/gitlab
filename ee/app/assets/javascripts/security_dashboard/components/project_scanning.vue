@@ -3,22 +3,43 @@ import { __ } from '~/locale';
 import { GlTabs, GlTab } from '@gitlab/ui';
 
 // SET projects[] <- data from response
-// INITIALISE untested[]
-// INITIALISE outdated[]
-
-// LOOP over projects
-    // IF untested match
-        // ADD to untested[]
-    // IF outdated match
-        // SET lastSuccessfullRunDaysAgo
-        // IF lastSuccessfullRunDaysAgo > 5 && < 15
-            // ADD to outdates[5ago]
-        // IF lastSuccessfullRunDaysAgo > 15 && < 30
-            // ADD to outdates[15ago]
-        // IF lastSuccessfullRunDaysAgo > 30 && < 60
-            // ADD to outdates[30ago]
-        // IF lastSuccessfullRunDaysAgo > 60
-            // ADD to outdates[60ago]
+const tempProjects = [
+  {
+    path: 'unconfigured/1',
+    id: 10,
+    security_tests_unconfigured: true,
+  },
+  {
+    path: 'unconfigured/2',
+    id: 20,
+    security_tests_unconfigured: true,
+  },
+  {
+    path: 'unconfigured/3',
+    id: 30,
+    security_tests_unconfigured: true,
+  },
+  {
+    path: 'outdated/60-days',
+    id: 40,
+    security_tests_last_successful_run: '2019-11-29T12:00:43.7690+11:00',
+  },
+  {
+    path: 'outdated/30-days',
+    id: 50,
+    security_tests_last_successful_run: '2019-12-29T12:00:43.7690+11:00',
+  },
+  {
+    path: 'outdated/15-days',
+    id: 60,
+    security_tests_last_successful_run: '2020-01-13T12:00:43.7690+11:00',
+  },
+  {
+    path: 'outdated/5-days',
+    id: 70,
+    security_tests_last_successful_run: '2020-01-23T12:00:43.7690+11:00',
+  },
+];
 
 export default {
   css: {
