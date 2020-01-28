@@ -47,6 +47,24 @@ module Gitlab
             id
           end
 
+          def noteable
+            return commit if for_commit?
+
+            super
+          rescue
+            # Temp fix to prevent app crash
+            # if note commit id doesn't exist
+            nil
+          end
+
+          def for_commit?
+            noteable_type == "Commit"
+          end
+
+          def commit
+            @commit ||= project.commit(commit_id) if commit_id.present?
+          end
+
           private
 
           def mentionable_params

@@ -17,6 +17,13 @@ module Gitlab
               attr = attr.to_s
               mentionable_attrs << [attr, options]
             end
+
+            def no_quote_columns
+              [
+                :note_id,
+                user_mention_model.resource_foreign_key
+              ]
+            end
           end
 
           included do

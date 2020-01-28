@@ -3,6 +3,7 @@
 require 'spec_helper'
 require './db/post_migrate/20200127131953_migrate_snippet_mentions_to_db'
 require './db/post_migrate/20200127151953_migrate_snippet_notes_mentions_to_db'
+require './db/post_migrate/20200128134110_migrate_commit_notes_mentions_to_db'
 
 describe Gitlab::BackgroundMigration::UserMentions::CreateResourceUserMention do
   include MigrationsHelpers
@@ -10,6 +11,7 @@ describe Gitlab::BackgroundMigration::UserMentions::CreateResourceUserMention do
   let(:users) { table(:users) }
   let(:namespaces) { table(:namespaces) }
   let(:notes) { table(:notes) }
+  let(:projects) { table(:projects) }
 
   let(:author) { users.create!(email: 'author@example.com', notification_email: 'author@example.com', name: 'author', username: 'author', projects_limit: 10, state: 'active') }
   let(:member) { users.create!(email: 'member@example.com', notification_email: 'member@example.com', name: 'member', username: 'member', projects_limit: 10, state: 'active') }
@@ -22,6 +24,8 @@ describe Gitlab::BackgroundMigration::UserMentions::CreateResourceUserMention do
 
   let(:group) { namespaces.create!(name: 'test1', path: 'test1', runners_token: 'my-token1', project_creation_level: 1, visibility_level: 20, type: 'Group') }
   let(:inaccessible_group) { namespaces.create!(name: 'test2', path: 'test2', runners_token: 'my-token2', project_creation_level: 1, visibility_level: 0, type: 'Group') }
+
+  let(:project) { projects.create!(id: 1, name: 'gitlab1', path: 'gitlab1', namespace_id: group.id, visibility_level: 0) }
 
   let(:mentioned_groups) { [group, inaccessible_group] }
   let(:group_mentions) { [group, inaccessible_group].map { |gr| "@#{gr.path}" }.join(' ') }
@@ -40,11 +44,9 @@ describe Gitlab::BackgroundMigration::UserMentions::CreateResourceUserMention do
   end
 
   context 'migrate snippet mentions' do
-    let(:projects) { table(:projects) }
     let(:snippets) { table(:snippets) }
     let(:snippet_user_mentions) { table(:snippet_user_mentions) }
 
-    let(:project) { projects.create!(id: 1, name: 'gitlab1', path: 'gitlab1', namespace_id: group.id, visibility_level: 0) }
     let(:snippet) { snippets.create!(project_id: project.id, author_id: author.id, description: description_mentions) }
     let(:snippet_without_mentions) { snippets.create!(project_id: project.id, author_id: author.id, description: 'some description') }
 
@@ -86,6 +88,39 @@ describe Gitlab::BackgroundMigration::UserMentions::CreateResourceUserMention do
         expect(epic_user_mention.mentioned_groups_ids.sort).to eq([group.id])
         expect(epic_user_mention.mentioned_groups_ids.sort).not_to include(inaccessible_group.id)
       end
+    end
+  end
+
+  context 'migrate commit mentions' do
+    let(:repository) { Gitlab::Git::Repository.new('default', TEST_REPO_PATH, '', 'group/project') }
+    let(:commit) { Commit.new(RepoHelpers.sample_commit, project.becomes(Project)) }
+    let(:commit_user_mentions) { table(:commit_user_mentions) }
+
+    let(:commit_note) { notes.create!(commit_id: commit.id, noteable_type: 'Commit', project_id: project.id, author_id: author.id, note: description_mentions) }
+    let(:commit_note2) { notes.create!(commit_id: commit.id, noteable_type: 'Commit', project_id: project.id, author_id: author.id, note: 'sample note') }
+    let(:system_commit_note) { notes.create!(commit_id: commit.id, noteable_type: 'Commit', project_id: project.id, author_id: author.id, note: description_mentions, system: true) }
+
+    before do
+      commit_note.becomes(Note).save!
+      commit_note2.becomes(Note).save!
+      system_commit_note.becomes(Note).save!
+    end
+
+    it 'migrates mentions from note' do
+      allow_any_instance_of(Project).to receive(:commit).and_return(commit)
+      allow_any_instance_of(Project).to receive(:repository).and_return(repository)
+
+      join = MigrateCommitNotesMentionsToDb::JOIN
+      conditions = MigrateCommitNotesMentionsToDb::QUERY_CONDITIONS
+
+      expect do
+        subject.perform('Commit', join, conditions, true, Note.minimum(:id), Note.maximum(:id))
+      end.to change { commit_user_mentions.count }.by(2)
+
+      commit_user_mention = commit_user_mentions.last
+      expect(commit_user_mention.mentioned_users_ids.sort).to eq(users.pluck(:id).sort)
+      expect(commit_user_mention.mentioned_groups_ids.sort).to eq([group.id])
+      expect(commit_user_mention.mentioned_groups_ids.sort).not_to include(inaccessible_group.id)
     end
   end
 end
