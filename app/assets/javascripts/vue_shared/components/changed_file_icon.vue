@@ -53,16 +53,12 @@ export default {
 
       const type = this.file.tempFile ? 'addition' : 'modification';
 
-      if (this.file.changed && !this.file.staged) {
+      if (!this.file.staged) {
         return sprintf(__('Unstaged %{type}'), {
           type,
         });
-      } else if (!this.file.changed && this.file.staged) {
+      } else if (this.file.staged) {
         return sprintf(__('Staged %{type}'), {
-          type,
-        });
-      } else if (this.file.changed && this.file.staged) {
-        return sprintf(__('Unstaged and staged %{type}'), {
           type,
         });
       }
