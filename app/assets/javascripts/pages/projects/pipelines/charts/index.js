@@ -3,6 +3,8 @@ import Chart from 'chart.js';
 
 import { barChartOptions, lineChartOptions } from '~/lib/utils/chart_utils';
 
+import initProjectPipelinesChartsApp from '~/projects/pipelines/charts/index';
+
 const SUCCESS_LINE_COLOR = '#1aaa55';
 
 const TOTAL_LINE_COLOR = '#707070';
@@ -81,3 +83,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   chartsData.forEach(scope => buildChart(scope, shouldAdjustFontSize));
 });
+
+document.addEventListener('DOMContentLoaded', initProjectPipelinesChartsApp);
