@@ -11,7 +11,14 @@ const dayRangeGroups = () =>
     projects: [],
   }));
 
-export const groupsTwo = projects =>
+/**
+ * Takes an array of objects and returns an array of date-ranges,
+ * which contain all projects that fall under the given range
+ *
+ * @param projects Array
+ * @returns {*}
+ */
+export const groupByDayRanges = projects =>
   projects.reduce((groups, currentProject) => {
     const lastSuccessfulRun = new Date(currentProject.security_tests_last_successful_run);
 
