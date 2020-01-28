@@ -21,27 +21,27 @@ export default {
       type: Number,
       required: true,
     },
-    extraComponent: {
-      type: Object,
-      required: false,
-      default: null,
-    },
-    hideExtraOnTree: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
+    // extraComponent: {
+    //   type: Object,
+    //   required: false,
+    //   default: null,
+    // },
+    // hideExtraOnTree: {
+    //   type: Boolean,
+    //   required: false,
+    //   default: false,
+    // },
     showChangedIcon: {
       type: Boolean,
       required: false,
       default: false,
     },
   },
-  data() {
-    return {
-      dropdownOpen: false,
-    };
-  },
+  // data() {
+  //   return {
+  //     dropdownOpen: false,
+  //   };
+  // },
   computed: {
     isTree() {
       return this.file.type === 'tree';
@@ -120,15 +120,19 @@ export default {
 
       return this.$router.currentRoute.path === `/project${this.file.url}`;
     },
-    toggleDropdown(val) {
-      this.dropdownOpen = val;
-    },
+    // toggleDropdown(val) {
+    //   this.dropdownOpen = val;
+    // },
   },
 };
 </script>
 
 <template>
   <file-header v-if="file.isHeader" :path="file.path" />
+  <!--
+    @mouseleave="$emit('mouseleave', $event)" -> pass only mouseleave events
+    v-on="$listeners"-> pass all events
+  -->
   <div
     v-else
     :class="fileClass"
@@ -136,7 +140,7 @@ export default {
     class="file-row"
     role="button"
     @click="clickFile"
-    @mouseleave="toggleDropdown(false)"
+    @mouseleave="$emit('mouseleave', $event)"
   >
     <div class="file-row-name-container">
       <span ref="textOutput" :style="levelIndentation" class="file-row-name str-truncated">
@@ -152,13 +156,14 @@ export default {
         <changed-file-icon v-else :file="file" :size="16" class="append-right-5" />
         {{ file.name }}
       </span>
-      <component
+      <slot></slot>
+      <!-- <component
         :is="extraComponent"
         v-if="extraComponent && !(hideExtraOnTree && file.type === 'tree')"
         :file="file"
         :dropdown-open="dropdownOpen"
         @toggle="toggleDropdown($event)"
-      />
+      /> -->
     </div>
   </div>
 </template>
