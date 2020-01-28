@@ -23,7 +23,7 @@ module Packages
       def packages
         result = project.packages
                         .nuget
-                        .with_name(package_name)
+                        .with_name_like(package_name)
         result = result.with_version(package_version) if package_version.present?
         result
       end

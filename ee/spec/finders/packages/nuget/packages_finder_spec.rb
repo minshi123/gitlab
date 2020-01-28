@@ -9,9 +9,15 @@ describe Packages::Nuget::PackagesFinder do
   let(:package_version) { nil }
 
   describe '#execute!' do
-    subject { described_class.new(project, package_name, package_version).execute }
+    subject { described_class.new(project: project, package_name: package_name, package_version: package_version).execute }
 
     it { is_expected.to match_array([package1, package2]) }
+
+    context 'with lower case package name' do
+      let(:package_name) { package1.name.downcase }
+
+      it { is_expected.to match_array([package1, package2]) }
+    end
 
     context 'with unknown package name' do
       let(:package_name) { 'foobar' }
@@ -35,7 +41,7 @@ describe Packages::Nuget::PackagesFinder do
   describe '#first' do
     let(:package_version) { '2.0.0' }
 
-    subject { described_class.new(project, package_name, package_version).first }
+    subject { described_class.new(project: project, package_name: package_name, package_version: package_version).first }
 
     it { is_expected.to eq(package2) }
 
