@@ -32,9 +32,8 @@
           .term
             = render 'shared/projects/list', projects: @search_objects, pipeline_status: false
         - else
-          %ul.content-list
-            - locals = { projects: blob_projects(@search_objects) } if %w[blobs wiki_blobs].include?(@scope)
-            = render partial: "search/results/#{@scope.singularize}", collection: @search_objects, locals: locals
+          - locals = { projects: blob_projects(@search_objects) } if %w[blobs wiki_blobs].include?(@scope)
+          = render partial: "search/results/#{@scope.singularize}", collection: @search_objects, locals: locals
 
     - if @scope != 'projects'
       = paginate_collection(@search_objects)

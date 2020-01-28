@@ -3,7 +3,7 @@
 - snippet_chunks = snippet_blob[:snippet_chunks]
 - snippet_path = gitlab_snippet_path(snippet)
 
-%li.search-result-row.snippet-row
+.search-result-row.snippet-row
   = image_tag avatar_icon_for_user(snippet.author), class: "avatar s40 d-none d-sm-block", alt: ''
   .title
     %span.font-weight-bold
@@ -18,7 +18,7 @@
     = link_to user_snippets_path(snippet.author) do
       = snippet.author_name
 
-  .file-holder.prepend-top-8.append-bottom-8
+  .file-holder.my-2
     .js-file-title.file-title-flex-parent
       = link_to snippet_path do
         %i.fa.fa-file
