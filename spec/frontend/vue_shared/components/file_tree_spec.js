@@ -76,7 +76,6 @@ describe('File Tree component', () => {
           tree: [{}, {}],
         },
       });
-
       expect(wrapper.findAll(FileTree).length).toEqual(fileTreeLength);
     });
   });
