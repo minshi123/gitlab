@@ -10,11 +10,17 @@ query errorDetails($fullPath: ID!, $errorId: ID!) {
             lastSeen
             message
             culprit
+            tags {
+                level
+                logger
+            }
             externalUrl
+            externalBaseUrl
             firstReleaseShortVersion
             lastReleaseShortVersion
             gitlabCommit
             gitlabCommitPath
+            gitlabIssuePath
         }
     }
 }
