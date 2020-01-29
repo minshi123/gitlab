@@ -124,11 +124,35 @@ describe('Settings Form', () => {
       form = findForm();
     });
 
-    describe('form cancel event', () => {
+    describe('cancel button', () => {
       it('has type reset', () => {
         expect(findCancelButton().attributes('type')).toBe('reset');
       });
 
+      it('is disabled when isEdited is false', () => {
+        store.dispatch('receiveSettingsSuccess', { foo: 'bar' });
+        return wrapper.vm.$nextTick().then(() => {
+          expect(findCancelButton().attributes('disabled')).toBe('true');
+        });
+      });
+
+      it('is disabled when isLoading is trye', () => {
+        store.dispatch('toggleLoading');
+        return wrapper.vm.$nextTick().then(() => {
+          expect(findCancelButton().attributes('disabled')).toBe('true');
+        });
+      });
+
+      it('is enabled when isEdited is true and isLoading is false', () => {
+        store.dispatch('receiveSettingsSuccess', { foo: 'bar' });
+        store.dispatch('updateSettings', { foo: 'baz' });
+        return wrapper.vm.$nextTick().then(() => {
+          expect(findCancelButton().attributes('disabled')).toBe();
+        });
+      });
+    });
+
+    describe('form cancel event', () => {
       it('calls the appropriate function', () => {
         dispatchSpy.mockReturnValue();
         form.trigger('reset');
