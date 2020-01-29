@@ -3,7 +3,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import GeoNodeForm from 'ee/geo_node_form/components/geo_node_form.vue';
 import GeoNodeFormCore from 'ee/geo_node_form/components/geo_node_form_core.vue';
 import GeoNodeFormCapacities from 'ee/geo_node_form/components/geo_node_form_capacities.vue';
-import { MOCK_NODE } from '../mock_data';
+import { MOCK_NODE, MOCK_SELECTIVE_SYNC_TYPES, MOCK_SYNC_SHARDS } from '../mock_data';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
@@ -14,6 +14,8 @@ describe('GeoNodeForm', () => {
 
   const propsData = {
     node: MOCK_NODE,
+    selectiveSyncTypes: MOCK_SELECTIVE_SYNC_TYPES,
+    syncShardsOptions: MOCK_SYNC_SHARDS,
   };
 
   const createComponent = () => {

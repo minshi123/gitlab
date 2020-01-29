@@ -3545,7 +3545,13 @@ msgstr ""
 msgid "Choose what content you want to see on a group’s overview page"
 msgstr ""
 
+msgid "Choose which groups you wish to synchronize to this secondary node"
+msgstr ""
+
 msgid "Choose which repositories you want to connect and run CI/CD pipelines."
+msgstr ""
+
+msgid "Choose which shards you wish to synchronize to this secondary node"
 msgstr ""
 
 msgid "Choose which shards you wish to synchronize to this secondary node."
@@ -9737,6 +9743,9 @@ msgstr ""
 msgid "Groups can also be nested by creating %{subgroup_docs_link_start}subgroups%{subgroup_docs_link_end}."
 msgstr ""
 
+msgid "Groups to synchronize"
+msgstr ""
+
 msgid "Groups with access to %{strong_start}%{group_name}%{strong_end}"
 msgstr ""
 
@@ -12737,6 +12746,9 @@ msgid "Notes|Show history only"
 msgstr ""
 
 msgid "Notes|This comment has changed since you started editing, please review the %{open_link}updated comment%{close_link} to ensure information is not lost"
+msgstr ""
+
+msgid "Nothing found…"
 msgstr ""
 
 msgid "Nothing to preview."
@@ -16784,6 +16796,9 @@ msgstr ""
 msgid "Select group or project"
 msgstr ""
 
+msgid "Select groups to replicate"
+msgstr ""
+
 msgid "Select labels"
 msgstr ""
 
@@ -16809,6 +16824,9 @@ msgid "Select projects"
 msgstr ""
 
 msgid "Select projects you want to import."
+msgstr ""
+
+msgid "Select shards to replicate"
 msgstr ""
 
 msgid "Select source branch"
@@ -16839,6 +16857,9 @@ msgid "Selected levels cannot be used by non-admin users for groups, projects or
 msgstr ""
 
 msgid "Selecting a GitLab user will add a link to the GitLab user in the descriptions of issues and comments (e.g. \"By <a href=\"#\">@johnsmith</a>\"). It will also associate and/or assign these issues and comments with the selected user."
+msgstr ""
+
+msgid "Selective synchronization"
 msgstr ""
 
 msgid "Self monitoring project does not exist"
@@ -17169,6 +17190,9 @@ msgid "Settings"
 msgstr ""
 
 msgid "Severity: %{severity}"
+msgstr ""
+
+msgid "Shards to synchronize"
 msgstr ""
 
 msgid "Share"
@@ -19035,6 +19059,9 @@ msgid "There was an error fetching median data for stages"
 msgstr ""
 
 msgid "There was an error fetching the Designs"
+msgstr ""
+
+msgid "There was an error fetching the Node's Groups"
 msgstr ""
 
 msgid "There was an error gathering the chart data"
