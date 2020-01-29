@@ -15,7 +15,7 @@ describe Packages::Nuget::PackageMetadataPresenter do
   end
 
   describe '#archive_url' do
-    let_it_be(:expected_suffix) { "/api/v4/projects/#{package.project_id}/packages/nuget/download/#{package.name}/#{package.version}/#{package.name.downcase}.#{package.version.downcase}.nupkg" }
+    let_it_be(:expected_suffix) { "/api/v4/projects/#{package.project_id}/packages/nuget/download/#{package.name}/#{package.version}/#{package.name}.#{package.version}.nupkg" }
 
     subject { presenter.archive_url }
 
