@@ -72,7 +72,6 @@ export default {
       <gl-icon name="labels" class="append-right-8" />
       <strong class="append-right-8 js-tags-count">{{ tagsDisplay }}</strong>
     </div>
-
     <gl-badge
       v-for="(tag, index) in tagsToRender"
       :key="index"
