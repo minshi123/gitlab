@@ -1,8 +1,8 @@
 import Vuex from 'vuex';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, createLocalVue } from '@vue/test-utils';
 import createStore from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import Component from 'ee/subscriptions/new/components/checkout/confirm_order.vue';
 
 describe('Confirm Order', () => {
@@ -11,15 +11,23 @@ describe('Confirm Order', () => {
 
   let wrapper;
 
+  const methods = {
+    confirmOrder: jest.fn(),
+  };
+
   const store = createStore();
 
   const createComponent = (opts = {}) => {
-    wrapper = shallowMount(Component, {
+    wrapper = mount(Component, {
       localVue,
       store,
+      methods,
       ...opts,
     });
   };
+
+  const findConfirmButton = () => wrapper.find(GlButton);
+  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
 
   beforeEach(() => {
     createComponent();
@@ -35,7 +43,35 @@ describe('Confirm Order', () => {
     });
 
     it('button should be visible', () => {
-      expect(wrapper.find(GlButton).exists()).toBe(true);
+      expect(findConfirmButton().exists()).toBe(true);
+    });
+
+    it('shows the text "Confirm purchase"', () => {
+      expect(findConfirmButton().text()).toBe('Confirm purchase');
+    });
+
+    it('the loading indicator should not be visible', () => {
+      expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    describe('Clicking the button', () => {
+      beforeEach(() => {
+        findConfirmButton().trigger('click');
+
+        store.commit(types.UPDATE_IS_CONFIRMING_ORDER, true);
+      });
+
+      it('invokes the confirmOrder action', () => {
+        expect(methods.confirmOrder).toHaveBeenCalled();
+      });
+
+      it('shows the text "Confirming..."', () => {
+        expect(findConfirmButton().text()).toBe('Confirming...');
+      });
+
+      it('the loading indicator should be visible', () => {
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
     });
   });
 
@@ -45,7 +81,7 @@ describe('Confirm Order', () => {
     });
 
     it('button should not be visible', () => {
-      expect(wrapper.find(GlButton).exists()).toBe(false);
+      expect(findConfirmButton().exists()).toBe(false);
     });
   });
 });
