@@ -136,7 +136,7 @@ describe('Settings Form', () => {
         });
       });
 
-      it('is disabled when isLoading is trye', () => {
+      it('is disabled when isLoading is true', () => {
         store.dispatch('toggleLoading');
         return wrapper.vm.$nextTick().then(() => {
           expect(findCancelButton().attributes('disabled')).toBe('true');
