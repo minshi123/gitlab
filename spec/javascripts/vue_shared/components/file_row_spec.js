@@ -19,7 +19,7 @@ describe('File row component', () => {
 
   const findNewDropdown = () => vm.$el.querySelector('.ide-new-btn .dropdown');
   const findNewDropdownButton = () => vm.$el.querySelector('.ide-new-btn .dropdown button');
-  const findFileRow = () => vm.$el.querySelector('.file-row');
+  const findFileRow = () => vm.$el;
 
   it('renders name', () => {
     createComponent({
@@ -42,7 +42,7 @@ describe('File row component', () => {
     });
     spyOn(vm, '$emit').and.stub();
 
-    vm.$el.querySelector('.file-row').click();
+    vm.$el.click();
 
     expect(vm.$emit).toHaveBeenCalledWith('toggleTreeOpen', vm.file.path);
   });
@@ -87,7 +87,7 @@ describe('File row component', () => {
       level: 0,
     });
 
-    expect(vm.$el.querySelector('.js-file-row-header')).not.toBe(null);
+    expect(vm.$el.classList).toContain('js-file-row-header');
   });
 
   describe('new dropdown', () => {
