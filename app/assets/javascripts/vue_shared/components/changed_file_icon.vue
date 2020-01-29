@@ -57,13 +57,11 @@ export default {
         return sprintf(__('Staged %{type}'), {
           type,
         });
-      } else {
-        return sprintf(__('Unstaged %{type}'), {
-          type,
-        });
       }
 
-      return undefined;
+      return sprintf(__('Unstaged %{type}'), {
+        type,
+      });
     },
     showIcon() {
       return (
