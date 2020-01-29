@@ -20020,7 +20020,6 @@ msgstr "Unstaged"
 msgid "Unstaged %{type}"
 msgstr ""
 
-
 msgid "Unstar"
 msgstr ""
 

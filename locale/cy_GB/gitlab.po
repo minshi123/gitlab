@@ -20432,7 +20432,6 @@ msgstr ""
 msgid "Unstaged %{type}"
 msgstr ""
 
-
 msgid "Unstar"
 msgstr ""
 
