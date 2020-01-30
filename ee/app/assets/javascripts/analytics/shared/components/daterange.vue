@@ -23,8 +23,29 @@ export default {
     },
     minDate: {
       type: Date,
-      rerquired: false,
+      required: false,
       default: null,
+    },
+    containerClasses: {
+      type: String,
+      required: false,
+      default:
+        'daterange-container d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-end',
+    },
+    datepickerClasses: {
+      type: String,
+      required: false,
+      default: 'd-flex flex-column flex-lg-row',
+    },
+    startPickerClasses: {
+      type: String,
+      required: false,
+      default: 'd-flex flex-column flex-lg-row align-items-lg-center mr-lg-2 mb-2 mb-md-0',
+    },
+    endPickerClasses: {
+      type: String,
+      required: false,
+      default: 'd-flex flex-column flex-lg-row align-items-lg-center',
     },
   },
   computed: {
@@ -40,19 +61,16 @@ export default {
 };
 </script>
 <template>
-  <div
-    v-if="show"
-    class="daterange-container d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-end"
-  >
+  <div v-if="show" :class="containerClasses">
     <gl-daterange-picker
       v-model="dateRange"
-      class="d-flex flex-column flex-lg-row"
+      :class="datepickerClasses"
       :default-start-date="startDate"
       :default-end-date="endDate"
       :default-min-date="minDate"
       theme="animate-picker"
-      start-picker-class="d-flex flex-column flex-lg-row align-items-lg-center mr-lg-2 mb-2 mb-md-0"
-      end-picker-class="d-flex flex-column flex-lg-row align-items-lg-center"
+      :start-picker-class="startPickerClasses"
+      :end-picker-class="endPickerClasses"
     />
   </div>
 </template>

@@ -205,40 +205,37 @@ export default {
     </div>
     <div class="mw-100">
       <div
-        class="row-content-block second-block d-flex flex-column flex-lg-row mt-3 py-2 px-3 justify-content-between"
+        class="row-content-block second-block d-flex flex-column flex-sm-row flex-wrap justify-content-between mt-3 py-2 px-3"
       >
         <div
-          :class="[
-            { 'flex-grow-1': selectedGroup },
-            'dropdown-container d-flex flex-column flex-lg-row mr-2 mt-2 mt-md-0',
-          ]"
+          class="d-flex flex-column flex-sm-row flex-grow-1 justify-content-between align-items-center mr-2 mt-2 mt-md-0"
         >
           <groups-dropdown-filter
-            class="js-groups-dropdown-filter w-100"
+            class="js-groups-dropdown-filter dropdown-select flex-grow-1"
             :query-params="$options.groupsQueryParams"
             @selected="onGroupSelect"
           />
           <projects-dropdown-filter
             v-if="shouldDisplayFilters"
             :key="selectedGroup.id"
-            class="js-projects-dropdown-filter ml-lg-1 mt-1 mt-lg-0 w-100"
+            class="js-projects-dropdown-filter dropdown-select flex-grow-1 ml-sm-1 mt-1 mt-sm-0 mr-0"
             :group-id="selectedGroup.id"
             :query-params="$options.projectsQueryParams"
             :multi-select="$options.multiProjectSelect"
             @selected="onProjectsSelect"
           />
         </div>
-        <div
+        <date-range
           v-if="shouldDisplayFilters"
-          class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-end"
-        >
-          <date-range
-            :start-date="startDate"
-            :end-date="endDate"
-            class="js-daterange-picker"
-            @change="setDateRange"
-          />
-        </div>
+          :start-date="startDate"
+          :end-date="endDate"
+          class="js-daterange-picker"
+          @change="setDateRange"
+        />
+        <!-- container-classes="d-flex flex-grow-1 justify-content-between justify-content-xl-end align-items-center mt-2 mt-xl-0"
+          datepicker-classes="d-flex flex-column flex-sm-row flex-fill"
+          start-picker-classes="d-flex flex-column flex-sm-row flex-grow-1 align-items-sm-center"
+          end-picker-classes="d-flex flex-column flex-sm-row flex-grow-1 align-items-sm-center w-100 mt-2 m" -->
       </div>
     </div>
     <gl-empty-state
