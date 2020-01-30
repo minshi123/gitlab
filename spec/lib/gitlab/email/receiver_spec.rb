@@ -45,7 +45,7 @@ describe Gitlab::Email::Receiver do
     end
 
     context 'when in a Received header' do
-      stub_incoming_email_setting(enabled: true, address: "gitlab+%{key}@example.com"
+      stub_incoming_email_setting(enabled: true, address: "gitlab+%{key}@example.com")
       let(:email_raw) { fixture_file('emails/received_header.eml') }
 
       it_behaves_like 'correctly finds the project and issue'
