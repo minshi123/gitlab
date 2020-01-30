@@ -13,6 +13,14 @@ describe Gitlab::Email::Receiver do
     end
   end
 
+  shared_examples 'correctly finds the project and issue' do
+    specify do
+      expect(Gitlab::Email::Handler).to receive(:for).with(an_instance_of(Mail::Message), 'test-group-test-project-29-issue-').and_return(handler)
+
+      receiver.execute
+    end
+  end
+
   context 'when the email contains a valid email address in a header' do
     let(:handler) { double(:handler) }
 
@@ -37,9 +45,10 @@ describe Gitlab::Email::Receiver do
     end
 
     context 'when in a Received header' do
+      stub_incoming_email_setting(enabled: true, address: "gitlab+%{key}@example.com"
       let(:email_raw) { fixture_file('emails/received_header.eml') }
 
-      it_behaves_like 'correctly finds the mail key'
+      it_behaves_like 'correctly finds the project and issue'
     end
   end
 
