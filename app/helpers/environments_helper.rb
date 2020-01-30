@@ -40,9 +40,7 @@ module EnvironmentsHelper
     }
   end
 
-  def can_user_update_environment(user, environment)
-    {
-      can?(user, :update_environment, environment) && environment.stopped?
-    }
+  def can_user_update_environment?(environment)
+    can?(current_user, :update_environment, environment) && environment.stopped?
   end
 end

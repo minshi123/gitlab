@@ -67,7 +67,7 @@
         target: '#stop-environment-modal' } do
         = sprite_icon('stop')
         = s_('Environments|Stop')
-    - if can_user_update_environment(current_user, @environment)?
+    - if can_user_update_environment(@environment)?
       = button_tag class: 'btn btn-danger', type: 'button', data: { toggle: 'modal',
         target: '#delete-environment-modal' } do
         = s_('Environments|Delete')

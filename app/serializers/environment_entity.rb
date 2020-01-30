@@ -52,7 +52,7 @@ class EnvironmentEntity < Grape::Entity
   end
 
   expose :can_delete do |environment|
-    can_user_update_environment(current_user, @environment)?
+    can_user_update_environment(@environment)?
   end
 
   private
