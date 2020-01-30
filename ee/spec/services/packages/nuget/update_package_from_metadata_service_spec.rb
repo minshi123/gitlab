@@ -14,20 +14,29 @@ describe Packages::Nuget::UpdatePackageFromMetadataService do
     subject { service.execute }
 
     it 'updates package and package file' do
-      subject
+      expect { subject }
+        .to change { ::Packages::Package.count }.by(0)
+        .and change { ::Packages::PackageFile.count }.by(0)
 
       expect(package.reload.name).to eq(package_name)
       expect(package.version).to eq(package_version)
-      expect(package_file.reload.file_name).to eq(package_file_name)
+      last_package_file = package.package_files.last
+      expect(last_package_file.file_name).to eq(package_file_name)
+      expect(last_package_file.id).not_to eq(package_file.id)
     end
 
     context 'with exisiting package' do
       let!(:existing_package) { create(:nuget_package, project: package.project, name: package_name, version: package_version) }
 
       it 'link existing package and updates package file' do
-        expect { subject }.to change { ::Packages::Package.count }.by(-1)
-        expect(package_file.reload.file_name).to eq(package_file_name)
-        expect(package_file.package).to eq(existing_package)
+        expect { subject }
+          .to change { ::Packages::Package.count }.by(-1)
+          .and change { ::Packages::PackageFile.count }.by(0)
+          .and change { existing_package.package_files.count }.by(1)
+
+        last_package_file = existing_package.reload.package_files.last
+        expect(last_package_file.file_name).to eq(package_file_name)
+        expect(last_package_file.id).not_to eq(package_file.id)
       end
     end
 
