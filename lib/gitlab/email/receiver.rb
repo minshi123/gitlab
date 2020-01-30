@@ -67,7 +67,7 @@ module Gitlab
       def key_from_additional_headers(mail)
         find_key_from_references(mail) ||
           find_key_from_delivered_to_header(mail) ||
-          find_key_from_envelope_to_header(mail) || 
+          find_key_from_envelope_to_header(mail) ||
           find_key_from_received_header(mail)
       end
 
