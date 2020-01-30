@@ -93,12 +93,17 @@ There are multiple ways to create a branch from GitLab's web interface.
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/2808) in GitLab 8.6.
 
-In case your development workflow dictates to have an issue for every merge
-request, you can quickly create a branch right on the issue page which will be
-tied with the issue itself. You can see a **Create merge request** dropdown
-below the issue description unless there is already a branch with the same
-name or a referenced merge request or your project (still) has an active
+If your development workflow dictates to have an issue for every merge
+request, you can quickly create a branch on the issue page.
+The new branch, and later its merge request, will be marked as related to this issue.
+You can see a **Create merge request** dropdown below the issue description.
+
+NOTE: **Note:**
+You won't see the **Create merge request** button if there is already a branch with the same
+name or a referenced merge request or your project has an active
 [fork relationship](../settings/index.md#advanced-settings).
+If you would like to make this button appear, a possible workaround is to remove your project's
+fork relationship.
 
 ![Create Button](img/web_editor_new_branch_from_issue_create_button_v12_6.png)
 
