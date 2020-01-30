@@ -20,7 +20,7 @@ module Gitlab
           belongs_to :project
 
           def user_mention_model
-            "#{CreateResourceUserMention::ISOLATION_MODULE}::#{noteable.class}".constantize.user_mention_model
+            "#{CreateResourceUserMention::ISOLATION_MODULE}::#{noteable_type}".constantize.user_mention_model
           end
 
           def for_personal_snippet?
