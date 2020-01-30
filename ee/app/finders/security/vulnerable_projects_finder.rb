@@ -18,7 +18,7 @@ module Security
       ::Vulnerabilities::Occurrence
         .select(1)
         .undismissed
-        .where('vulnerability_occurrences.project_id = projects.id') # rubocop:disable CodeReuse/ActiveRecord
+        .scoped_project
     end
   end
 end
