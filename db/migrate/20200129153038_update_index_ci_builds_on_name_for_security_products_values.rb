@@ -27,6 +27,5 @@ class UpdateIndexCiBuildsOnNameForSecurityProductsValues < ActiveRecord::Migrati
                          :name,
                          name: INDEX_NAME,
                          where: INITIAL_INDEX + ']))'
-
   end
 end
