@@ -72,8 +72,8 @@ export default {
     },
     shouldRenderSecurityReport() {
       return (
-        this.mr.enabledSecurityReports &&
-        Object.values(this.mr.enabledSecurityReports).some(isReportEnabled => isReportEnabled)
+        this.mr.enabledReports &&
+        this.$options.securityReportTypes.some(reportType => this.mr.enabledReports[reportType])
       );
     },
     codequalityText() {
@@ -247,6 +247,7 @@ export default {
       };
     },
   },
+  securityReportTypes: ['dast', 'sast', 'dependencyScanning', 'containerScanning'],
 };
 </script>
 <template>
@@ -301,7 +302,7 @@ export default {
         :source-branch="mr.sourceBranch"
         :target-branch="mr.targetBranch"
         :base-blob-path="mr.baseBlobPath"
-        :enabled-reports="mr.enabledSecurityReports"
+        :enabled-reports="mr.enabledReports"
         :sast-help-path="mr.sastHelp"
         :dast-help-path="mr.dastHelp"
         :container-scanning-help-path="mr.containerScanningHelp"
@@ -320,6 +321,7 @@ export default {
         :can-dismiss-vulnerability="mr.canDismissVulnerability"
         :diverged-commits-count="mr.divergedCommitsCount"
         :mr-state="mr.state"
+        class="js-security-widget"
       />
       <mr-widget-licenses
         v-if="shouldRenderLicenseReport"
