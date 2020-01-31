@@ -26,8 +26,8 @@ Merge request approvals enable multiple use cases:
 Approval rules define how many approvals a merge request must receive before it can
 be merged, and optionally which users should do the approving. Approvals can be defined:
 
-- [As project defaults](#adding--editing-a-default-approval-rule)
-- [Per merge request](#editing--overriding-approval-rules-per-merge-request)
+- [As project defaults](#adding--editing-a-default-approval-rule).
+- [Per merge request](#editing--overriding-approval-rules-per-merge-request).
 
 If no approval rules are defined, any user can approve a merge request, though the default
 minimum number of required approvers can still be set in the [project settings for merge request approvals](#merge-request-approvals-project-settings).
