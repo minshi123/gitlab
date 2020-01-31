@@ -34,6 +34,10 @@ describe BulkInsertable do
     it 'does not raise an error when method is bulk-insert safe' do
       expect { BulkInsertItem.after_initialize -> {} }.not_to raise_error
     end
+
+    it 'does not raise an error when the call is triggered by belongs_to' do
+      expect { BulkInsertItem.belongs_to(:other_record) }.not_to raise_error
+    end
   end
 
   context 'when inheriting class methods' do
