@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require './db/post_migrate/20200130161025_migrate_issue_mentions_to_db'
+require './db/post_migrate/20200131125025_migrate_issue_notes_mentions_to_db'
 
 describe Gitlab::BackgroundMigration::UserMentions::CreateResourceUserMention do
   include MigrationsHelpers
@@ -59,6 +60,32 @@ describe Gitlab::BackgroundMigration::UserMentions::CreateResourceUserMention do
       expect(snippet_user_mention.mentioned_users_ids.sort).to eq(users.pluck(:id).sort)
       expect(snippet_user_mention.mentioned_groups_ids.sort).to eq([group.id])
       expect(snippet_user_mention.mentioned_groups_ids.sort).not_to include(inaccessible_group.id)
+    end
+
+    context 'mentions in note' do
+      let(:issue_note) { notes.create!(noteable_id: issue.id, noteable_type: 'Issue', project_id: project.id, author_id: author.id, note: description_mentions) }
+      let(:issue_note2) { notes.create!(noteable_id: issue.id, noteable_type: 'Issue', project_id: project.id, author_id: author.id, note: 'sample note') }
+      let(:system_issue_note) { notes.create!(noteable_id: issue.id, noteable_type: 'Issue', project_id: project.id, author_id: author.id, note: description_mentions, system: true) }
+
+      before do
+        issue_note.becomes(Note).save!
+        issue_note2.becomes(Note).save!
+        system_issue_note.becomes(Note).save!
+      end
+
+      it 'migrates mentions from note' do
+        join = MigrateIssueNotesMentionsToDb::JOIN
+        conditions = MigrateIssueNotesMentionsToDb::QUERY_CONDITIONS
+
+        expect do
+          subject.perform('Issue', join, conditions, true, Note.minimum(:id), Note.maximum(:id))
+        end.to change { issue_user_mentions.where(issue_id: issue.id).count }.by(2)
+
+        epic_user_mention = issue_user_mentions.last
+        expect(epic_user_mention.mentioned_users_ids.sort).to eq(users.pluck(:id).sort)
+        expect(epic_user_mention.mentioned_groups_ids.sort).to eq([group.id])
+        expect(epic_user_mention.mentioned_groups_ids.sort).not_to include(inaccessible_group.id)
+      end
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_30_161025) do
+ActiveRecord::Schema.define(version: 2020_01_31_125025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -2787,6 +2787,7 @@ ActiveRecord::Schema.define(version: 2020_01_30_161025) do
     t.index ["created_at"], name: "index_notes_on_created_at"
     t.index ["discussion_id"], name: "index_notes_on_discussion_id"
     t.index ["id"], name: "epic_mentions_temp_index", where: "((note ~~ '%@%'::text) AND ((noteable_type)::text = 'Epic'::text))"
+    t.index ["id"], name: "issue_mentions_temp_index", where: "((note ~~ '%@%'::text) AND ((noteable_type)::text = 'Issue'::text))"
     t.index ["line_code"], name: "index_notes_on_line_code"
     t.index ["note"], name: "index_notes_on_note_trigram", opclass: :gin_trgm_ops, using: :gin
     t.index ["noteable_id", "noteable_type"], name: "index_notes_on_noteable_id_and_noteable_type"
