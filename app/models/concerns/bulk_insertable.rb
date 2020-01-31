@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 module BulkInsertable
+  IncludeNotAllowedError = Class.new(StandardError)
   MethodDefinitionNotAllowedError = Class.new(StandardError)
+
+  def self.included(mod)
+    raise IncludeNotAllowedError.new("You must `extend` the `#{self}` module")
+  end
 
   BLACKLISTED_METHODS = [
     :before_save, :after_save, :before_create, :after_create,
