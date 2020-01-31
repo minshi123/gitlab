@@ -15,8 +15,8 @@ module Analytics
         validates :name, exclusion: { in: Gitlab::Analytics::CycleAnalytics::DefaultStages.names }, if: :custom?
         validates :start_event_identifier, presence: true
         validates :end_event_identifier, presence: true
-        validates :start_event_label, presence: true, if: :start_event_label_based?
-        validates :end_event_label, presence: true, if: :end_event_label_based?
+        validates :start_event_label_id, presence: true, if: :start_event_label_based?
+        validates :end_event_label_id, presence: true, if: :end_event_label_based?
         validate :validate_stage_event_pairs
         validate :validate_labels
 
@@ -68,11 +68,11 @@ module Analytics
       end
 
       def params_for_start_event
-        start_event_label.present? ? { label: start_event_label } : {}
+        start_event_label_id.present? ? { label: start_event_label_id } : {}
       end
 
       def params_for_end_event
-        end_event_label.present? ? { label: end_event_label } : {}
+        end_event_label_id.present? ? { label: end_event_label_id } : {}
       end
 
       def default_stage?
