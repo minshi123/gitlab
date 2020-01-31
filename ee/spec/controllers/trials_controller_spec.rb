@@ -77,7 +77,9 @@ describe TrialsController do
               last_name: user.last_name,
               phone_number: '1111111111',
               number_of_users: "20",
-              country: 'IN'
+              country: 'IN',
+              glm_source: 'source',
+              glm_content: 'content',
           }
           extra_params = {
               work_email: user.email,

@@ -46,7 +46,8 @@ class TrialsController < ApplicationController
   end
 
   def company_params
-    params.permit(:company_name, :company_size, :first_name, :last_name, :phone_number, :number_of_users, :country)
+    params.permit(:company_name, :company_size, :first_name, :last_name, :phone_number,
+                  :number_of_users, :country, :glm_source, :glm_content)
           .merge(extra_params)
   end
 
