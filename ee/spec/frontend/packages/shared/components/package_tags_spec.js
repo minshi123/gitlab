@@ -73,6 +73,7 @@ describe('PackageTags', () => {
       'd-block': false,
       'd-md-block': false,
       'append-right-4': false,
+      'prepend-left-8': false,
     };
 
     it('shows tag badge when there is only one', () => {
@@ -81,6 +82,7 @@ describe('PackageTags', () => {
       const expectedStyle = {
         ...defaultStyle,
         'd-block': true,
+        'prepend-left-8': true,
       };
 
       expect(wrapper.vm.tagBadgeClass(0)).toEqual(expectedStyle);
@@ -97,7 +99,7 @@ describe('PackageTags', () => {
       expect(wrapper.vm.tagBadgeClass(1)).toEqual(expectedStyle);
     });
 
-    it('correctly appends right when there is more than one tag', () => {
+    it('correctly prepends left and appends right when there is more than one tag', () => {
       createComponent(mockTags, {
         tagDisplayLimit: 4,
       });
@@ -105,6 +107,7 @@ describe('PackageTags', () => {
       const expectedStyleWithoutAppend = {
         ...defaultStyle,
         'd-md-block': true,
+        'append-right-4': false,
       };
 
       const expectedStyleWithAppend = {
@@ -112,7 +115,10 @@ describe('PackageTags', () => {
         'append-right-4': true,
       };
 
-      expect(wrapper.vm.tagBadgeClass(0)).toEqual(expectedStyleWithAppend);
+      expect(wrapper.vm.tagBadgeClass(0)).toEqual({
+        ...expectedStyleWithAppend,
+        'prepend-left-8': true,
+      });
       expect(wrapper.vm.tagBadgeClass(1)).toEqual(expectedStyleWithAppend);
       expect(wrapper.vm.tagBadgeClass(2)).toEqual(expectedStyleWithAppend);
       expect(wrapper.vm.tagBadgeClass(3)).toEqual(expectedStyleWithoutAppend);
