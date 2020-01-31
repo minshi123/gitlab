@@ -43,9 +43,7 @@ export default {
     initialFields: {
       type: Object,
       required: false,
-      default: () => ({
-        ...initFields,
-      }),
+      default: () => {},
     },
     isSavingCustomStage: {
       type: Boolean,
@@ -61,6 +59,7 @@ export default {
   data() {
     return {
       fields: {
+        ...initFields,
         ...this.initialFields,
       },
     };
