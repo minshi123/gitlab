@@ -32,7 +32,7 @@
             = button_tag _('Cancel'), type: 'button', class: 'btn btn-cancel', data: { dismiss: 'modal' }
             = button_to stop_project_environment_path(@project, @environment), class: 'btn btn-danger has-tooltip', method: :post do
               = s_('Environments|Stop environment')
-  - if can?(current_user, :update_environment, @environment)
+  - if can_user_update_environment(@environment)?
     #delete-environment-modal.modal.fade{ tabindex: -1 }
       .modal-dialog
         .modal-content
