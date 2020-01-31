@@ -10,6 +10,7 @@ import { stageKeys } from '../constants';
 import service from '../services';
 import router from '../ide_router';
 import eventHub from '../eventhub';
+import themes from '../lib/themes';
 
 export const redirectToUrl = (self, url) => visitUrl(url);
 
@@ -276,6 +277,16 @@ export const renameEntry = ({ dispatch, commit, state, getters }, { path, name, 
   }
 
   dispatch('triggerFilesChange');
+};
+
+export const getEditorTheme = ({ commit, state }) => {
+  const promise = state.editorTheme
+    ? Promise.resolve()
+    : service.getEditorThemeId().then(id => {
+        commit(types.SET_EDITOR_THEME, themes.find(theme => theme.id === id)?.name);
+      });
+
+  return promise.then(() => state.editorTheme);
 };
 
 export const getBranchData = ({ commit, state }, { projectId, branchId, force = false } = {}) =>

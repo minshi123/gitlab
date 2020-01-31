@@ -32,4 +32,5 @@ export default () => ({
   },
   clientsidePreviewEnabled: false,
   renderWhitespaceInCode: false,
+  editorTheme: '',
 });

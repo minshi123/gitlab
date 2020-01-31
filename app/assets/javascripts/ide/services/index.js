@@ -75,4 +75,9 @@ export default {
     const commitSha = getters.lastCommit.id;
     return Api.commitPipelines(getters.currentProject.path_with_namespace, commitSha);
   },
+  getEditorThemeId() {
+    if (!gon.current_user_id) return 1;
+
+    return Api.user(gon.current_user_id).then(({ data }) => data.color_scheme_id);
+  },
 };

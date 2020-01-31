@@ -68,6 +68,9 @@ export default {
       entries,
     });
   },
+  [types.SET_EDITOR_THEME](state, theme) {
+    state.editorTheme = theme;
+  },
   [types.CREATE_TMP_ENTRY](state, { data, projectId, branchId }) {
     Object.keys(data.entries).reduce((acc, key) => {
       const entry = data.entries[key];

@@ -14,6 +14,7 @@ import Editor from '../lib/editor';
 import ExternalLink from './external_link.vue';
 import FileTemplatesBar from './file_templates/bar.vue';
 import { __ } from '~/locale';
+import { DEFAULT_THEME } from '../lib/themes';
 
 export default {
   components: {
@@ -158,11 +159,16 @@ export default {
       'updateViewer',
       'removePendingTab',
       'triggerFilesChange',
+      'getEditorTheme',
     ]),
     initEditor() {
       if (this.shouldHideEditor && (this.file.content || this.file.raw)) {
         return;
       }
+
+      this.getEditorTheme()
+        .then((theme = DEFAULT_THEME) => Editor.setTheme(theme))
+        .catch(Editor.setTheme(DEFAULT_THEME));
 
       this.editor.clearEditor();
 

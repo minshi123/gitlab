@@ -1,5 +1,5 @@
 import { editor as monacoEditor, languages as monacoLanguages, Uri } from 'monaco-editor';
-import gitlabTheme from '~/ide/lib/themes/gl_theme';
+import gitlabTheme from '~/ide/lib/themes/gitlab';
 import { defaultEditorOptions } from '~/ide/lib/editor_options';
 import { clearDomElement } from './utils';
 
@@ -19,7 +19,7 @@ export default class Editor {
   }
 
   static setupMonacoTheme() {
-    monacoEditor.defineTheme(gitlabTheme.themeName, gitlabTheme.monacoTheme);
+    monacoEditor.defineTheme('gitlab', gitlabTheme);
     monacoEditor.setTheme('gitlab');
   }
 
