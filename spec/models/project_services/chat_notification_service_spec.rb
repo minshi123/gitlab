@@ -35,6 +35,7 @@ describe ChatNotificationService do
     let(:user) { create(:user) }
     let(:project) { create(:project, :repository) }
     let(:webhook_url) { 'https://example.gitlab.com/' }
+    let(:data) { Gitlab::DataBuilder::Push.build_sample(project, user) }
 
     before do
       allow(chat_service).to receive_messages(
@@ -52,7 +53,6 @@ describe ChatNotificationService do
     context 'with a repository' do
       it 'returns true' do
         subject.project = project
-        data = Gitlab::DataBuilder::Push.build_sample(project, user)
 
         expect(chat_service).to receive(:notify).and_return(true)
         expect(chat_service.execute(data)).to be true
@@ -60,12 +60,38 @@ describe ChatNotificationService do
     end
 
     context 'with an empty repository' do
+      let(:data) { Gitlab::DataBuilder::Push.build_sample(subject.project, user) }
+
       it 'returns true' do
         subject.project = create(:project, :empty_repo)
-        data = Gitlab::DataBuilder::Push.build_sample(subject.project, user)
 
         expect(chat_service).to receive(:notify).and_return(true)
         expect(chat_service.execute(data)).to be true
+      end
+    end
+
+    context 'with channel specified' do
+      before do
+        allow(chat_service).to receive(:push_channel).and_return(channel)
+      end
+
+      context 'with single channel name' do
+        let(:channel) { 'slack-integration' }
+
+        it 'notifies once' do
+          expect(chat_service).to receive(:notify).with(any_args, hash_including(channel: channel)).and_return(true)
+          expect(chat_service.execute(data)).to be(true)
+        end
+      end
+
+      context 'with multiple channel names' do
+        let(:channel) { 'slack-integration,slack-test' }
+
+        it 'notifies once' do
+          expect(chat_service).to receive(:notify).with(any_args, hash_including(channel: 'slack-integration')).and_return(true)
+          expect(chat_service).to receive(:notify).with(any_args, hash_including(channel: 'slack-test')).and_return(true)
+          expect(chat_service.execute(data)).to be(true)
+        end
       end
     end
   end
