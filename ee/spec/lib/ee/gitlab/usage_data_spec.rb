@@ -116,6 +116,7 @@ describe Gitlab::UsageData do
           create(:group_member, ldap: true, user: user)
 
           expect(described_class.uncached_data[:usage_activity_by_stage][:manage]).to eq(
+            events: 1,
             groups: 1,
             ldap_keys: 1,
             ldap_users: 1
