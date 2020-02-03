@@ -43,9 +43,9 @@ module Gitlab
       def system_usage_data
         {
           counts: {
-            assignee_lists: count(List.assignee),
+            assignee_lists: batch_count(List.assignee),
             boards: count(Board),
-            ci_builds: count(::Ci::Build),
+            ci_builds: batch_count(::Ci::Build),
             ci_internal_pipelines: count(::Ci::Pipeline.internal),
             ci_external_pipelines: count(::Ci::Pipeline.external),
             ci_pipeline_config_auto_devops: count(::Ci::Pipeline.auto_devops_source),
@@ -81,8 +81,8 @@ module Gitlab
             clusters_applications_jupyter: count(::Clusters::Applications::Jupyter.available),
             in_review_folder: count(::Environment.in_review_folder),
             grafana_integrated_projects: count(GrafanaIntegration.enabled),
-            groups: count(Group),
-            issues: count(Issue),
+            groups: batch_count(Group),
+            issues: batch_count(Issue),
             issues_created_from_gitlab_error_tracking_ui: count(SentryIssue),
             issues_with_associated_zoom_link: count(ZoomMeeting.added_to_issue),
             issues_using_zoom_quick_actions: count(ZoomMeeting.select(:issue_id).distinct),
@@ -103,7 +103,7 @@ module Gitlab
             remote_mirrors: count(RemoteMirror),
             snippets: count(Snippet),
             suggestions: count(Suggestion),
-            todos: count(Todo),
+            todos: batch_count(Todo),
             uploads: count(Upload),
             web_hooks: count(WebHook)
           }.merge(
@@ -233,6 +233,47 @@ module Gitlab
         relation.count
       rescue ActiveRecord::StatementInvalid
         fallback
+      end
+
+      def batch_count(relation, column: :id, batch_size: nil, start: nil, finish: nil, mode: :default)
+        counter = 0
+        i = start || relation.minimum(column) || 0
+        finish ||= relation.maximum(column) || 0
+        batch_size ||= mode == :distinct ? 10000 : 100000 # non-distinct have better performance
+
+        sql = build_batch_count_sql(relation, column, mode)
+
+        while i <= finish
+          l = ->(i, batch_size) { ApplicationRecord.connection.exec_query(sql, 'SQL', [[nil, i], [nil, i + batch_size]])[0]["count"] }
+
+          begin
+            counter += l.call(i, batch_size)
+          rescue ActiveRecord::QueryCanceled
+            # retry with a safe batch size & warmer cache
+            batch_size /= 2 if batch_size >= 2000
+            counter += l.call(i, batch_size)
+          end
+          i += batch_size
+          sleep(0.01) # 10 msec sleep to relieve the db
+        end
+
+        counter
+      rescue ActiveRecord::QueryCanceled
+        -2
+      rescue ActiveRecord::StatementInvalid
+        -3
+      end
+
+      def build_batch_count_sql(relation, column, mode = default)
+        batch_sql = "\"#{column}\" >= $1 and \"#{column}\" < $2"
+
+        sql = if mode == :distinct
+                "SELECT DISTINCT \"#{column}\" FROM \"#{relation.table_name}\" WHERE (#{batch_sql})"
+              else
+                relation.select(column).where(batch_sql).to_sql # rubocop: disable CodeReuse/ActiveRecord
+              end
+
+        "SELECT COUNT(*) FROM (#{sql}) as t"
       end
 
       def approximate_counts
