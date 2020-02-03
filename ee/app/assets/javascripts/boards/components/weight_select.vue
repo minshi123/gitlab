@@ -1,16 +1,15 @@
 <script>
 /* eslint-disable vue/require-default-prop */
-/* eslint-disable @gitlab/vue-i18n/no-bare-strings */
 
-import WeightSelect from 'ee/weight_select';
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 
 const ANY_WEIGHT = 'Any Weight';
 const NO_WEIGHT = 'No Weight';
 
 export default {
   components: {
-    GlLoadingIcon,
+    GlDropdown,
+    GlDropdownItem,
   },
   props: {
     board: {
@@ -34,6 +33,7 @@ export default {
   data() {
     return {
       fieldName: 'weight',
+      dropdownHidden: true,
     };
   },
   computed: {
@@ -49,16 +49,17 @@ export default {
       return ANY_WEIGHT;
     },
   },
-  mounted() {
-    this.weightDropdown = new WeightSelect(this.$refs.dropdownButton, {
-      handleClick: this.selectWeight,
-      selected: this.value,
-      fieldName: this.fieldName,
-    });
-  },
   methods: {
-    selectWeight(weight) {
-      this.board.weight = this.weightInt(weight);
+    showDropdown() {
+      this.dropdownHidden = false;
+      this.$nextTick(() => {
+        this.$refs.dropdown.$children[0].show();
+      });
+    },
+    selectWeight({ target }) {
+      if (!target) return;
+      this.board.weight = this.weightInt(target.value);
+      this.dropdownHidden = true;
     },
     weightInt(weight) {
       if (weight > 0) {
@@ -74,40 +75,21 @@ export default {
 </script>
 
 <template>
-  <div class="block weight">
+  <div class="block">
     <div class="title append-bottom-10">
-      Weight
-      <button v-if="canEdit" type="button" class="edit-link btn btn-blank float-right">
+      {{ __('Weight') }}
+      <button v-if="canEdit" type="button" class="btn btn-blank float-right" @click="showDropdown">
         {{ __('Edit') }}
       </button>
     </div>
-    <div :class="valueClass" class="value">{{ valueText }}</div>
-    <div class="selectbox" style="display: none;">
-      <input :name="fieldName" type="hidden" />
-      <div class="dropdown">
-        <button
-          ref="dropdownButton"
-          class="dropdown-menu-toggle js-weight-select wide"
-          type="button"
-          data-default-label="Weight"
-          data-toggle="dropdown"
-        >
-          <span class="dropdown-toggle-text is-default">{{ __('Weight') }}</span>
-          <i aria-hidden="true" data-hidden="true" class="fa fa-chevron-down"> </i>
-        </button>
-        <div class="dropdown-menu dropdown-select dropdown-menu-selectable dropdown-menu-weight">
-          <div class="dropdown-content ">
-            <ul>
-              <li v-for="weight in weights" :key="weight">
-                <a :class="{ 'is-active': weight == valueText }" :data-id="weight" href="#">
-                  {{ weight }}
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div class="dropdown-loading"><gl-loading-icon /></div>
-        </div>
+    <div :class="valueClass" :hidden="!dropdownHidden" class="value">{{ valueText }}</div>
+    
+    <gl-dropdown ref="dropdown" :hidden="dropdownHidden" :text="valueText" class="w-100" menu-class="w-100" toggle-class="d-flex justify-content-between">
+      <div @click="selectWeight">
+        <gl-dropdown-item v-for="weight in weights" :key="weight" :value="weight">
+          {{ weight }}
+        </gl-dropdown-item>
       </div>
-    </div>
+    </gl-dropdown>
   </div>
 </template>
