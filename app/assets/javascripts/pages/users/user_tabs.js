@@ -209,7 +209,7 @@ export default class UserTabs {
 
   loadActivityCalendar() {
     const $calendarWrap = this.$parentEl.find('.tab-pane.active .user-calendar');
-    if (!$calendarWrap.length) return;
+    if (!$calendarWrap.length || $calendarWrap.first().height() === 0) return;
 
     const calendarPath = $calendarWrap.data('calendarPath');
 
