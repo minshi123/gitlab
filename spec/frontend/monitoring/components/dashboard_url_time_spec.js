@@ -7,6 +7,7 @@ import { mockProjectDir } from '../mock_data';
 
 import Dashboard from '~/monitoring/components/dashboard.vue';
 import { createStore } from '~/monitoring/stores';
+import { defaultTimeRange } from '~/monitoring/constants';
 import { propsData } from '../init_utils';
 
 jest.mock('~/flash');
@@ -17,7 +18,10 @@ describe('dashboard invalid url parameters', () => {
   let wrapper;
   let mock;
 
-  const fetchDataMock = jest.fn();
+  const actionMocks = {
+    setTimeRange: jest.fn(),
+    fetchData: jest.fn(),
+  };
 
   const createMountedWrapper = (props = { hasMetrics: true }, options = {}) => {
     wrapper = mount(Dashboard, {
@@ -25,7 +29,7 @@ describe('dashboard invalid url parameters', () => {
       store,
       stubs: ['graph-group', 'panel-type'],
       methods: {
-        fetchData: fetchDataMock,
+        ...actionMocks,
       },
       ...options,
     });
@@ -43,7 +47,10 @@ describe('dashboard invalid url parameters', () => {
       wrapper.destroy();
     }
     mock.restore();
-    fetchDataMock.mockReset();
+
+    actionMocks.setTimeRange.mockReset();
+    actionMocks.fetchData.mockReset();
+
     queryToObject.mockReset();
   });
 
@@ -53,15 +60,12 @@ describe('dashboard invalid url parameters', () => {
     createMountedWrapper();
 
     return wrapper.vm.$nextTick().then(() => {
-      expect(findDateTimePicker().props('value')).toMatchObject({
-        duration: { seconds: 28800 },
-      });
+      expect(findDateTimePicker().props('value')).toEqual(defaultTimeRange);
 
-      expect(fetchDataMock).toHaveBeenCalledTimes(1);
-      expect(fetchDataMock).toHaveBeenCalledWith({
-        start: expect.any(String),
-        end: expect.any(String),
-      });
+      expect(actionMocks.setTimeRange).toHaveBeenCalledTimes(1);
+      expect(actionMocks.setTimeRange).toHaveBeenCalledWith(defaultTimeRange);
+
+      expect(actionMocks.fetchData).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -78,8 +82,10 @@ describe('dashboard invalid url parameters', () => {
     return wrapper.vm.$nextTick().then(() => {
       expect(findDateTimePicker().props('value')).toEqual(params);
 
-      expect(fetchDataMock).toHaveBeenCalledTimes(1);
-      expect(fetchDataMock).toHaveBeenCalledWith(params);
+      expect(actionMocks.setTimeRange).toHaveBeenCalledTimes(1);
+      expect(actionMocks.setTimeRange).toHaveBeenCalledWith(params);
+
+      expect(actionMocks.fetchData).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -91,15 +97,16 @@ describe('dashboard invalid url parameters', () => {
     createMountedWrapper();
 
     return wrapper.vm.$nextTick().then(() => {
-      expect(findDateTimePicker().props('value')).toMatchObject({
+      const expectedTimeRange = {
         duration: { seconds: 60 * 2 },
-      });
+      };
 
-      expect(fetchDataMock).toHaveBeenCalledTimes(1);
-      expect(fetchDataMock).toHaveBeenCalledWith({
-        start: expect.any(String),
-        end: expect.any(String),
-      });
+      expect(findDateTimePicker().props('value')).toMatchObject(expectedTimeRange);
+
+      expect(actionMocks.setTimeRange).toHaveBeenCalledTimes(1);
+      expect(actionMocks.setTimeRange).toHaveBeenCalledWith(expectedTimeRange);
+
+      expect(actionMocks.fetchData).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -114,15 +121,12 @@ describe('dashboard invalid url parameters', () => {
     return wrapper.vm.$nextTick().then(() => {
       expect(createFlash).toHaveBeenCalled();
 
-      expect(findDateTimePicker().props('value')).toMatchObject({
-        duration: { seconds: 28800 },
-      });
+      expect(findDateTimePicker().props('value')).toEqual(defaultTimeRange);
 
-      expect(fetchDataMock).toHaveBeenCalledTimes(1);
-      expect(fetchDataMock).toHaveBeenCalledWith({
-        start: expect.any(String),
-        end: expect.any(String),
-      });
+      expect(actionMocks.setTimeRange).toHaveBeenCalledTimes(1);
+      expect(actionMocks.setTimeRange).toHaveBeenCalledWith(defaultTimeRange);
+
+      expect(actionMocks.fetchData).toHaveBeenCalledTimes(1);
     });
   });
 

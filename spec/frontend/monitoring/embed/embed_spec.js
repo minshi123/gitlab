@@ -14,7 +14,7 @@ describe('Embed', () => {
   let actions;
   let metricsWithDataGetter;
 
-  function mountComponent() {
+  function mountComponent(options = {}) {
     wrapper = shallowMount(Embed, {
       localVue,
       store,
@@ -26,10 +26,11 @@ describe('Embed', () => {
 
   beforeEach(() => {
     actions = {
-      setFeatureFlags: () => {},
-      setShowErrorBanner: () => {},
-      setEndpoints: () => {},
-      fetchMetricsData: () => {},
+      setFeatureFlags: jest.fn(),
+      setShowErrorBanner: jest.fn(),
+      setEndpoints: jest.fn(),
+      setTimeRange: jest.fn(),
+      fetchMetricsData: jest.fn(),
     };
 
     metricsWithDataGetter = jest.fn();
@@ -74,6 +75,24 @@ describe('Embed', () => {
       metricsWithDataGetter.mockReturnValue(metricsWithData);
 
       mountComponent();
+    });
+
+    it('calls actions to fetch data', () => {
+      const expectedState = expect.any(Object);
+      const expectedTimeRangePayload = expect.objectContaining({
+        start: expect.any(String),
+        end: expect.any(String),
+      });
+
+      expect(actions.setTimeRange).toHaveBeenCalled();
+      expect(actions.setTimeRange).toHaveBeenCalledWith(
+        expectedState,
+        expectedTimeRangePayload,
+        undefined,
+      );
+
+      expect(actions.fetchMetricsData).toHaveBeenCalled();
+      expect(actions.fetchMetricsData).toHaveBeenCalledWith(expectedState, undefined, undefined);
     });
 
     it('shows a chart when metrics are present', () => {

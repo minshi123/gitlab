@@ -94,6 +94,24 @@ describe('Dashboard', () => {
   });
 
   describe('request information to the server', () => {
+    it('calls to set time range and fetch data', done => {
+      const methods = {
+        setTimeRange: jest.fn(),
+        fetchData: jest.fn(),
+      };
+
+      createShallowWrapper({ hasMetrics: true }, { methods });
+
+      wrapper.vm
+        .$nextTick()
+        .then(() => {
+          expect(methods.setTimeRange).toHaveBeenCalled();
+          expect(methods.fetchData).toHaveBeenCalled();
+          done();
+        })
+        .catch(done.fail);
+    });
+
     it('shows up a loading state', done => {
       createShallowWrapper({ hasMetrics: true }, { methods: {} });
 
