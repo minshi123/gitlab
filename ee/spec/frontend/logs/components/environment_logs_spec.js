@@ -13,6 +13,7 @@ import {
   mockLogsResult,
   mockTrace,
   mockPodName,
+  mockSearch,
   mockEnvironmentsEndpoint,
   mockDocumentationPath,
 } from '../mock_data';
@@ -33,6 +34,7 @@ describe('EnvironmentLogs', () => {
 
   const actionMocks = {
     setInitData: jest.fn(),
+    setSearch: jest.fn(),
     showPodLogs: jest.fn(),
     showEnvironment: jest.fn(),
     fetchEnvironments: jest.fn(),
@@ -205,10 +207,18 @@ describe('EnvironmentLogs', () => {
       initWrapper();
     });
 
-    it('displays a disabled search bar and time window dropdown', () => {
+    it('displays a disabled time window dropdown', () => {
+      expect(findTimeRangePicker().attributes('disabled')).toBe('true');
+    });
+
+    fit('displays a disabled search bar', () => {
       expect(findSearchBar().exists()).toBe(true);
       expect(findSearchBar().attributes('disabled')).toBe('true');
-      expect(findTimeRangePicker().attributes('disabled')).toBe('true');
+
+      expect(findSearchBar().vm.$emit('input', mockSearch));
+      expect(findSearchBar().vm.$emit('submit'));
+
+      expect(actionMocks.setSearch).not.toHaveBeenCalled();
     });
   });
 
@@ -230,8 +240,15 @@ describe('EnvironmentLogs', () => {
       actionMocks.fetchEnvironments.mockReset();
     });
 
-    it('displays an enabled search bar', () => {
+    fit('displays an enabled search bar', () => {
       expect(findSearchBar().attributes('disabled')).toBeFalsy();
+
+      // input a search and click submit
+      expect(findSearchBar().vm.$emit('input', mockSearch));
+      expect(findSearchBar().vm.$emit('submit'));
+
+      expect(actionMocks.setSearch).toHaveBeenCalledTimes(1);
+      expect(actionMocks.setSearch).toHaveBeenCalledWith(mockSearch);
     });
 
     it('displays an enabled time window dropdown', () => {
