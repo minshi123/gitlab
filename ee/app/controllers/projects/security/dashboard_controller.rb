@@ -22,6 +22,7 @@ module Projects
         @vulnerability = project.vulnerabilities.find(params[:id])
         pipeline = @vulnerability.finding.pipelines.first
         @pipeline = pipeline if Ability.allowed?(current_user, :read_pipeline, pipeline)
+        @create_vulnerability_feedback_issue_path = create_vulnerability_feedback_issue_path(@vulnerability.finding.project)
       end
     end
   end
