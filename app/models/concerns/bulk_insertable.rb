@@ -1,35 +1,71 @@
 # frozen_string_literal: true
 
 module BulkInsertable
-  IncludeNotAllowedError = Class.new(StandardError)
+  extend ActiveSupport::Concern
+
   MethodDefinitionNotAllowedError = Class.new(StandardError)
 
-  def self.included(mod)
-    raise IncludeNotAllowedError.new("You must `extend` the `#{self}` module")
-  end
+  class_methods do
+    def before_save(*)
+      calling_method = caller_locations(1, 1).first&.label
 
-  BLACKLISTED_METHODS = [
-    :before_save, :after_save, :before_create, :after_create,
-    :before_commit, :after_commit, :around_save, :around_create,
-    :before_validation, :after_validation, :validate, :validates
-  ].freeze
-
-  BLACKLISTED_METHODS.each do |method|
-    define_method(method) do |*args|
-      return super(args) if _bi_allow_method?(method, args)
-
-      raise MethodDefinitionNotAllowedError.new(
-        "Not allowed to call `#{method}(args: #{args.inspect})` when model < `BulkInsertable`")
+      # this means we're called from a belongs_to assoc, which is OK
+      if calling_method == 'add_autosave_association_callbacks'
+        super
+      else
+        raise_not_allowed(:before_save)
+      end
     end
-  end
 
-  private
+    def after_save(*)
+      raise_not_allowed(:after_save)
+    end
 
-  def _bi_allow_method?(method, args)
-    _bi_before_save_called_from_belongs_to?(method, args)
-  end
+    def before_create(*)
+      raise_not_allowed(:before_create)
+    end
 
-  def _bi_before_save_called_from_belongs_to?(method, args)
-    method == :before_save && args&.first.to_s.start_with?('autosave_associated_records_for_')
+    def after_create(*)
+      raise_not_allowed(:after_create)
+    end
+
+    def before_commit(*)
+      raise_not_allowed(:before_commit)
+    end
+
+    def after_commit(*)
+      raise_not_allowed(:after_commit)
+    end
+
+    def around_save(*)
+      raise_not_allowed(:around_save)
+    end
+
+    def around_create(*)
+      raise_not_allowed(:around_create)
+    end
+
+    def before_validation(*)
+      raise_not_allowed(:before_validation)
+    end
+
+    def after_validation(*)
+      raise_not_allowed(:after_validation)
+    end
+
+    def validate(*)
+      raise_not_allowed(:validate)
+    end
+
+    def validates(*)
+      raise_not_allowed(:validates)
+    end
+
+    private
+
+    def raise_not_allowed(method)
+      raise MethodDefinitionNotAllowedError.new(
+        "Not allowed to call `#{method}})` when model < `BulkInsertable`")
+    end
   end
 end

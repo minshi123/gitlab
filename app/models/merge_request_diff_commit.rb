@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MergeRequestDiffCommit < ApplicationRecord
-  extend BulkInsertable
+  include BulkInsertable
   include ShaAttribute
   include CachedCommit
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MergeRequestDiffFile < ApplicationRecord
-  extend BulkInsertable
+  include BulkInsertable
   include Gitlab::EncodingHelper
   include DiffFile
 

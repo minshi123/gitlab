@@ -1,8 +1,14 @@
 # frozen_string_literal: true
 
 describe BulkInsertable do
+  BLACKLISTED_METHODS = [
+    :before_save, :after_save, :before_create, :after_create,
+    :before_commit, :after_commit, :around_save, :around_create,
+    :before_validation, :after_validation, :validate, :validates
+  ].freeze
+
   class BulkInsertItem < ApplicationRecord
-    extend BulkInsertable
+    include BulkInsertable
   end
 
   module InheritedUnsafeMethods
@@ -21,13 +27,9 @@ describe BulkInsertable do
     end
   end
 
-  it 'raises an error when being included instead of extended' do
-    expect { BulkInsertItem.include(subject) }.to raise_error(subject::IncludeNotAllowedError)
-  end
-
   context 'when calling class methods directly' do
     it 'raises an error when method is not bulk-insert safe' do
-      subject::BLACKLISTED_METHODS.each do |m|
+      BLACKLISTED_METHODS.each do |m|
         expect { BulkInsertItem.send(m, nil) }.to(
           raise_error(subject::MethodDefinitionNotAllowedError),
           "Expected call to #{m} to raise an error, but it didn't"
