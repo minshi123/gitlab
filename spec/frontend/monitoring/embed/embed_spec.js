@@ -14,7 +14,7 @@ describe('Embed', () => {
   let actions;
   let metricsWithDataGetter;
 
-  function mountComponent(options = {}) {
+  function mountComponent() {
     wrapper = shallowMount(Embed, {
       localVue,
       store,

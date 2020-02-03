@@ -70,7 +70,7 @@ export default {
       );
     },
     logsPathWithTimeRange() {
-      if (this.logsPath !== invalidUrl) {
+      if (this.logsPath !== invalidUrl && this.timeRange) {
         return timeRangeToUrl(this.timeRange, this.logsPath);
       }
       return null;
@@ -159,7 +159,11 @@ export default {
           <icon name="ellipsis_v" class="text-secondary" />
         </template>
 
-        <gl-dropdown-item v-if="logsPathWithTimeRange" :href="logsPathWithTimeRange">
+        <gl-dropdown-item
+          v-if="logsPathWithTimeRange"
+          ref="viewLogsLink"
+          :href="logsPathWithTimeRange"
+        >
           {{ s__('Metrics|View logs') }}
         </gl-dropdown-item>
 
