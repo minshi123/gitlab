@@ -8,6 +8,15 @@ export default () => ({
   showEmptyState: true,
   showErrorBanner: true,
 
+  /**
+   * Dashboard request parameters
+   */
+  timeRange: null,
+  currentDashboard: null,
+
+  /**
+   * Dashboard data
+   */
   dashboard: {
     panel_groups: [],
   },
@@ -17,6 +26,10 @@ export default () => ({
   environmentsSearchTerm: '',
   environmentsLoading: false,
   allDashboards: [],
-  currentDashboard: null,
+
+  /**
+   * Paths to other pages
+   */
+  logsPath: invalidUrl,
   projectPath: null,
 });

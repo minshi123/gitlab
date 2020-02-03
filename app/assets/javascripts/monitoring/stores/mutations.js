@@ -183,6 +183,9 @@ export default {
     state.currentDashboard = endpoints.currentDashboard;
     state.projectPath = endpoints.projectPath;
   },
+  [types.SET_TIME_RANGE](state, timeRange) {
+    state.timeRange = timeRange;
+  },
   [types.SET_GETTING_STARTED_EMPTY_STATE](state) {
     state.emptyState = 'gettingStarted';
   },
