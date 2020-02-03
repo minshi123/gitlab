@@ -330,6 +330,13 @@ describe API::Users do
       expect(json_response.keys).not_to include 'last_sign_in_ip'
     end
 
+    it "does not contain plan or trial data" do
+      get api("/users/#{user.id}", user)
+      expect(response).to match_response_schema('public_api/v4/user/basic')
+      expect(json_response.keys).not_to include 'plan'
+      expect(json_response.keys).not_to include 'trial'
+    end
+
     context 'when authenticated as admin' do
       it 'includes the `is_admin` field' do
         get api("/users/#{user.id}", admin)
@@ -350,6 +357,12 @@ describe API::Users do
 
         expect(response).to match_response_schema('public_api/v4/user/admin')
         expect(json_response['highest_role']).to be(0)
+      end
+
+      it 'does not include values for plan or trial' do
+        get api("/users/#{user.id}", admin)
+        expect(response).to match_response_schema('public_api/v4/user/basic')
+        expect(json_response).to include({'plan' => nil, 'trial' => nil})
       end
 
       context 'when user has not logged in' do
