@@ -22,7 +22,7 @@ class Repository
 
   include Gitlab::RepositoryCacheAdapter
 
-  attr_accessor :full_path, :disk_path, :container, :repo_type
+  attr_accessor :full_path, :disk_path, :repo_type
 
   delegate :ref_name_for_sha, to: :raw_repository
   delegate :bundle_to_disk, to: :raw_repository
@@ -67,10 +67,10 @@ class Repository
 
   MERGED_BRANCH_NAMES_CACHE_DURATION = 10.minutes
 
-  def initialize(full_path, container, disk_path: nil, repo_type: Gitlab::GlRepository::PROJECT)
+  def initialize(full_path, shard:, disk_path: nil, repo_type: Gitlab::GlRepository::PROJECT)
     @full_path = full_path
     @disk_path = disk_path || full_path
-    @container = container
+    @shard = shard
     @commit_cache = {}
     @repo_type = repo_type
   end
@@ -97,7 +97,7 @@ class Repository
   def path_to_repo
     @path_to_repo ||=
       begin
-        storage = Gitlab.config.repositories.storages[container.repository_storage]
+        storage = Gitlab.config.repositories.storages[shard]
 
         File.expand_path(
           File.join(storage.legacy_disk_path, disk_path + '.git')
@@ -130,7 +130,7 @@ class Repository
     commits = Gitlab::Git::Commit.batch_by_oid(raw_repository, oids)
 
     if commits.present?
-      Commit.decorate(commits, container)
+      Commit.decorate(commits, nil)
     else
       []
     end
@@ -161,14 +161,14 @@ class Repository
     }
 
     commits = Gitlab::Git::Commit.where(options)
-    commits = Commit.decorate(commits, container) if commits.present?
+    commits = Commit.decorate(commits, repository: self) if commits.present?
 
-    CommitCollection.new(container, commits, ref)
+    CommitCollection.new(commits, ref, repository: self)
   end
 
   def commits_between(from, to)
     commits = Gitlab::Git::Commit.between(raw_repository, from, to)
-    commits = Commit.decorate(commits, container) if commits.present?
+    commits = Commit.decorate(commits, repository: self) if commits.present?
     commits
   end
 
@@ -176,7 +176,7 @@ class Repository
   def new_commits(newrev)
     commits = raw.new_commits(newrev)
 
-    ::Commit.decorate(commits, container)
+    ::Commit.decorate(commits, repository: self)
   end
 
   # Gitaly migration: https://gitlab.com/gitlab-org/gitaly/issues/384
@@ -188,7 +188,7 @@ class Repository
     commits = raw_repository.find_commits_by_message(query, ref, path, limit, offset).map do |c|
       commit(c)
     end
-    CommitCollection.new(container, commits, ref)
+    CommitCollection.new(commits, ref, repository: self)
   end
 
   def find_branch(name)
@@ -499,7 +499,7 @@ class Repository
   end
 
   def blob_at(sha, path)
-    blob = Blob.decorate(raw_repository.blob_at(sha, path), container)
+    blob = Blob.decorate(raw_repository.blob_at(sha, path), repository: self)
 
     # Don't attempt to return a special result if there is no blob at all
     return unless blob
@@ -522,7 +522,7 @@ class Repository
     return [] unless exists?
 
     raw_repository.batch_blobs(items, blob_size_limit: blob_size_limit).map do |blob|
-      Blob.decorate(blob, container)
+      Blob.decorate(blob, repository: self)
     end
   end
 
@@ -701,13 +701,13 @@ class Repository
     commits = raw_repository.list_last_commits_for_tree(sha, path, offset: offset, limit: limit)
 
     commits.each do |path, commit|
-      commits[path] = ::Commit.new(commit, container)
+      commits[path] = ::Commit.new(commit, repository: self)
     end
   end
 
   def last_commit_for_path(sha, path)
     commit = raw_repository.last_commit_for_path(sha, path)
-    ::Commit.new(commit, container) if commit
+    ::Commit.new(commit, repository: self) if commit
   end
 
   def last_commit_id_for_path(sha, path)
@@ -1158,10 +1158,6 @@ class Repository
     Gitlab::Git::Blob.batch_metadata(raw, references).map { |raw_blob| Blob.decorate(raw_blob) }
   end
 
-  def project
-    container
-  end
-
   private
 
   # TODO Genericize finder, later split this on finders by Ref or Oid
@@ -1208,10 +1204,12 @@ class Repository
   end
 
   def initialize_raw_repository
-    Gitlab::Git::Repository.new(container.repository_storage,
-                                disk_path + '.git',
-                                repo_type.identifier_for_container(container),
-                                container.full_path)
+    Gitlab::Git::Repository.new(
+      shard,
+      disk_path + '.git',
+      repo_type.identifier_for_container(container), # FIXME
+      full_path
+    )
   end
 end
 
