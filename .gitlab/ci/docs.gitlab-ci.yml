@@ -46,10 +46,14 @@ review-docs-cleanup:
 
 graphql-docs-generate:
   extends:
+    - .only-ee
     - .default-tags
     - .default-retry
+    - .default-cache
     - .default-only
     - .default-before_script
+    - .only:changes-code-backstage-qa
+    - .use-pg9
   stage: prepare
   script:
     - bundle exec rake gitlab:graphql:compile_docs
