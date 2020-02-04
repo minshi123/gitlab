@@ -241,7 +241,7 @@ Feel free to remove their definitions from their `ignored_columns` definitions.
 
 ## Update GraphQL Documentation and Schema definitions
 
-A gitlab pipeline autogenerates graphql documentation.
+A GitLab pipeline autogenerates graphql documentation.
 
 To generate GraphQL documentation locally based on the GitLab schema, run:
 
@@ -266,7 +266,7 @@ should implement any new methods for new types you'd like to display.
 
 ### Update machine-readable schema files
 
-A gitlab pipeline also autogenerates machine-readable graphql documentation.
+A GitLab pipeline also autogenerates machine-readable graphql documentation.
 
 To generate that documentation locally, run:
 
