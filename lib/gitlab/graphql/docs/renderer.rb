@@ -23,7 +23,7 @@ module Gitlab
           @template = template
           @layout = Haml::Engine.new(File.read(template))
           @parsed_schema = GraphQLDocs::Parser.new(schema, {}).parse
-          @logger = Gitlab::AppLogger.build
+          @logger = Gitlab::AppLogger.primary_logger.build
         end
 
         def contents
