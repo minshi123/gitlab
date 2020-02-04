@@ -125,6 +125,45 @@ describe Issue, :elastic do
     expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash)
   end
 
+  context 'field length limits' do
+    let(:plan) { create(:default_plan) }
+    let(:plan_limits) { create(:plan_limits, plan: plan) }
+
+    context 'when there is an elasticsearch_indexed_field_length limit' do
+      it 'truncates to the default plan limit' do
+        plan_limits.update!(elasticsearch_indexed_field_length: 10)
+
+        issue = create :issue, description: 'The description is too long'
+
+        indexed_json = issue.__elasticsearch__.as_indexed_json
+
+        expect(indexed_json['description']).to eq('The descri')
+      end
+    end
+
+    context 'when the elasticsearch_indexed_field_length limit is 0' do
+      it 'does not truncate the fields' do
+        plan_limits.update!(elasticsearch_indexed_field_length: 0)
+
+        issue = create :issue, description: 'The description is too long'
+
+        indexed_json = issue.__elasticsearch__.as_indexed_json
+
+        expect(indexed_json['description']).to eq('The description is too long')
+      end
+    end
+
+    context 'when there is no limits for the plan' do
+      it 'does not truncate the fields' do
+        issue = create :issue, description: 'The description is too long'
+
+        indexed_json = issue.__elasticsearch__.as_indexed_json
+
+        expect(indexed_json['description']).to eq('The description is too long')
+      end
+    end
+  end
+
   it_behaves_like 'no results when the user cannot read cross project' do
     let(:record1) { create(:issue, project: project, title: 'test-issue') }
     let(:record2) { create(:issue, project: project2, title: 'test-issue') }
