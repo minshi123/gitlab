@@ -75,7 +75,7 @@ ready.
 To keep files in the repository organized it is often helpful to create a new
 directory.
 
-From a project's files page, click the `+` button to the right of the branch selector.
+From a project's files page, click the **+** button to the right of the branch selector.
 Choose **New directory** from the dropdown.
 
 ![New directory dropdown](img/web_editor_new_directory_dropdown.png)
