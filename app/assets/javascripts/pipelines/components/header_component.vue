@@ -1,5 +1,5 @@
 <script>
-import { GlLoadingIcon, GlModal, GlModalDirective } from '@gitlab/ui';
+import { GlModal, GlModalDirective } from '@gitlab/ui';
 import ciHeader from '~/vue_shared/components/header_ci_component.vue';
 import LoadingButton from '~/vue_shared/components/loading_button.vue';
 import eventHub from '../event_hub';
@@ -11,7 +11,6 @@ export default {
   name: 'PipelineHeaderSection',
   components: {
     ciHeader,
-    GlLoadingIcon,
     GlModal,
     LoadingButton,
   },
@@ -70,10 +69,7 @@ export default {
 <template>
   <div class="pipeline-header-container">
     <ci-header
-      v-if="shouldRenderContent"
       :status="status"
-      :item-id="pipeline.id"
-      :time="pipeline.created_at"
       :user="pipeline.user"
       item-name="Pipeline"
     >
@@ -107,8 +103,6 @@ export default {
         :label="__('Delete')"
       />
     </ci-header>
-
-    <gl-loading-icon v-if="isLoading" :size="2" class="prepend-top-default append-bottom-default" />
 
     <gl-modal
       :modal-id="$options.DELETE_MODAL_ID"
