@@ -33,11 +33,15 @@ module BulkInsertable
     private
 
     def callback_allowed?(name, args)
-      !CALLBACK_BLACKLIST.include?(name) || save_from_belongs_to(name, args)
+      !blacklisted?(name) || save_from_belongs_to?(name, args)
+    end
+
+    def blacklisted?(name)
+      CALLBACK_BLACKLIST.include?(name)
     end
 
     # belongs_to associations will install a before_save hook during class loading
-    def save_from_belongs_to(name, args)
+    def save_from_belongs_to?(name, args)
       args.first == :before && args.second.to_s.start_with?('autosave_associated_records_for_')
     end
 
