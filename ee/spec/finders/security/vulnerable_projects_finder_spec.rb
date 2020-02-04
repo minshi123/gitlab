@@ -7,11 +7,7 @@ describe Security::VulnerableProjectsFinder do
     let(:projects) { Project.all }
     let!(:safe_project) { create(:project) }
     let(:vulnerable_project) { create(:project) }
-    let(:vulnerability) { create(:vulnerabilities_occurrence, :dast) }
-
-    before do
-      vulnerability.update(project: vulnerable_project)
-    end
+    let!(:vulnerability) { create(:vulnerabilities_occurrence, project: vulnerable_project) }
 
     subject { described_class.new(projects).execute }
 
@@ -20,27 +16,18 @@ describe Security::VulnerableProjectsFinder do
     end
 
     it 'does not include projects that only have dismissed vulnerabilities' do
-      create(
-        :vulnerability_feedback,
-        :dismissal,
-        :dast,
-        project: vulnerable_project,
-        project_fingerprint: vulnerability.project_fingerprint
-      )
+      create(:vulnerabilities_occurrence, :dismissed, project: safe_project)
 
-      expect(subject).to be_empty
+      expect(subject).to contain_exactly(vulnerable_project)
     end
 
     it 'only uses 1 query' do
       another_project = create(:project)
-      dismissed_vulnerability = create(:vulnerabilities_occurrence, project: another_project)
-      create(
-        :vulnerability_feedback,
-        :dismissal,
-        project_fingerprint: dismissed_vulnerability.project_fingerprint
-      )
+      create(:vulnerabilities_occurrence, :dismissed, project: another_project)
 
       expect { subject }.not_to exceed_query_limit(1)
+
+      expect(subject).to contain_exactly(vulnerable_project)
     end
   end
 end
