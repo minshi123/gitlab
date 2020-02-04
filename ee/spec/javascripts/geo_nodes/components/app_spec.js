@@ -195,7 +195,7 @@ describe('AppComponent', () => {
     });
 
     describe('repairNode', () => {
-      it('calls service.repairNode and shows success Flash message on request success', done => {
+      it('calls service.repairNode and shows success Toast message on request success', done => {
         const node = { ...mockNode };
         mock.onPost(node.repairPath).reply(() => {
           expect(node.nodeActionActive).toBe(true);
@@ -206,7 +206,7 @@ describe('AppComponent', () => {
         vm.repairNode(node)
           .then(() => {
             expect(vm.service.repairNode).toHaveBeenCalledWith(node);
-            expect(document.querySelector('.flash-text').innerText.trim()).toBe(
+            expect(document.querySelector('.gl-toast').innerText.trim()).toBe(
               'Node Authentication was successfully repaired.',
             );
 
@@ -287,7 +287,7 @@ describe('AppComponent', () => {
     });
 
     describe('removeNode', () => {
-      it('calls service.removeNode for removing node and shows Flash message on request success', done => {
+      it('calls service.removeNode for removing node and shows Toast message on request success', done => {
         const node = { ...mockNode };
         mock.onDelete(node.basePath).reply(() => {
           expect(node.nodeActionActive).toBe(true);
@@ -300,7 +300,7 @@ describe('AppComponent', () => {
           .then(() => {
             expect(vm.service.removeNode).toHaveBeenCalledWith(node);
             expect(vm.store.removeNode).toHaveBeenCalledWith(node);
-            expect(document.querySelector('.flash-text').innerText.trim()).toBe(
+            expect(document.querySelector('.gl-toast').innerText.trim()).toBe(
               'Node was successfully removed.',
             );
           })
