@@ -50,7 +50,7 @@ docs lint:
     - .default-retry
     - .default-only
     - .only:changes-docs
-  image: "registry.gitlab.com/gitlab-org/gitlab-docs:docs-lint"
+  image: 'registry.gitlab.com/gitlab-org/gitlab-docs:docs-lint'
   stage: test
   dependencies: []
   script:
@@ -67,6 +67,21 @@ docs lint:
     # Check the internal anchor links
     - bundle exec nanoc check internal_anchors
 
+graphql-generate:
+  extends:
+    - .only-ee
+    - .default-tags
+    - .default-retry
+    - .default-cache
+    - .default-only
+    - .default-before_script
+    - .only:changes-code-backstage-qa
+    - .use-pg9
+  stage: prepare
+  script:
+    - bundle exec rake gitlab:graphql:compile_docs
+    - bundle exec rake gitlab:graphql:schema:dump
+
 graphql-reference-verify:
   extends:
     - .only-ee
@@ -78,7 +93,7 @@ graphql-reference-verify:
     - .only:changes-code-backstage-qa
     - .use-pg9
   stage: test
-  needs: ["setup-test-env"]
+  needs: ['setup-test-env']
   script:
     - bundle exec rake gitlab:graphql:check_docs
     - bundle exec rake gitlab:graphql:check_schema
