@@ -16,11 +16,14 @@ module Gitlab
       class Renderer
         include Gitlab::Graphql::Docs::Helper
 
+        attr_accessor :logger
+
         def initialize(schema, output_dir:, template:)
           @output_dir = output_dir
           @template = template
           @layout = Haml::Engine.new(File.read(template))
           @parsed_schema = GraphQLDocs::Parser.new(schema, {}).parse
+          @logger = Gitlab::Logger.build
         end
 
         def contents
@@ -33,6 +36,7 @@ module Gitlab
 
           FileUtils.mkdir_p(@output_dir)
           File.write(filename, contents)
+          logger.info("message: Successful generated graphql schema and wrote to #{filename}")
         end
       end
     end
