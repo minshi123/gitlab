@@ -77,8 +77,15 @@ export default {
       </button>
     </div>
     <div :class="valueClass" :hidden="!dropdownHidden" class="value">{{ valueText }}</div>
-    
-    <gl-dropdown ref="dropdown" :hidden="dropdownHidden" :text="valueText" class="w-100" menu-class="w-100" toggle-class="d-flex justify-content-between">
+
+    <gl-dropdown
+      ref="dropdown"
+      :hidden="dropdownHidden"
+      :text="valueText"
+      class="w-100"
+      menu-class="w-100"
+      toggle-class="d-flex justify-content-between"
+    >
       <div class="js-weight-select" @click="selectWeight">
         <gl-dropdown-item v-for="weight in weights" :key="weight" :value="weight">
           {{ weight }}

@@ -16,13 +16,13 @@ describe('WeightSelect', () => {
     },
     canEdit: true,
   };
-  
+
   const createComponent = (props = {}) => {
     wrapper = mount(WeightSelect, {
       propsData: {
         ...defaultProps,
         ...props,
-      }
+      },
     });
   };
 
@@ -54,7 +54,7 @@ describe('WeightSelect', () => {
       it('hides the value text', () => {
         expect(valueContainer().isVisible()).toBeFalsy();
       });
-  
+
       it('shows the weight dropdown', () => {
         expect(weightDropdown().isVisible()).toBeTruthy();
       });
@@ -64,21 +64,21 @@ describe('WeightSelect', () => {
       beforeEach(() => {
         wrapper.find('.js-weight-select').trigger('click');
       });
-  
+
       it('shows the value text', () => {
         expect(valueContainer().isVisible()).toBeTruthy();
       });
-  
+
       it('hides the weight dropdown', () => {
         expect(weightDropdown().isVisible()).toBeFalsy();
       });
-    });  
+    });
   });
-  
+
   describe('when a new weight is selected', () => {
     describe('and the weight is "Any Weight"', () => {
       beforeEach(() => {
-        createComponent({ board: { weight: 'Any Weight' }});
+        createComponent({ board: { weight: 'Any Weight' } });
       });
 
       it('displays "No Weight"', () => {
@@ -88,7 +88,7 @@ describe('WeightSelect', () => {
 
     describe('and the value is "No Weight"', () => {
       beforeEach(() => {
-        createComponent({ board: { weight: 'No Weight' }});
+        createComponent({ board: { weight: 'No Weight' } });
       });
 
       it('displays "No Weight"', () => {
@@ -98,7 +98,7 @@ describe('WeightSelect', () => {
 
     describe('and the value is 0', () => {
       beforeEach(() => {
-        createComponent({ board: { weight: 0 }});
+        createComponent({ board: { weight: 0 } });
       });
 
       it('displays "No Weight"', () => {
@@ -108,7 +108,7 @@ describe('WeightSelect', () => {
 
     describe('and the value is -1', () => {
       beforeEach(() => {
-        createComponent({ board: { weight: -1 }});
+        createComponent({ board: { weight: -1 } });
       });
 
       it('displays "Any Weight"', () => {
@@ -118,7 +118,7 @@ describe('WeightSelect', () => {
 
     describe('and the value is 1', () => {
       beforeEach(() => {
-        createComponent({ board: { weight: 1 }});
+        createComponent({ board: { weight: 1 } });
       });
 
       it('displays "1"', () => {
@@ -126,5 +126,4 @@ describe('WeightSelect', () => {
       });
     });
   });
-
 });
