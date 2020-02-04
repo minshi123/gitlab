@@ -19,6 +19,8 @@ module Gitlab
           records = model.joins(join).where(conditions).where(id: start_id..end_id)
 
           records.in_groups_of(BULK_INSERT_SIZE, false).each do |records|
+            filter_missing_records!(records, resource_model, with_notes)
+
             mentions = []
             records.each do |record|
               mentions << record.build_mention_values
@@ -32,6 +34,16 @@ module Gitlab
               on_conflict: :do_nothing
             )
           end
+        end
+
+        private
+
+        def filter_missing_records!(records, resource_model, with_notes)
+          return unless with_notes
+
+          records_ids = records.pluck(:noteable_id)
+          actual_records_ids = resource_model.where(id: records_ids).pluck(:id)
+          records.select! { |r| actual_records_ids.include?(r.noteable_id) }
         end
       end
     end
