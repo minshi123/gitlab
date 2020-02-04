@@ -1,6 +1,4 @@
 <script>
-/* eslint-disable vue/require-default-prop */
-
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 
 const ANY_WEIGHT = 'Any Weight';
@@ -15,10 +13,6 @@ export default {
     board: {
       type: Object,
       required: true,
-    },
-    value: {
-      type: [Number, String],
-      required: false,
     },
     canEdit: {
       type: Boolean,
@@ -44,8 +38,9 @@ export default {
       return 'bold';
     },
     valueText() {
-      if (this.value > 0) return this.value;
-      if (this.value === 0) return NO_WEIGHT;
+      const { weight } = this.board;
+      if (weight > 0) return weight.toString();
+      if (weight === 0 || weight === NO_WEIGHT) return NO_WEIGHT;
       return ANY_WEIGHT;
     },
   },
@@ -56,9 +51,8 @@ export default {
         this.$refs.dropdown.$children[0].show();
       });
     },
-    selectWeight({ target }) {
-      if (!target) return;
-      this.board.weight = this.weightInt(target.value);
+    selectWeight({ target: { value: weight } }) {
+      this.board.weight = this.weightInt(weight);
       this.dropdownHidden = true;
     },
     weightInt(weight) {
@@ -85,7 +79,7 @@ export default {
     <div :class="valueClass" :hidden="!dropdownHidden" class="value">{{ valueText }}</div>
     
     <gl-dropdown ref="dropdown" :hidden="dropdownHidden" :text="valueText" class="w-100" menu-class="w-100" toggle-class="d-flex justify-content-between">
-      <div @click="selectWeight">
+      <div class="js-weight-select" @click="selectWeight">
         <gl-dropdown-item v-for="weight in weights" :key="weight" :value="weight">
           {{ weight }}
         </gl-dropdown-item>
