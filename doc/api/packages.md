@@ -124,6 +124,15 @@ The `_links` object contains the following properties:
 - `web_path`: The path which you can visit in GitLab and see the details of the package.
 - `delete_api_path`: The API path to delete the package. Only available if the request user has permission to do so.
 
+### Sorting
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/20963) in GitLab 12.9.
+
+The packages list can be retrieved sorted by specifying the params `order_by` and `sort`:
+
+- `order_by`: The field to use as order. One of `created_at` (default), `name`, `version`, or `type`.
+- `sort`: The direction of the order, either `asc` (default) for ascending order or `desc` for descending order.
+
 ## Get a project package
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/9667) in GitLab 11.9.
