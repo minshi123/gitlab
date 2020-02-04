@@ -77,7 +77,7 @@ graphql-generate:
     - .default-before_script
     - .only:changes-code-backstage-qa
     - .use-pg9
-  stage: prepare
+  stage: sync
   script:
     - bundle exec rake gitlab:graphql:compile_docs
     - bundle exec rake gitlab:graphql:schema:dump
