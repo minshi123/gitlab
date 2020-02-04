@@ -290,6 +290,21 @@ export default {
     onChartUpdated(chart) {
       [this.primaryColor] = chart.getOption().color;
     },
+    onChartCreated(eChart) {
+      // TODO Use another convertor
+      // TODO Somehow times dont seem to adjust, they match
+      // TODO throttle handling of this function
+      // TODO Add this to other relevant charts
+      const asDate = number => new Date(number).toISOString();
+      eChart.on('datazoom', e => {
+        const { startValue, endValue } = eChart.getOption().dataZoom[0];
+        this.$emit('datazoom', {
+          startValue: asDate(startValue),
+          endValue: asDate(endValue),
+          ...e,
+        });
+      });
+    },
     onResize() {
       if (!this.$refs.chart) return;
       const { width } = this.$refs.chart.$el.getBoundingClientRect();
@@ -331,6 +346,7 @@ export default {
       :height="height"
       :average-text="legendAverageText"
       :max-text="legendMaxText"
+      @created="onChartCreated"
       @updated="onChartUpdated"
     >
       <template v-if="tooltip.isDeployment">

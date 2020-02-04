@@ -112,6 +112,11 @@ export default {
     },
     downloadCSVOptions,
     generateLinkToChartOptions,
+
+    onDatazoom(e) {
+      // TODO Update the View logs link
+      console.log(e);
+    },
   },
 };
 </script>
@@ -136,6 +141,7 @@ export default {
     :project-path="projectPath"
     :thresholds="getGraphAlertValues(graphData.metrics)"
     :group-id="groupId"
+    @datazoom="onDatazoom"
   >
     <div class="d-flex align-items-center">
       <alert-widget
