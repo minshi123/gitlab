@@ -27,7 +27,7 @@ namespace :gitlab do
 
       renderer.write
 
-      puts "Documentation compiled."
+      puts "Documentation compiled. Successful generated graphql docs and wrote inside #{OUTPUT_DIR}"
     end
 
     desc 'GitLab | GraphQL | Check if GraphQL docs are up to date'
