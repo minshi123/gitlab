@@ -1,0 +1,35 @@
+query SnippetBlobFull($ids: [ID!]) {
+  snippets(ids: $ids) {
+    edges {
+      node {
+        id
+        blob {
+          binary
+          highlightedData
+          name
+          path
+          rawPath
+          size
+          simpleViewer {
+            collapsed
+            fileType
+            loadAsync
+            loadingPartialName
+            renderError
+            tooLarge
+            type
+          }
+          richViewer {
+            collapsed
+            fileType
+            loadAsync
+            loadingPartialName
+            renderError
+            tooLarge
+            type
+          }
+        }
+      }
+    }
+  }
+}
