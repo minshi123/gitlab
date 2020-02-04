@@ -36,7 +36,9 @@ module Gitlab
 
           FileUtils.mkdir_p(@output_dir)
           File.write(filename, contents)
-          logger.info("message: Successful generated graphql schema and wrote to #{filename}")
+          # rubocop:disable Rails/Output
+          puts "message: Successful generated graphql schema and wrote to #{filename}"
+          # rubocop:enable Rails/Output
         end
       end
     end
