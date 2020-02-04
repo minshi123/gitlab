@@ -3,54 +3,23 @@
 module BulkInsertable
   extend ActiveSupport::Concern
 
-  MethodDefinitionNotAllowedError = Class.new(StandardError)
+  CALLBACK_BLACKLIST = [
+    :save,
+    :create,
+    :before_commit,
+    :commit,
+    :validation
+  ].freeze
+
+  MethodNotAllowedError = Class.new(StandardError)
 
   class_methods do
-    def before_save(*)
-      calling_method = caller_locations(1, 1).first&.label
-
-      # this means we're called from a belongs_to assoc, which is OK
-      if calling_method == 'add_autosave_association_callbacks'
+    def set_callback(name, *args)
+      if callback_allowed?(name, args)
         super
       else
-        raise_not_allowed(:before_save)
+        raise_not_allowed("set_callback(#{name}, #{args})")
       end
-    end
-
-    def after_save(*)
-      raise_not_allowed(:after_save)
-    end
-
-    def before_create(*)
-      raise_not_allowed(:before_create)
-    end
-
-    def after_create(*)
-      raise_not_allowed(:after_create)
-    end
-
-    def before_commit(*)
-      raise_not_allowed(:before_commit)
-    end
-
-    def after_commit(*)
-      raise_not_allowed(:after_commit)
-    end
-
-    def around_save(*)
-      raise_not_allowed(:around_save)
-    end
-
-    def around_create(*)
-      raise_not_allowed(:around_create)
-    end
-
-    def before_validation(*)
-      raise_not_allowed(:before_validation)
-    end
-
-    def after_validation(*)
-      raise_not_allowed(:after_validation)
     end
 
     def validate(*)
@@ -63,9 +32,18 @@ module BulkInsertable
 
     private
 
-    def raise_not_allowed(method)
-      raise MethodDefinitionNotAllowedError.new(
-        "Not allowed to call `#{method}})` when model < `BulkInsertable`")
+    def callback_allowed?(name, args)
+      !CALLBACK_BLACKLIST.include?(name) || save_from_belongs_to(name, args)
+    end
+
+    # belongs_to associations will install a before_save hook during class loading
+    def save_from_belongs_to(name, args)
+      args.first == :before && args.second.to_s.start_with?('autosave_associated_records_for_')
+    end
+
+    def raise_not_allowed(invocation)
+      raise MethodNotAllowedError.new(
+        "Not allowed to call `#{invocation}` when model < `BulkInsertable`")
     end
   end
 end
