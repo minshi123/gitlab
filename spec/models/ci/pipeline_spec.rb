@@ -1143,6 +1143,7 @@ describe Ci::Pipeline, :mailer do
 
     describe 'pipeline caching' do
       it 'performs ExpirePipelinesCacheWorker' do
+        pipeline.config_source = Ci::PipelineEnums.config_sources[:repository_source]
         expect(ExpirePipelineCacheWorker).to receive(:perform_async).with(pipeline.id)
 
         pipeline.cancel

@@ -184,7 +184,10 @@ module Ci
 
         pipeline.run_after_commit do
           PipelineHooksWorker.perform_async(pipeline.id)
-          ExpirePipelineCacheWorker.perform_async(pipeline.id)
+
+          if ::Ci::PipelineEnums.ci_config_sources_values.include?(::Ci::PipelineEnums.config_sources[pipeline.config_source.to_sym])
+            ExpirePipelineCacheWorker.perform_async(pipeline.id)
+          end
         end
       end
 

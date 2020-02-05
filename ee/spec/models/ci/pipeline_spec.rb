@@ -561,6 +561,16 @@ describe Ci::Pipeline do
         end
       end
     end
+
+    context 'when pipeline is web terminal triggered' do
+      before do
+        pipeline.config_source = 'webide_source'
+      end
+
+      it 'does not schedule the pipeline cache worker' do
+        expect(ExpirePipelineCacheWorker).not_to receive(:perform_async)
+      end
+    end
   end
 
   describe '#latest_merge_request_pipeline?' do
