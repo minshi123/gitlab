@@ -221,6 +221,7 @@ review-stop:
     EE_LICENSE: "${REVIEW_APPS_EE_LICENSE}"
   before_script:
     - '[[ ! -d "ee/" ]] || export GITLAB_EDITION="ee"'
+    - apk add build-base
     - export QA_IMAGE="${CI_REGISTRY}/${CI_PROJECT_PATH}/gitlab/gitlab-${GITLAB_EDITION}-qa:${CI_COMMIT_REF_SLUG}"
     - export CI_ENVIRONMENT_URL="$(cat review_app_url.txt)"
     - echo "${CI_ENVIRONMENT_URL}"
