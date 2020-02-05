@@ -18,6 +18,10 @@ module Gitlab
         matches << :rake if rake?
         matches << :test_suite if test_suite?
 
+        Gitlab.ee do
+          matches << :geo_log_cursor if geo_log_cursor?
+        end
+
         if matches.one?
           matches.first
         elsif matches.none?
@@ -54,6 +58,10 @@ module Gitlab
 
       def console?
         !!defined?(::Rails::Console)
+      end
+
+      def geo_log_cursor?
+        !!defined?(::GeoLogCursorOptionParser)
       end
 
       def web_server?
