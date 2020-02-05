@@ -117,7 +117,7 @@ class RegistrationsController < Devise::RegistrationsController
 
   def after_inactive_sign_up_path_for(resource)
     Gitlab::AppLogger.info(user_created_message)
-    dashboard_projects_path
+    users_almost_there_path
   end
 
   private
