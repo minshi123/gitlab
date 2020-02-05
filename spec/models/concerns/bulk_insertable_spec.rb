@@ -3,8 +3,7 @@
 describe BulkInsertable do
   BLACKLISTED_METHODS = [
     :before_save, :after_save, :before_create, :after_create,
-    :before_commit, :after_commit, :around_save, :around_create,
-    :before_validation, :after_validation, :validate, :validates
+    :before_commit, :after_commit, :around_save, :around_create
   ].freeze
 
   class BulkInsertItem < ApplicationRecord

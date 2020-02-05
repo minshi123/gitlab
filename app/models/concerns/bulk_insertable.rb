@@ -3,12 +3,11 @@
 module BulkInsertable
   extend ActiveSupport::Concern
 
-  CALLBACK_BLACKLIST = [
+  CALLBACK_BLACKLIST = Set[
     :save,
     :create,
     :before_commit,
-    :commit,
-    :validation
+    :commit
   ].freeze
 
   MethodNotAllowedError = Class.new(StandardError)
@@ -20,14 +19,6 @@ module BulkInsertable
       else
         raise_not_allowed("set_callback(#{name}, #{args})")
       end
-    end
-
-    def validate(*)
-      raise_not_allowed(:validate)
-    end
-
-    def validates(*)
-      raise_not_allowed(:validates)
     end
 
     private
