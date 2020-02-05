@@ -66,6 +66,38 @@ const environment = {
   auto_stop_at: null,
 };
 
+const environmentsList = [
+  {
+    name: 'DEV',
+    size: 1,
+    id: 7,
+    state: 'available',
+    external_url: null,
+    environment_type: null,
+    last_deployment: null,
+    has_stop_action: false,
+    environment_path: '/root/review-app/environments/7',
+    stop_path: '/root/review-app/environments/7/stop',
+    created_at: '2017-01-31T10:53:46.894Z',
+    updated_at: '2017-01-31T10:53:46.894Z',
+  },
+  {
+    folderName: 'build',
+    size: 5,
+    id: 12,
+    name: 'build/update-README',
+    state: 'available',
+    external_url: null,
+    environment_type: 'build',
+    last_deployment: null,
+    has_stop_action: false,
+    environment_path: '/root/review-app/environments/12',
+    stop_path: '/root/review-app/environments/12/stop',
+    created_at: '2017-02-01T19:42:18.400Z',
+    updated_at: '2017-02-01T19:42:18.400Z',
+  },
+];
+
 const folder = {
   name: 'review',
   folderName: 'review',
@@ -108,4 +140,4 @@ const tableData = {
   },
 };
 
-export { environment, folder, tableData };
+export { environment, environmentsList, folder, tableData };
