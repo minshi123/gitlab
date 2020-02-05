@@ -5,6 +5,7 @@ module Projects
     module Alerts
       class NotifyService < BaseService
         include Gitlab::Utils::StrongMemoize
+        include Projects::IncidentManagement::Settings
 
         def execute(token)
           return false unless valid_payload_size?
@@ -24,17 +25,6 @@ module Projects
           Gitlab::Utils::DeepSize.new(params).valid?
         end
 
-        def incident_management_available?
-          project.feature_available?(:incident_management)
-        end
-
-        def incident_management_setting
-          strong_memoize(:incident_management_setting) do
-            project.incident_management_setting ||
-              project.build_incident_management_setting
-          end
-        end
-
         def send_email?
           # Send email if the `incident_management` feature flag is disabled.
           # This is done in order to keep the old behavior of sending emails for
@@ -44,12 +34,6 @@ module Projects
           return firings.any? unless incident_management_available?
 
           incident_management_setting.send_email && firings.any?
-        end
-
-        def process_issues?
-          return unless incident_management_available?
-
-          incident_management_setting.create_issue?
         end
 
         def firings

@@ -70,18 +70,22 @@ module EE
     def prometheus_alerts_fired(project, alerts)
       return if project.emails_disabled?
 
+      alert_recipients(project).to_a.product(alerts).each do |recipient, alert|
+        mailer.prometheus_alert_fired_email(project.id, recipient.user.id, alert).deliver_later
+      end
+    end
+
+    private
+
+    def alert_recipients(project)
       recipients = project.members.active_without_invites_and_requests.owners_and_masters
 
       if recipients.empty? && project.group
         recipients = project.group.members.active_without_invites_and_requests.owners_and_masters
       end
 
-      recipients.to_a.product(alerts).each do |recipient, alert|
-        mailer.prometheus_alert_fired_email(project.id, recipient.user.id, alert).deliver_later
-      end
+      recipients
     end
-
-    private
 
     def send_new_review_notification(review)
       recipients = ::NotificationRecipientService.build_new_review_recipients(review)
