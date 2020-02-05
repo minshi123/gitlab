@@ -34,6 +34,15 @@ module EE
 
       private
 
+      override :check_repository_existence!
+      def check_repository_existence!
+        return true if repository.exists?
+
+        # TODO: Check if Geo && selective sync enabled for project
+
+        true
+      end
+
       override :check_custom_action
       def check_custom_action(cmd)
         custom_action = custom_action_for(cmd)

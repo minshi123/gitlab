@@ -30,6 +30,7 @@ module EE
       #
       prepended do
         prepend_before_action do
+          # Rails.logger.info("ASH: redirect?=[#{redirect?}] primary_full_url=[#{primary_full_url}]")
           redirect_to(primary_full_url) if redirect?
         end
       end
@@ -55,8 +56,28 @@ module EE
         end
 
         def redirect?
+          # Rails.logger.info("ASH: controller_name=[#{controller_name}] service_or_action_name=[#{service_or_action_name}] action_name=[#{action_name}] git_receive_pack_request?=[#{git_receive_pack_request?}] selective_sync_redirect?=[#{selective_sync_redirect?}]")
           !!CONTROLLER_AND_ACTIONS_TO_REDIRECT[controller_name]&.include?(action_name) ||
-            git_receive_pack_request?
+            git_receive_pack_request? ||
+            selective_sync_redirect?
+        end
+
+        # Matches:
+        #
+        # GET  /repo.git/info/refs?service=git-receive-pack
+        # POST /repo.git/git-receive-pack
+        #
+        def git_receive_pack_request?
+          service_or_action_name == 'git-receive-pack'
+        end
+
+        # Matches:
+        #
+        # GET /repo.git/info/refs?service=git-upload-pack
+        #
+        def selective_sync_redirect?
+          # TODO: also inspect selective sync enabled and check Project
+          info_refs_request? && service_or_action_name == 'git-upload-pack'
         end
 
         private
@@ -72,15 +93,6 @@ module EE
         #
         def service_or_action_name
           info_refs_request? ? service : action_name.dasherize
-        end
-
-        # Matches:
-        #
-        # GET  /repo.git/info/refs?service=git-receive-pack
-        # POST /repo.git/git-receive-pack
-        #
-        def git_receive_pack_request?
-          service_or_action_name == 'git-receive-pack'
         end
 
         # Matches:
@@ -155,7 +167,15 @@ module EE
       end
 
       def primary_full_url
-        path = File.join(secondary_referrer_path_prefix, request_fullpath_for_primary)
+        path = if route_helper.git_receive_pack_request?
+                 # git push
+                 File.join(secondary_referrer_path_prefix, request_fullpath_for_primary)
+               elsif route_helper.selective_sync_redirect?
+                 # git clone/pull
+                 request_fullpath_for_primary
+               else
+                 raise 'We should not get here.'
+               end
 
         ::Gitlab::Utils.append_path(::Gitlab::Geo.primary_node.internal_url, path)
       end
