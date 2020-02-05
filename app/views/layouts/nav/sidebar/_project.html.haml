@@ -1,4 +1,4 @@
-- should_display_analytics_pages_in_sidebar = Feature.enabled?(:analytics_pages_under_project_analytics_sidebar, @project)
+- should_display_analytics_pages_in_sidebar = Feature.enabled?(:analytics_pages_under_project_analytics_sidebar, @project, default_enabled: true)
 
 .nav-sidebar{ class: ("sidebar-collapsed-desktop" if collapsed_sidebar?) }
   .nav-sidebar-inner-scroll
