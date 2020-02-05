@@ -16,8 +16,8 @@ describe ContainerExpirationPolicyService do
     subject { described_class.new(project, user).execute(container_expiration_policy) }
 
     it 'kicks off a cleanup worker for the container repository' do
-      expect(CleanupContainerRepositoryWorker).to receive(:perform_async)
-        .with(user.id, container_repository.id, anything)
+      expect(ExpirationPolicyContainerRepositoryWorker).to receive(:perform_async)
+        .with(container_repository.id, hash_including(container_expiration_policy: true))
 
       subject
     end
