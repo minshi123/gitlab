@@ -49,7 +49,7 @@ RSpec.shared_examples 'process nuget service index request' do |user_type, statu
     it 'returns a valid json response' do
       subject
 
-      expect(response.content_type.to_s).to eq('application/json')
+      expect(response.media_type).to eq('application/json')
       expect(json_response).to be_a(Hash)
     end
 
@@ -78,7 +78,7 @@ RSpec.shared_examples 'process nuget metadata request at package name level' do 
     it 'returns a valid json response' do
       subject
 
-      expect(response.content_type.to_s).to eq('application/json')
+      expect(response.media_type).to eq('application/json')
       expect(json_response).to be_a(Hash)
     end
 
@@ -107,7 +107,7 @@ RSpec.shared_examples 'process nuget metadata request at package name and packag
     it 'returns a valid json response' do
       subject
 
-      expect(response.content_type.to_s).to eq('application/json')
+      expect(response.media_type).to eq('application/json')
       expect(json_response).to be_a(Hash)
     end
 
@@ -136,7 +136,7 @@ RSpec.shared_examples 'process nuget workhorse authorization' do |user_type, sta
     it 'has the proper content type' do
       subject
 
-      expect(response.content_type.to_s).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
+      expect(response.media_type).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
     end
 
     context 'with a request that bypassed gitlab-workhorse' do
