@@ -119,11 +119,11 @@ rspec unit pg9-foss:
 
 rspec integration pg9:
   extends: .rspec-base-pg9
-  parallel: 6
+  parallel: 8
 
 rspec integration pg9-foss:
   extends: .rspec-base-pg9-foss
-  parallel: 6
+  parallel: 8
 
 rspec system pg9:
   extends: .rspec-base-pg9
@@ -139,7 +139,7 @@ rspec unit pg10:
 
 rspec integration pg10:
   extends: .rspec-base-pg10
-  parallel: 6
+  parallel: 8
 
 rspec system pg10:
   extends: .rspec-base-pg10
