@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe Projects::Settings::OperationsController do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project, reload: true) { create(:project) }
 
   before do
     sign_in(user)
@@ -118,6 +118,45 @@ describe Projects::Settings::OperationsController do
 
         expect(response).to redirect_to(new_user_session_path)
       end
+    end
+  end
+
+  context 'incident management' do
+    describe 'GET #show' do
+      context 'with existing setting' do
+        let!(:incident_management_setting) do
+          create(:project_incident_management_setting, project: project)
+        end
+
+        it 'loads existing setting' do
+          get :show, params: project_params(project)
+
+          expect(controller.helpers.project_incident_management_setting)
+            .to eq(incident_management_setting)
+        end
+      end
+
+      context 'without an existing setting' do
+        it 'builds a new setting' do
+          get :show, params: project_params(project)
+
+          expect(controller.helpers.project_incident_management_setting).to be_new_record
+        end
+      end
+    end
+
+    describe 'PATCH #update' do
+      let(:params) do
+        {
+          incident_management_setting_attributes: {
+            create_issue: 'false',
+            send_email: 'false',
+            issue_template_key: 'some-other-template'
+          }
+        }
+      end
+
+      it_behaves_like 'PATCHable'
     end
   end
 

@@ -25,7 +25,7 @@ module EE
             end
           end
 
-          helper_method :tracing_setting, :incident_management_available?
+          helper_method :tracing_setting
 
           private
 
@@ -50,10 +50,6 @@ module EE
             project.feature_available?(:tracing, current_user)
           end
 
-          def incident_management_available?
-            project.feature_available?(:incident_management, current_user)
-          end
-
           def track_tracing_external_url
             external_url_previous_change = project&.tracing_setting&.external_url_previous_change
             return unless external_url_previous_change
@@ -69,10 +65,6 @@ module EE
 
           if has_tracing_license?
             permitted_params[:tracing_setting_attributes] = [:external_url]
-          end
-
-          if incident_management_available?
-            permitted_params[:incident_management_setting_attributes] = ::Gitlab::Tracking::IncidentManagement.tracking_keys.keys
           end
 
           permitted_params

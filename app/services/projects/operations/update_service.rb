@@ -15,6 +15,7 @@ module Projects
         error_tracking_params
           .merge(metrics_setting_params)
           .merge(grafana_integration_params)
+          .merge(incident_management_setting_params)
       end
 
       def metrics_setting_params
@@ -76,6 +77,10 @@ module Projects
         destroy = attrs[:grafana_url].blank? && attrs[:token].blank?
 
         { grafana_integration_attributes: attrs.merge(_destroy: destroy) }
+      end
+
+      def incident_management_setting_params
+        params.slice(:incident_management_setting_attributes)
       end
     end
   end
