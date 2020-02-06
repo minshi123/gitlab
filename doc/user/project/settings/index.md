@@ -124,8 +124,23 @@ in project listings.
 
 To archive a project:
 
-1. Navigate to your project's **Settings > General > Advanced settings**.
-1. In the Archive project section, click the **Archive project** button.
+1. Navigate to your project's **{settings}** **Settings > General > Advanced settings**.
+1. In the **Archive project** section, click the **Archive project** button.
+1. Confirm the action when asked to.
+
+#### Unarchiving a project
+
+NOTE: **Note:**
+Only project Owners and Admin users have the [permissions](../../permissions.md#project-members-permissions)
+to unarchive a project.
+
+Unarchiving a project removes the read-only restriction on a project, and makes it
+available in project listings.
+
+To unarchive a project:
+
+1. Navigate to your project's **{settings}** **Settings > General > Advanced settings**.
+1. In the **Unarchive project** section, click the **Unarchive project** button.
 1. Confirm the action when asked to.
 
 #### Renaming a repository
