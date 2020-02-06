@@ -5,10 +5,12 @@ import _ from 'underscore';
 import ListLabel from '../../models/label';
 
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select/base.vue';
+import LabelsSelectVue from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 
 export default {
   components: {
     LabelsSelect,
+    LabelsSelectVue,
   },
   props: {
     canUpdate: {
@@ -27,6 +29,7 @@ export default {
   },
   computed: {
     ...mapState([
+      'epicId',
       'labels',
       'namespace',
       'updateEndpoint',
@@ -105,6 +108,7 @@ export default {
 
 <template>
   <labels-select
+    v-if="epicId !== 1"
     :can-edit="canUpdate"
     :context="epicContext"
     :namespace="namespace"
@@ -121,4 +125,12 @@ export default {
     @toggleCollapse="toggleSidebarRevealLabelsDropdown"
     >{{ __('None') }}</labels-select
   >
+  <labels-select-vue
+    v-else
+    :allow-label-edit="canUpdate"
+    :allow-label-create="true"
+    :labels="epicContext.labels"
+    :label-filter-base-path="epicsWebUrl"
+    :scoped-labels-documentation-path="scopedLabelsDocumentationLink"
+  />
 </template>
