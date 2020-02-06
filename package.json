@@ -158,7 +158,6 @@
     "custom-jquery-matchers": "^2.1.0",
     "docdash": "^1.0.2",
     "eslint": "~6.8.0",
-    "eslint-import-resolver-jest": "^3.0.0",
     "eslint-import-resolver-webpack": "^0.12.1",
     "eslint-plugin-jasmine": "^4.1.0",
     "eslint-plugin-jest": "^22.3.0",
@@ -199,6 +198,9 @@
     "vue-jest": "^4.0.0-beta.2",
     "webpack-dev-server": "^3.8.1",
     "yarn-deduplicate": "^1.1.1"
+  },
+  "optionalDependencies": {
+    "eslint-import-resolver-jest": "^3.0.0"
   },
   "resolutions": {
     "vue-jest/ts-jest": "24.0.0",
