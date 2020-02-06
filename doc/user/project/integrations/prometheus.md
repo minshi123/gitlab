@@ -94,10 +94,14 @@ The actual configuration of Prometheus integration within GitLab is very simple.
 All you will need is the DNS or IP address of the Prometheus server you'd like
 to integrate with.
 
-1. Navigate to the [Integrations page](project_services.md#accessing-the-project-services)
-1. Click the **Prometheus** service
-1. Provide the base URL of your server, for example `http://prometheus.example.com/`
-1. Click **Save changes**
+NOTE: **Note:**
+You can also use these steps to configure a Thanos integration with GitLab, by
+replacing the Prometheus base URL with a Thanos base URL.
+
+1. Navigate to the [Integrations page](project_services.md#accessing-the-project-services).
+1. Click the **Prometheus** service.
+1. Provide the base URL of your server, for example `http://prometheus.example.com/`.
+1. Click **Save changes**.
 
 ![Configure Prometheus Service](img/prometheus_service_configuration.png)
 
