@@ -11,7 +11,7 @@ settings:
   import/core-modules:
     - events
     - fs
-    - path  
+    - path
   import/resolver:
     jest:
       jestConfigFile: 'jest.config.js'
