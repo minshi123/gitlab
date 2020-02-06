@@ -1,17 +1,19 @@
 # frozen_string_literal: true
 
 class Security::VulnerableProjectsController < Security::ApplicationController
-  include SecurityDashboardsPermissions
-
   def index
-    vulnerable_projects = VulnerableProjectsFinder.new(vulnerable.projects)
+    vulnerable_projects = ::Security::VulnerableProjectsFinder.new(projects).execute
 
-    render json: VulnerableProjectSerializer.new.represent(vulnerable_projects)
+    presented_projects = vulnerable_projects.map do |project|
+      ::Security::VulnerableProjectPresenter.new(project)
+    end
+
+    render json: VulnerableProjectSerializer.new.represent(presented_projects)
   end
 
   private
 
-  def vulnerable
-    InstanceSecurityDashboard.new(current_user)
+  def projects
+    vulnerable.projects.non_archived.without_deleted.with_route
   end
 end
