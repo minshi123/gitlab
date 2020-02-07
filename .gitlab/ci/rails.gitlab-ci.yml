@@ -173,7 +173,7 @@ rspec-ee integration pg9:
 
 rspec-ee system pg9:
   extends: .rspec-ee-base-pg9
-  parallel: 5
+  parallel: 6
 
 rspec-ee migration pg10:
   extends:
