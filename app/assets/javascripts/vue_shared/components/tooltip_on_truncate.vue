@@ -28,12 +28,13 @@ export default {
       showTooltip: false,
     };
   },
+  watch: {
+    title() {
+      this.$nextTick(this.updateTooltip);
+    },
+  },
   mounted() {
-    const target = this.selectTarget();
-
-    if (target && target.scrollWidth > target.offsetWidth) {
-      this.showTooltip = true;
-    }
+    this.updateTooltip();
   },
   methods: {
     selectTarget() {
@@ -44,6 +45,10 @@ export default {
       }
 
       return this.$el;
+    },
+    updateTooltip() {
+      const target = this.selectTarget();
+      this.showTooltip = Boolean(target && target.scrollWidth > target.offsetWidth);
     },
   },
 };
