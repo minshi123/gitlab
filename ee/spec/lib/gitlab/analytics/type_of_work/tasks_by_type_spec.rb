@@ -8,6 +8,8 @@ describe Gitlab::Analytics::TypeOfWork::TasksByType do
   let_it_be(:other_group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:label) { create(:group_label, group: group) }
+  let_it_be(:other_label) { create(:group_label, group: group) }
+  let_it_be(:not_used_label) { create(:group_label, group: group) }
   let_it_be(:label_for_subgroup) { create(:group_label, group: group) }
   let_it_be(:other_label) { create(:group_label, group: other_group) }
   let_it_be(:project) { create(:project, group: group) }
@@ -118,6 +120,33 @@ describe Gitlab::Analytics::TypeOfWork::TasksByType do
     end
   end
 
+  shared_examples '#top_labels' do
+    let(:top_labels) { described_class.new(params).top_labels }
+
+    let!(:with_label) do
+      create(factory_name, {
+        :created_at => 3.days.ago,
+        :labels => [label, other_label],
+        project_attribute_name => project
+      })
+    end
+    let!(:with_other_label_only) do
+      create(factory_name, {
+        :created_at => 3.days.ago,
+        :labels => [other_label],
+        project_attribute_name => create(:project, group: group)
+      })
+    end
+
+    it 'sorts by descending order' do
+      expect(top_labels).to eq([other_label, label])
+    end
+
+    it 'limits the the size of the results' do
+      expect(described_class.new(params).top_labels(1)).to eq([other_label])
+    end
+  end
+
   context 'when subject is `Issue`' do
     let(:factory_name) { :labeled_issue }
     let(:project_attribute_name) { :project }
@@ -126,7 +155,8 @@ describe Gitlab::Analytics::TypeOfWork::TasksByType do
       params[:params][:subject] = Issue.to_s
     end
 
-    include_examples '#counts_by_labels'
+    it_behaves_like '#counts_by_labels'
+    it_behaves_like '#top_labels'
   end
 
   context 'when subject is `MergeRequest`' do
@@ -137,6 +167,7 @@ describe Gitlab::Analytics::TypeOfWork::TasksByType do
       params[:params][:subject] = MergeRequest.to_s
     end
 
-    include_examples '#counts_by_labels'
+    it_behaves_like '#counts_by_labels'
+    it_behaves_like '#top_labels'
   end
 end

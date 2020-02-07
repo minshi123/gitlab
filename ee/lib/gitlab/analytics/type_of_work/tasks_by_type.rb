@@ -11,6 +11,8 @@ module Gitlab
           Issue.to_s => IssuesFinder
         }.freeze
 
+        TOP_LABELS_COUNT = 10
+
         def initialize(group:, params:, current_user:)
           @group = group
           @params = params
@@ -20,6 +22,29 @@ module Gitlab
         def counts_by_labels
           format_result(query_result)
         end
+
+        # top N commonly used labels for the Issues or MergeRequests
+        # rubocop: disable CodeReuse/ActiveRecord
+        def top_labels(limit = TOP_LABELS_COUNT)
+          label_id_column = GroupLabel.arel_table[:id]
+
+          count_by_id = Arel::Nodes::Over.new(
+            Arel::Nodes::NamedFunction.new('count', [label_id_column]),
+            Arel::Nodes::Window.new.partition(label_id_column)
+          ).as('count_by_id')
+
+          subquery = finder.execute.limit(100)
+          label_link_query = LabelLink.where(target_type: params[:subject].to_s, target_id: subquery)
+
+          GroupLabel
+            .select('labels.*', count_by_id)
+            .joins(:label_links)
+            .merge(label_link_query)
+            .reorder(count_by_id: :desc)
+            .distinct
+            .limit(limit)
+        end
+        # rubocop: enable CodeReuse/ActiveRecord
 
         private
 
