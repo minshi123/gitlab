@@ -107,7 +107,7 @@ rspec migration pg9-foss:
   extends:
     - .rspec-base-pg9-foss
     - .rspec-base-migration
-  parallel: 4
+  parallel: 5
 
 rspec unit pg9:
   extends: .rspec-base-pg9
