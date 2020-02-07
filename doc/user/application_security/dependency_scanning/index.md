@@ -152,7 +152,7 @@ The following variables allow configuration of the advisory DB used by dependenc
 | Environment variable                    | Default         | Description |
 | --------------------------------------- | --------------- | ----------- |
 | `GEMNASIUM_DB_LOCAL_PATH`               | /gemnasium-db | Path to local gemnasium database. |
-| `GEMNASIUM_DB_REMOTE_URL`               | https://gitlab.com/gitlab-org/security-products/gemnasium-db.git | Repository URL for fetching the gemnasium database. |
+| `GEMNASIUM_DB_REMOTE_URL`               | `https://gitlab.com/gitlab-org/security-products/gemnasium-db.git` | Repository URL for fetching the gemnasium database. |
 | `GEMNASIUM_DB_REF_NAME`                 | master        | Branch name for remote repository database. `GEMNASIUM_DB_REMOTE_URL` is required. |
 
 #### Configuring specific analyzers used by Dependency Scanning
@@ -161,16 +161,16 @@ The following variables are used for configuring specific analyzers (used for a 
 
 | Environment variable                    | Analyzer         | Description |
 | --------------------------------------- | ---------------- |------------ |
-| `PIP_INDEX_URL`                         | gemnasium-python | Base URL of Python Package Index (default `https://pypi.org/simple`). |
-| `PIP_EXTRA_INDEX_URL`                   | gemnasium-python | Array of [extra URLs](https://pip.pypa.io/en/stable/reference/pip_install/#cmdoption-extra-index-url) of package indexes to use in addition to `PIP_INDEX_URL`. Comma separated. |
-| `PIP_REQUIREMENTS_FILE`                 | gemnasium-python | Pip requirements file to be scanned. |
-| `DS_PIP_VERSION`                        | gemnasium-python | Force the install of a specific pip version (example: `"19.3"`), otherwise the pip installed in the Docker image is used. ([Introduced](https://gitlab.com/gitlab-org/gitlab/issues/12811) in GitLab 12.7) |
-| `DS_PIP_DEPENDENCY_PATH`                | gemnasium-python | Path to load Python pip dependencies from. ([Introduced](https://gitlab.com/gitlab-org/gitlab/issues/12412) in GitLab 12.2) |
-| `DS_PYTHON_VERSION`                     | retire.js        | Version of Python. If set to 2, dependencies are installed using Python 2.7 instead of Python 3.6. ([Introduced](https://gitlab.com/gitlab-org/gitlab/issues/12296) in GitLab 12.1)|
-| `MAVEN_CLI_OPTS`                        | gemnasium-maven  | List of command line arguments that will be passed to `maven` by the analyzer. The default is `"-DskipTests --batch-mode"`. See an example for [using private repos](#using-private-maven-repos). |
-| `BUNDLER_AUDIT_UPDATE_DISABLED`         | bundler-audit    | Disable automatic updates for the `bundler-audit` analyzer (default: `"false"`). Useful if you're running Dependency Scanning in an offline, air-gapped environment.|
-| `BUNDLER_AUDIT_ADVISORY_DB_URL`         | bundler-audit    | URL of the advisory database used by bundler-audit (default: `https://github.com/rubysec/ruby-advisory-db`). |
-| `BUNDLER_AUDIT_ADVISORY_DB_REF_NAME`    | bundler-audit    | Git ref for the advisory database specified by `BUNDLER_AUDIT_ADVISORY_DB_URL` (default: `master`). |
+| `PIP_INDEX_URL`                         | `gemnasium-python` | Base URL of Python Package Index (default `https://pypi.org/simple`). |
+| `PIP_EXTRA_INDEX_URL`                   | `gemnasium-python` | Array of [extra URLs](https://pip.pypa.io/en/stable/reference/pip_install/#cmdoption-extra-index-url) of package indexes to use in addition to `PIP_INDEX_URL`. Comma separated. |
+| `PIP_REQUIREMENTS_FILE`                 | `gemnasium-python` | Pip requirements file to be scanned. |
+| `DS_PIP_VERSION`                        | `gemnasium-python` | Force the install of a specific pip version (example: `"19.3"`), otherwise the pip installed in the Docker image is used. ([Introduced](https://gitlab.com/gitlab-org/gitlab/issues/12811) in GitLab 12.7) |
+| `DS_PIP_DEPENDENCY_PATH`                | `gemnasium-python` | Path to load Python pip dependencies from. ([Introduced](https://gitlab.com/gitlab-org/gitlab/issues/12412) in GitLab 12.2) |
+| `DS_PYTHON_VERSION`                     | `retire.js`        | Version of Python. If set to 2, dependencies are installed using Python 2.7 instead of Python 3.6. ([Introduced](https://gitlab.com/gitlab-org/gitlab/issues/12296) in GitLab 12.1)|
+| `MAVEN_CLI_OPTS`                        | `gemnasium-maven`  | List of command line arguments that will be passed to `maven` by the analyzer. The default is `"-DskipTests --batch-mode"`. See an example for [using private repos](#using-private-maven-repos). |
+| `BUNDLER_AUDIT_UPDATE_DISABLED`         | `bundler-audit`    | Disable automatic updates for the `bundler-audit` analyzer (default: `"false"`). Useful if you're running Dependency Scanning in an offline, air-gapped environment.|
+| `BUNDLER_AUDIT_ADVISORY_DB_URL`         | `bundler-audit`    | URL of the advisory database used by bundler-audit (default: `https://github.com/rubysec/ruby-advisory-db`). |
+| `BUNDLER_AUDIT_ADVISORY_DB_REF_NAME`    | `bundler-audit`    | Git ref for the advisory database specified by `BUNDLER_AUDIT_ADVISORY_DB_URL` (default: `master`). |
 
 ### Using private Maven repos
 
