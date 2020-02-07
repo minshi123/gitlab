@@ -129,7 +129,7 @@ Dependency Scanning can be [configured](#customizing-the-dependency-scanning-set
 using environment variables.
 
 
-#### Configuring the Dependency Scanning orchestrator
+#### Configuring Dependency Scanning orchestrator
 | Environment variable                    | Default     | Description |
 | --------------------------------------- | ----------- | ----------- |
 | `DS_ANALYZER_IMAGES`                    |             | Comma separated list of custom images. The official default images are still enabled. Read more about [customizing analyzers](analyzers.md). |
@@ -143,7 +143,7 @@ using environment variables.
 | `DS_PULL_ANALYZER_IMAGE_TIMEOUT`        | 5m          | Time limit when pulling the image of an analyzer. Timeouts are parsed using Go's [`ParseDuration`](https://golang.org/pkg/time/#ParseDuration). Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`. For example, `300ms`, `1.5h`, or `2h45m`. |
 | `DS_RUN_ANALYZER_TIMEOUT`               | 20m         | Time limit when running an analyzer. Timeouts are parsed using Go's [`ParseDuration`](https://golang.org/pkg/time/#ParseDuration). Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`. For example, `300ms`, `1.5h`, or `2h45m`. |
 
-#### Configuring the gemnasium advisory DB
+#### Configuring Gemnasium advisory DB
 
 | Environment variable                    | Description |
 | --------------------------------------- | ----------- |
