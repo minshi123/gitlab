@@ -194,6 +194,42 @@ describe Resolvers::EpicResolver do
           expect(resolve_epics).to contain_exactly(epic1, epic2, epic3, epic4)
         end
       end
+
+      context 'with partial iids' do
+        let(:epic3)   { create(:epic, group: group, author: user2, title: 'foo', description: 'bar', created_at: 2.days.ago, updated_at: 3.days.ago, iid: '1122') }
+        let(:epic4)   { create(:epic, group: group, author: user2, title: 'foo', description: 'bar', created_at: 2.days.ago, updated_at: 3.days.ago, iid: '132') }
+        let(:epic5)   { create(:epic, group: group, author: user2, title: 'foo', description: 'bar', created_at: 2.days.ago, updated_at: 3.days.ago, iid: '62') }
+
+        it 'returns the expected epics if just the first number of iid is requested' do
+          epics = resolve_epics(by_partial_iids: '1')
+
+          expect(epics).to contain_exactly(epic3, epic4)
+        end
+
+        it 'returns the expected epics if first two numbers of iid are requested' do
+          epics = resolve_epics(by_partial_iids: '11')
+
+          expect(epics).to contain_exactly(epic3)
+        end
+
+        it 'returns the expected epics if last two numbers of iid are given' do
+          epics = resolve_epics(by_partial_iids: '32')
+
+          expect(epics).to contain_exactly(epic4)
+        end
+
+        it 'returns the expected epics if last number of iid is given' do
+          epics = resolve_epics(by_partial_iids: '2')
+
+          expect(epics).to contain_exactly(epic4, epic3, epic5)
+        end
+
+        it 'returns the expected epics if exact number of iid is given' do
+          epics = resolve_epics(by_partial_iids: '62')
+
+          expect(epics).to contain_exactly(epic5)
+        end
+      end
     end
   end
 

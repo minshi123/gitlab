@@ -66,6 +66,7 @@ module EE
       scope :in_milestone, -> (milestone_id) { joins(:issues).where(issues: { milestone_id: milestone_id }) }
       scope :in_issues, -> (issues) { joins(:epic_issues).where(epic_issues: { issue_id: issues }).distinct }
       scope :has_parent, -> { where.not(parent_id: nil) }
+      scope :by_partial_iid, -> (partial_iid) { where('iid::varchar LIKE ?', "%#{partial_iid}%") }
 
       scope :within_timeframe, -> (start_date, end_date) do
         where('start_date is not NULL or end_date is not NULL')

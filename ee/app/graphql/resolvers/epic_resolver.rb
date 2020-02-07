@@ -32,6 +32,10 @@ module Resolvers
              required: false,
              description: 'Filter epics by labels'
 
+    argument :by_partial_iid, GraphQL::STRING_TYPE,
+             required: false,
+             description: 'Filter epics by partial iid for autocomplete'
+
     type Types::EpicType, null: true
 
     def resolve(**args)
@@ -50,7 +54,10 @@ module Resolvers
     attr_reader :resolver_object
 
     def find_epics(args)
-      EpicsFinder.new(context[:current_user], args).execute
+      epics = EpicsFinder.new(context[:current_user], args).execute
+      return epics.by_partial_iid(args[:by_partial_iid]) if args[:by_partial_iid]
+
+      epics
     end
 
     def epic_feature_enabled?
