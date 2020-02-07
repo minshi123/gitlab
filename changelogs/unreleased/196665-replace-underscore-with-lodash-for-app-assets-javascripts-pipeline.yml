@@ -1,0 +1,5 @@
+---
+title: Replace underscore with lodash in app/assets/javascripts/pipeline
+merge_request:
+author:
+type: other
