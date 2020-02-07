@@ -133,7 +133,7 @@ To add projects to the dashboard:
 Once added, the dashboard will display the vulnerabilities found in your chosen
 projects.
 
-![Instance Security Dashboard with projects](img/instance_security_dashboard_with_projects_v12_7.png)
+![Instance Security Dashboard with projects](img/instance_security_dashboard_with_projects_v12_8.png)
 
 ## Keeping the dashboards up to date
 
