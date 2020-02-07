@@ -17,7 +17,9 @@
       = metric_query
 
 %p
-  - if @alert.gitlab_alert
-    = link_to('View performance dashboard.', @alert.performance_dashboard_link)
+  - if @alert.generic_alert?
+    = _("View incident issues at ")
+    = link_to(nil, @alert.incident_issues_link)
   - else
-    = "View incident issues at #{link_to(nil, @alert.incident_issues_link)}"
+    = link_to(_('View performance dashboard.'), @alert.performance_dashboard_link)
+

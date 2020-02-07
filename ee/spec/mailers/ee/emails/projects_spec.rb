@@ -83,6 +83,7 @@ describe EE::Emails::Projects do
 
       before do
         alert_params['annotations'] = { 'title' => title }
+        alert_params['generatorURL'] = 'http://localhost:9090/graph?g0.expr=vector%281%29&g0.tab=1'
       end
 
       it_behaves_like 'an email sent from GitLab'
@@ -100,6 +101,18 @@ describe EE::Emails::Projects do
         is_expected.not_to have_body_text('Environment:')
         is_expected.not_to have_body_text('Metric:')
         is_expected.to have_body_text(metrics_url)
+      end
+
+      context 'generic alert' do
+        let(:incident_issues_url) do
+          project_issues_url(project, label_name: 'incident')
+        end
+
+        before do
+          alert_params['generatorURL'] = nil
+        end
+
+        it { is_expected.to have_body_text(incident_issues_url) }
       end
 
       context 'with annotated description' do

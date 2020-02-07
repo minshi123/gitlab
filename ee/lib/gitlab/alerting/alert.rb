@@ -93,6 +93,10 @@ module Gitlab
         metric_id.present?
       end
 
+      def generic_alert?
+        gitlab_alert.blank? && full_query.blank?
+      end
+
       def valid?
         payload.respond_to?(:dig) && project && title && starts_at
       end
