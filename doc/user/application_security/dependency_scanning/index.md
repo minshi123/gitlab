@@ -128,8 +128,10 @@ dependency_scanning:
 Dependency Scanning can be [configured](#customizing-the-dependency-scanning-settings)
 using environment variables.
 
+#### Configuring Dependency Scanning
 
-#### Configuring Dependency Scanning orchestrator
+The following variables allow configuration of global dependency scanning settings.
+
 | Environment variable                    | Default     | Description |
 | --------------------------------------- | ----------- | ----------- |
 | `DS_ANALYZER_IMAGES`                    |             | Comma separated list of custom images. The official default images are still enabled. Read more about [customizing analyzers](analyzers.md). |
@@ -145,13 +147,17 @@ using environment variables.
 
 #### Configuring Gemnasium advisory DB
 
-| Environment variable                    | Description |
-| --------------------------------------- | ----------- |
-| `GEMNASIUM_DB_LOCAL_PATH`               | Path to local gemnasium database (default `/gemnasium-db`).
-| `GEMNASIUM_DB_REMOTE_URL`               | Repository URL for fetching the gemnasium database (default `https://gitlab.com/gitlab-org/security-products/gemnasium-db.git`).
-| `GEMNASIUM_DB_REF_NAME`                 | Branch name for remote repository database (default `master`). `GEMNASIUM_DB_REMOTE_URL` is required.
+The following variables allow configuration of the advisory DB used by dependency scanning to find vulnerable dependencies.
 
-#### Configuring specific analyzers
+| Environment variable                    | Default         | Description |
+| --------------------------------------- | --------------- | ----------- |
+| `GEMNASIUM_DB_LOCAL_PATH`               | /gemnasium-db | Path to local gemnasium database. |
+| `GEMNASIUM_DB_REMOTE_URL`               | https://gitlab.com/gitlab-org/security-products/gemnasium-db.git | Repository URL for fetching the gemnasium database. |
+| `GEMNASIUM_DB_REF_NAME`                 | master        | Branch name for remote repository database. `GEMNASIUM_DB_REMOTE_URL` is required. |
+
+#### Configuring specific analyzers used by Dependency Scanning
+
+The following variables are used for configuring specific analyzers (used for a specific language/framework).
 
 | Environment variable                    | Analyzer         | Description |
 | --------------------------------------- | ---------------- |------------ |
