@@ -24,12 +24,12 @@ module Projects
 
       def process_incident_issues
         ::IncidentManagement::ProcessAlertWorker
-          .new
-          .perform(project.id, parsed_payload)
+          .perform_async(project.id, parsed_payload)
       end
 
       def send_alert_email
         notification_service
+          .async
           .prometheus_alerts_fired(project, [parsed_payload])
       end
 

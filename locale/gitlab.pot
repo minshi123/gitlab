@@ -21107,6 +21107,9 @@ msgstr ""
 msgid "View group labels"
 msgstr ""
 
+msgid "View incident issues at "
+msgstr ""
+
 msgid "View issue"
 msgstr ""
 
@@ -21129,6 +21132,9 @@ msgid "View log"
 msgstr ""
 
 msgid "View open merge request"
+msgstr ""
+
+msgid "View performance dashboard."
 msgstr ""
 
 msgid "View project"

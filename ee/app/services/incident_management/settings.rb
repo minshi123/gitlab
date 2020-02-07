@@ -17,7 +17,7 @@ module Projects
       def send_email?
         return unless incident_management_available?
 
-        incident_management_setting.send_email
+        incident_management_setting.send_email?
       end
 
       def process_issues?
