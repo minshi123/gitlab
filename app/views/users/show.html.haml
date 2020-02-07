@@ -130,7 +130,8 @@
             %h4.prepend-top-20
               = s_('UserProfile|Most Recent Activity')
             .content_list{ data: { href: user_path } }
-            = spinner
+            .text-center.loading
+              .spinner.spinner-md
 
       - if profile_tab?(:groups)
         #groups.tab-pane
