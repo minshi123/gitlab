@@ -19,7 +19,8 @@ module Packages
         package_file.transaction do
           package_file.update!(
             file_name: package_filename,
-            file: package_file.file
+            file: package_file.file,
+            size: package_file.file.size
           )
 
           if existing_package_id

@@ -18,11 +18,14 @@ describe Packages::Nuget::UpdatePackageFromMetadataService do
     end
 
     it 'updates package and package file' do
+      package_file.update!(size: 0)
+
       subject
 
       expect(package.reload.name).to eq(package_name)
       expect(package.version).to eq(package_version)
       expect(package_file.reload.file_name).to eq(package_file_name)
+      expect(package_file.size).not_to eq 0
       # hard reset needed to properly reload package_file.file
       expect(Packages::PackageFile.find(package_file.id).file.size).not_to eq 0
     end
