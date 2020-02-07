@@ -169,7 +169,7 @@ rspec-ee unit pg9:
 
 rspec-ee integration pg9:
   extends: .rspec-ee-base-pg9
-  parallel: 3
+  parallel: 4
 
 rspec-ee system pg9:
   extends: .rspec-ee-base-pg9
