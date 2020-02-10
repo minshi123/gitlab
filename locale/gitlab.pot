@@ -9024,9 +9024,6 @@ msgstr ""
 msgid "Geo|Tracking entry for upload (%{type}/%{id}) was successfully removed."
 msgstr ""
 
-msgid "Geo|Tracking entry will be removed. Are you sure?"
-msgstr ""
-
 msgid "Geo|URL"
 msgstr ""
 
@@ -15767,6 +15764,9 @@ msgstr ""
 msgid "Remove due date"
 msgstr ""
 
+msgid "Remove entry"
+msgstr ""
+
 msgid "Remove fork relationship"
 msgstr ""
 
@@ -15810,6 +15810,9 @@ msgid "Remove stage"
 msgstr ""
 
 msgid "Remove time estimate"
+msgstr ""
+
+msgid "Remove tracking database entry"
 msgstr ""
 
 msgid "Removed"
@@ -20168,6 +20171,9 @@ msgid "Track your GitLab projects with GitLab for Slack."
 msgstr ""
 
 msgid "Track your project with Audit Events."
+msgstr ""
+
+msgid "Tracking database entry will be removed. Are you sure?"
 msgstr ""
 
 msgid "Transfer project"

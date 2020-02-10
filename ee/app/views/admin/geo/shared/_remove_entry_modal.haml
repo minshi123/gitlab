@@ -1,0 +1,11 @@
+#modal-remove-entry.modal
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h4.modal-title= _('Remove tracking database entry')
+        %button.close{ type: "button", "data-dismiss": "modal", "aria-label" => _('Cancel') }
+      .modal-body.p-3
+        %p= _("Tracking database entry will be removed. Are you sure?")
+      .modal-footer
+        = link_to _('Cancel'), '#', class: "btn btn-cancel", "data-dismiss" => "modal"
+        = link_to _('Remove entry'), removal_path, class: 'btn btn-danger', method: :delete
