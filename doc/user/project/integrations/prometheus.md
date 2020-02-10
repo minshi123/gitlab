@@ -419,11 +419,30 @@ Note the following properties:
 When viewing a custom dashboard of a project, you can view the original
 `.yml` file by clicking on **Edit dashboard** button.
 
+### Chart Context Menu
+
+From each of the panels in the dashboard, you will be able to use the context menu by clicking on the three dots on the upper right corner to take actions related to the chart's data.
+
+![Context Menu](img/panel_context_menu_v12_8.png)
+
+The options are:
+
+- [View logs](#view-pod-logs-ultimate)
+- [Download CSV](#downloading-data-as-csv)
+- [Generate link to chart](#embedding-gitlab-managed-kubernetes-metrics)
+- [Alerts](#setting-up-alerts-for-prometheus-metrics-ultimate)
+
 ### Downloading data as CSV
 
-Data from Prometheus charts on the metrics dashboard can be downloaded as CSV.
+Data from Prometheus charts on the metrics dashboard can be downloaded as CSV by clicking on the context menu in the upper-right corner.
 
-![Downloading as CSV](img/download_as_csv.png)
+### View Pod Logs **(ULTIMATE)**
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/122013) in GitLab 12.8.
+
+If you have [Kubernetes Pod Logs](https://docs.gitlab.com/ee/user/project/clusters/kubernetes_pod_logs.html) enabled, you can navigate from the charts in the dashboard to view Pod Logs by clicking on the context menu in the upper-right corner.
+
+If you use the "timeline zoom" function at the bottom of the chart, logs will narrow down to the time range you selected.
 
 ### Setting up alerts for Prometheus metrics **(ULTIMATE)**
 
