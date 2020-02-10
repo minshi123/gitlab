@@ -87,9 +87,6 @@
         show_suggest_popover: show_suggest_popover?.to_s,
         show_whitespace_default: @show_whitespace_default.to_s }
 
-    .mr-loading-status
-      = spinner
-
 = render 'shared/issuable/sidebar', issuable_sidebar: @issuable_sidebar, assignees: @merge_request.assignees
 
 - if @merge_request.can_be_reverted?(current_user)
