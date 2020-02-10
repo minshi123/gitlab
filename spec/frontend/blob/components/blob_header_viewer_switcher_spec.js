@@ -8,6 +8,7 @@ import {
 } from '~/blob/components/constants';
 import { GlButtonGroup, GlButton } from '@gitlab/ui';
 import { Blob } from './mock_data';
+import eventHub from '~/blob/event_hub';
 
 describe('Blob Header Viewer Switcher', () => {
   let wrapper;
@@ -68,31 +69,27 @@ describe('Blob Header Viewer Switcher', () => {
       buttons = wrapper.findAll(GlButton);
       simpleBtn = buttons.at(0);
       richBtn = buttons.at(1);
+
+      jest.spyOn(eventHub, '$emit');
     });
 
     it('does not switch the viewer if the selected one is already active', () => {
-      jest.spyOn(wrapper.vm, '$emit');
-
       expect(wrapper.vm.viewer).toBe(RICH_BLOB_VIEWER);
       richBtn.vm.$emit('click');
       expect(wrapper.vm.viewer).toBe(RICH_BLOB_VIEWER);
-      expect(wrapper.vm.$emit).not.toHaveBeenCalled();
+      expect(eventHub.$emit).not.toHaveBeenCalled();
     });
 
     it('emits an event when a Simple Viewer button is clicked', () => {
-      jest.spyOn(wrapper.vm, '$emit');
-
       simpleBtn.vm.$emit('click');
 
       return wrapper.vm.$nextTick().then(() => {
         expect(wrapper.vm.viewer).toBe(SIMPLE_BLOB_VIEWER);
-        expect(wrapper.vm.$emit).toHaveBeenCalledWith('switch-viewer', SIMPLE_BLOB_VIEWER);
+        expect(eventHub.$emit).toHaveBeenCalledWith('switch-viewer', SIMPLE_BLOB_VIEWER);
       });
     });
 
     it('emits an event when a Rich Viewer button is clicked', () => {
-      jest.spyOn(wrapper.vm, '$emit');
-
       wrapper.setData({ viewer: SIMPLE_BLOB_VIEWER });
 
       return wrapper.vm
@@ -102,7 +99,7 @@ describe('Blob Header Viewer Switcher', () => {
         })
         .then(() => {
           expect(wrapper.vm.viewer).toBe(RICH_BLOB_VIEWER);
-          expect(wrapper.vm.$emit).toHaveBeenCalledWith('switch-viewer', RICH_BLOB_VIEWER);
+          expect(eventHub.$emit).toHaveBeenCalledWith('switch-viewer', RICH_BLOB_VIEWER);
         });
     });
   });

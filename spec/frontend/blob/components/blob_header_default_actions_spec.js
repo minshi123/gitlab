@@ -7,6 +7,7 @@ import {
 } from '~/blob/components/constants';
 import { GlButtonGroup, GlButton } from '@gitlab/ui';
 import { Blob } from './mock_data';
+import eventHub from '~/blob/event_hub';
 
 describe('Blob Header Default Actions', () => {
   let wrapper;
@@ -55,10 +56,10 @@ describe('Blob Header Default Actions', () => {
 
   describe('functionally', () => {
     it('emits an event when a Copy Contents button is clicked', () => {
-      jest.spyOn(wrapper.vm, '$emit');
+      jest.spyOn(eventHub, '$emit');
       buttons.at(0).vm.$emit('click');
 
-      expect(wrapper.vm.$emit).toHaveBeenCalledWith('copy');
+      expect(eventHub.$emit).toHaveBeenCalledWith('copy');
     });
   });
 });

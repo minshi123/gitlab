@@ -6,6 +6,7 @@ import {
   SIMPLE_BLOB_VIEWER,
   SIMPLE_BLOB_VIEWER_TITLE,
 } from './constants';
+import eventHub from '../event_hub';
 
 export default {
   components: {
@@ -39,7 +40,7 @@ export default {
     switchToViewer(viewer) {
       if (viewer !== this.viewer) {
         this.viewer = viewer;
-        this.$emit('switch-viewer', viewer);
+        eventHub.$emit('switch-viewer', viewer);
       }
     },
   },

@@ -1,6 +1,7 @@
 <script>
 import { GlButton, GlButtonGroup, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { BTN_COPY_CONTENTS_TITLE, BTN_DOWNLOAD_TITLE, BTN_RAW_TITLE } from './constants';
+import eventHub from '../event_hub';
 
 export default {
   components: {
@@ -27,7 +28,7 @@ export default {
   },
   methods: {
     requestCopyContents() {
-      this.$emit('copy');
+      eventHub.$emit('copy');
     },
   },
   BTN_COPY_CONTENTS_TITLE,
