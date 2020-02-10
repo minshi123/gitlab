@@ -3,6 +3,7 @@ import BlobHeader from '~/blob/components/blob_header.vue';
 import ViewerSwitcher from '~/blob/components/blob_header_viewer_switcher.vue';
 import DefaultActions from '~/blob/components/blob_header_default_actions.vue';
 import BlobFilepath from '~/blob/components/blob_header_filepath.vue';
+import eventHub from '~/blob/event_hub';
 
 import { Blob } from './mock_data';
 
@@ -86,6 +87,43 @@ describe('Blob Header Default Actions', () => {
           },
         );
         expect(wrapper.text()).toContain(slotContent);
+      });
+    });
+  });
+
+  describe('functionality', () => {
+    const newViewer = 'Foo Bar';
+
+    it('listens to "switch-view" event when viewer switcher is shown and updates activeViewer', () => {
+      expect(wrapper.vm.showViewerSwitcher).toBe(true);
+      eventHub.$emit('switch-viewer', newViewer);
+
+      return wrapper.vm.$nextTick().then(() => {
+        expect(wrapper.vm.activeViewer).toBe(newViewer);
+      });
+    });
+
+    it('does not update active viewer is the switcher is not shown', () => {
+      const activeViewer = 'Alpha Beta';
+      createComponent(
+        {},
+        {
+          data() {
+            return {
+              activeViewer,
+            };
+          },
+        },
+        {
+          hideViewerSwitcher: true,
+        },
+      );
+
+      expect(wrapper.vm.showViewerSwitcher).toBe(false);
+      eventHub.$emit('switch-viewer', newViewer);
+
+      return wrapper.vm.$nextTick().then(() => {
+        expect(wrapper.vm.activeViewer).toBe(activeViewer);
       });
     });
   });

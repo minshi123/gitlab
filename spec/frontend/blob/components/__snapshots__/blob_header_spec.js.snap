@@ -96,7 +96,8 @@ exports[`Blob Header Default Actions rendering matches the snapshot 1`] = `
     >
       <button
         aria-label="Copy file contents"
-        class="btn btn-secondary btn-md"
+        class="btn btn-secondary btn-md disabled"
+        disabled="disabled"
         title="Copy file contents"
         type="button"
       >

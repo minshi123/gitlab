@@ -4,6 +4,8 @@ import {
   BTN_COPY_CONTENTS_TITLE,
   BTN_DOWNLOAD_TITLE,
   BTN_RAW_TITLE,
+  RICH_BLOB_VIEWER,
+  SIMPLE_BLOB_VIEWER,
 } from '~/blob/components/constants';
 import { GlButtonGroup, GlButton } from '@gitlab/ui';
 import { Blob } from './mock_data';
@@ -60,6 +62,31 @@ describe('Blob Header Default Actions', () => {
       buttons.at(0).vm.$emit('click');
 
       expect(eventHub.$emit).toHaveBeenCalledWith('copy');
+    });
+
+    it('disables "Copy file contents" button if the view is switched to rich', () => {
+      jest.spyOn(eventHub, '$emit');
+
+      const simpleBlob = Object.assign({}, Blob, {
+        richViewer: null,
+      });
+
+      wrapper.setProps({ blob: simpleBlob });
+
+      return wrapper.vm
+        .$nextTick()
+        .then(() => {
+          expect(buttons.at(0).attributes('disabled')).not.toBeTruthy();
+          eventHub.$emit('switch-viewer', RICH_BLOB_VIEWER);
+        })
+        .then(() => {
+          expect(buttons.at(0).attributes('disabled')).toBeTruthy();
+          eventHub.$emit('switch-viewer', SIMPLE_BLOB_VIEWER);
+          return wrapper.vm.$nextTick();
+        })
+        .then(() => {
+          expect(buttons.at(0).attributes('disabled')).not.toBeTruthy();
+        });
     });
   });
 });

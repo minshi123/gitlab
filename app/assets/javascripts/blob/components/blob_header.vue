@@ -2,6 +2,8 @@
 import ViewerSwitcher from './blob_header_viewer_switcher.vue';
 import DefaultActions from './blob_header_default_actions.vue';
 import BlobFilepath from './blob_header_filepath.vue';
+import eventHub from '../event_hub';
+import { RICH_BLOB_VIEWER, SIMPLE_BLOB_VIEWER } from './constants';
 
 export default {
   components: {
@@ -23,6 +25,11 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      activeViewer: this.blob.richViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER,
+    };
+  },
   computed: {
     showViewerSwitcher() {
       return !this.hideViewerSwitcher && Boolean(this.blob.simpleViewer && this.blob.richViewer);
@@ -30,6 +37,13 @@ export default {
     showDefaultActions() {
       return !this.hideDefaultActions;
     },
+  },
+  mounted() {
+    if(this.showViewerSwitcher) {
+      eventHub.$on('switch-viewer', viewer => {
+        this.activeViewer = viewer;
+      });
+    }
   },
 };
 </script>
@@ -42,11 +56,11 @@ export default {
     </blob-filepath>
 
     <div class="file-actions d-none d-sm-block">
-      <viewer-switcher v-if="showViewerSwitcher" :blob="blob" />
+      <viewer-switcher v-if="showViewerSwitcher" :blob="blob" :active-viewer="activeViewer" />
 
       <slot name="actions"></slot>
 
-      <default-actions v-if="showDefaultActions" :blob="blob" />
+      <default-actions v-if="showDefaultActions" :blob="blob" :active-viewer="activeViewer" />
     </div>
   </div>
 </template>

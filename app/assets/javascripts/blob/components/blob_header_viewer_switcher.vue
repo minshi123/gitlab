@@ -22,24 +22,23 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  data() {
-    return {
-      viewer: this.blob.richViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER,
-    };
+    activeViewer: {
+      type: String,
+      default: SIMPLE_BLOB_VIEWER,
+      required: false,
+    },
   },
   computed: {
     isSimpleViewer() {
-      return this.viewer === SIMPLE_BLOB_VIEWER;
+      return this.activeViewer === SIMPLE_BLOB_VIEWER;
     },
     isRichViewer() {
-      return this.viewer === RICH_BLOB_VIEWER;
+      return this.activeViewer === RICH_BLOB_VIEWER;
     },
   },
   methods: {
     switchToViewer(viewer) {
-      if (viewer !== this.viewer) {
-        this.viewer = viewer;
+      if (viewer !== this.activeViewer) {
         eventHub.$emit('switch-viewer', viewer);
       }
     },
