@@ -10,6 +10,32 @@ describe Oauth::ApplicationsController do
       sign_in(user)
     end
 
+    describe 'GET #show' do
+      let(:application) { create(:oauth_application, owner: user) }
+
+      subject { get :show, params: { id: application.id } }
+
+      context 'when the user is signed in' do
+        it 'shows the requested application' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      context 'when the user is not signed in' do
+        before do
+          sign_out(user)
+        end
+
+        it 'redirects to login page' do
+          subject
+
+          expect(response).to redirect_to(new_user_session_path)
+        end
+      end
+    end
+
     describe 'GET #index' do
       it 'shows list of applications' do
         get :index
