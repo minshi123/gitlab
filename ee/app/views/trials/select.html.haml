@@ -10,9 +10,10 @@
 = render 'errors'
 
 = form_tag apply_trials_path(glm_params), method: :post do
-  .form-group.gl-select2-html5-required-fix
-    = label_tag :namespace_id, _('This subscription is for'), for: :namespace_id, class: 'col-form-label'
-    = select_tag :namespace_id, namespace_options_for_select, class: 'select2', required: true
+  - if current_user.setup_for_company.nil?
+    .form-group.gl-select2-html5-required-fix
+      = label_tag :namespace_id, _('This subscription is for'), for: :namespace_id, class: 'col-form-label'
+      = select_tag :namespace_id, namespace_options_for_select, class: 'select2', required: true
   #group_name.form-group.hidden
     = label_tag :new_group_name, _('New Group Name'), for: :new_group_name, class: 'col-form-label'
     = text_field_tag :new_group_name, nil, class: 'form-control'
