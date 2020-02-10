@@ -1,0 +1,148 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Blob Header Default Actions rendering matches the snapshot 1`] = `
+<div
+  class="js-file-title file-title-flex-parent"
+>
+  <div
+    class="file-header-content d-flex align-items-center lh-100"
+  >
+     
+    <span
+      aria-hidden="true"
+    >
+      <svg
+        class="s18 mr-2"
+      >
+        <use
+          xlink:href="undefined#markdown"
+        />
+      </svg>
+       
+      <!---->
+       
+      <!---->
+    </span>
+     
+    <strong
+      class="file-title-name qa-file-title-name mr-1 js-blob-header-filepath"
+    >
+      dummy.md
+    </strong>
+     
+    <small
+      class="mr-2"
+    >
+      75 bytes
+    </small>
+     
+    <button
+      class="btn btn-secondary btn-md btn-clipboard btn-transparent lh-100 position-static"
+      data-clipboard-text="{\\"text\\":\\"dummy.md\\",\\"gfm\\":\\"\`dummy.md\`\\"}"
+      title="Copy file path"
+      type="button"
+    >
+      <svg
+        class="gl-icon s16"
+      >
+        <use
+          href="#copy-to-clipboard"
+        />
+      </svg>
+    </button>
+  </div>
+   
+  <div
+    class="file-actions d-none d-sm-block"
+  >
+    <div
+      class="js-blob-viewer-switcher ml-2 btn-group"
+      role="group"
+    >
+      <button
+        aria-label="Display source"
+        class="btn btn-secondary btn-md"
+        title="Display source"
+        type="button"
+      >
+        <svg
+          class="gl-icon s14"
+        >
+          <use
+            href="#code"
+          />
+        </svg>
+      </button>
+       
+      <button
+        aria-label="Display rendered file"
+        class="btn btn-secondary btn-md selected active"
+        title="Display rendered file"
+        type="button"
+      >
+        <svg
+          class="gl-icon s14"
+        >
+          <use
+            href="#document"
+          />
+        </svg>
+      </button>
+    </div>
+      
+    <div
+      class="btn-group"
+      role="group"
+    >
+      <button
+        aria-label="Copy file contents"
+        class="btn btn-secondary btn-md"
+        title="Copy file contents"
+        type="button"
+      >
+        <svg
+          class="gl-icon s14"
+        >
+          <use
+            href="#copy-to-clipboard"
+          />
+        </svg>
+      </button>
+       
+      <a
+        aria-label="Open raw"
+        class="btn btn-secondary btn-md"
+        href="/flightjs/flight/snippets/51/raw"
+        rel="noopener"
+        target="_blank"
+        title="Open raw"
+      >
+        <svg
+          class="gl-icon s14"
+        >
+          <use
+            href="#doc-code"
+          />
+        </svg>
+      </a>
+       
+      <a
+        aria-label="Download"
+        class="btn btn-secondary btn-md"
+        href="/flightjs/flight/snippets/51/raw?inline=false"
+        rel="noopener"
+        target="_blank"
+        title="Download"
+      >
+        <svg
+          class="gl-icon s14"
+        >
+          <use
+            href="#download"
+          />
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+`;
