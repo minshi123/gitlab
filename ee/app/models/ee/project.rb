@@ -44,7 +44,6 @@ module EE
       has_one :jenkins_deprecated_service
       has_one :github_service
       has_one :gitlab_slack_application_service
-      has_one :alerts_service
 
       has_one :service_desk_setting, class_name: 'ServiceDeskSetting'
       has_one :tracing_setting, class_name: 'ProjectTracingSetting'
@@ -549,7 +548,6 @@ module EE
         [].tap do |services|
           services.push('jenkins', 'jenkins_deprecated') unless feature_available?(:jenkins_integration)
           services.push('github') unless feature_available?(:github_project_service_integration)
-          services.push('alerts') unless alerts_service_available?
         end
       end
     end
@@ -681,14 +679,6 @@ module EE
       if design.exists?
         design.before_delete
       end
-    end
-
-    def alerts_service_available?
-      feature_available?(:incident_management)
-    end
-
-    def alerts_service_activated?
-      alerts_service_available? && alerts_service&.active?
     end
 
     def package_already_taken?(package_name)

@@ -5584,6 +5584,28 @@ describe Project do
     end
   end
 
+  describe '#alerts_service_activated?' do
+    let!(:project) { create(:project) }
+
+    subject { project.alerts_service_activated? }
+
+    context 'when project has an activated alerts service' do
+      before do
+        create(:alerts_service, project: project)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when project has an inactive alerts service' do
+      before do
+        create(:alerts_service, :inactive, project: project)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
   def rugged_config
     rugged_repo(project.repository).config
   end
