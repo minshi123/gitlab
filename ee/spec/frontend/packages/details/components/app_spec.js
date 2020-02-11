@@ -27,25 +27,7 @@ describe('PackagesApp', () => {
   let wrapper;
   let store;
 
-  const defaultProps = {
-    canDelete: true,
-    destroyPath: 'destroy-package-path',
-    emptySvgPath: 'empty-illustration',
-    npmPath: 'foo',
-    npmHelpPath: 'foo',
-    mavenPath: 'foo',
-    mavenHelpPath: 'foo',
-    conanPath: 'foo',
-    conanHelpPath: 'foo',
-    nugetPath: 'foo',
-    nugetHelpPath: 'foo',
-  };
-
   function createComponent(packageEntity = mavenPackage, packageFiles = mavenFiles) {
-    const propsData = {
-      ...defaultProps,
-    };
-
     store = new Vuex.Store({
       state: {
         isLoading: false,
@@ -53,17 +35,25 @@ describe('PackagesApp', () => {
         packageFiles,
         pipelineInfo: {},
         pipelineError: null,
-      },
-      getters: {
-        packageHasPipeline: () => packageEntity.build_info && packageEntity.build_info.pipeline_id,
-        packageTypeDisplay: () => {},
+        canDelete: true,
+        destroyPath: 'destroy-package-path',
+        emptySvgPath: 'empty-illustration',
+        npmPath: 'foo',
+        npmHelpPath: 'foo',
       },
     });
 
     wrapper = mount(PackagesApp, {
       localVue,
-      propsData,
       store,
+      stubs: {
+        PackageInformation: true,
+        PackageTitle: true,
+        ConanInstallation: true,
+        MavenInstallation: true,
+        NpmInstallation: true,
+        NugetInstallation: true,
+      },
     });
   }
 

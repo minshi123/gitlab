@@ -5,6 +5,7 @@ import CodeInstruction from './code_instruction.vue';
 import Tracking from '~/tracking';
 import { TrackingActions, TrackingLabels } from '../constants';
 import { trackInstallationTabChange } from '../utils';
+import { mapGetters, mapState } from 'vuex';
 
 export default {
   name: 'NugetInstallation',
@@ -19,34 +20,16 @@ export default {
     }),
     trackInstallationTabChange,
   ],
-  props: {
-    packageEntity: {
-      type: Object,
-      required: true,
-    },
-    registryUrl: {
-      type: String,
-      required: true,
-    },
-    helpUrl: {
-      type: String,
-      required: true,
-    },
-  },
   computed: {
-    nugetCommand() {
-      return `nuget install ${this.packageEntity.name} -Source "GitLab"`;
-    },
-    setupCommand() {
-      return `nuget source Add -Name "GitLab" -Source "${this.registryUrl}" -UserName <your_username> -Password <your_token>`;
-    },
+    ...mapState(['nugetPath']),
+    ...mapGetters(['nugetInstallationCommand', 'nugetSetupCommand']),
     helpText() {
       return sprintf(
         s__(
           `PackageRegistry|For more information on the NuGet registry, %{linkStart}see the documentation%{linkEnd}.`,
         ),
         {
-          linkStart: `<a href="${this.helpUrl}" target="_blank" rel="noopener noreferer">`,
+          linkStart: `<a href="${this.nugetPath}" target="_blank" rel="noopener noreferer">`,
           linkEnd: '</a>',
         },
         false,
@@ -64,7 +47,7 @@ export default {
         <div class="prepend-left-default append-right-default">
           <p class="prepend-top-8 font-weight-bold">{{ s__('PackageRegistry|NuGet Command') }}</p>
           <code-instruction
-            :instruction="nugetCommand"
+            :instruction="nugetInstallationCommand"
             :copy-text="s__('PackageRegistry|Copy NuGet Command')"
             class="js-nuget-command"
             :tracking-action="$options.trackingActions.COPY_NUGET_INSTALL_COMMAND"
@@ -77,7 +60,7 @@ export default {
             {{ s__('PackageRegistry|Add NuGet Source') }}
           </p>
           <code-instruction
-            :instruction="setupCommand"
+            :instruction="nugetSetupCommand"
             :copy-text="s__('PackageRegistry|Copy NuGet Setup Command')"
             class="js-nuget-setup"
             :tracking-action="$options.trackingActions.COPY_NUGET_SETUP_COMMAND"
