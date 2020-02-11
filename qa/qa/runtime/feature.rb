@@ -44,7 +44,7 @@ module QA
       end
 
       def enabled?(key)
-        feature = JSON.parse(get_features).find { |flag| flag["name"] == key }
+        feature = JSON.parse(get_features).find { |flag| flag["name"] == key.to_s }
         feature && feature["state"] == "on"
       end
 
