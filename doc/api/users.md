@@ -356,7 +356,7 @@ over `password`. In addition, `reset_password` and
 `force_random_password` can be used together.
 
 NOTE: **Note:**
-From [GitLab 12.1](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/29888/), `private_profile` will default to `false`.
+From [GitLab 12.1](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/29888/), `private_profile` will default to `false`.
 
 ```
 POST /users
@@ -385,7 +385,9 @@ Parameters:
 - `skip_confirmation` (optional) - Skip confirmation - true or false (default)
 - `external` (optional)          - Flags the user as external - true or false (default)
 - `avatar` (optional)            - Image file for user's avatar
-- `private_profile` (optional)   - User's profile is private - true or false (default)
+- `theme_id` (optional)          - The GitLab theme for the user (see [the user preference docs](../user/profile/preferences.md#navigation-theme) for more information)
+- `color_scheme_id` (optional)   - User's color scheme for the file viewer (see [the user preference docs](../user/profile/preferences.md#syntax-highlighting-theme) for more information)
+- `private_profile` (optional)   - User's profile is private - true, false (default), or null (will be converted to false)
 - `shared_runners_minutes_limit` (optional)       - Pipeline minutes quota for this user **(STARTER)**
 - `extra_shared_runners_minutes_limit` (optional) - Extra pipeline minutes quota for this user **(STARTER)**
 
@@ -423,7 +425,9 @@ Parameters:
 - `shared_runners_minutes_limit` (optional) - Pipeline minutes quota for this user
 - `extra_shared_runners_minutes_limit` (optional) - Extra pipeline minutes quota for this user
 - `avatar` (optional)              - Image file for user's avatar
-- `private_profile` (optional)     - User's profile is private - true or false (default)
+- `theme_id` (optional)          - The GitLab theme for the user (see [the user preference docs](../user/profile/preferences.md#navigation-theme) for more information)
+- `color_scheme_id` (optional)   - User's color scheme for the file viewer (see [the user preference docs](../user/profile/preferences.md#syntax-highlighting-theme) for more information)
+- `private_profile` (optional)     - User's profile is private - true, false (default), or null (will be converted to false)
 - `shared_runners_minutes_limit` (optional)       - Pipeline minutes quota for this user **(STARTER)**
 - `extra_shared_runners_minutes_limit` (optional) - Extra pipeline minutes quota for this user **(STARTER)**
 - `note` (optional)                - Admin notes for this user **(STARTER)**
@@ -1162,7 +1166,7 @@ Will return `201 OK` on success, `404 User Not Found` is user cannot be found or
 
 ## Deactivate user
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-ce/issues/63921) in GitLab 12.4.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/22257) in GitLab 12.4.
 
 Deactivates the specified user.  Available only for admin.
 
@@ -1184,7 +1188,7 @@ Returns:
 
 ## Activate user
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-ce/issues/63921) in GitLab 12.4.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/22257) in GitLab 12.4.
 
 Activates the specified user.  Available only for admin.
 
@@ -1372,6 +1376,7 @@ The activities that update the timestamp are:
 - Git HTTP/SSH activities (such as clone, push)
 - User logging in into GitLab
 - User visiting pages related to Dashboards, Projects, Issues and Merge Requests ([introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/54947) in GitLab 11.8)
+- User using the API
 
 By default, it shows the activity for all users in the last 6 months, but this can be
 amended by using the `from` parameter.
@@ -1416,7 +1421,7 @@ Please note that `last_activity_at` is deprecated, please use `last_activity_on`
 
 ## User memberships (admin only)
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/22518) in GitLab 12.8.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/22518) in GitLab 12.8.
 
 Lists all projects and groups a user is a member of. This endpoint is available for admins only.
 It returns the `source_id`, `source_name`, `source_type` and `access_level` of a membership.

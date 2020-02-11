@@ -113,7 +113,7 @@ The following table lists available parameters for jobs:
 | [`retry`](#retry)                                  | When and how many times a job can be auto-retried in case of a failure.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | [`timeout`](#timeout)                              | Define a custom job-level timeout that takes precedence over the project-wide setting.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | [`parallel`](#parallel)                            | How many instances of a job should be run in parallel.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| [`trigger`](#trigger-premium)                      | Defines a downstream pipeline trigger.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| [`trigger`](#trigger)                      | Defines a downstream pipeline trigger.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | [`include`](#include)                              | Allows this job to include external YAML files. Also available: `include:local`, `include:file`, `include:template`, and `include:remote`.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | [`extends`](#extends)                              | Configuration entries that this job is going to inherit from.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | [`pages`](#pages)                                  | Upload the result of a job to use with GitLab Pages.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -172,6 +172,8 @@ job:
   script: "bundle exec rspec"
 ```
 
+[YAML anchors for scripts](#yaml-anchors-for-script) are available.
+
 This parameter can also contain several commands using an array:
 
 ```yaml
@@ -197,25 +199,6 @@ job:
   script:
     - false && true; exit_code=$?
     - if [ $exit_code -ne 0 ]; then echo "Previous command failed"; fi;
-```
-
-#### YAML anchors for `script`
-
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/23005) in GitLab 12.5.
-
-You can use [YAML anchors](#anchors) with scripts, which makes it possible to
-include a predefined list of commands in multiple jobs.
-
-For example:
-
-```yaml
-.something: &something
-- echo 'something'
-
-job_name:
-  script:
-    - *something
-    - echo 'this is the script'
 ```
 
 ### `image`
@@ -317,32 +300,7 @@ job:
     - execute this after my script
 ```
 
-#### YAML anchors for `before_script` and `after_script`
-
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/23005) in GitLab 12.5.
-
-You can use [YAML anchors](#anchors) with `before_script` and `after_script`,
-which makes it possible to include a predefined list of commands in multiple
-jobs.
-
-Example:
-
-```yaml
-.something_before: &something_before
-- echo 'something before'
-
-.something_after: &something_after
-- echo 'something after'
-
-
-job_name:
-  before_script:
-    - *something_before
-  script:
-    - echo 'this is the script'
-  after_script:
-    - *something_after
-```
+[YAML anchors for `before_script` and `after_script`](#yaml-anchors-for-before_script-and-after_script) are available.
 
 ### `stages`
 
@@ -860,7 +818,7 @@ This could result in some unexpected behavior, including:
 
 ### `rules`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/29011) in GitLab 12.3.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/29011) in GitLab 12.3.
 
 `rules` allows for a list of individual rule objects to be evaluated
 *in order*, until one matches and dynamically provides attributes to the job.
@@ -947,7 +905,7 @@ In this example, a job either set to:
 
 #### `rules:exists`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/16574) in GitLab 12.4.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/16574) in GitLab 12.4.
 
 `exists` accepts an array of paths and will match if any of these paths exist
 as files in the repository.
@@ -1290,7 +1248,7 @@ stages by triggering the blocking manual job.
 
 #### `when:delayed`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/21767) in GitLab 11.4.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/21767) in GitLab 11.4.
 
 Delayed job are for executing scripts after a certain period.
 This is useful if you want to avoid jobs entering `pending` state immediately.
@@ -1613,7 +1571,7 @@ allowing you to cache data between different jobs or even different branches.
 
 The `cache:key` variable can use any of the
 [predefined variables](../variables/README.md), and the default key, if not
-set, is just literal `default` which means everything is shared between each
+set, is just literal `default` which means everything is shared between
 pipelines and jobs by default, starting from GitLab 9.0.
 
 NOTE: **Note:**
@@ -1672,6 +1630,7 @@ use the new cache, instead of rebuilding the dependencies.
 ##### `cache:key:prefix`
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/18986) in GitLab v12.5.
+
 The `prefix` parameter adds extra functionality to `key:files` by allowing the key to
 be composed of the given `prefix` combined with the SHA computed for `cache:key:files`.
 For example, adding a `prefix` of `test`, will cause keys to look like: `test-feef9576d21ee9b6a32e30c5c79d0a0ceb68d1e5`.
@@ -2012,7 +1971,7 @@ job:
 > Introduced in GitLab 8.9 and GitLab Runner v1.3.0.
 
 `expire_in` allows you to specify how long artifacts should live before they
-expire and therefore deleted, counting from the time they are uploaded and
+expire and are therefore deleted, counting from the time they are uploaded and
 stored on GitLab. If the expiry time is not defined, it defaults to the
 [instance wide setting](../../user/admin_area/settings/continuous_integration.md#default-artifacts-expiration-core-only)
 (30 days by default, forever on GitLab.com).
@@ -2044,7 +2003,7 @@ job:
 
 #### `artifacts:reports`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/20390) in
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/20390) in
 GitLab 11.2. Requires GitLab Runner 11.2 and above.
 
 The `reports` keyword is used for collecting test reports from jobs and
@@ -2062,7 +2021,7 @@ If you also want the ability to browse the report output files, include the
 
 ##### `artifacts:reports:junit`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/20390) in
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/20390) in
 GitLab 11.2. Requires GitLab Runner 11.2 and above.
 
 The `junit` report collects [JUnit XML files](https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.1.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html)
@@ -2150,6 +2109,11 @@ dashboards. It is not available for download through the web interface.
 
 ##### `artifacts:reports:license_management` **(ULTIMATE)**
 
+CAUTION: **Warning:**
+This artifact is still valid but was **deprecated** in favor of the
+[artifacts:reports:license_scanning](#artifactsreportslicense_scanning-ultimate)
+introduced in GitLab 12.8.
+
 > Introduced in GitLab 11.5. Requires GitLab Runner 11.5 and above.
 
 The `license_management` report collects [Licenses](../../user/application_security/license_compliance/index.md)
@@ -2158,6 +2122,17 @@ as artifacts.
 The collected License Compliance report will be uploaded to GitLab as an artifact and will
 be summarized in the merge requests and pipeline view. It is also used to provide data for security
 dashboards. It is not available for download through the web interface.
+
+##### `artifacts:reports:license_scanning` **(ULTIMATE)**
+
+> Introduced in GitLab 12.8. Requires GitLab Runner 11.5 and above.
+
+The `license_scanning` report collects [Licenses](../../user/application_security/license_compliance/index.md)
+as artifacts.
+
+The License Compliance report will be uploaded to GitLab as an artifact and will
+be automatically shown in merge requests, pipeline view and provide data for security
+dashboards.
 
 ##### `artifacts:reports:performance` **(PREMIUM)**
 
@@ -2452,7 +2427,7 @@ job1:
 ### `retry`
 
 > - [Introduced][ce-12909] in GitLab 9.5.
-> - [Behaviour expanded](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/21758) in GitLab 11.5 to control on which failures to retry.
+> - [Behaviour expanded](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/21758) in GitLab 11.5 to control on which failures to retry.
 
 `retry` allows you to configure how many times a job is going to be retried in
 case of a failure.
@@ -2521,6 +2496,12 @@ Possible values for `when` are:
 - `runner_system_failure`: Retry if there was a runner system failure (e.g. setting up the job failed).
 - `missing_dependency_failure`: Retry if a dependency was missing.
 - `runner_unsupported`: Retry if the runner was unsupported.
+- `stale_schedule`: Retry if a delayed job could not be executed.
+- `job_execution_timeout`: Retry if the script exceeded the maximum execution time set for the job.
+- `archived_failure`: Retry if the job is archived and cannot be run.
+- `unmet_prerequisites`: Retry if the job failed to complete prerequisite tasks.
+- `scheduler_failure`: Retry if the scheduler failed to assign the job to a runner.
+- `data_integrity_failure`: Retry if there was a structural integrity problem detected.
 
 ### `timeout`
 
@@ -2544,7 +2525,7 @@ exceed the Runner-specific timeout.
 
 ### `parallel`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/22631) in GitLab 11.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/22631) in GitLab 11.5.
 
 `parallel` allows you to configure how many instances of a job to run in
 parallel. This value has to be greater than or equal to two (2) and less than or equal to 50.
@@ -2591,9 +2572,10 @@ Please be aware that semaphore_test_boosters reports usages statistics to the au
 You can then navigate to the **Jobs** tab of a new pipeline build and see your RSpec
 job split into three separate jobs.
 
-### `trigger` **(PREMIUM)**
+### `trigger`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/8997) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.8.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/8997) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.8.
+> - [Moved](https://gitlab.com/gitlab-org/gitlab/issues/199224) to GitLab Core in 12.8.
 
 `trigger` allows you to define downstream pipeline trigger. When a job created
 from `trigger` definition is started by GitLab, a downstream pipeline gets
@@ -2704,7 +2686,7 @@ starting, at the cost of reduced parallelization.
 
 ### `interruptible`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/23464) in GitLab 12.3.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/23464) in GitLab 12.3.
 
 `interruptible` is used to indicate that a job should be canceled if made redundant by a newer pipeline run. Defaults to `false`.
 This value will only be used if the [automatic cancellation of redundant pipelines feature](../../user/project/pipelines/settings.md#auto-cancel-pending-pipelines)
@@ -2791,7 +2773,7 @@ one can be deployed to, but there can be only one deployment per device at any g
 
 > - Introduced in [GitLab Premium](https://about.gitlab.com/pricing/) 10.5.
 > - Available for Starter, Premium and Ultimate since 10.6.
-> - [Moved](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/21603) to GitLab Core in 11.4.
+> - [Moved](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/21603) to GitLab Core in 11.4.
 
 Using the `include` keyword, you can allow the inclusion of external YAML files.
 `include` requires the external YAML file to have the extensions `.yml` or `.yaml`,
@@ -3356,30 +3338,9 @@ you can set in `.gitlab-ci.yml`, there are also the so called
 [Variables](../variables/README.md#gitlab-cicd-environment-variables)
 which can be set in GitLab's UI.
 
+[YAML anchors for variables](#yaml-anchors-for-variables) are available.
+
 Learn more about [variables and their priority][variables].
-
-#### YAML anchors for variables
-
-[YAML anchors](#anchors) can be used with `variables`, to easily repeat assignment
-of variables across multiple jobs. It can also enable more flexibility when a job
-requires a specific `variables` block that would otherwise override the global variables.
-
-In the example below, we will override the `GIT_STRATEGY` variable without affecting
-the use of the `SAMPLE_VARIABLE` variable:
-
-```yaml
-# global variables
-variables: &global-variables
-  SAMPLE_VARIABLE: sample_variable_value
-
-# a job that needs to set the GIT_STRATEGY variable, yet depend on global variables
-job_no_git_strategy:
-  stage: cleanup
-  variables:
-    <<: *global-variables
-    GIT_STRATEGY: none
-  script: echo $SAMPLE_VARIABLE
-```
 
 #### Git strategy
 
@@ -3616,7 +3577,7 @@ default:
 
 ## Custom build directories
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-runner/merge_requests/1267) in GitLab Runner 11.10
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/1267) in GitLab Runner 11.10
 
 NOTE: **Note:**
 This can only be used when `custom_build_dir` is enabled in the [Runner's
@@ -3858,12 +3819,81 @@ NOTE: **Note:**
 You can't use YAML anchors across multiple files when leveraging the [`include`](#include)
 feature. Anchors are only valid within the file they were defined in.
 
+#### YAML anchors for `before_script` and `after_script`
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/23005) in GitLab 12.5.
+
+You can use [YAML anchors](#anchors) with `before_script` and `after_script`,
+which makes it possible to include a predefined list of commands in multiple
+jobs.
+
+Example:
+
+```yaml
+.something_before: &something_before
+- echo 'something before'
+
+.something_after: &something_after
+- echo 'something after'
+
+
+job_name:
+  before_script:
+    - *something_before
+  script:
+    - echo 'this is the script'
+  after_script:
+    - *something_after
+```
+
+#### YAML anchors for `script`
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/23005) in GitLab 12.5.
+
+You can use [YAML anchors](#anchors) with scripts, which makes it possible to
+include a predefined list of commands in multiple jobs.
+
+For example:
+
+```yaml
+.something: &something
+- echo 'something'
+
+job_name:
+  script:
+    - *something
+    - echo 'this is the script'
+```
+
+#### YAML anchors for variables
+
+[YAML anchors](#anchors) can be used with `variables`, to easily repeat assignment
+of variables across multiple jobs. It can also enable more flexibility when a job
+requires a specific `variables` block that would otherwise override the global variables.
+
+In the example below, we will override the `GIT_STRATEGY` variable without affecting
+the use of the `SAMPLE_VARIABLE` variable:
+
+```yaml
+# global variables
+variables: &global-variables
+  SAMPLE_VARIABLE: sample_variable_value
+
+# a job that needs to set the GIT_STRATEGY variable, yet depend on global variables
+job_no_git_strategy:
+  stage: cleanup
+  variables:
+    <<: *global-variables
+    GIT_STRATEGY: none
+  script: echo $SAMPLE_VARIABLE
+```
+
 ## Triggers
 
 Triggers can be used to force a rebuild of a specific branch, tag or commit,
 with an API call when a pipeline gets created using a trigger token.
 
-Not to be confused with [`trigger`](#trigger-premium).
+Not to be confused with [`trigger`](#trigger).
 
 [Read more in the triggers documentation.](../triggers/README.md)
 
@@ -3896,11 +3926,11 @@ Each scenario can be a third-level heading, e.g. `### Getting error message X`.
 If you have none to add when creating a doc, leave this section in place
 but commented out to help encourage others to add to it in the future. -->
 
-[ce-6323]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/6323
-[ce-6669]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/6669
-[ce-7983]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/7983
-[ce-7447]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/7447
-[ce-12909]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/12909
+[ce-6323]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/6323
+[ce-6669]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/6669
+[ce-7983]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/7983
+[ce-7447]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/7447
+[ce-12909]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/12909
 [ce-19232]: https://gitlab.com/gitlab-org/gitlab-foss/issues/19232
 [environment]: ../environments.md "CI/CD environments"
 [schedules]: ../../user/project/pipelines/schedules.md "Pipelines schedules"

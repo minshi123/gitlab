@@ -9,6 +9,10 @@ and [deployments](../../ci/environments.md) when using [Auto DevOps](../../topic
 You can install them after you
 [create a cluster](../project/clusters/add_remove_clusters.md).
 
+Interested in contributing a new GitLab managed app? Visit the
+[development guidelines page](../../development/kubernetes.md#gitlab-managed-apps)
+to get started.
+
 ## Installing applications
 
 Applications managed by GitLab will be installed onto the `gitlab-managed-apps` namespace.
@@ -135,10 +139,12 @@ file. Customizing installation by modifying this file is not supported.
 > - Introduced in GitLab 10.2 for project-level clusters.
 > - Introduced in GitLab 11.6 for group-level clusters.
 
-[Ingress](https://kubernetes.github.io/ingress-nginx/) can provide load
-balancing, SSL termination, and name-based virtual hosting. It acts as a
-web proxy for your applications and is useful if you want to use [Auto
-DevOps](../../topics/autodevops/index.md) or deploy your own web apps.
+[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) provides load balancing, SSL termination, and name-based virtual hosting
+out of the box. It acts as a web proxy for your applications and is useful
+if you want to use [Auto DevOps](../../topics/autodevops/index.md) or deploy your own web apps.
+
+The Ingress Controller installed is [Ingress-NGINX](https://kubernetes.io/docs/concepts/services-networking/ingress/),
+which is supported by the Kubernetes community.
 
 NOTE: **Note:**
 With the following procedure, a load balancer must be installed in your cluster
@@ -153,7 +159,7 @@ to determine the external endpoint and it should be available within a few minut
 
 #### Determining the external endpoint automatically
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/17052) in GitLab 10.6.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/17052) in GitLab 10.6.
 
 After you install Ingress, the external endpoint should be available within a few minutes.
 
@@ -249,14 +255,22 @@ use an A record. If your external endpoint is a hostname, use a CNAME record.
 
 #### Web Application Firewall (ModSecurity)
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/21966) in GitLab 12.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/21966) in GitLab 12.7.
 
-Out of the box, GitLab provides you real-time security monitoring with
-[ModSecurity](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#modsecurity).
+A Web Application Firewall (WAF) is able to examine traffic being sent/received
+and can block malicious traffic before it reaches your application. The benefits
+of a WAF are:
 
-Modsecurity is a toolkit for real-time web application monitoring, logging,
-and access control. With GitLab's offering, the [OWASP's Core Rule Set](https://www.modsecurity.org/CRS/Documentation/), which provides generic attack detection capabilities,
-is automatically applied.
+- Real-time security monitoring for your application
+- Logging of all your HTTP traffic to the application
+- Access control for your application
+- Highly configurable logging and blocking rules
+
+Out of the box, GitLab provides you with a WAF known as [`ModSecurity`](https://www.modsecurity.org/)
+
+ModSecurity is a toolkit for real-time web application monitoring, logging,
+and access control. With GitLab's offering, the [OWASP's Core Rule Set](https://www.modsecurity.org/CRS/Documentation/),
+which provides generic attack detection capabilities, is automatically applied.
 
 This feature:
 
@@ -270,6 +284,12 @@ This feature:
 
 To enable ModSecurity, check the **Enable Web Application Firewall** checkbox
 when installing your [Ingress application](#ingress).
+
+If this is your first time using GitLab's WAF, we recommend you follow the
+[quick start guide](../../topics/web_application_firewall/quick_start_guide.md).
+
+There is a small performance overhead by enabling ModSecurity. However,
+if this is considered significant for your application, you can disable it.
 
 There is a small performance overhead by enabling ModSecurity. If this is
 considered significant for your application, you can disable ModSecurity's
@@ -316,8 +336,8 @@ file.
 
 #### Jupyter Git Integration
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/28783) in GitLab 12.0 for project-level clusters.
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/32512) in GitLab 12.3 for group and instance-level clusters.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/28783) in GitLab 12.0 for project-level clusters.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/32512) in GitLab 12.3 for group and instance-level clusters.
 
 When installing JupyterHub onto your Kubernetes cluster, [JupyterLab's Git extension](https://github.com/jupyterlab/jupyterlab-git)
 is automatically provisioned and configured using the authenticated user's:
@@ -433,7 +453,7 @@ Filebeat will run as a DaemonSet on each node in your cluster, and it will ship 
 GitLab will then connect to Elasticsearch for logs instead of the Kubernetes API,
 and you will have access to more advanced querying capabilities.
 
-Log data is automatically deleted after 15 days using [Curator](https://www.elastic.co/guide/en/elasticsearch/client/curator/5.5/about.html).
+Log data is automatically deleted after 30 days using [Curator](https://www.elastic.co/guide/en/elasticsearch/client/curator/5.5/about.html).
 
 To enable log shipping, install Elastic Stack into the cluster with the **Install** button.
 
@@ -450,7 +470,7 @@ which makes it incompatible with clusters of `f1-micro` and `g1-small` instance 
 
 ## Install using GitLab CI (alpha)
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/20822) in GitLab 12.6.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/20822) in GitLab 12.6.
 
 CAUTION: **Warning:**
 This is an _alpha_ feature, and it is subject to change at any time without
@@ -653,7 +673,7 @@ available configuration options.
 
 ### Install Cilium using GitLab CI
 
-> [Introduced](https://gitlab.com/gitlab-org/cluster-integration/cluster-applications/merge_requests/22) in GitLab 12.8.
+> [Introduced](https://gitlab.com/gitlab-org/cluster-integration/cluster-applications/-/merge_requests/22) in GitLab 12.8.
 
 [Cilium](https://cilium.io/) is a networking plugin for Kubernetes
 that you can use to implement support for
@@ -695,14 +715,33 @@ Major upgrades might require additional setup steps, please consult
 the official [upgrade guide](https://docs.cilium.io/en/stable/install/upgrade/) for more
 information.
 
-By default, the drop log for traffic is logged out by the
+By default, Cilium will drop all non-whitelisted packets upon policy
+deployment. The audit mode is scheduled for release in
+[Cilium 1.8](https://github.com/cilium/cilium/pull/9970). In the audit
+mode non-whitelisted packets will not be dropped, instead audit
+notifications will be generated. GitLab provides alternative Docker
+images for Cilium with the audit patch included. You can switch to the
+custom build and enable the audit mode by adding the following to
+`.gitlab/managed-apps/cilium/values.yaml`:
+
+```yml
+global:
+  registry: registry.gitlab.com/gitlab-org/defend/cilium
+  policyAuditMode: true
+
+agent:
+  monitor:
+    eventTypes: ["drop", "audit"]
+```
+
+The Cilium monitor log for traffic is logged out by the
 `cilium-monitor` sidecar container. You can check these logs via:
 
 ```shell
 kubectl -n gitlab-managed-apps logs cilium-XXXX cilium-monitor
 ```
 
-Drop logging can be disabled via `.gitlab/managed-apps/cilium/values.yaml`:
+You can disable the monitor log via `.gitlab/managed-apps/cilium/values.yaml`:
 
 ```yml
 agent:
@@ -712,7 +751,7 @@ agent:
 
 ## Upgrading applications
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/24789) in GitLab 11.8.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/24789) in GitLab 11.8.
 
 The applications below can be upgraded.
 

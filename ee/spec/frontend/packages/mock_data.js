@@ -13,6 +13,7 @@ export const mavenPackage = {
   },
   name: 'Test package',
   package_type: 'maven',
+  project_path: 'foo/bar/baz',
   project_id: 1,
   updated_at: '2015-12-10',
   version: '1.0.0',
@@ -41,6 +42,7 @@ export const npmPackage = {
   id: 2,
   name: '@Test/package',
   package_type: 'npm',
+  project_path: 'foo/bar/baz',
   project_id: 1,
   updated_at: '2015-12-10',
   version: '',
@@ -68,6 +70,7 @@ export const conanPackage = {
   created_at: '2015-12-10',
   id: 3,
   name: 'conan-package',
+  project_path: 'foo/bar/baz',
   package_files: [],
   package_type: 'conan',
   project_id: 1,
@@ -75,6 +78,18 @@ export const conanPackage = {
   updated_at: '2015-12-10',
   version: '1.0.0',
   _links,
+};
+
+export const nugetPackage = {
+  created_at: '2015-12-10',
+  id: 4,
+  name: 'NugetPackage1',
+  package_files: [],
+  package_type: 'nuget',
+  project_id: 1,
+  tags: [],
+  updated_at: '2015-12-10',
+  version: '1.0.0',
 };
 
 export const mockTags = [

@@ -1,7 +1,7 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import { __ } from '~/locale';
-import { GlLoadingIcon, GlLink, GlBadge, GlFormInput } from '@gitlab/ui';
+import { GlLoadingIcon, GlLink, GlBadge, GlFormInput, GlAlert, GlSprintf } from '@gitlab/ui';
 import LoadingButton from '~/vue_shared/components/loading_button.vue';
 import Stacktrace from '~/error_tracking/components/stacktrace.vue';
 import ErrorDetails from '~/error_tracking/components/error_details.vue';
@@ -28,7 +28,7 @@ describe('ErrorDetails', () => {
 
   function mountComponent() {
     wrapper = shallowMount(ErrorDetails, {
-      stubs: { LoadingButton },
+      stubs: { LoadingButton, GlSprintf },
       localVue,
       store,
       mocks,
@@ -37,14 +37,13 @@ describe('ErrorDetails', () => {
         projectPath: '/root/gitlab-test',
         listPath: '/error_tracking',
         issueUpdatePath: '/123',
-        issueDetailsPath: '/123/details',
         issueStackTracePath: '/stacktrace',
         projectIssuesPath: '/test-project/issues/',
         csrfToken: 'fakeToken',
       },
     });
     wrapper.setData({
-      GQLerror: {
+      error: {
         id: 'gid://gitlab/Gitlab::ErrorTracking::DetailedError/129381',
         sentryId: 129381,
         title: 'Issue title',
@@ -59,10 +58,9 @@ describe('ErrorDetails', () => {
 
   beforeEach(() => {
     actions = {
-      startPollingDetails: () => {},
       startPollingStacktrace: () => {},
       updateIgnoreStatus: jest.fn(),
-      updateResolveStatus: jest.fn(),
+      updateResolveStatus: jest.fn().mockResolvedValue({ closed_issue_iid: 1 }),
     };
 
     getters = {
@@ -71,8 +69,6 @@ describe('ErrorDetails', () => {
     };
 
     const state = {
-      error: {},
-      loading: true,
       stacktraceData: {},
       loadingStacktrace: true,
     };
@@ -93,7 +89,7 @@ describe('ErrorDetails', () => {
       $apollo: {
         query,
         queries: {
-          GQLerror: {
+          error: {
             loading: true,
             stopPolling: jest.fn(),
           },
@@ -122,9 +118,7 @@ describe('ErrorDetails', () => {
 
   describe('Error details', () => {
     beforeEach(() => {
-      store.state.details.loading = false;
-      store.state.details.error.id = 1;
-      mocks.$apollo.queries.GQLerror.loading = false;
+      mocks.$apollo.queries.error.loading = false;
       mountComponent();
     });
 
@@ -138,16 +132,22 @@ describe('ErrorDetails', () => {
 
     describe('Badges', () => {
       it('should show language and error level badges', () => {
-        store.state.details.error.tags = { level: 'error', logger: 'ruby' };
-        mountComponent();
+        wrapper.setData({
+          error: {
+            tags: { level: 'error', logger: 'ruby' },
+          },
+        });
         return wrapper.vm.$nextTick().then(() => {
           expect(wrapper.findAll(GlBadge).length).toBe(2);
         });
       });
 
       it('should NOT show the badge if the tag is not present', () => {
-        store.state.details.error.tags = { level: 'error' };
-        mountComponent();
+        wrapper.setData({
+          error: {
+            tags: { level: 'error' },
+          },
+        });
         return wrapper.vm.$nextTick().then(() => {
           expect(wrapper.findAll(GlBadge).length).toBe(1);
         });
@@ -156,8 +156,11 @@ describe('ErrorDetails', () => {
       it.each(Object.keys(severityLevel))(
         'should set correct severity level variant for %s badge',
         level => {
-          store.state.details.error.tags = { level: severityLevel[level] };
-          mountComponent();
+          wrapper.setData({
+            error: {
+              tags: { level: severityLevel[level] },
+            },
+          });
           return wrapper.vm.$nextTick().then(() => {
             expect(wrapper.find(GlBadge).attributes('variant')).toEqual(
               severityLevelVariant[severityLevel[level]],
@@ -167,8 +170,11 @@ describe('ErrorDetails', () => {
       );
 
       it('should fallback for ERROR severityLevelVariant when severityLevel is unknown', () => {
-        store.state.details.error.tags = { level: 'someNewErrorLevel' };
-        mountComponent();
+        wrapper.setData({
+          error: {
+            tags: { level: 'someNewErrorLevel' },
+          },
+        });
         return wrapper.vm.$nextTick().then(() => {
           expect(wrapper.find(GlBadge).attributes('variant')).toEqual(
             severityLevelVariant[severityLevel.ERROR],
@@ -180,7 +186,6 @@ describe('ErrorDetails', () => {
     describe('Stacktrace', () => {
       it('should show stacktrace', () => {
         store.state.details.loadingStacktrace = false;
-        mountComponent();
         return wrapper.vm.$nextTick().then(() => {
           expect(wrapper.find(GlLoadingIcon).exists()).toBe(false);
           expect(wrapper.find(Stacktrace).exists()).toBe(true);
@@ -190,9 +195,10 @@ describe('ErrorDetails', () => {
       it('should NOT show stacktrace if no entries', () => {
         store.state.details.loadingStacktrace = false;
         store.getters = { 'details/sentryUrl': () => 'sentry.io', 'details/stacktrace': () => [] };
-        mountComponent();
-        expect(wrapper.find(GlLoadingIcon).exists()).toBe(false);
-        expect(wrapper.find(Stacktrace).exists()).toBe(false);
+        return wrapper.vm.$nextTick().then(() => {
+          expect(wrapper.find(GlLoadingIcon).exists()).toBe(false);
+          expect(wrapper.find(Stacktrace).exists()).toBe(false);
+        });
       });
     });
 
@@ -313,23 +319,36 @@ describe('ErrorDetails', () => {
             expect.objectContaining({ status: errorStatus.UNRESOLVED }),
           );
         });
+
+        it('should show alert with closed issueId', () => {
+          const findAlert = () => wrapper.find(GlAlert);
+          const closedIssueId = 123;
+          wrapper.setData({
+            isAlertVisible: true,
+            closedIssueId,
+          });
+
+          return wrapper.vm.$nextTick().then(() => {
+            expect(findAlert().exists()).toBe(true);
+            expect(findAlert().text()).toContain(`#${closedIssueId}`);
+          });
+        });
       });
     });
 
     describe('GitLab issue link', () => {
-      const gitlabIssue = 'https://gitlab.example.com/issues/1';
-      const findGitLabLink = () => wrapper.find(`[href="${gitlabIssue}"]`);
+      const gitlabIssuePath = 'https://gitlab.example.com/issues/1';
+      const findGitLabLink = () => wrapper.find(`[href="${gitlabIssuePath}"]`);
       const findCreateIssueButton = () => wrapper.find('[data-qa-selector="create_issue_button"]');
       const findViewIssueButton = () => wrapper.find('[data-qa-selector="view_issue_button"]');
 
       describe('is present', () => {
         beforeEach(() => {
-          store.state.details.loading = false;
-          store.state.details.error = {
-            id: 1,
-            gitlab_issue: gitlabIssue,
-          };
-          mountComponent();
+          wrapper.setData({
+            error: {
+              gitlabIssuePath,
+            },
+          });
         });
 
         it('should display the View issue button', () => {
@@ -347,12 +366,11 @@ describe('ErrorDetails', () => {
 
       describe('is not present', () => {
         beforeEach(() => {
-          store.state.details.loading = false;
-          store.state.details.error = {
-            id: 1,
-            gitlab_issue: null,
-          };
-          mountComponent();
+          wrapper.setData({
+            error: {
+              gitlabIssuePath: null,
+            },
+          });
         });
 
         it('should not display the View issue button', () => {
@@ -376,9 +394,9 @@ describe('ErrorDetails', () => {
       const findGitLabCommitLink = () => wrapper.find(`[href$="${gitlabCommitPath}"]`);
 
       it('should display a link', () => {
-        mocks.$apollo.queries.GQLerror.loading = false;
+        mocks.$apollo.queries.error.loading = false;
         wrapper.setData({
-          GQLerror: {
+          error: {
             gitlabCommit,
             gitlabCommitPath,
           },
@@ -389,9 +407,9 @@ describe('ErrorDetails', () => {
       });
 
       it('should not display a link', () => {
-        mocks.$apollo.queries.GQLerror.loading = false;
+        mocks.$apollo.queries.error.loading = false;
         wrapper.setData({
-          GQLerror: {
+          error: {
             gitlabCommit: null,
           },
         });

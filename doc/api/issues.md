@@ -14,7 +14,7 @@ Read more on [pagination](README.md#pagination).
 
 CAUTION: **Deprecation**
 > `reference` attribute in response is deprecated in favour of `references`.
-> Introduced [GitLab 12.6](https://gitlab.com/gitlab-org/gitlab/merge_requests/20354)
+> Introduced [GitLab 12.6](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/20354)
 
 NOTE: **Note**
 > `references.relative` is relative to the group / project that the issue is being requested. When issue is fetched from its project
@@ -47,7 +47,7 @@ GET /issues?confidential=true
 | ------------------- | ---------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `state`             | string           | no         | Return `all` issues or just those that are `opened` or `closed`                                                                                       |
 | `labels`            | string           | no         | Comma-separated list of label names, issues must have all labels to be returned. `None` lists all issues with no labels. `Any` lists all issues with at least one label. `No+Label` (Deprecated) lists all issues with no labels. Predefined names are case-insensitive. |
-| `with_labels_details` | Boolean        | no         | If `true`, response will return more details for each label in labels field: `:name`, `:color`, `:description`, `:description_html`, `:text_color`. Default is `false`. The `description_html` attribute was introduced in [GitLab 12.7](https://gitlab.com/gitlab-org/gitlab/merge_requests/21413)|
+| `with_labels_details` | Boolean        | no         | If `true`, response will return more details for each label in labels field: `:name`, `:color`, `:description`, `:description_html`, `:text_color`. Default is `false`. The `description_html` attribute was introduced in [GitLab 12.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/21413)|
 | `milestone`         | string           | no         | The milestone title. `None` lists all issues with no milestone. `Any` lists all issues that have an assigned milestone.                             |
 | `scope`             | string           | no         | Return issues for the given scope: `created_by_me`, `assigned_to_me` or `all`. Defaults to `created_by_me`<br> For versions before 11.0, use the now deprecated `created-by-me` or `assigned-to-me` scopes instead.<br> _([Introduced][ce-13004] in GitLab 9.5. [Changed to snake_case][ce-18935] in GitLab 11.0)_ |
 | `author_id`         | integer          | no         | Return issues created by the given user `id`. Mutually exclusive with `author_username`. Combine with `scope=all` or `scope=assigned_to_me`. _([Introduced][ce-13004] in GitLab 9.5)_ |
@@ -203,7 +203,7 @@ GET /groups/:id/issues?confidential=true
 | `id`                | integer/string   | yes        | The ID or [URL-encoded path of the group](README.md#namespaced-path-encoding) owned by the authenticated user                 |
 | `state`             | string           | no         | Return all issues or just those that are `opened` or `closed`                                                                 |
 | `labels`            | string           | no         | Comma-separated list of label names, issues must have all labels to be returned. `None` lists all issues with no labels. `Any` lists all issues with at least one label. `No+Label` (Deprecated) lists all issues with no labels. Predefined names are case-insensitive. |
-| `with_labels_details` | Boolean        | no         | If `true`, response will return more details for each label in labels field: `:name`, `:color`, `:description`, `:description_html`, `:text_color`. Default is `false`. The `description_html` attribute was introduced in [GitLab 12.7](https://gitlab.com/gitlab-org/gitlab/merge_requests/21413) |
+| `with_labels_details` | Boolean        | no         | If `true`, response will return more details for each label in labels field: `:name`, `:color`, `:description`, `:description_html`, `:text_color`. Default is `false`. The `description_html` attribute was introduced in [GitLab 12.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/21413) |
 | `iids[]`            | integer array    | no         | Return only the issues having the given `iid`                                                                                 |
 | `milestone`         | string           | no         | The milestone title. `None` lists all issues with no milestone. `Any` lists all issues that have an assigned milestone.       |
 | `scope`             | string           | no         | Return issues for the given scope: `created_by_me`, `assigned_to_me` or `all`.<br> For versions before 11.0, use the now deprecated `created-by-me` or `assigned-to-me` scopes instead.<br> _([Introduced][ce-13004] in GitLab 9.5. [Changed to snake_case][ce-18935] in GitLab 11.0)_ |
@@ -222,6 +222,7 @@ GET /groups/:id/issues?confidential=true
 | `updated_before`    | datetime         | no         | Return issues updated on or before the given time                                                                             |
 | `confidential`     | Boolean          | no         | Filter confidential or public issues.                                                                                         |
 | `not`               | Hash             | no         | Return issues that do not match the parameters supplied. Accepts: `labels`, `milestone`, `author_id`, `author_username`, `assignee_id`, `assignee_username`, `my_reaction_emoji`, `search`, `in` |
+| `non_archived`      | Boolean          | no         | Return issues from non archived projects. Default is true. _(Introduced in [GitLab 12.8](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/23785))_ |
 
 ```shell
 curl --header "PRIVATE-TOKEN: <your_access_token>" https://gitlab.example.com/api/v4/groups/4/issues
@@ -358,7 +359,7 @@ GET /projects/:id/issues?confidential=true
 | `iids[]`            | integer array    | no         | Return only the milestone having the given `iid`                                                                              |
 | `state`             | string           | no         | Return all issues or just those that are `opened` or `closed`                                                                 |
 | `labels`            | string           | no         | Comma-separated list of label names, issues must have all labels to be returned. `None` lists all issues with no labels. `Any` lists all issues with at least one label. `No+Label` (Deprecated) lists all issues with no labels. Predefined names are case-insensitive. |
-| `with_labels_details` | Boolean        | no         | If `true`, response will return more details for each label in labels field: `:name`, `:color`, `:description`, `:description_html`, `:text_color`. Default is `false`. `description_html` Introduced in [GitLab 12.7](https://gitlab.com/gitlab-org/gitlab/merge_requests/21413) |
+| `with_labels_details` | Boolean        | no         | If `true`, response will return more details for each label in labels field: `:name`, `:color`, `:description`, `:description_html`, `:text_color`. Default is `false`. `description_html` Introduced in [GitLab 12.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/21413) |
 | `milestone`         | string           | no         | The milestone title. `None` lists all issues with no milestone. `Any` lists all issues that have an assigned milestone.       |
 | `scope`             | string           | no         | Return issues for the given scope: `created_by_me`, `assigned_to_me` or `all`.<br> For versions before 11.0, use the now deprecated `created-by-me` or `assigned-to-me` scopes instead.<br> _([Introduced][ce-13004] in GitLab 9.5. [Changed to snake_case][ce-18935] in GitLab 11.0)_ |
 | `author_id`         | integer          | no         | Return issues created by the given user `id`. Mutually exclusive with `author_username`. Combine with `scope=all` or `scope=assigned_to_me`. _([Introduced][ce-13004] in GitLab 9.5)_ |
@@ -1714,7 +1715,7 @@ Example response:
 }
 ```
 
-[ce-13004]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/13004
-[ce-14016]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/14016
-[ce-17042]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/17042
-[ce-18935]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/18935
+[ce-13004]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/13004
+[ce-14016]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/14016
+[ce-17042]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/17042
+[ce-18935]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/18935

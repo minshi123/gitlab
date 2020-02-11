@@ -781,7 +781,7 @@ describe API::MergeRequests do
       it_behaves_like 'merge requests list'
     end
 
-    context "#to_reference" do
+    describe "#to_reference" do
       it 'exposes reference path in context of group' do
         get api("/groups/#{group.id}/merge_requests", user)
 
@@ -804,6 +804,38 @@ describe API::MergeRequests do
           expect(json_response.first['references']['short']).to eq("!#{merge_request_merged.iid}")
           expect(json_response.first['references']['relative']).to eq("#{merge_request_merged.target_project.full_path}!#{merge_request_merged.iid}")
           expect(json_response.first['references']['full']).to eq("#{merge_request_merged.target_project.full_path}!#{merge_request_merged.iid}")
+        end
+      end
+    end
+
+    context 'with archived projects' do
+      let(:project2) { create(:project, :public, :archived, namespace: group) }
+      let!(:merge_request_archived) { create(:merge_request, title: 'archived mr', author: user, source_project: project2, target_project: project2) }
+
+      it 'returns an array excluding merge_requests from archived projects' do
+        get api(endpoint_path, user)
+
+        expect_response_contain_exactly(
+          merge_request_merged,
+          merge_request_locked,
+          merge_request_closed,
+          merge_request
+        )
+      end
+
+      context 'with non_archived param set as false' do
+        it 'returns an array including merge_requests from archived projects' do
+          path = endpoint_path + '?non_archived=false'
+
+          get api(path, user)
+
+          expect_response_contain_exactly(
+            merge_request_merged,
+            merge_request_locked,
+            merge_request_closed,
+            merge_request,
+            merge_request_archived
+          )
         end
       end
     end
@@ -1460,7 +1492,7 @@ describe API::MergeRequests do
       end
     end
 
-    context 'forked projects' do
+    context 'forked projects', :sidekiq_might_not_need_inline do
       let!(:user2) { create(:user) }
       let(:project) { create(:project, :public, :repository) }
       let!(:forked_project) { fork_project(project, user2, repository: true) }

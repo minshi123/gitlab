@@ -56,8 +56,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :subscriptions, only: [:create, :destroy]
 
-        resources :licenses, only: [:index, :create, :update]
-
         resource :threat_monitoring, only: [:show], controller: :threat_monitoring
 
         resources :logs, only: [:index] do
@@ -79,6 +77,18 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           resources :waf_anomalies, only: [] do
             get :summary, on: :collection
           end
+
+          resources :dashboard, only: [:show, :index], controller: :dashboard
+          resource :configuration, only: [:show], controller: :configuration
+          resource :discover, only: [:show], controller: :discover
+
+          resources :vulnerability_findings, only: [:index] do
+            collection do
+              get :summary
+            end
+          end
+
+          resources :vulnerabilities, only: [:index]
         end
 
         namespace :analytics do
@@ -88,6 +98,9 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         resources :approvers, only: :destroy
         resources :approver_groups, only: :destroy
         resources :push_rules, constraints: { id: /\d+/ }, only: [:update]
+        resources :vulnerability_feedback, only: [:index, :create, :update, :destroy], constraints: { id: /\d+/ }
+        resources :dependencies, only: [:index]
+        resources :licenses, only: [:index, :create, :update]
       end
       # End of the /-/ scope.
 
@@ -104,6 +117,9 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
       namespace :prometheus do
         resources :alerts, constraints: { id: /\d+/ }, only: [:index, :create, :show, :update, :destroy] do
           post :notify, on: :collection
+          member do
+            get :metrics_dashboard
+          end
         end
 
         resources :metrics, constraints: { id: %r{[^\/]+} }, only: [] do
@@ -143,22 +159,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           post :query
         end
       end
-
-      namespace :security do
-        resources :dashboard, only: [:show, :index], controller: :dashboard
-        resource :configuration, only: [:show], controller: :configuration
-        resource :discover, only: [:show], controller: :discover
-
-        resources :vulnerability_findings, only: [:index] do
-          collection do
-            get :summary
-          end
-        end
-      end
-
-      resources :vulnerability_feedback, only: [:index, :create, :update, :destroy], constraints: { id: /\d+/ }
-
-      resources :dependencies, only: [:index]
       # All new routes should go under /-/ scope.
       # Look for scope '-' at the top of the file.
       # rubocop: enable Cop/PutProjectRoutesUnderScope

@@ -41,8 +41,6 @@ describe('License Report MR Widget', () => {
   const defaultProps = {
     loadingText: 'LOADING',
     errorText: 'ERROR',
-    headPath: `${TEST_HOST}/head.json`,
-    basePath: `${TEST_HOST}/head.json`,
     licensesApiPath: `${TEST_HOST}/parsed_license_report.json`,
     canManageLicenses: true,
     licenseManagementSettingsPath: `${TEST_HOST}/lm_settings`,
@@ -53,8 +51,8 @@ describe('License Report MR Widget', () => {
 
   const defaultActions = {
     setAPISettings: () => {},
-    loadManagedLicenses: () => {},
-    loadParsedLicenseReport: () => {},
+    fetchManagedLicenses: () => {},
+    fetchParsedLicenseReport: () => {},
   };
 
   const mountComponent = ({
@@ -221,7 +219,9 @@ describe('License Report MR Widget', () => {
   it('should init store after mount', () => {
     const actions = {
       setAPISettings: jasmine.createSpy('setAPISettings').and.callFake(() => {}),
-      loadParsedLicenseReport: jasmine.createSpy('loadParsedLicenseReport').and.callFake(() => {}),
+      fetchParsedLicenseReport: jasmine
+        .createSpy('fetchParsedLicenseReport')
+        .and.callFake(() => {}),
     };
     vm = mountComponent({ actions });
 
@@ -229,15 +229,13 @@ describe('License Report MR Widget', () => {
       jasmine.any(Object),
       {
         apiUrlManageLicenses: apiUrl,
-        headPath: defaultProps.headPath,
-        basePath: defaultProps.basePath,
         licensesApiPath: defaultProps.licensesApiPath,
         canManageLicenses: true,
       },
       undefined,
     );
 
-    expect(actions.loadParsedLicenseReport).toHaveBeenCalledWith(
+    expect(actions.fetchParsedLicenseReport).toHaveBeenCalledWith(
       jasmine.any(Object),
       undefined,
       undefined,

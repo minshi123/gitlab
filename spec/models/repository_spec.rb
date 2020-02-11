@@ -40,7 +40,7 @@ describe Repository do
   end
 
   describe '#branch_names_contains' do
-    set(:project) { create(:project, :repository) }
+    let_it_be(:project) { create(:project, :repository) }
     let(:repository) { project.repository }
 
     subject { repository.branch_names_contains(sample_commit.id) }
@@ -328,7 +328,7 @@ describe Repository do
   end
 
   describe '#new_commits' do
-    set(:project) { create(:project, :repository) }
+    let_it_be(:project) { create(:project, :repository) }
     let(:repository) { project.repository }
 
     subject { repository.new_commits(rev) }
@@ -356,7 +356,7 @@ describe Repository do
   end
 
   describe '#commits_by' do
-    set(:project) { create(:project, :repository) }
+    let_it_be(:project) { create(:project, :repository) }
     let(:oids) { TestEnv::BRANCH_SHA.values }
 
     subject { project.repository.commits_by(oids: oids) }
@@ -1618,79 +1618,58 @@ describe Repository do
       end
     end
 
-    context 'when two_step_rebase feature is enabled' do
-      before do
-        stub_feature_flags(two_step_rebase: true)
-      end
+    it_behaves_like 'a method that can rebase successfully'
 
-      it_behaves_like 'a method that can rebase successfully'
+    it 'executes the new Gitaly RPC' do
+      expect_any_instance_of(Gitlab::GitalyClient::OperationService).to receive(:rebase)
+      expect_any_instance_of(Gitlab::GitalyClient::OperationService).not_to receive(:user_rebase)
 
-      it 'executes the new Gitaly RPC' do
-        expect_any_instance_of(Gitlab::GitalyClient::OperationService).to receive(:rebase)
-        expect_any_instance_of(Gitlab::GitalyClient::OperationService).not_to receive(:user_rebase)
-
-        repository.rebase(user, merge_request)
-      end
-
-      describe 'rolling back the `rebase_commit_sha`' do
-        let(:new_sha) { Digest::SHA1.hexdigest('foo') }
-
-        it 'does not rollback when there are no errors' do
-          second_response = double(pre_receive_error: nil, git_error: nil)
-          mock_gitaly(second_response)
-
-          repository.rebase(user, merge_request)
-
-          expect(merge_request.reload.rebase_commit_sha).to eq(new_sha)
-        end
-
-        it 'does rollback when a PreReceiveError is encountered in the second step' do
-          second_response = double(pre_receive_error: 'my_error', git_error: nil)
-          mock_gitaly(second_response)
-
-          expect do
-            repository.rebase(user, merge_request)
-          end.to raise_error(Gitlab::Git::PreReceiveError)
-
-          expect(merge_request.reload.rebase_commit_sha).to be_nil
-        end
-
-        it 'does rollback when a GitError is encountered in the second step' do
-          second_response = double(pre_receive_error: nil, git_error: 'git error')
-          mock_gitaly(second_response)
-
-          expect do
-            repository.rebase(user, merge_request)
-          end.to raise_error(Gitlab::Git::Repository::GitError)
-
-          expect(merge_request.reload.rebase_commit_sha).to be_nil
-        end
-
-        def mock_gitaly(second_response)
-          responses = [
-            double(rebase_sha: new_sha).as_null_object,
-            second_response
-          ]
-
-          expect_any_instance_of(
-            Gitaly::OperationService::Stub
-          ).to receive(:user_rebase_confirmable).and_return(responses.each)
-        end
-      end
+      repository.rebase(user, merge_request)
     end
 
-    context 'when two_step_rebase feature is disabled' do
-      before do
-        stub_feature_flags(two_step_rebase: false)
-      end
+    describe 'rolling back the `rebase_commit_sha`' do
+      let(:new_sha) { Digest::SHA1.hexdigest('foo') }
 
-      it_behaves_like 'a method that can rebase successfully'
-
-      it 'executes the deprecated Gitaly RPC' do
-        expect_any_instance_of(Gitlab::GitalyClient::OperationService).to receive(:user_rebase)
-        expect_any_instance_of(Gitlab::GitalyClient::OperationService).not_to receive(:rebase)
+      it 'does not rollback when there are no errors' do
+        second_response = double(pre_receive_error: nil, git_error: nil)
+        mock_gitaly(second_response)
 
         repository.rebase(user, merge_request)
+
+        expect(merge_request.reload.rebase_commit_sha).to eq(new_sha)
+      end
+
+      it 'does rollback when a PreReceiveError is encountered in the second step' do
+        second_response = double(pre_receive_error: 'my_error', git_error: nil)
+        mock_gitaly(second_response)
+
+        expect do
+          repository.rebase(user, merge_request)
+        end.to raise_error(Gitlab::Git::PreReceiveError)
+
+        expect(merge_request.reload.rebase_commit_sha).to be_nil
+      end
+
+      it 'does rollback when a GitError is encountered in the second step' do
+        second_response = double(pre_receive_error: nil, git_error: 'git error')
+        mock_gitaly(second_response)
+
+        expect do
+          repository.rebase(user, merge_request)
+        end.to raise_error(Gitlab::Git::Repository::GitError)
+
+        expect(merge_request.reload.rebase_commit_sha).to be_nil
+      end
+
+      def mock_gitaly(second_response)
+        responses = [
+          double(rebase_sha: new_sha).as_null_object,
+          second_response
+        ]
+
+        expect_any_instance_of(
+          Gitaly::OperationService::Stub
+        ).to receive(:user_rebase_confirmable).and_return(responses.each)
       end
     end
   end
@@ -2596,7 +2575,7 @@ describe Repository do
   end
 
   describe 'commit cache' do
-    set(:project) { create(:project, :repository) }
+    let_it_be(:project) { create(:project, :repository) }
 
     it 'caches based on SHA' do
       # Gets the commit oid, and warms the cache
@@ -2744,7 +2723,7 @@ describe Repository do
   end
 
   describe '#merge_base' do
-    set(:project) { create(:project, :repository) }
+    let_it_be(:project) { create(:project, :repository) }
     subject(:repository) { project.repository }
 
     it 'only makes one gitaly call' do
@@ -2802,8 +2781,47 @@ describe Repository do
     end
   end
 
+  describe '#create_from_bundle' do
+    let(:project) { create(:project) }
+    let(:repository) { project.repository }
+    let(:valid_bundle_path) { File.join(Dir.tmpdir, "repo-#{SecureRandom.hex}.bundle") }
+    let(:raw_repository) { repository.raw }
+
+    before do
+      allow(raw_repository).to receive(:create_from_bundle).and_return({})
+    end
+
+    after do
+      FileUtils.rm_rf(valid_bundle_path)
+    end
+
+    it 'calls out to the raw_repository to create a repo from bundle' do
+      expect(raw_repository).to receive(:create_from_bundle)
+
+      repository.create_from_bundle(valid_bundle_path)
+    end
+
+    it 'calls after_create' do
+      expect(repository).to receive(:after_create)
+
+      repository.create_from_bundle(valid_bundle_path)
+    end
+
+    context 'when exception is raised' do
+      before do
+        allow(raw_repository).to receive(:create_from_bundle).and_raise(::Gitlab::Git::BundleFile::InvalidBundleError)
+      end
+
+      it 'after_create is not executed' do
+        expect(repository).not_to receive(:after_create)
+
+        expect {repository.create_from_bundle(valid_bundle_path)}.to raise_error(::Gitlab::Git::BundleFile::InvalidBundleError)
+      end
+    end
+  end
+
   describe "#blobs_metadata" do
-    set(:project) { create(:project, :repository) }
+    let_it_be(:project) { create(:project, :repository) }
     let(:repository) { project.repository }
 
     def expect_metadata_blob(thing)

@@ -64,7 +64,7 @@ Example response:
 
 Gets a list of group or project members viewable by the authenticated user, including inherited members through ancestor groups.
 When a user is a member of the project/group and of one or more ancestor groups the user is returned only once with the project `access_level` (if exists)
-or the `access_level` for the user in the first group which he belongs to in the project groups ancestors chain.
+or the `access_level` for the user in the first group which they belong to in the project groups ancestors chain.
 
 ```
 GET /groups/:id/members/all
@@ -155,7 +155,7 @@ Example response:
 
 ## Get a member of a group or project, including inherited members
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/17744) in GitLab 12.4.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/17744) in GitLab 12.4.
 
 Gets a member of a group or project, including members inherited through ancestor groups. See the corresponding [endpoint to list all inherited members](#list-all-members-of-a-group-or-project-including-inherited-members) for details.
 

@@ -1,7 +1,7 @@
 # Elasticsearch integration **(STARTER ONLY)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/109 "Elasticsearch Merge Request") in GitLab [Starter](https://about.gitlab.com/pricing/) 8.4. Support
-> for [Amazon Elasticsearch](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-gsg.html) was [introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/1305) in GitLab
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/109 "Elasticsearch Merge Request") in GitLab [Starter](https://about.gitlab.com/pricing/) 8.4. Support
+> for [Amazon Elasticsearch](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-gsg.html) was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/1305) in GitLab
 > [Starter](https://about.gitlab.com/pricing/) 9.0.
 
 This document describes how to set up Elasticsearch with GitLab. Once enabled,
@@ -150,6 +150,7 @@ The following Elasticsearch settings are available:
 | `AWS Region`                                          | The AWS region your Elasticsearch service is located in. |
 | `AWS Access Key`                                      | The AWS access key. |
 | `AWS Secret Access Key`                               | The AWS secret access key. |
+| `Maximum field length`                                | See [the explanation in instance limits.](../administration/instance_limits.md#maximum-field-length). |
 
 ### Limiting namespaces and projects
 
@@ -199,7 +200,7 @@ To backfill existing data, you can use one of the methods below to index it in b
 
 ### Indexing through the administration UI
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/15390) in [GitLab Starter](https://about.gitlab.com/pricing/) 12.3.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/15390) in [GitLab Starter](https://about.gitlab.com/pricing/) 12.3.
 
 To index via the Admin Area:
 

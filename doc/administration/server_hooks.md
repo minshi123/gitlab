@@ -73,7 +73,7 @@ Now test the hook to check whether it is functioning properly.
 
 ## Chained hooks support
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-shell/merge_requests/93) in GitLab Shell 4.1.0 and GitLab 8.15.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-shell/-/merge_requests/93) in GitLab Shell 4.1.0 and GitLab 8.15.
 
 Hooks can be also global or be set per project directories and support a chained
 execution of the hooks.
@@ -99,7 +99,7 @@ first script exiting with a non-zero value.
 
 ## Custom error messages
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/5073) in GitLab 8.10.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/5073) in GitLab 8.10.
 
 To have custom error messages appear in GitLab's UI when the commit is
 declined or an error occurs during the Git hook, your script should:

@@ -9,7 +9,7 @@ Currently `Rails.logger` calls all get saved into `production.log`, which contai
 a mix of Rails' logs and other calls developers have inserted in the code base.
 For example:
 
-```
+```plaintext
 Started GET "/gitlabhq/yaml_db/tree/master" for 168.111.56.1 at 2015-02-12 19:34:53 +0200
 Processing by Projects::TreeController#show as HTML
   Parameters: {"project_id"=>"gitlabhq/yaml_db", "id"=>"master"}
@@ -312,7 +312,7 @@ end
 1. If you add a new file, submit an issue to the [production
    tracker](https://gitlab.com/gitlab-com/gl-infra/production/issues) or
    a merge request to the [gitlab_fluentd](https://gitlab.com/gitlab-cookbooks/gitlab_fluentd)
-   project. See [this example](https://gitlab.com/gitlab-cookbooks/gitlab_fluentd/merge_requests/51/diffs).
+   project. See [this example](https://gitlab.com/gitlab-cookbooks/gitlab_fluentd/-/merge_requests/51/diffs).
 
 1. Be sure to update the [GitLab CE/EE documentation](../administration/logs.md) and the [GitLab.com
    runbooks](https://gitlab.com/gitlab-com/runbooks/blob/master/howto/logging.md).

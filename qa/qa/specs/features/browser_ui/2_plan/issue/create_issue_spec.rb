@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 module QA
-  context 'Plan', :smoke do
+  context 'Plan', :smoke, :reliable do
     describe 'Issue creation' do
       before do
         Flow::Login.sign_in
       end
 
-      it 'user creates an issue' do
+      it 'creates an issue' do
         issue = Resource::Issue.fabricate_via_browser_ui!
 
         Page::Project::Menu.perform(&:click_issues)
@@ -27,7 +27,7 @@ module QA
           Resource::Issue.fabricate_via_api!.visit!
         end
 
-        it 'user comments on an issue with an attachment' do
+        it 'comments on an issue with an attachment' do
           Page::Project::Issue::Show.perform do |show|
             show.comment('See attached banana for scale', attachment: file_to_attach)
 

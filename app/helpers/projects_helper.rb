@@ -703,7 +703,11 @@ module ProjectsHelper
   end
 
   def vue_file_list_enabled?
-    Feature.enabled?(:vue_file_list, @project)
+    Feature.enabled?(:vue_file_list, @project, default_enabled: true)
+  end
+
+  def native_code_navigation_enabled?(project)
+    Feature.enabled?(:code_navigation, project)
   end
 
   def show_visibility_confirm_modal?(project)

@@ -224,7 +224,7 @@ export default {
 
     <div
       v-if="!diffFile.submodule && addMergeRequestButtons"
-      class="file-actions d-none d-sm-block"
+      class="file-actions d-none d-sm-flex align-items-center flex-wrap"
     >
       <diff-stats :added-lines="diffFile.added_lines" :removed-lines="diffFile.removed_lines" />
       <div class="btn-group" role="group">
@@ -285,7 +285,7 @@ export default {
           ref="viewButton"
           v-gl-tooltip.hover
           :href="diffFile.view_path"
-          target="blank"
+          target="_blank"
           class="view-file"
           data-track-event="click_toggle_view_sha_button"
           data-track-label="diff_toggle_view_sha_button"

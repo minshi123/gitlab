@@ -126,6 +126,18 @@ Benchmark.bm do |x|
 end
 ```
 
+## Feature flags
+
+### Show all feature flags that are enabled
+
+```ruby
+# Regular output
+Feature.all
+
+# Nice output
+Feature.all.map {|f| [f.name, f.state]}
+```
+
 ## Command Line
 
 ### Check the GitLab version fast
@@ -442,7 +454,7 @@ user.skip_reconfirmation!
 ### Get an admin token
 
 ```ruby
-# Get the first admin's first access token (no longer works on 11.9+. see: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/22743)
+# Get the first admin's first access token (no longer works on 11.9+. see: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/22743)
 User.where(admin:true).first.personal_access_tokens.first.token
 
 # Get the first admin's private token (no longer works on 10.2+)
@@ -929,7 +941,7 @@ projects.each do |p|
 
    container_repositories.each do |c|
        c.tags.each do |t|
-          project_total_size = project_total_size + t.total_size
+          project_total_size = project_total_size + t.total_size unless t.total_size.nil?
        end
    end
 

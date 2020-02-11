@@ -69,6 +69,7 @@ describe Project do
     it { is_expected.to have_one(:forked_from_project).through(:fork_network_member) }
     it { is_expected.to have_one(:auto_devops).class_name('ProjectAutoDevops') }
     it { is_expected.to have_one(:error_tracking_setting).class_name('ErrorTracking::ProjectErrorTrackingSetting') }
+    it { is_expected.to have_one(:project_setting) }
     it { is_expected.to have_many(:commit_statuses) }
     it { is_expected.to have_many(:ci_pipelines) }
     it { is_expected.to have_many(:builds) }
@@ -105,6 +106,14 @@ describe Project do
     it { is_expected.to have_many(:external_pull_requests) }
     it { is_expected.to have_many(:sourced_pipelines) }
     it { is_expected.to have_many(:source_pipelines) }
+
+    it_behaves_like 'model with repository' do
+      let_it_be(:container) { create(:project, :repository, path: 'somewhere') }
+      let(:stubbed_container) { build_stubbed(:project) }
+      let(:expected_full_path) { "#{container.namespace.full_path}/somewhere" }
+      let(:expected_repository_klass) { Repository }
+      let(:expected_storage_klass) { Storage::Hashed }
+    end
 
     it 'has an inverse relationship with merge requests' do
       expect(described_class.reflect_on_association(:merge_requests).has_inverse?).to eq(:target_project)
@@ -146,6 +155,11 @@ describe Project do
       it 'automatically creates a Pages metadata row' do
         expect(project.pages_metadatum).to be_an_instance_of(ProjectPagesMetadatum)
         expect(project.pages_metadatum).to be_persisted
+      end
+
+      it 'automatically creates a project setting row' do
+        expect(project.project_setting).to be_an_instance_of(ProjectSetting)
+        expect(project.project_setting).to be_persisted
       end
     end
 
@@ -269,6 +283,12 @@ describe Project do
         expect(project2).not_to be_valid
         expect(project2.errors[:repository_storage].first).to match(/is not included in the list/)
       end
+    end
+
+    it 'validates presence of project_feature' do
+      project = build(:project, project_feature: nil)
+
+      expect(project).not_to be_valid
     end
 
     describe 'import_url' do
@@ -510,7 +530,6 @@ describe Project do
 
   describe 'Respond to' do
     it { is_expected.to respond_to(:url_to_repo) }
-    it { is_expected.to respond_to(:repo_exists?) }
     it { is_expected.to respond_to(:execute_hooks) }
     it { is_expected.to respond_to(:owner) }
     it { is_expected.to respond_to(:path_with_namespace) }
@@ -662,44 +681,6 @@ describe Project do
   it 'returns valid url to repo' do
     project = described_class.new(path: 'somewhere')
     expect(project.url_to_repo).to eq(Gitlab.config.gitlab_shell.ssh_path_prefix + 'somewhere.git')
-  end
-
-  describe "#web_url" do
-    let(:project) { create(:project, path: "somewhere") }
-
-    context 'when given the only_path option' do
-      subject { project.web_url(only_path: only_path) }
-
-      context 'when only_path is false' do
-        let(:only_path) { false }
-
-        it 'returns the full web URL for this repo' do
-          expect(subject).to eq("#{Gitlab.config.gitlab.url}/#{project.namespace.full_path}/somewhere")
-        end
-      end
-
-      context 'when only_path is true' do
-        let(:only_path) { true }
-
-        it 'returns the relative web URL for this repo' do
-          expect(subject).to eq("/#{project.namespace.full_path}/somewhere")
-        end
-      end
-
-      context 'when only_path is nil' do
-        let(:only_path) { nil }
-
-        it 'returns the full web URL for this repo' do
-          expect(subject).to eq("#{Gitlab.config.gitlab.url}/#{project.namespace.full_path}/somewhere")
-        end
-      end
-    end
-
-    context 'when not given the only_path option' do
-      it 'returns the full web URL for this repo' do
-        expect(project.web_url).to eq("#{Gitlab.config.gitlab.url}/#{project.namespace.full_path}/somewhere")
-      end
-    end
   end
 
   describe "#readme_url" do
@@ -931,14 +912,6 @@ describe Project do
     end
   end
 
-  describe '#repository' do
-    let(:project) { create(:project, :repository) }
-
-    it 'returns valid repo' do
-      expect(project.repository).to be_kind_of(Repository)
-    end
-  end
-
   describe '#default_issues_tracker?' do
     it "is true if used internal tracker" do
       project = build(:project)
@@ -951,24 +924,6 @@ describe Project do
       project = create(:redmine_project)
 
       expect(project.default_issues_tracker?).to be_falsey
-    end
-  end
-
-  describe '#empty_repo?' do
-    context 'when the repo does not exist' do
-      let(:project) { build_stubbed(:project) }
-
-      it 'returns true' do
-        expect(project.empty_repo?).to be(true)
-      end
-    end
-
-    context 'when the repo exists' do
-      let(:project) { create(:project, :repository) }
-      let(:empty_project) { create(:project, :empty_repo) }
-
-      it { expect(empty_project.empty_repo?).to be(true) }
-      it { expect(project.empty_repo?).to be(false) }
     end
   end
 
@@ -2152,6 +2107,28 @@ describe Project do
     end
   end
 
+  describe '#uses_default_ci_config?' do
+    let(:project) { build(:project)}
+
+    it 'has a custom ci config path' do
+      project.ci_config_path = 'something_custom'
+
+      expect(project.uses_default_ci_config?).to be_falsey
+    end
+
+    it 'has a blank ci config path' do
+      project.ci_config_path = ''
+
+      expect(project.uses_default_ci_config?).to be_truthy
+    end
+
+    it 'does not have a custom ci config path' do
+      project.ci_config_path = nil
+
+      expect(project.uses_default_ci_config?).to be_truthy
+    end
+  end
+
   describe '#latest_successful_build_for_ref' do
     let(:project) { create(:project, :repository) }
     let(:pipeline) { create_pipeline(project) }
@@ -2729,16 +2706,44 @@ describe Project do
     describe '#all_lfs_objects' do
       let(:lfs_object) { create(:lfs_object) }
 
-      before do
-        project.lfs_objects << lfs_object
+      context 'when LFS object is only associated to the source' do
+        before do
+          project.lfs_objects << lfs_object
+        end
+
+        it 'returns the lfs object for a project' do
+          expect(project.all_lfs_objects).to contain_exactly(lfs_object)
+        end
+
+        it 'returns the lfs object for a fork' do
+          expect(forked_project.all_lfs_objects).to contain_exactly(lfs_object)
+        end
       end
 
-      it 'returns the lfs object for a project' do
-        expect(project.all_lfs_objects).to contain_exactly(lfs_object)
+      context 'when LFS object is only associated to the fork' do
+        before do
+          forked_project.lfs_objects << lfs_object
+        end
+
+        it 'returns nothing' do
+          expect(project.all_lfs_objects).to be_empty
+        end
+
+        it 'returns the lfs object for a fork' do
+          expect(forked_project.all_lfs_objects).to contain_exactly(lfs_object)
+        end
       end
 
-      it 'returns the lfs object for a fork' do
-        expect(forked_project.all_lfs_objects).to contain_exactly(lfs_object)
+      context 'when LFS object is associated to both source and fork' do
+        before do
+          project.lfs_objects << lfs_object
+          forked_project.lfs_objects << lfs_object
+        end
+
+        it 'returns the lfs object for the source and fork' do
+          expect(project.all_lfs_objects).to contain_exactly(lfs_object)
+          expect(forked_project.all_lfs_objects).to contain_exactly(lfs_object)
+        end
       end
     end
   end
@@ -3406,59 +3411,6 @@ describe Project do
     end
   end
 
-  describe '#http_url_to_repo' do
-    let(:project) { create(:project) }
-
-    context 'when a custom HTTP clone URL root is not set' do
-      it 'returns the url to the repo without a username' do
-        expect(project.http_url_to_repo).to eq("#{project.web_url}.git")
-        expect(project.http_url_to_repo).not_to include('@')
-      end
-    end
-
-    context 'when a custom HTTP clone URL root is set' do
-      before do
-        stub_application_setting(custom_http_clone_url_root: custom_http_clone_url_root)
-      end
-
-      context 'when custom HTTP clone URL root has a relative URL root' do
-        context 'when custom HTTP clone URL root ends with a slash' do
-          let(:custom_http_clone_url_root) { 'https://git.example.com:51234/mygitlab/' }
-
-          it 'returns the url to the repo, with the root replaced with the custom one' do
-            expect(project.http_url_to_repo).to eq("https://git.example.com:51234/mygitlab/#{project.full_path}.git")
-          end
-        end
-
-        context 'when custom HTTP clone URL root does not end with a slash' do
-          let(:custom_http_clone_url_root) { 'https://git.example.com:51234/mygitlab' }
-
-          it 'returns the url to the repo, with the root replaced with the custom one' do
-            expect(project.http_url_to_repo).to eq("https://git.example.com:51234/mygitlab/#{project.full_path}.git")
-          end
-        end
-      end
-
-      context 'when custom HTTP clone URL root does not have a relative URL root' do
-        context 'when custom HTTP clone URL root ends with a slash' do
-          let(:custom_http_clone_url_root) { 'https://git.example.com:51234/' }
-
-          it 'returns the url to the repo, with the root replaced with the custom one' do
-            expect(project.http_url_to_repo).to eq("https://git.example.com:51234/#{project.full_path}.git")
-          end
-        end
-
-        context 'when custom HTTP clone URL root does not end with a slash' do
-          let(:custom_http_clone_url_root) { 'https://git.example.com:51234' }
-
-          it 'returns the url to the repo, with the root replaced with the custom one' do
-            expect(project.http_url_to_repo).to eq("https://git.example.com:51234/#{project.full_path}.git")
-          end
-        end
-      end
-    end
-  end
-
   describe '#lfs_http_url_to_repo' do
     let(:project) { create(:project) }
 
@@ -3779,7 +3731,7 @@ describe Project do
     end
   end
 
-  describe '.wrap_authorized_projects_with_cte' do
+  describe '.wrap_with_cte' do
     let!(:user) { create(:user) }
 
     let!(:private_project) do
@@ -3790,10 +3742,10 @@ describe Project do
 
     let(:projects) { described_class.all.public_or_visible_to_user(user) }
 
-    subject { described_class.wrap_authorized_projects_with_cte(projects) }
+    subject { described_class.wrap_with_cte(projects) }
 
     it 'wrapped query matches original' do
-      expect(subject.to_sql).to match(/^WITH "authorized_projects" AS/)
+      expect(subject.to_sql).to match(/^WITH "projects_cte" AS/)
       expect(subject).to match_array(projects)
     end
   end
@@ -5054,17 +5006,7 @@ describe Project do
     end
   end
 
-  context '#commits_by' do
-    let(:project) { create(:project, :repository) }
-    let(:commits) { project.repository.commits('HEAD', limit: 3).commits }
-    let(:commit_shas) { commits.map(&:id) }
-
-    it 'retrieves several commits from the repository by oid' do
-      expect(project.commits_by(oids: commit_shas)).to eq commits
-    end
-  end
-
-  context '#members_among' do
+  describe '#members_among' do
     let(:users) { create_list(:user, 3) }
 
     set(:group) { create(:group) }
@@ -5602,6 +5544,43 @@ describe Project do
 
       expect(described_class.with_issues_or_mrs_available_for_user(user))
         .to contain_exactly(project1, project3, project4)
+    end
+  end
+
+  describe '#limited_protected_branches' do
+    let(:project) { create(:project) }
+    let!(:protected_branch) { create(:protected_branch, project: project) }
+    let!(:another_protected_branch) { create(:protected_branch, project: project) }
+
+    subject { project.limited_protected_branches(1) }
+
+    it 'returns limited number of protected branches based on specified limit' do
+      expect(subject).to eq([another_protected_branch])
+    end
+  end
+
+  describe '#lfs_objects_oids' do
+    let(:project) { create(:project) }
+    let(:lfs_object) { create(:lfs_object) }
+    let(:another_lfs_object) { create(:lfs_object) }
+
+    subject { project.lfs_objects_oids }
+
+    context 'when project has associated LFS objects' do
+      before do
+        create(:lfs_objects_project, lfs_object: lfs_object, project: project)
+        create(:lfs_objects_project, lfs_object: another_lfs_object, project: project)
+      end
+
+      it 'returns OIDs of LFS objects' do
+        expect(subject).to match_array([lfs_object.oid, another_lfs_object.oid])
+      end
+    end
+
+    context 'when project has no associated LFS objects' do
+      it 'returns empty array' do
+        expect(subject).to be_empty
+      end
     end
   end
 

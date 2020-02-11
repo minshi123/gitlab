@@ -4,7 +4,7 @@ FactoryBot.define do
     project
     name { 'my/company/app/my-app' }
     sequence(:version) { |n| "1.#{n}-SNAPSHOT" }
-    package_type { 'maven' }
+    package_type { :maven }
 
     factory :maven_package do
       maven_metadatum
@@ -23,7 +23,7 @@ FactoryBot.define do
     factory :npm_package do
       sequence(:name) { |n| "@#{project.root_namespace.path}/package-#{n}"}
       version { '1.0.0' }
-      package_type { 'npm' }
+      package_type { :npm }
 
       after :create do |package|
         create :package_file, :npm, package: package
@@ -42,7 +42,7 @@ FactoryBot.define do
       package_type { :nuget }
 
       after :create do |package|
-        create :package_file, :nuget, package: package
+        create :package_file, :nuget, package: package, file_name: "#{package.name}.#{package.version}.nupkg"
       end
     end
 
@@ -57,7 +57,7 @@ FactoryBot.define do
 
       sequence(:name) { |n| "package-#{n}" }
       version { '1.0.0' }
-      package_type { 'conan' }
+      package_type { :conan }
 
       after :create do |package|
         create :conan_package_file, :conan_recipe_file, package: package
@@ -170,7 +170,6 @@ FactoryBot.define do
       file { fixture_file_upload('ee/spec/fixtures/nuget/package.nupkg') }
       file_name { 'package.nupkg' }
       file_sha1 { '5fe852b2a6abd96c22c11fa1ff2fb19d9ce58b57' }
-      file_type { 0 }
       size { 300.kilobytes }
     end
 
@@ -180,7 +179,7 @@ FactoryBot.define do
   end
 
   factory :maven_metadatum, class: 'Packages::MavenMetadatum' do
-    package
+    association :package, package_type: :maven
     path { 'my/company/app/my-app/1.0-SNAPSHOT' }
     app_group { 'my.company.app' }
     app_name { 'my-app' }
@@ -188,7 +187,7 @@ FactoryBot.define do
   end
 
   factory :conan_metadatum, class: 'Packages::ConanMetadatum' do
-    package
+    association :package, package_type: :conan
     package_username { 'username' }
     package_channel { 'stable' }
   end

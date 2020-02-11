@@ -84,7 +84,7 @@ gem 'net-ldap'
 # API
 gem 'grape', '~> 1.1.0'
 gem 'grape-entity', '~> 0.7.1'
-gem 'rack-cors', '~> 1.0.0', require: 'rack/cors'
+gem 'rack-cors', '~> 1.0.6', require: 'rack/cors'
 
 # GraphQL API
 gem 'graphql', '~> 1.9.11'
@@ -381,8 +381,6 @@ group :development, :test do
 
   gem 'knapsack', '~> 1.17'
 
-  gem 'stackprof', '~> 0.2.13', require: false
-
   gem 'simple_po_parser', '~> 1.1.2', require: false
 
   gem 'timecop', '~> 0.8.0'
@@ -427,6 +425,7 @@ gem 'email_reply_trimmer', '~> 0.1'
 gem 'html2text'
 
 gem 'ruby-prof', '~> 1.0.0'
+gem 'stackprof', '~> 0.2.15', require: false
 gem 'rbtrace', '~> 0.4', require: false
 gem 'memory_profiler', '~> 0.9', require: false
 gem 'benchmark-memory', '~> 0.1', require: false
@@ -488,3 +487,8 @@ gem 'liquid', '~> 4.0'
 gem 'lru_redux'
 
 gem 'erubi', '~> 1.9.0'
+
+# Locked as long as quoted-printable encoding issues are not resolved
+# Monkey-patched in `config/initializers/mail_encoding_patch.rb`
+# See https://gitlab.com/gitlab-org/gitlab/issues/197386
+gem 'mail', '= 2.7.1'

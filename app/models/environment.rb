@@ -6,11 +6,13 @@ class Environment < ApplicationRecord
 
   self.reactive_cache_refresh_interval = 1.minute
   self.reactive_cache_lifetime = 55.seconds
+  self.reactive_cache_hard_limit = 10.megabytes
 
   belongs_to :project, required: true
 
   has_many :deployments, -> { visible }, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
   has_many :successful_deployments, -> { success }, class_name: 'Deployment'
+  has_many :prometheus_alerts, inverse_of: :environment
 
   has_one :last_deployment, -> { success.order('deployments.id DESC') }, class_name: 'Deployment'
   has_one :last_deployable, through: :last_deployment, source: 'deployable', source_type: 'CommitStatus'
@@ -103,6 +105,14 @@ class Environment < ApplicationRecord
 
   def self.find_or_create_by_name(name)
     find_or_create_by(name: name)
+  end
+
+  def clear_prometheus_reactive_cache!(query_name)
+    cluster_prometheus_adapter&.clear_prometheus_reactive_cache!(query_name, self)
+  end
+
+  def cluster_prometheus_adapter
+    @cluster_prometheus_adapter ||= ::Gitlab::Prometheus::Adapter.new(project, deployment_platform&.cluster).cluster_prometheus_adapter
   end
 
   def predefined_variables

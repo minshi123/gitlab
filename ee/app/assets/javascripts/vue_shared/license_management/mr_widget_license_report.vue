@@ -23,15 +23,6 @@ export default {
   },
   mixins: [reportsMixin],
   props: {
-    headPath: {
-      type: String,
-      required: true,
-    },
-    basePath: {
-      type: String,
-      required: false,
-      default: null,
-    },
     fullReportPath: {
       type: String,
       required: false,
@@ -96,20 +87,18 @@ export default {
     },
   },
   mounted() {
-    const { headPath, basePath, apiUrl, canManageLicenses, licensesApiPath } = this;
+    const { apiUrl, canManageLicenses, licensesApiPath } = this;
 
     this.setAPISettings({
       apiUrlManageLicenses: apiUrl,
-      headPath,
-      basePath,
       canManageLicenses,
       licensesApiPath,
     });
 
-    this.loadParsedLicenseReport();
+    this.fetchParsedLicenseReport();
   },
   methods: {
-    ...mapActions(['setAPISettings', 'loadParsedLicenseReport']),
+    ...mapActions(['setAPISettings', 'fetchParsedLicenseReport']),
   },
 };
 </script>

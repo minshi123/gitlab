@@ -171,6 +171,16 @@ To make full use of Auto DevOps, you will need:
   To get response metrics (in addition to system metrics), you need to
   [configure Prometheus to monitor NGINX](../../user/project/integrations/prometheus_library/nginx_ingress.md#configuring-nginx-ingress-monitoring).
 
+- **cert-manager** (optional, for TLS/HTTPS)
+
+  To enable HTTPS endpoints for your application, you need to install cert-manager,
+  a native Kubernetes certificate management controller that helps with issuing certificates.
+  Installing cert-manager on your cluster will issue a certificate by
+  [Let’s Encrypt](https://letsencrypt.org/) and ensure that certificates are valid and up-to-date.
+  If you have configured GitLab's Kubernetes integration, you can deploy it to
+  your cluster by installing the
+  [GitLab-managed app for cert-manager](../../user/clusters/applications.md#cert-manager).
+  
 If you do not have Kubernetes or Prometheus installed, then Auto Review Apps,
 Auto Deploy, and Auto Monitoring will be silently skipped.
 
@@ -508,7 +518,7 @@ namespace](../../user/project/clusters/index.md#deployment-variables)
 for the environment.
 
 Since GitLab 11.4, a [local
-Tiller](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/22036) is
+Tiller](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/22036) is
 used. Previous versions of GitLab had a Tiller installed in the project
 namespace.
 
@@ -600,7 +610,7 @@ namespace](../../user/project/clusters/index.md#deployment-variables)
 for the environment.
 
 Since GitLab 11.4, a [local
-Tiller](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/22036) is
+Tiller](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/22036) is
 used. Previous versions of GitLab had a Tiller installed in the project
 namespace.
 
@@ -665,7 +675,7 @@ to run background tasks like sending emails.
 
 The [default Helm chart](https://gitlab.com/gitlab-org/charts/auto-deploy-app)
 used in Auto Deploy [has support for running worker
-processes](https://gitlab.com/gitlab-org/charts/auto-deploy-app/merge_requests/9).
+processes](https://gitlab.com/gitlab-org/charts/auto-deploy-app/-/merge_requests/9).
 
 In order to run a worker, you'll need to ensure that it is able to respond to
 the standard health checks, which expect a successful HTTP response on port
@@ -704,7 +714,7 @@ workers:
 
 #### Network Policy
 
-> [Introduced](https://gitlab.com/gitlab-org/charts/auto-deploy-app/merge_requests/30) in GitLab 12.7.
+> [Introduced](https://gitlab.com/gitlab-org/charts/auto-deploy-app/-/merge_requests/30) in GitLab 12.7.
 
 By default, all Kubernetes pods are
 [non-isolated](https://kubernetes.io/docs/concepts/services-networking/network-policies/#isolated-and-non-isolated-pods)
@@ -750,6 +760,39 @@ networkPolicy:
       - namespaceSelector:
           matchLabels:
             app.gitlab.com/managed_by: gitlab
+```
+
+#### Web Application Firewall (ModSecurity) customization
+
+> [Introduced](https://gitlab.com/gitlab-org/charts/auto-deploy-app/-/merge_requests/44) in GitLab 12.8.
+
+Customization on an [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) or on a deployment base is available for clusters with [ModSecurity installed](../../user/clusters/applications.md#web-application-firewall-modsecurity).
+
+To enable ModSecurity with Auto Deploy, you need to create a `.gitlab/auto-deploy-values.yaml` file in your project with the following attributes.
+
+|Attribute | Description | Default |
+-----------|-------------|---------|
+|`enabled` | Enables custom configuration for modsecurity, defaulting to the [Core Rule Set](https://coreruleset.org/) | `false` |
+|`secRuleEngine` | Configures the [rules engine](https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual-(v2.x)#secruleengine) | `DetectionOnly` |
+|`secRules` | Creates one or more additional [rule](https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual-(v2.x)#SecRule) | `nil` |
+
+In the following `auto-deploy-values.yaml` example, some custom settings
+are enabled for ModSecurity. Those include setting its engine to
+process rules instead of only logging them, while adding two specific
+rules which are header-based:
+
+```yaml
+ingress:
+  modSecurity:
+    enabled: true
+    secRuleEngine: "On"
+    secRules:
+      - variable: "REQUEST_HEADERS:User-Agent"
+        operator: "printer"
+        action: "log,deny,id:'2010',status:403,msg:'printer is an invalid agent'"
+      - variable: "REQUEST_HEADERS:Content-Type"
+        operator: "text/plain"
+        action: "log,deny,id:'2011',status:403,msg:'Text is not supported as content type'"
 ```
 
 #### Running commands in the container
@@ -1222,7 +1265,7 @@ service:
 
 #### Deploy policy for staging and production environments
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-ci-yml/merge_requests/160)
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-ci-yml/-/merge_requests/160)
 in GitLab 10.8.
 
 TIP: **Tip:**
@@ -1241,7 +1284,7 @@ you when you're ready to manually deploy to production.
 
 #### Deploy policy for canary environments **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-ci-yml/merge_requests/171)
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-ci-yml/-/merge_requests/171)
 in GitLab 11.0.
 
 A [canary environment](../../user/project/canary_deployments.md) can be used
@@ -1434,8 +1477,8 @@ spec:
 [postgresql]: https://www.postgresql.org/
 [Auto DevOps template]: https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Auto-DevOps.gitlab-ci.yml
 [ee]: https://about.gitlab.com/pricing/
-[ce-21955]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/21955
-[ce-19507]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/19507
+[ce-21955]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/21955
+[ce-19507]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/19507
 
 ## Development guides
 

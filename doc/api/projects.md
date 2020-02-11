@@ -55,8 +55,8 @@ GET /projects
 | `with_issues_enabled`         | boolean | no | Limit by enabled issues feature |
 | `with_merge_requests_enabled` | boolean | no | Limit by enabled merge requests feature |
 | `with_programming_language`   | string  | no | Limit by projects which use the given programming language |
-| `wiki_checksum_failed`        | boolean | no | **(PREMIUM)** Limit projects where the wiki checksum calculation has failed ([Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/6137) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.2) |
-| `repository_checksum_failed`  | boolean | no | **(PREMIUM)** Limit projects where the repository checksum calculation has failed ([Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/6137) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.2) |
+| `wiki_checksum_failed`        | boolean | no | **(PREMIUM)** Limit projects where the wiki checksum calculation has failed ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/6137) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.2) |
+| `repository_checksum_failed`  | boolean | no | **(PREMIUM)** Limit projects where the repository checksum calculation has failed ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/6137) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.2) |
 | `min_access_level`            | integer | no | Limit by current user minimal [access level](members.md) |
 | `id_after`                    | integer | no | Limit results to projects with IDs greater than the specified ID |
 | `id_before`                   | integer | no | Limit results to projects with IDs less than the specified ID |
@@ -1016,6 +1016,7 @@ POST /projects
 | `wiki_access_level` | string | no | One of `disabled`, `private` or `enabled` |
 | `snippets_access_level` | string | no | One of `disabled`, `private` or `enabled` |
 | `pages_access_level` | string | no | One of `disabled`, `private`, `enabled` or `public` |
+| `emails_disabled` | boolean | no | Disable email notifications |
 | `resolve_outdated_diff_discussions` | boolean | no | Automatically resolve merge request diffs discussions on lines changed with a push |
 | `container_registry_enabled` | boolean | no | Enable container registry for this project |
 | `container_expiration_policy_attributes` | hash | no | Update the container expiration policy for this project. Accepts: `cadence` (string), `keep_n` (string), `older_than` (string), `name_regex` (string), `enabled` (boolean) |
@@ -1083,6 +1084,7 @@ POST /projects/user/:user_id
 | `wiki_access_level` | string | no | One of `disabled`, `private` or `enabled` |
 | `snippets_access_level` | string | no | One of `disabled`, `private` or `enabled` |
 | `pages_access_level` | string | no | One of `disabled`, `private`, `enabled` or `public` |
+| `emails_disabled` | boolean | no | Disable email notifications |
 | `resolve_outdated_diff_discussions` | boolean | no | Automatically resolve merge request diffs discussions on lines changed with a push |
 | `container_registry_enabled` | boolean | no | Enable container registry for this project |
 | `shared_runners_enabled` | boolean | no | Enable shared runners for this project |
@@ -1149,6 +1151,7 @@ PUT /projects/:id
 | `wiki_access_level` | string | no | One of `disabled`, `private` or `enabled` |
 | `snippets_access_level` | string | no | One of `disabled`, `private` or `enabled` |
 | `pages_access_level` | string | no | One of `disabled`, `private`, `enabled` or `public` |
+| `emails_disabled` | boolean | no | Disable email notifications |
 | `resolve_outdated_diff_discussions` | boolean | no | Automatically resolve merge request diffs discussions on lines changed with a push |
 | `container_registry_enabled` | boolean | no | Enable container registry for this project |
 | `container_expiration_policy_attributes` | hash | no | Update the container expiration policy for this project. Accepts: `cadence` (string), `keep_n` (string), `older_than` (string), `name_regex` (string), `enabled` (boolean) |
@@ -1997,11 +2000,6 @@ Allows modification of the forked relationship between existing projects. Availa
 
 ### Create a forked from/to relation between existing projects
 
-CAUTION: **Warning:**
-This will destroy the LFS objects stored in the fork.
-So to retain the LFS objects, make sure you've pulled them **before** creating the fork relation,
-and push them again **after** creating the fork relation.
-
 ```
 POST /projects/:id/fork/:forked_from_id
 ```
@@ -2230,4 +2228,4 @@ GET /projects/:id/snapshot
 | `id`      | integer/string | yes | The ID or [URL-encoded path of the project](README.md#namespaced-path-encoding) |
 | `wiki`    | boolean | no | Whether to download the wiki, rather than project, repository |
 
-[ce-27427]: https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/27427
+[ce-27427]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/27427

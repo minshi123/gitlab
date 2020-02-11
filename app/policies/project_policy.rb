@@ -370,7 +370,7 @@ class ProjectPolicy < BasePolicy
 
   # There's two separate cases when builds_disabled is true:
   # 1. When internal CI is disabled - builds_disabled && internal_builds_disabled
-  #   - We do not prevent the user from accessing Pipelines to allow him to access external CI
+  #   - We do not prevent the user from accessing Pipelines to allow them to access external CI
   # 2. When the user is not allowed to access CI - builds_disabled && ~internal_builds_disabled
   #   - We prevent the user from accessing Pipelines
   rule { (builds_disabled & ~internal_builds_disabled) | repository_disabled }.policy do
@@ -515,6 +515,8 @@ class ProjectPolicy < BasePolicy
   end
 
   def lookup_access_level!
+    return ::Gitlab::Access::REPORTER if alert_bot?
+
     # NOTE: max_member_access has its own cache
     project.team.max_member_access(@user.id)
   end

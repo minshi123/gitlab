@@ -705,10 +705,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@gitlab/eslint-config@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@gitlab/eslint-config/-/eslint-config-2.1.1.tgz#64fcc8135f1a6055181fd64b991e33eb43913153"
-  integrity sha512-+rQA+gIcZbkaQ7GIjDjfMnYz41fFtsEaF0cRmk0KSqXWTKmOi4gcYZppIPdRvJWKhNPRS735Y5Of3gdIObINYQ==
+"@gitlab/eslint-config@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@gitlab/eslint-config/-/eslint-config-2.1.2.tgz#9f4011d3bf15f3e2668a1faa754f0b9804f23f8f"
+  integrity sha512-+9yd5PKyipUVngEtKOdBxq7C6tXsUNdaGVD+SLBDqX0VaCNxQVWJvmQ2FPxb9gOLZsSAnP5Yl2Rj7dY0fJV4Gw==
   dependencies:
     "@gitlab/eslint-plugin-i18n" "^1.1.0"
     "@gitlab/eslint-plugin-vue-i18n" "^1.2.0"
@@ -718,7 +718,6 @@
     eslint-plugin-babel "^5.3.0"
     eslint-plugin-filenames "^1.3.2"
     eslint-plugin-import "^2.20.0"
-    eslint-plugin-no-jquery "^2.3.1"
     eslint-plugin-promise "^4.2.1"
     eslint-plugin-vue "^5.2.3"
 
@@ -736,15 +735,15 @@
   dependencies:
     vue-eslint-parser "^6.0.4"
 
-"@gitlab/svgs@^1.91.0":
-  version "1.91.0"
-  resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-1.91.0.tgz#cf7b28e43779a929a438dcc0c51f39f92551e58e"
-  integrity sha512-Sz8aaaNnUUtlrk/FPf6FNceu4XsDLBh6g/c6nmzDVGF9kHrfiXfWL0tYAax8vhkrld5vewGHE0bRpq2ZILq0pw==
+"@gitlab/svgs@^1.96.0":
+  version "1.96.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-1.96.0.tgz#1d32730389e94358dc245e8336912523446d1269"
+  integrity sha512-mhg6kndxDhwjWChKhs5utO6PowlOyFdaCXUrkkxxe2H3cd8DYa40QOEcJeUrSIhkmgIMVesUawesx5tt4Bnnnw==
 
-"@gitlab/ui@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@gitlab/ui/-/ui-9.0.0.tgz#16d637f47ba0537100fd1c6d452b56174b50171b"
-  integrity sha512-OfP8UAticpqKkqbPBZ+7bbCBsd9Fxq3eL55Uq5nEwxJ8gGXm+nSc+HFnbzX/ryv0iz5+7nCI4DfIfgy9E4QAeQ==
+"@gitlab/ui@^9.6.0":
+  version "9.6.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/ui/-/ui-9.6.0.tgz#13119a56a34be34fd07e761cab0af3c00462159d"
+  integrity sha512-R0pUa30l/JX/+1K/rZGAjDvCLLoQuodwCxBNzQ5U1ylnnfGclVrM2rBlZT3UlWnMkb9BRhTPn6uoC/HBOAo37g==
   dependencies:
     "@babel/standalone" "^7.0.0"
     "@gitlab/vue-toasted" "^1.3.0"
@@ -990,10 +989,10 @@
     "@sentry/types" "5.10.0"
     tslib "^1.9.3"
 
-"@sourcegraph/code-host-integration@0.0.21":
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/@sourcegraph/code-host-integration/-/code-host-integration-0.0.21.tgz#d536ccb3d9fda6d0c9d611ed6b80813265d8cb2f"
-  integrity sha512-HRBb6FO5+kc0JM6mAzhBGrDCuMdkGBjgdnKGnkW8B/FFKEtZEB6HI4ghGfY0eH01tFRis7snkZ4b3NSLjAbHew==
+"@sourcegraph/code-host-integration@0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@sourcegraph/code-host-integration/-/code-host-integration-0.0.30.tgz#85f52eca0f8fd5efb1526a7ec6a09d261ab43bda"
+  integrity sha512-5zBN0/oa1c0lY0+MPb2kEs9NqefvOg0NevDQXqQpLHDOx+TtMzC2uEOQiBnyHm2bWcCl/RFatjvNlEV+reGgnA==
 
 "@types/anymatch@*":
   version "1.3.0"
@@ -4350,7 +4349,7 @@ eslint-plugin-jest@^22.3.0:
   resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-22.3.0.tgz#a10f10dedfc92def774ec9bb5bfbd2fb8e1c96d2"
   integrity sha512-P1mYVRNlOEoO5T9yTqOfucjOYf1ktmJ26NjwjH8sxpCFQa6IhBGr5TpKl3hcAAT29hOsRJVuMWmTsHoUVo9FoA==
 
-eslint-plugin-no-jquery@^2.3.0, eslint-plugin-no-jquery@^2.3.1:
+eslint-plugin-no-jquery@^2.3.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/eslint-plugin-no-jquery/-/eslint-plugin-no-jquery-2.3.1.tgz#1c364cb863a38cc1570c8020155b6004cca62178"
   integrity sha512-/fiQUBSOMUETnfBuiK5ewvtRbek1IRTy5ov/6RZ6nlybvZ337vyGaNPWM1KgaIoIeN7dairNrPfq0h7A0tpT3A==

@@ -111,7 +111,7 @@ production: &base
     # Email server smtp settings are in config/initializers/smtp_settings.rb.sample
 
     # default_can_create_group: false  # default: true
-    # username_changing_enabled: false # default: true - User can change her username/namespace
+    # username_changing_enabled: false # default: true - User can change their username/namespace
     ## Default theme ID
     ##   1 - Indigo
     ##   2 - Dark
@@ -144,6 +144,12 @@ production: &base
     ## Webhook settings
     # Number of seconds to wait for HTTP response after sending webhook HTTP POST request (default: 10)
     # webhook_timeout: 10
+
+    ### GraphQL Settings
+    # Tells the rails application how long it has to complete a GraphQL request.
+    # We suggest this value to be higher than the database timeout value
+    # and lower than the worker timeout set in unicorn/puma. (default: 30)
+    # graphql_timeout: 30
 
     ## Repository downloads directory
     # When a user clicks e.g. 'Download zip' on a project, a temporary zip file is created in the following directory.

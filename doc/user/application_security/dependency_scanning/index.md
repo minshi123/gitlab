@@ -79,7 +79,7 @@ Add the following to your `.gitlab-ci.yml` file:
 
 ```yaml
 include:
-  template: Dependency-Scanning.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
 ```
 
 The included template will create a `dependency_scanning` job in your CI/CD
@@ -99,7 +99,7 @@ For example:
 
 ```yaml
 include:
-  template: Dependency-Scanning.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
 
 variables:
   DS_PYTHON_VERSION: 2
@@ -116,7 +116,7 @@ after the template inclusion and specify any additional keys under it. For examp
 
 ```yaml
 include:
-  template: Dependency-Scanning.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
 
 dependency_scanning:
   variables:
@@ -151,6 +151,8 @@ using environment variables.
 | `PIP_REQUIREMENTS_FILE`                 | Pip requirements file to be scanned. |
 | `MAVEN_CLI_OPTS`                        | List of command line arguments that will be passed to `maven` by the analyzer. The default is `"-DskipTests --batch-mode"`. See an example for [using private repos](#using-private-maven-repos). |
 | `BUNDLER_AUDIT_UPDATE_DISABLED`         | Disable automatic updates for the `bundler-audit` analyzer (default: `"false"`). Useful if you're running Dependency Scanning in an offline, air-gapped environment.|
+| `BUNDLER_AUDIT_ADVISORY_DB_URL`         | URL of the advisory database used by bundler-audit (default: `https://github.com/rubysec/ruby-advisory-db`). |
+| `BUNDLER_AUDIT_ADVISORY_DB_REF_NAME`    | Git ref for the advisory database specified by `BUNDLER_AUDIT_ADVISORY_DB_URL` (default: `master`). |
 
 ### Using private Maven repos
 
@@ -187,7 +189,7 @@ This does not require running the executor in privileged mode. For example:
 
 ```yaml
 include:
-  template: Dependency-Scanning.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
 
 variables:
   DS_DISABLE_DIND: "true"

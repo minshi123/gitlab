@@ -217,8 +217,8 @@ support this.
      # The 'docker' hostname is the alias of the service container as described at
      # https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#accessing-the-services.
      #
-     # Note that if you're using the Kubernetes executor, the variable
-     # should be set to tcp://localhost:2376 because of how the
+     # Note that if you're using GitLab Runner 12.7 or earlier with the Kubernetes executor and Kubernetes 1.6 or earlier,
+     # the variable must be set to tcp://localhost:2376 because of how the
      # Kubernetes executor connects services to the job container
      # DOCKER_HOST: tcp://localhost:2376
      #
@@ -279,12 +279,11 @@ variables:
   # The 'docker' hostname is the alias of the service container as described at
   # https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#accessing-the-services
   #
-  # Note that if you're using the Kubernetes executor, the variable should be set to
-  # tcp://localhost:2375 because of how the Kubernetes executor connects services
-  # to the job container
+  # Note that if you're using GitLab Runner 12.7 or earlier with the Kubernetes executor and Kubernetes 1.6 or earlier,
+  # the variable must be set to tcp://localhost:2375 because of how the
+  # Kubernetes executor connects services to the job container
   # DOCKER_HOST: tcp://localhost:2375
   #
-  # For non-Kubernetes executors, we use tcp://docker:2375
   DOCKER_HOST: tcp://docker:2375
   #
   # This will instruct Docker not to start over TLS.
@@ -310,7 +309,7 @@ container so that Docker is available in the context of that image.
 
 NOTE: **Note:**
 If you bind the Docker socket [when using GitLab Runner 11.11 or
-newer](https://gitlab.com/gitlab-org/gitlab-runner/merge_requests/1261),
+newer](https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/1261),
 you can no longer use `docker:19.03.1-dind` as a service because volume bindings
 are done to the services as well, making these incompatible.
 

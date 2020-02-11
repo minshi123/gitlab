@@ -95,7 +95,7 @@ The following table depicts the various user permission levels in a project.
 | Stop environments                                 |         |            | ✓           | ✓        | ✓      |
 | Add tags                                          |         |            | ✓           | ✓        | ✓      |
 | Cancel and retry jobs                             |         |            | ✓           | ✓        | ✓      |
-| Create or update commit status                    |         |            | ✓           | ✓        | ✓      |
+| Create or update commit status                    |         |            | ✓ (*5*)     | ✓        | ✓      |
 | Update a container registry                       |         |            | ✓           | ✓        | ✓      |
 | Remove a container registry image                 |         |            | ✓           | ✓        | ✓      |
 | Create/edit/delete project milestones             |         |            | ✓           | ✓        | ✓      |
@@ -139,11 +139,12 @@ The following table depicts the various user permission levels in a project.
 | Force push to protected branches (*4*)            |         |            |             |          |        |
 | Remove protected branches (*4*)                   |         |            |             |          |        |
 
-\* Owner permission is only available at the group or personal namespace level (and for instance admins) and is inherited by its projects.  
-(*1*): Guest users are able to perform this action on public and internal projects, but not private projects.  
-(*2*): Guest users can only view the confidential issues they created themselves.  
-(*3*): If **Public pipelines** is enabled in **Project Settings > CI/CD**.  
+\* Owner permission is only available at the group or personal namespace level (and for instance admins) and is inherited by its projects.
+(*1*): Guest users are able to perform this action on public and internal projects, but not private projects.
+(*2*): Guest users can only view the confidential issues they created themselves.
+(*3*): If **Public pipelines** is enabled in **Project Settings > CI/CD**.
 (*4*): Not allowed for Guest, Reporter, Developer, Maintainer, or Owner. See [Protected Branches](./project/protected_branches.md).
+(*5*): If the [branch is protected](./project/protected_branches.md#using-the-allowed-to-merge-and-allowed-to-push-settings), this depends on the access Developers and Maintainers are given.
 
 ## Project features permissions
 
@@ -165,10 +166,10 @@ Maintainers and Developers from pushing to a protected branch. Read through the 
 [Allowed to Merge and Allowed to Push settings](project/protected_branches.md#using-the-allowed-to-merge-and-allowed-to-push-settings)
 to learn more.
 
-### Cycle Analytics permissions
+### Value Stream Analytics permissions
 
-Find the current permissions on the Cycle Analytics dashboard on
-the [documentation on Cycle Analytics permissions](analytics/cycle_analytics.md#permissions).
+Find the current permissions on the Value Stream Analytics dashboard, as described in
+[related documentation](analytics/value_stream_analytics.md#permissions).
 
 ### Issue Board permissions
 
@@ -328,7 +329,7 @@ free guest user.
 
 ## Auditor users **(PREMIUM ONLY)**
 
->[Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/998) in [GitLab Premium](https://about.gitlab.com/pricing/) 8.17.
+>[Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/998) in [GitLab Premium](https://about.gitlab.com/pricing/) 8.17.
 
 Auditor users are given read-only access to all projects, groups, and other
 resources on the GitLab instance.

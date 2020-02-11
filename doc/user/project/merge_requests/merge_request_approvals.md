@@ -4,7 +4,7 @@ type: reference, concepts
 
 # Merge request approvals **(STARTER)**
 
-> Introduced in [GitLab Enterprise Edition 7.12](https://about.gitlab.com/blog/2015/06/22/gitlab-7-12-released/#merge-request-approvers-ee-only).
+> Introduced in [GitLab Enterprise Edition 7.12](https://about.gitlab.com/releases/2015/06/22/gitlab-7-12-released/#merge-request-approvers-ee-only).
 
 Merge request approvals enable enforced code review by requiring specified people
 to approve a merge request before it can be merged.
@@ -64,7 +64,7 @@ were not explicitly listed in the approval rules.
 
 #### Code Owners as eligible approvers
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/merge_requests/7933) in [GitLab Starter](https://about.gitlab.com/pricing/) 11.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/7933) in [GitLab Starter](https://about.gitlab.com/pricing/) 11.5.
 
 If you add [Code Owners](../code_owners.md) to your repository, the owners to the
 corresponding files will become eligible approvers, together with members with Developer
@@ -74,9 +74,9 @@ To enable this merge request approval rule:
 
 1. Navigate to your project's **Settings > General** and expand
    **Merge request approvals**.
-1. Locate **All members with Developer role or higher and code owners (if any)** and click **Edit** to choose the number of approvals required.
+1. Locate **Any eligible user** and choose the number of approvals required.
 
-![MR approvals by Code Owners](img/mr_approvals_by_code_owners_v12_4.png)
+![MR approvals by Code Owners](img/mr_approvals_by_code_owners_v12_7.png)
 
 Once set, merge requests can only be merged once approved by the
 number of approvals you've set. GitLab will accept approvals from
@@ -145,7 +145,7 @@ a rule is already defined.
 When an [eligible approver](#eligible-approvers) approves a merge request, it will
 reduce the number of approvals left for all rules that the approver belongs to.
 
-![Approvals premium merge request widget](img/approvals_premium_mr_widget.png)
+![Approvals premium merge request widget](img/approvals_premium_mr_widget_v12_7.png)
 
 ## Adding or removing an approval
 

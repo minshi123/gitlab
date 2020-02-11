@@ -49,7 +49,6 @@ module EE
       has_one :service_desk_setting, class_name: 'ServiceDeskSetting'
       has_one :tracing_setting, class_name: 'ProjectTracingSetting'
       has_one :alerting_setting, inverse_of: :project, class_name: 'Alerting::ProjectAlertingSetting'
-      has_one :incident_management_setting, inverse_of: :project, class_name: 'IncidentManagement::ProjectIncidentManagementSetting'
       has_one :feature_usage, class_name: 'ProjectFeatureUsage'
 
       has_many :reviews, inverse_of: :project
@@ -83,7 +82,6 @@ module EE
 
       has_many :webide_pipelines, -> { webide_source }, class_name: 'Ci::Pipeline', inverse_of: :project
 
-      has_many :prometheus_alerts, inverse_of: :project
       has_many :prometheus_alert_events, inverse_of: :project
       has_many :self_managed_prometheus_alert_events, inverse_of: :project
 
@@ -182,7 +180,6 @@ module EE
 
       accepts_nested_attributes_for :tracing_setting, update_only: true, allow_destroy: true
       accepts_nested_attributes_for :alerting_setting, update_only: true
-      accepts_nested_attributes_for :incident_management_setting, update_only: true
 
       alias_attribute :fallback_approvals_required, :approvals_before_merge
     end
@@ -195,6 +192,12 @@ module EE
       def with_slack_application_disabled
         joins('LEFT JOIN services ON services.project_id = projects.id AND services.type = \'GitlabSlackApplicationService\' AND services.active IS true')
           .where('services.id IS NULL')
+      end
+
+      def find_by_service_desk_project_key(key)
+        # project_key is not indexed for now
+        # see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/24063#note_282435524 for details
+        joins(:service_desk_setting).find_by('service_desk_settings.project_key' => key)
       end
     end
 
@@ -353,7 +356,7 @@ module EE
     def has_group_hooks?(hooks_scope = :push_hooks)
       return unless group && feature_available?(:group_webhooks)
 
-      group.hooks.hooks_for(hooks_scope).any?
+      group_hooks.hooks_for(hooks_scope).any?
     end
 
     def execute_hooks(data, hooks_scope = :push_hooks)
@@ -361,7 +364,7 @@ module EE
 
       if group && feature_available?(:group_webhooks)
         run_after_commit_or_now do
-          group.hooks.hooks_for(hooks_scope).each do |hook|
+          group_hooks.hooks_for(hooks_scope).each do |hook|
             hook.async_execute(data, hooks_scope.to_s)
           end
         end
@@ -731,6 +734,12 @@ module EE
     end
 
     private
+
+    def group_hooks
+      return group.hooks unless ::Feature.enabled?(:sub_group_webhooks, self)
+
+      GroupHook.where(group_id: group.self_and_ancestors)
+    end
 
     def set_override_pull_mirror_available
       self.pull_mirror_available_overridden = read_attribute(:mirror)
