@@ -1,0 +1,5 @@
+---
+title: 'Fix: [Geo]Replicating objects in object storage schedules removal'
+merge_request: 24901
+author:
+type: fixed
