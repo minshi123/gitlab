@@ -26,7 +26,7 @@ export default class UsagePingPayload {
   requestPayload() {
     if (this.isInserted) return this.showPayload();
 
-    this.spinner.classList.add('d-inline');
+    this.spinner.classList.add('d-inline-flex');
 
     return axios
       .get(this.container.dataset.endpoint, {
