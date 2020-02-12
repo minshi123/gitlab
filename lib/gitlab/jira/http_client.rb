@@ -12,7 +12,13 @@ module Gitlab
       def request(*args)
         result = make_request(*args)
 
-        raise JIRA::HTTPError.new(result.response) unless result.response.is_a?(Net::HTTPSuccess)
+        unless result.response.is_a?(Net::HTTPSuccess)
+          Gitlab::AppLogger.error(
+            message: 'Jira::HTTPError',
+            response: result
+          )
+          raise JIRA::HTTPError.new(result.response)
+        end
 
         result
       end
