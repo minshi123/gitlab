@@ -195,11 +195,11 @@ The Windows Shared Runners are currently in
 [beta](https://about.gitlab.com/handbook/product/#beta) and should not be used
 for production workloads.
 
-During the beta period for groups and private projects the use of
-Windows Shared Runners will count towards the [shared runner pipeline
-quota](https://docs.gitlab.com/ee/user/admin_area/settings/continuous_integration.html#shared-runners-pipeline-minutes-quota-starter-only)
-as if they are Linux Runners, we do have plans to change this in
-[#30835](https://gitlab.com/gitlab-org/gitlab/issues/30834).
+During the beta period, the
+[shared runner pipeline quota](https://docs.gitlab.com/ee/user/admin_area/settings/continuous_integration.html#shared-runners-pipeline-minutes-quota-starter-only)
+will apply for groups and projects in the same way as Linux Runners.
+This may change when the beta period ends, as discussed in this
+[related issue](https://gitlab.com/gitlab-org/gitlab/issues/30834).
 
 Windows Shared Runners on GitLab.com automatically autoscale by
 launching virtual machines on the Google Cloud Platform. This solution uses
