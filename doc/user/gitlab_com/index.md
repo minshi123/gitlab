@@ -315,8 +315,8 @@ test:
 - All the limitations mentioned in our [beta
   definition](https://about.gitlab.com/handbook/product/#beta).
 - The average provisioning time for a new Windows VM is 5 minutes.
-  This means that for the beta you will notice slower build start times
-  on the Windows Shared Runner fleet compared to Linux. In a future
+  This means that you will notice slower build start times
+  on the Windows Shared Runner fleet during the beta when compared to Linux. In a future
   release we will add the ability to the autoscaler which will enable
   the pre-warming of virtual machines. This will significantly reduce
   the time it takes to provision a VM on the Windows fleet. You can
