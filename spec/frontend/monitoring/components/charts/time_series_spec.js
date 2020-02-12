@@ -357,7 +357,7 @@ describe('Time series component', () => {
           let format;
 
           beforeEach(() => {
-            format = timeSeriesChart.vm.chartOptions.yAxis.axisLabel.formatter;
+            format = timeSeriesChart.vm.chartOptions.yAxis[0].axisLabel.formatter;
           });
 
           it('rounds to 3 decimal places', () => {
@@ -366,15 +366,15 @@ describe('Time series component', () => {
         });
       });
 
-      describe('scatterSeries', () => {
+      describe('deploymentSeries', () => {
         it('utilizes deployment data', () => {
-          expect(timeSeriesChart.vm.scatterSeries.data).toEqual([
-            ['2019-07-16T10:14:25.589Z', 0],
-            ['2019-07-16T11:14:25.589Z', 0],
-            ['2019-07-16T12:14:25.589Z', 0],
+          expect(timeSeriesChart.vm.deploymentSeries.data).toEqual([
+            ['2019-07-16T10:14:25.589Z', expect.any(Number)],
+            ['2019-07-16T11:14:25.589Z', expect.any(Number)],
+            ['2019-07-16T12:14:25.589Z', expect.any(Number)],
           ]);
 
-          expect(timeSeriesChart.vm.scatterSeries.symbolSize).toBe(14);
+          expect(timeSeriesChart.vm.deploymentSeries.symbolSize).toBe(14);
         });
       });
 
