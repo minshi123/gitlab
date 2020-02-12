@@ -90,27 +90,42 @@ describe Ci::Pipeline do
     end
 
     context 'with license compliance artifact' do
-      before do
-        stub_licensed_features(license_scanning: true)
-      end
-
-      [:license_management, :license_scanning].each do |artifact_type|
-        let!(:build) { create(:ee_ci_build, artifact_type, :success, pipeline: pipeline) }
-
-        context 'when looking for license_scanning' do
-          let(:file_type) { :license_scanning }
-
-          it 'returns artifact' do
-            is_expected.to eq(build_artifact)
-          end
+      context 'when license_scanning feature available' do
+        before do
+          stub_licensed_features(license_scanning: true)
         end
 
-        context 'when looking for license_management' do
-          let(:file_type) { :license_management }
+        [:license_management, :license_scanning].each do |artifact_type|
+          let!(:build) { create(:ee_ci_build, artifact_type, :success, pipeline: pipeline) }
 
-          it 'returns artifact' do
-            is_expected.to eq(build_artifact)
+          context 'when looking for license_scanning' do
+            let(:file_type) { :license_scanning }
+
+            it 'returns artifact' do
+              is_expected.to eq(build_artifact)
+            end
           end
+
+          context 'when looking for license_management' do
+            let(:file_type) { :license_management }
+
+            it 'returns artifact' do
+              is_expected.to eq(build_artifact)
+            end
+          end
+        end
+      end
+
+      context 'when license_management feature available' do
+        let!(:build) { create(:ee_ci_build, :license_scanning, :success, pipeline: pipeline) }
+        let(:file_type) { :license_scanning }
+
+        before do
+          stub_licensed_features(license_management: true)
+        end
+
+        it 'returns artifact' do
+          is_expected.to eq(build_artifact)
         end
       end
     end
