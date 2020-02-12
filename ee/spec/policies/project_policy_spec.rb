@@ -20,7 +20,7 @@ describe ProjectPolicy do
     project.add_developer(developer)
     project.add_reporter(reporter)
     project.add_guest(guest)
-    stub_licensed_features(license_management: true)
+    stub_licensed_features(license_scanning: true)
   end
 
   context 'basic permissions' do
@@ -67,7 +67,7 @@ describe ProjectPolicy do
       let(:current_user) { create(:user, :auditor) }
 
       before do
-        stub_licensed_features(security_dashboard: true, license_management: true, threat_monitoring: true)
+        stub_licensed_features(security_dashboard: true, license_scanning: true, threat_monitoring: true)
       end
 
       context 'who is not a team member' do
