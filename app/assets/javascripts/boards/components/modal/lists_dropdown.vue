@@ -3,6 +3,7 @@ import { GlLink } from '@gitlab/ui';
 import Icon from '~/vue_shared/components/icon.vue';
 import ModalStore from '../../stores/modal_store';
 import boardsStore from '../../stores/boards_store';
+import { ListType } from '../../constants';
 
 export default {
   components: {
@@ -19,6 +20,13 @@ export default {
     selected() {
       return this.modal.selectedList || this.state.lists[1];
     },
+    lists() {
+      return this.state.lists.filter(list => [
+        ListType.assignee,
+        ListType.milestone,
+        ListType.label,
+      ].includes(list.type));
+    },
   },
   destroyed() {
     this.modal.selectedList = null;
@@ -28,19 +36,19 @@ export default {
 <template>
   <div class="dropdown inline">
     <button class="dropdown-menu-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-      <span :style="{ backgroundColor: selected.label.color }" class="dropdown-label-box"> </span>
+      <span v-if="selected.label" :style="{ backgroundColor: selected.label.color }" class="dropdown-label-box"> </span>
       {{ selected.title }} <icon name="chevron-down" />
     </button>
     <div class="dropdown-menu dropdown-menu-selectable dropdown-menu-drop-up">
       <ul>
-        <li v-for="(list, i) in state.lists" v-if="list.type == 'label'" :key="i">
+        <li v-for="(list, i) in lists" :key="i">
           <gl-link
             :class="{ 'is-active': list.id == selected.id }"
             href="#"
             role="button"
             @click.prevent="modal.selectedList = list"
           >
-            <span :style="{ backgroundColor: list.label.color }" class="dropdown-label-box"> </span>
+            <span v-if="list.label" :style="{ backgroundColor: list.label.color }" class="dropdown-label-box"> </span>
             {{ list.title }}
           </gl-link>
         </li>
