@@ -12,6 +12,7 @@ export default {
   },
   computed: {
     ...mapState('projectSelector', [
+      'pageInfo',
       'projects',
       'selectedProjects',
       'projectSearchResults',
@@ -62,8 +63,10 @@ export default {
             :show-loading-indicator="isSearchingProjects"
             :show-minimum-search-query-message="messages.minimumQuery"
             :show-search-error-message="messages.searchError"
+            :total-results="pageInfo.totalResults"
             @searched="searched"
             @projectClicked="projectClicked"
+            @bottomReached="fetchNextPage"
           />
           <div class="mb-3">
             <gl-button :disabled="!canAddProjects" variant="success" @click="addProjects">

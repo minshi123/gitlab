@@ -1,4 +1,4 @@
-import projectSelectorModule from '../modules/project_selector';
+import projectSelectorModule from '~/vuex_shared/modules/project_selector';
 import * as projectSelectorMutationTypes from '../modules/project_selector/mutation_types';
 import { BASE_FILTERS } from '../modules/filters/constants';
 

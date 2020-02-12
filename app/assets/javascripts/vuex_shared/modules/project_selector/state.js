@@ -20,7 +20,7 @@ export default () => ({
   // pagination data - maybe rename?
   pageInfo: {
     totalPages: 0,
-    totalResults: 0,
+    totalResults: 200,
     nextPage: 0,
     currentPage: 0,
   },
