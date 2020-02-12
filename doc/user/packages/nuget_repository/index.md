@@ -149,6 +149,10 @@ For example:
 
 ## Uploading packages
 
+CAUTION: **Caveats:**
+- When uploading a package, the maximum allowed size is 50 Megabytes.
+- If you upload several times the same package with the same version, each consecutive upload is saved as a separated file. When installing a package, the most recent file is served by GitLab.
+
 NOTE: **Note:**
 When uploading packages to GitLab, those are not available right away as they are processed. Once their handling is done, they are displayed in the packages part of your project.
 
