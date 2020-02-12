@@ -285,6 +285,16 @@ module Gitlab
       g.factory_bot false
     end
 
+    FastGettext.add_text_domain 'gitlab',
+                                path: File.join(Rails.root, 'locale'),
+                                type: :po,
+                                ignore_fuzzy: true
+    FastGettext.default_text_domain = 'gitlab'
+    FastGettext.default_locale = :en
+
+    initializer :move_initializers, before: :load_config_initializers, after: :let_zeitwerk_take_over do
+    end
+
     config.after_initialize do
       Rails.application.reload_routes!
 
