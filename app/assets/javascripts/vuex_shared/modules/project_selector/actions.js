@@ -156,11 +156,16 @@ export const receiveRemoveProjectError = ({ commit }) => {
 
 export const fetchSearchResults = ({ state, dispatch }) => {
   const { searchQuery } = state;
-  dispatch('requestSearchResults');
 
-  if (!searchQuery || searchQuery.length < API_MINIMUM_QUERY_LENGTH) {
+  if (!searchQuery) {
+    return dispatch('resetSearchResults');
+  }
+
+  if (searchQuery.length < API_MINIMUM_QUERY_LENGTH) {
     return dispatch('setMinimumQueryMessage');
   }
+
+  dispatch('requestSearchResults');
 
   return Api.projects(searchQuery, {})
     .then(results => dispatch('receiveSearchResultsSuccess', results))
@@ -179,8 +184,14 @@ export const receiveSearchResultsError = ({ commit }) => {
   commit(types.RECEIVE_SEARCH_RESULTS_ERROR);
 };
 
-export const setMinimumQueryMessage = ({ commit }) => {
+export const setMinimumQueryMessage = ({ commit, dispatch }) => {
+  dispatch('resetSearchResults');
+
   commit(types.SET_MINIMUM_QUERY_MESSAGE);
+};
+
+export const resetSearchResults = ({ commit }) => {
+  commit(types.RESET_SEARCH_RESULTS);
 };
 
 // prevent babel-plugin-rewire from generating an invalid default during karma tests
