@@ -1,5 +1,18 @@
 import * as types from './mutation_types';
 
+import { parseIntPagination, normalizeHeaders } from '~/lib/utils/common_utils';
+
+export const updatePageInfo = (state, headers) => {
+  const { page, nextPage, total, totalPages } = parseIntPagination(normalizeHeaders(headers));
+
+  state.pageInfo = {
+    nextPage,
+    totalPages,
+    currentPage: page,
+    totalResults: total,
+  };
+};
+
 export default {
   [types.SET_PROJECT_ENDPOINTS](state, endpoints) {
     state.projectEndpoints.add = endpoints.add;
@@ -53,12 +66,14 @@ export default {
     state.messages.minimumQuery = false;
     state.searchCount += 1;
   },
-  [types.RECEIVE_SEARCH_RESULTS_SUCCESS](state, results) {
-    state.projectSearchResults = results.data;
+  [types.RECEIVE_SEARCH_RESULTS_SUCCESS](state, { data, headers }) {
+    state.projectSearchResults = data;
 
     state.messages.noResults = state.projectSearchResults.length === 0;
     state.messages.searchError = false;
     state.messages.minimumQuery = false;
+
+    updatePageInfo(state, headers);
 
     state.searchCount = Math.max(0, state.searchCount - 1);
   },
@@ -73,11 +88,17 @@ export default {
   },
   [types.SET_MINIMUM_QUERY_MESSAGE](state) {
     state.projectSearchResults = [];
+    state.pageInfo.totalResults = 0;
 
     state.messages.noResults = false;
     state.messages.searchError = false;
     state.messages.minimumQuery = true;
 
     state.searchCount = Math.max(0, state.searchCount - 1);
+  },
+  [types.RECEIVE_NEXT_PAGE_SUCCESS](state, { data, headers }) {
+    state.projectSearchResults = state.projectSearchResults.concat(data);
+
+    updatePageInfo(state, headers);
   },
 };

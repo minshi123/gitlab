@@ -20,7 +20,7 @@ export default () => ({
   // @TODO - pagination data - maybe rename?
   pageInfo: {
     totalPages: 0,
-    totalResults: 200,
+    totalResults: 0,
     nextPage: 0,
     currentPage: 0,
   },
