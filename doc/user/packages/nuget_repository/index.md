@@ -149,18 +149,21 @@ For example:
 
 ## Uploading packages
 
-CAUTION: **Caveats:**
-- When uploading a package, the maximum allowed size is 50 Megabytes.
-- If you upload several times the same package with the same version, each consecutive upload is saved as a separated file. When installing a package, the most recent file is served by GitLab.
+CAUTION: **Caveat:**
+When uploading a package, the maximum allowed size is 50 Megabytes.
+
+CAUTION: **Caveat:**
+If you upload several times the same package with the same version, each consecutive upload is saved as a separated file. When installing a package, the most recent file is served by GitLab.
 
 NOTE: **Note:**
-When uploading packages to GitLab, those are not available right away as they are processed. Once their handling is done, they are displayed in the packages part of your project.
+When uploading packages to GitLab, those are not available right away as they must be processed first. Once they are processed, they are displayed in the packages UI of your project.
 
 ### Using nuget CLI
 
-This documentation that your project has been properly built and a nuget package has been created. For more information, please see https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package.
+This documentation that your project has been properly built and a nuget package has been created. For more information, please see [the official documentation](https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package).
 
 You will need the following:
+
 - Your package file ending in `.nupkg`
 - The source name used during the [setup](#adding-the-gitlab-nuget-repository-as-a-source-to-nuget)
 
@@ -183,9 +186,10 @@ nuget push MyPackage.1.0.0.nupkg -Source gitlab
 
 ### Using dotnet CLI
 
-This documentation that your project has been properly built and a nuget package has been created. For more information, please see https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package-dotnet-cli.
+This documentation that your project has been properly built and a nuget package has been created. For more information, please see [the official documentation](https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package-dotnet-cli.)
 
 You will need the following:
+
 - Your package file ending in `.nupkg`
 - The source name used during the [setup](#adding-the-gitlab-nuget-repository-as-a-source-to-nuget)
 
@@ -214,6 +218,7 @@ CAUTION: **Warning:**
 When installing a package, the official source `nuget.org` is checked first by `nuget`. If you happen to have on GitLab a package with a name that already exists on `nuget.org`, you will be installing the wrong package. Please specify the source using the `-Source` parameter.
 
 You will need the following:
+
 - The package id.
 - The output directoy where to download the package.
 - (optionnal) The package version.
@@ -245,6 +250,7 @@ Replace:
 - `<source_name>` with your source name.
 
 Examples:
+
 ```shell
 nuget install MyPackage -OutputDirectory packages
 ```
@@ -263,6 +269,7 @@ CAUTION: **Warning:**
 When installing a package, the order which `dotnet` will check to sources is defined by the `nuget.config` file.
 
 You will need the following:
+
 - The package id.
 - The package version.
 
@@ -273,6 +280,7 @@ dotnet add package <package_id>
 ```
 
 You can specify a version using the `-v` parameter:
+
 ```shell
 dotnet add package <package_id> -v <package_version>
 ```
@@ -283,6 +291,7 @@ Replace:
 - `<package_version>` with your package version.
 
 Examples:
+
 ```shell
 dotnet add package MyPackage
 ```
