@@ -61,6 +61,8 @@ tier](https://about.gitlab.com/pricing/), as shown in the following table:
 | Silver   | 100                            |
 | Gold     | 100                            |
 
+Update group limits documentation after https://gitlab.com/gitlab-org/gitlab/-/merge_requests/24843
+
 ## Use-cases
 
 - You can set up a webhook in GitLab to send a notification to
