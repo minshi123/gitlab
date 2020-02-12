@@ -17,7 +17,7 @@ export default () => ({
     minimumQuery: false,
   },
   searchCount: 0,
-  // pagination data - maybe rename?
+  // @TODO - pagination data - maybe rename?
   pageInfo: {
     totalPages: 0,
     totalResults: 200,
