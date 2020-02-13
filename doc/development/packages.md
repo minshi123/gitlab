@@ -144,11 +144,19 @@ During this phase, the idea is to collect as much information about the API used
 
 The analysis usually takes a full milestone to complete. Having said that, it's not impossible to start the implementation in the same milestone.
 
-In particular, the upload request can have some requirements on the GitLab Workhorse project (see [below](#file-upload)). This project having a different release cycle than the rails backend. It's strongly recommended to open an issue there as soon as the upload request analysis is done. The idea here is that when the upload request is implemented on the rails backend, GitLab Worhorse is already ready to handle such request.
+In particular, the upload request can have some requirements on the GitLab Workhorse project (see [below](#file-upload)). This project having a different release cycle than the rails backend. It's **strongly** recommended to open an issue there as soon as the upload request analysis is done. The idea here is that when the upload request is implemented on the rails backend, GitLab Worhorse is already ready to handle such request.
 
 ### Implementation
 
 The implementation of the different Merge Requests will vary from a package system integration to another. We will discuss some aspects of the implementation phase that contributors should take into account.
+
+#### Authentication
+
+The MVC must support [Personal Access Tokens](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) right from the start. We currently support two ways for these tokens: OAuth and Basic Access.
+
+For OAuth authentication, its support is already done for the APIs. You can see an example in the [npm API](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/lib/api/npm_packages.rb#L14).
+
+For [Basic Access autentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication), its support is done by override a specific function from the API helpers. You can see an example in the [Conan API](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/lib/api/conan_packages.rb#L425). For this authentication mecanism, keep in mind that some clients can send first an unauthenticated request, wait for the 401 Unauthorized response with the [`WWW-Authenticate`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate) field to then re execute the same request but in an authenticated way. This particular case is more involved as GitLab needs to handle the 401 Unauthorized response. the [Nuget API](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/lib/api/nuget_packages.rb#L44-57) supports this case.
 
 #### Authorization
 
