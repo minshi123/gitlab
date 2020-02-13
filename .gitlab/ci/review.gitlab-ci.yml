@@ -126,7 +126,6 @@ review-build-cng:
     - .default-tags
     - .default-retry
   image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
-  dependencies: []
   variables:
     HOST_SUFFIX: "${CI_ENVIRONMENT_SLUG}"
     DOMAIN: "-${CI_ENVIRONMENT_SLUG}.${REVIEW_APPS_DOMAIN}"
@@ -142,6 +141,9 @@ review-deploy:
     - .review-workflow-base
     - .review:rules:mr-and-schedule
   stage: review
+  needs:
+    - job: review-build-cng
+      artifacts: false
   allow_failure: true
   before_script:
     - '[[ ! -d "ee/" ]] || export GITLAB_EDITION="ee"'
@@ -276,7 +278,9 @@ parallel-spec-reports:
     - .review:rules:mr-only-manual
   image: ruby:2.6-alpine
   stage: post-qa
-  dependencies: ["review-qa-all"]
+  needs:
+    - job: review-qa-all
+      artifacts: true
   allow_failure: true
   variables:
     NEW_PARALLEL_SPECS_REPORT: qa/report-new.html
