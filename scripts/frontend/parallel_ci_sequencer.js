@@ -20,7 +20,7 @@ class ParallelCISequencer extends Sequencer {
 
   distributeAcrossCINodes(tests) {
     return tests.filter((test, index) => {
-      return index % this.ciNodeTotal === this.ciNodeIndex;
+      return index % this.ciNodeTotal === this.ciNodeIndex - 1;
     });
   }
 }
