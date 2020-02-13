@@ -59,7 +59,7 @@ module EE
         end
       end
 
-      expose :license_scanning, if: -> (mr, _) { head_pipeline_downloadable_path_for_report_type(:license_management) } do
+      expose :license_scanning, if: -> (mr, _) { head_pipeline_downloadable_path_for_report_type(:license_scanning) } do
         expose :managed_licenses_path do |merge_request|
           expose_path(api_v4_projects_managed_licenses_path(id: merge_request.target_project.id))
         end
@@ -68,11 +68,11 @@ module EE
           can?(current_user, :admin_software_license_policy, merge_request)
         end
 
-        expose :license_management_settings_path, if: -> (mr, _) { can?(current_user, :admin_software_license_policy, mr.target_project) } do |merge_request|
+        expose :license_compliance_settings_path, if: -> (mr, _) { can?(current_user, :admin_software_license_policy, mr.target_project) } do |merge_request|
           license_management_settings_path(merge_request.target_project)
         end
 
-        expose :license_management_full_report_path, if: -> (mr, _) { mr.head_pipeline } do |merge_request|
+        expose :license_scanning_full_report_path, if: -> (mr, _) { mr.head_pipeline } do |merge_request|
           licenses_project_pipeline_path(merge_request.target_project, merge_request.head_pipeline)
         end
       end
