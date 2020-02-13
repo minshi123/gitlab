@@ -182,6 +182,82 @@ describe MergeRequestWidgetEntity do
     end
   end
 
+  describe '#license_scanning', :request_store do
+    before do
+      allow(merge_request).to receive_messages(
+                                head_pipeline: pipeline, target_project: project)
+      stub_licensed_features(license_management: true)
+    end
+
+    it 'is not included, if missing artifacts' do
+      expect(subject.as_json).not_to include(:license_scanning)
+    end
+
+    context 'when report artifact is defined' do
+      before do
+        create(:ee_ci_build, :license_scanning, pipeline: pipeline)
+      end
+
+      it 'is included' do
+        expect(subject.as_json).to include(:license_scanning)
+        expect(subject.as_json[:license_scanning]).to include(:managed_licenses_path)
+        expect(subject.as_json[:license_scanning]).to include(:can_manage_licenses)
+        expect(subject.as_json[:license_scanning]).to include(:license_scanning_full_report_path)
+      end
+
+      context 'when feature is not licensed' do
+        before do
+          stub_licensed_features(license_management: false)
+        end
+
+        it 'is not included' do
+          expect(subject.as_json).not_to include(:license_scanning)
+        end
+      end
+
+      it '#license_compliance_settings_path should not be included for developers' do
+        expect(subject.as_json[:license_scanning]).not_to include(:license_compliance_settings_path)
+      end
+
+      context 'when user is maintainer' do
+        before do
+          project.add_maintainer(user)
+        end
+
+        it '#license_compliance_settings_path should be included for maintainers' do
+          expect(subject.as_json[:license_scanning]).to include(:license_compliance_settings_path)
+        end
+      end
+    end
+
+    describe '#managed_licenses_path' do
+      let(:managed_licenses_path) { expose_path(api_v4_projects_managed_licenses_path(id: project.id)) }
+
+      before do
+        create(:ee_ci_build, :license_scanning, pipeline: pipeline)
+      end
+
+      it 'is a path for target project' do
+        expect(subject.as_json[:license_scanning][:managed_licenses_path]).to eq(managed_licenses_path)
+      end
+
+      context 'with fork' do
+        let(:source_project) { fork_project(project, user, repository: true) }
+        let(:fork_merge_request) { create(:merge_request, source_project: source_project, target_project: project) }
+        let(:subject_json) { described_class.new(fork_merge_request, current_user: user, request: request).as_json }
+
+        before do
+          allow(fork_merge_request).to receive_messages(head_pipeline: pipeline)
+          stub_licensed_features(license_management: true)
+        end
+
+        it 'is a path for target project' do
+          expect(subject_json[:license_scanning][:managed_licenses_path]).to eq(managed_licenses_path)
+        end
+      end
+    end
+  end
+
   it 'has vulnerability feedback paths' do
     expect(subject.as_json[:vulnerability_feedback_path]).to eq(
       "/#{merge_request.project.full_path}/-/vulnerability_feedback"
