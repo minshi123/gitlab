@@ -6,7 +6,7 @@ class ParallelCISequencer extends Sequencer {
     this.ciNodeIndex = parseInt(process.env.CI_NODE_INDEX || '0');
     this.ciNodeTotal = parseInt(process.env.CI_NODE_TOTAL || '1');
   }
-  
+
   sort(tests) {
     const testsForThisRunner = this.distributeAcrossCINodes(tests);
 
@@ -14,13 +14,13 @@ class ParallelCISequencer extends Sequencer {
     console.log(`CI_NODE_TOTAL: ${this.ciNodeTotal}`);
     console.log(`Total number of tests: ${tests.length}`);
     console.log(`Total number of tests for this runner: ${testsForThisRunner.length}`);
-    
+
     return super.sort(testsForThisRunner);
   }
-  
+
   distributeAcrossCINodes(tests) {
     return tests.filter((test, index) => {
-      return (index % this.ciNodeTotal) === this.ciNodeIndex;
+      return index % this.ciNodeTotal === this.ciNodeIndex;
     });
   }
 }
