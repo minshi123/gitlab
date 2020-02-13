@@ -340,6 +340,12 @@ rspec quarantine pg9:
     - .rails:rules:master-refs-code-backstage
     - .use-pg10
 
+rspec migration pg10:
+  extends:
+    - .rspec-base-pg10
+    - .rspec-base-migration
+  parallel: 2
+
 rspec unit pg10:
   extends: .rspec-base-pg10
   parallel: 20
@@ -353,6 +359,46 @@ rspec system pg10:
   parallel: 24
 # master-only jobs #
 ####################
+
+############################
+# nightly master-only jobs #
+# Make sure to update all the similar conditions in other CI config files if you modify these conditions
+.if-nightly-master-refs: &if-nightly-master-refs
+  # FIXME: Keep only the following line.
+  # if: '$CI_COMMIT_REF_NAME == "master" && $CI_PIPELINE_SOURCE == "schedule" && $NIGHTLY'
+  if: '$CI_COMMIT_REF_NAME == "test-against-pg11"'
+
+.rails:rules:nightly-master-refs-code-backstage:
+  rules:
+    - <<: *if-nightly-master-refs
+      changes: *code-backstage-patterns
+      when: on_success
+
+.rspec-base-pg11:
+  extends:
+    - .rspec-base
+    - .rails:rules:nightly-master-refs-code-backstage
+    - .use-pg11
+
+rspec migration pg11:
+  extends:
+    - .rspec-base-pg11
+    - .rspec-base-migration
+  parallel: 2
+
+rspec unit pg11:
+  extends: .rspec-base-pg11
+  parallel: 20
+
+rspec integration pg11:
+  extends: .rspec-base-pg11
+  parallel: 8
+
+rspec system pg11:
+  extends: .rspec-base-pg11
+  parallel: 24
+# nightly master-only jobs #
+############################
 
 #########################
 # ee + master-only jobs #
