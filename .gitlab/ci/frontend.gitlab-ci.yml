@@ -263,7 +263,7 @@ karma-foss:
     - date
     - bundle exec rake frontend:fixtures
     - date
-    - yarn jest --ci --coverage
+    - yarn jest --ci --coverage --testSequencer ./scripts/frontend/parallel_ci_sequencer.js
   cache:
     key: jest
     paths:
