@@ -327,7 +327,8 @@ test:
 - The Windows Shared Runner fleet may be unavailable occasionally
   for maintenance or updates.
 - The Windows Shared Runner virtual machine instances do not use the
-  GitLab Docker executor. This means that you will not be able to specify `image` or `services` in
+  GitLab Docker executor. This means that you will not be able to specify
+  [`image`](../../ci/yaml/readme.md#image) or [`services`](../../ci/yaml/readme.md#services) in
   your pipeline configuration.
 - For the beta release, we have included a set of software packages in
   the base VM image. If your CI job requires additional software that's
