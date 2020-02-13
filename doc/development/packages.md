@@ -217,7 +217,7 @@ Here are some examples
 1. Limits on file sizes
 1. Tracking for metrics
 1. Read more metadata fields from the package to make it available to the front end. For example, it's usual to be able to tag a package. Those tags can be read and saved by backend and then displayed on the packages UI.
-1. Endpoints for the upper levels of the [remote hierarchy](#remote-hierarchy). This step might need to create a [naming convention](naming-conventions)
+1. Endpoints for the upper levels of the [remote hierarchy](#remote-hierarchy). This step might need to create a [naming convention](#naming-conventions)
 
 ## Exceptions
 
