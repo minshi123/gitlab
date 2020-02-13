@@ -98,7 +98,7 @@ Packages can be configured to use object storage, therefore your code must suppo
 
 ## MVC Approach
 
-The way new package systems are integrated in GitLab is using an [MVC](). In this regard, the first iteration should support the bare minimal user actions:
+The way new package systems are integrated in GitLab is using an [MVC](https://about.gitlab.com/handbook/values/#minimum-viable-change-mvc). In this regard, the first iteration should support the bare minimal user actions:
 
 - authentication
 - uploading a package
@@ -108,9 +108,9 @@ The way new package systems are integrated in GitLab is using an [MVC](). In thi
 Required actions are all the additional requests that GitLab will need to handle so the corresponding package manager CLI can work properly. Usually it can be a search feature or an endpoint providing meta information about a package. Here are some examples of such required actions:
 
 - In NuGet, to support Visual Studio, the search request has been implemented during the first iteration of the MVC.
-- In NPM, there is a metadata endpoint that the MVC had to be implemented.
+- In NPM, there is a metadata endpoint used by `npm` to get the tarball url.
 
-For the first iteration of the MVC, it's recommended to stay at the project level of the [remote hierarchy](#remote-hierarchy).
+For the first iteration of the MVC, it's recommended to stay at the project level of the [remote hierarchy](#remote-hierarchy). Other levels can be tackled with [future Merge Requests](#future-work)
 
 There are basically 2 phases for the MVC:
 
@@ -127,13 +127,13 @@ process.
 
 ### Analysis
 
-During this phase, the idea is to collect as much information about the API used by the package system as possible.
+During this phase, the idea is to collect as much information about the API used by the package system as possible. Here some aspects that can be useful to include.
 
-- What authentication mecanisms are available (OAuth, Basic Authorization, other). For this part, keep in mind that GitLab users will want to use their [Personal Access Tokens](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Although not needed for the MVC first iteration, the [CI job tokens](https://docs.gitlab.com/ee/user/project/new_ci_build_permissions_model.html#job-token) have to be supported at some point in the future.
-- Which requests are needed to have a working MVC. Ideally, it's better to produce a list of all the requests needed for the MVC (including required actions). A further investigation could provide for each request an example with the request and the response bodies.
-- Carefully how the upload process works. This will probably be the most complex request to implement. A detailed analysis is desired here as uploads can be encoded in different ways (body or multipart) or can even be a totally different format (for example, it could be a JSON structure where the package file is a Base64 value of a particular field). These different encodings lead to slight different implementations on GitLab and GitLab Workhorse. For a more detailed informations, see [below](#file-upload).
-- Suggest a list of endpoints urls that will be implemented on GitLab.
-- Suggest a list of changes to incrementally build the MVC. This will give a good idea of how much work there is to be done. Here is a general one that would need to be adapted on a case by case basis.
+- *Authentication* What authentication mecanisms are available (OAuth, Basic Authorization, other). For this part, keep in mind that GitLab users will want to use their [Personal Access Tokens](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Although not needed for the MVC first iteration, the [CI job tokens](https://docs.gitlab.com/ee/user/project/new_ci_build_permissions_model.html#job-token) have to be supported at some point in the future.
+- *Requests* Which requests are needed to have a working MVC. Ideally, it's better to produce a list of all the requests needed for the MVC (including required actions). A further investigation could provide for each request an example with the request and the response bodies.
+- *Upload* Carefully how the upload process works. This will probably be the most complex request to implement. A detailed analysis is desired here as uploads can be encoded in different ways (body or multipart) or can even be a totally different format (for example, it could be a JSON structure where the package file is a Base64 value of a particular field). These different encodings lead to slight different implementations on GitLab and GitLab Workhorse. For a more detailed informations, see [below](#file-upload).
+- *Endpoints* Suggest a list of endpoints urls that will be implemented on GitLab.
+- *Split work* Suggest a list of changes to incrementally build the MVC. This will give a good idea of how much work there is to be done. Here is a general one that would need to be adapted on a case by case basis.
   1. Empty file structure (API file, base service for this package)
   1. Authentication system for 'logging in' to the package manager
   1. Identify metadata and create applicable tables
@@ -144,11 +144,11 @@ During this phase, the idea is to collect as much information about the API used
 
 The analysis usually takes a full milestone to complete. Having said that, it's not impossible to start the implementation in the same milestone.
 
-In particular, the upload request can have some requirements on the GitLab Workhorse project (see [below](#file-upload)). This project having a different release cycle than the rails backend, it's strongly recommended to open an issue there as soon as the upload request analysis is done.
+In particular, the upload request can have some requirements on the GitLab Workhorse project (see [below](#file-upload)). This project having a different release cycle than the rails backend. It's strongly recommended to open an issue there as soon as the upload request analysis is done. The idea here is that when the upload request is implemented on the rails backend, GitLab Worhorse is already ready to handle such request.
 
 ### Implementation
 
-The implementation of the different Merge Requests will vary from a package system integration to an other. We will discuss some aspects of the implementation phase that contributors should take into account.
+The implementation of the different Merge Requests will vary from a package system integration to another. We will discuss some aspects of the implementation phase that contributors should take into account.
 
 #### Authorization
 
@@ -200,7 +200,7 @@ in your local development environment.
 
 ### Future Work
 
-While working on the MVC first iteration, contributors will probably find features that are not mandatory for the MVC but can provide a better user experience. It's generally a good idea to keep an eye on those and open issues.
+While working on the MVC, contributors will probably find features that are not mandatory for the MVC but can provide a better user experience. It's generally a good idea to keep an eye on those and open issues.
 
 Here are some examples
 
