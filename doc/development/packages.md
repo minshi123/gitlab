@@ -23,7 +23,7 @@ The existing database model requires the following:
 - A package can have one or more package files.
 - The package model is based on storing information about the package and its version.
 
-## API endpoints
+### API endpoints
 
 Package systems work with GitLab via API. For example `ee/lib/api/npm_packages.rb`
 implements API endpoints to work with NPM clients. So, the first thing to do is to
@@ -45,7 +45,7 @@ PUT https://gitlab.com/api/v4/projects/<your_project_id>/packages/npm/
 
 Group-level and instance-level endpoints are good to have but are optional.
 
-### Remote hierarchy
+#### Remote hierarchy
 
 Packages are scoped within various levels of access, which is generally configured by setting your remote. A
 remote endpoint may be set at the project level, meaning when installing packages, only packages belonging to that
@@ -68,7 +68,7 @@ NOTE: **Note:** NPM is currently a hybrid of the instance level and group level.
 It is using the top-level group or namespace as the defining portion of the name
 (for example, `@my-group-name/my-package-name`).
 
-## Naming conventions
+### Naming conventions
 
 To avoid name conflict for instance-level endpoints you will need to define a package naming convention
 that gives a way to identify the project that the package belongs to. This generally involves using the project
@@ -82,7 +82,100 @@ a user from reusing an existing name within a given scope.
 Otherwise, naming should follow the package manager's naming conventions and include a validation in the `package.md`
 model for that package type.
 
-## File uploads
+### Services and finders
+
+Logic for performing tasks such as creating package or package file records or finding packages should not live
+within the API file, but should live in services and finders. Existing services and finders should be used or
+extended when possible to keep the common package logic grouped as much as possible.
+
+### Configuration
+
+GitLab has a `packages` section in its configuration file (`gitlab.rb`).
+It applies to all package systems supported by GitLab. Usually you don't need
+to add anything there.
+
+Packages can be configured to use object storage, therefore your code must support it.
+
+## MVC Approach
+
+The way new package systems are integrated in GitLab is using an [MVC](). In this regard, the first iteration should support the bare minimal user actions:
+
+- authentication
+- uploading a package
+- pulling a package
+- required actions
+
+Required actions are all the additional requests that GitLab will need to handle so the corresponding package manager CLI can work properly. Usually it can be a search feature or an endpoint providing meta information about a package. Here are some examples of such required actions:
+
+- In NuGet, to support Visual Studio, the search request has been implemented during the first iteration of the MVC.
+- In NPM, there is a metadata endpoint that the MVC had to be implemented.
+
+For the first iteration of the MVC, it's recommended to stay at the project level of the [remote hierarchy](#remote-hierarchy).
+
+There are basically 2 phases for the MVC:
+
+- Analysis
+- Implementation
+
+### Keep iterations small
+
+When implementing a new package manager, it is easy to end up creating one large merge request containing all of the
+necessary endpoints and services necessary to support basic usage. If this is the case, consider putting the
+API endpoints behind a [feature flag](feature_flags/development.md) and
+submitting each endpoint or behavior (download, upload, etc) in different merge requests to shorten the review
+process.
+
+### Analysis
+
+During this phase, the idea is to collect as much information about the API used by the package system as possible.
+
+- What authentication mecanisms are available (OAuth, Basic Authorization, other). For this part, keep in mind that GitLab users will want to use their [Personal Access Tokens](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Although not needed for the MVC first iteration, the [CI job tokens](https://docs.gitlab.com/ee/user/project/new_ci_build_permissions_model.html#job-token) have to be supported at some point in the future.
+- Which requests are needed to have a working MVC. Ideally, it's better to produce a list of all the requests needed for the MVC (including required actions). A further investigation could provide for each request an example with the request and the response bodies.
+- Carefully how the upload process works. This will probably be the most complex request to implement. A detailed analysis is desired here as uploads can be encoded in different ways (body or multipart) or can even be a totally different format (for example, it could be a JSON structure where the package file is a Base64 value of a particular field). These different encodings lead to slight different implementations on GitLab and GitLab Workhorse. For a more detailed informations, see [below](#file-upload).
+- Suggest a list of endpoints urls that will be implemented on GitLab.
+- Suggest a list of changes to incrementally build the MVC. This will give a good idea of how much work there is to be done. Here is a general one that would need to be adapted on a case by case basis.
+  1. Empty file structure (API file, base service for this package)
+  1. Authentication system for 'logging in' to the package manager
+  1. Identify metadata and create applicable tables
+  1. Workhorse route for [object storage direct upload](uploads.md#direct-upload)
+  1. Endpoints required for upload/publish
+  1. Endpoints required for install/download
+  1. Endpoints required for required actions
+
+The analysis usually takes a full milestone to complete. Having said that, it's not impossible to start the implementation in the same milestone.
+
+In particular, the upload request can have some requirements on the GitLab Workhorse project (see [below](#file-upload)). This project having a different release cycle than the rails backend, it's strongly recommended to open an issue there as soon as the upload request analysis is done.
+
+### Implementation
+
+The implementation of the different Merge Requests will vary from a package system integration to an other. We will discuss some aspects of the implementation phase that contributors should take into account.
+
+#### Authorization
+
+There are project and group level permissions for `read_package`, `create_package`, and `destroy_package`. Each
+endpoint should
+[authorize the requesting user](https://gitlab.com/gitlab-org/gitlab/blob/398fef1ca26ae2b2c3dc89750f6b20455a1e5507/ee/lib/api/conan_packages.rb#L84)
+against the project or group before continuing.
+
+#### Database and handling metadata
+
+The current database model allows you to store a name and a version for each package.
+Every time you upload a new package, you can either create a new record of `Package`
+or add files to existing record. `PackageFile` should be able to store all file-related
+information like the file `name`, `side`, `sha1`, etc.
+
+If there is specific data necessary to be stored for only one package system support,
+consider creating a separate metadata model. See `packages_maven_metadata` table
+and `Packages::MavenMetadatum` model as an example for package specific data, and `packages_conan_file_metadata` table
+and `Packages::ConanFileMetadatum` model as an example for package file specific data.
+
+If there is package specific behavior for a given package manager, add those methods to the metadata models and
+delegate from the package model.
+
+Note that the existing package UI only displays information within the `packages_packages` and `packages_package_files`
+tables. If the data stored in the metadata tables need to be displayed, a ~frontend change will be required.
+
+#### File uploads
 
 File uploads should be handled by GitLab Workhorse using object accelerated uploads. What this means is that
 the workhorse proxy that checks all incoming requests to GitLab will intercept the upload request,
@@ -105,76 +198,18 @@ create the package record. Workhorse provides a variety of file metadata such as
 For testing purposes, you may want to [enable object storage](https://gitlab.com/gitlab-org/gitlab-development-kit/blob/master/doc/howto/object_storage.md)
 in your local development environment.
 
-## Services and finders
+### Future Work
 
-Logic for performing tasks such as creating package or package file records or finding packages should not live
-within the API file, but should live in services and finders. Existing services and finders should be used or
-extended when possible to keep the common package logic grouped as much as possible.
+While working on the MVC first iteration, contributors will probably find features that are not mandatory for the MVC but can provide a better user experience. It's generally a good idea to keep an eye on those and open issues.
 
-## Configuration
-
-GitLab has a `packages` section in its configuration file (`gitlab.rb`).
-It applies to all package systems supported by GitLab. Usually you don't need
-to add anything there.
-
-Packages can be configured to use object storage, therefore your code must support it.
-
-## Database and handling metadata
-
-The current database model allows you to store a name and a version for each package.
-Every time you upload a new package, you can either create a new record of `Package`
-or add files to existing record. `PackageFile` should be able to store all file-related
-information like the file `name`, `side`, `sha1`, etc.
-
-If there is specific data necessary to be stored for only one package system support,
-consider creating a separate metadata model. See `packages_maven_metadata` table
-and `Packages::MavenMetadatum` model as an example for package specific data, and `packages_conan_file_metadata` table
-and `Packages::ConanFileMetadatum` model as an example for package file specific data.
-
-If there is package specific behavior for a given package manager, add those methods to the metadata models and
-delegate from the package model.
-
-Note that the existing package UI only displays information within the `packages_packages` and `packages_package_files`
-tables. If the data stored in the metadata tables need to be displayed, a ~frontend change will be required.
-
-## Authorization
-
-There are project and group level permissions for `read_package`, `create_package`, and `destroy_package`. Each
-endpoint should
-[authorize the requesting user](https://gitlab.com/gitlab-org/gitlab/blob/398fef1ca26ae2b2c3dc89750f6b20455a1e5507/ee/lib/api/conan_packages.rb#L84)
-against the project or group before continuing.
-
-## Keep iterations small
-
-When implementing a new package manager, it is easy to end up creating one large merge request containing all of the
-necessary endpoints and services necessary to support basic usage. If this is the case, consider putting the
-API endpoints behind a [feature flag](feature_flags/development.md) and
-submitting each endpoint or behavior (download, upload, etc) in different merge requests to shorten the review
-process.
-
-### Potential MRs for any given package system
-
-#### MVC MRs
-
-These changes represent all that is needed to deliver a minimally usable package management system.
-
-1. Empty file structure (API file, base service for this package)
-1. Authentication system for 'logging in' to the package manager
-1. Identify metadata and create applicable tables
-1. Workhorse route for [object storage direct upload](uploads.md#direct-upload)
-1. Endpoints required for upload/publish
-1. Endpoints required for install/download
-1. Endpoints required for remove/delete
-
-#### Possible post-MVC MRs
-
-These updates are not essential to be able to publish and consume packages, but may be desired as the system is
-released for general use.
+Here are some examples
 
 1. Endpoints required for search
 1. Front end updates to display additional package information and metadata
 1. Limits on file sizes
 1. Tracking for metrics
+1. Read more metadata fields from the package to make it available to the front end. For example, it's usual to be able to tag a package. Those tags can be read and saved by backend and then displayed on the packages UI.
+1. Endpoints for the upper levels of the [remote hierarchy](#remote-hierarchy). This step might need to create a [naming convention](naming-conventions)
 
 ## Exceptions
 
