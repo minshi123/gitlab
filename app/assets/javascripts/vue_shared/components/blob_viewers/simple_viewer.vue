@@ -62,7 +62,7 @@ export default {
       </a>
     </div>
     <div class="blob-content">
-      <pre class="code highlight"><code v-html="content"></code></pre>
+      <pre class="code highlight"><code id="blob-code-content" v-html="content"></code></pre>
     </div>
   </div>
 </template>
