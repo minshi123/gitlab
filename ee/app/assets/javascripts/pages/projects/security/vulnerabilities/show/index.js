@@ -39,7 +39,7 @@ function createSolutionCardApp() {
 function createHeaderApp() {
   const el = document.getElementById('js-vulnerability-management-app');
   const { createIssueUrl, vulnerabilityUrl, pipelineUrl } = el.dataset;
-  const vulnerability = JSON.parse(el.dataset.vulnerability);
+  const initialVulnerability = JSON.parse(el.dataset.initialVulnerability);
   const finding = JSON.parse(el.dataset.finding);
   const pipeline = JSON.parse(el.dataset.pipeline);
 
@@ -49,7 +49,7 @@ function createHeaderApp() {
     render: h =>
       h(HeaderApp, {
         props: {
-          vulnerability,
+          initialVulnerability,
           finding,
           pipeline,
           createIssueUrl,

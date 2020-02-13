@@ -4,7 +4,7 @@
 - page_title @vulnerability.title
 - page_description @vulnerability.description
 
-#js-vulnerability-management-app{ data: { vulnerability: @vulnerability.to_json,
+#js-vulnerability-management-app{ data: { initial_vulnerability: @vulnerability.to_json,
   finding: @vulnerability.finding.to_json,
   pipeline: @pipeline.to_json,
   create_issue_url: create_vulnerability_feedback_issue_path(@vulnerability.finding.project),

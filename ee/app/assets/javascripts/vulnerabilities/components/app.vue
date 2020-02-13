@@ -1,29 +1,27 @@
 <script>
-import { GlLoadingIcon, GlBadge, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlBadge, GlLoadingIcon } from '@gitlab/ui';
 import Api from 'ee/api';
 import LoadingButton from '~/vue_shared/components/loading_button.vue';
 import axios from '~/lib/utils/axios_utils';
 import { redirectTo } from '~/lib/utils/url_utility';
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
-import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import VulnerabilityStateDropdown from './vulnerability_state_dropdown.vue';
+import StatusText from './status_text.vue';
 import { VULNERABILITY_STATES } from '../constants';
 
 export default {
   name: 'VulnerabilityManagementApp',
   components: {
-    GlLoadingIcon,
     GlBadge,
-    GlLink,
-    GlSprintf,
-    TimeAgoTooltip,
     VulnerabilityStateDropdown,
     LoadingButton,
+    StatusText,
+    GlLoadingIcon,
   },
 
   props: {
-    vulnerability: {
+    initialVulnerability: {
       type: Object,
       required: true,
     },
@@ -47,26 +45,26 @@ export default {
 
   data() {
     return {
-      isLoading: false,
+      isLoadingVulnerability: false,
       isCreatingIssue: false,
-      state: this.vulnerability.state,
+      vulnerability: this.initialVulnerability,
     };
   },
 
   computed: {
     variant() {
       // Get the badge variant based on the vulnerability state, defaulting to 'warning'.
-      return VULNERABILITY_STATES[this.state]?.variant || 'warning';
+      return VULNERABILITY_STATES[this.vulnerability.state]?.variant || 'warning';
     },
   },
 
   methods: {
-    onVulnerabilityStateChange(newState) {
-      this.isLoading = true;
+    changeVulnerabilityState(newState) {
+      this.isLoadingVulnerability = true;
 
       Api.changeVulnerabilityState(this.vulnerability.id, newState)
         .then(({ data }) => {
-          this.state = data.state;
+          this.vulnerability = data;
         })
         .catch(() => {
           createFlash(
@@ -76,9 +74,10 @@ export default {
           );
         })
         .finally(() => {
-          this.isLoading = false;
+          this.isLoadingVulnerability = false;
         });
     },
+
     createIssue() {
       this.isCreatingIssue = true;
       axios
@@ -105,30 +104,29 @@ export default {
 </script>
 
 <template>
-  <div class="d-flex align-items-center border-bottom pt-2 pb-2">
-    <gl-loading-icon v-if="isLoading" />
-    <gl-badge v-else ref="badge" class="text-capitalize" :variant="variant">{{ state }}</gl-badge>
+  <div class="d-flex align-items-center border-bottom py-2">
+    <gl-badge ref="badge" class="text-capitalize" :variant="variant">
+      <gl-loading-icon v-if="isLoadingVulnerability" />
+      <template v-else>{{ vulnerability.state }}</template>
+    </gl-badge>
 
-    <span v-if="pipeline" class="ml-2">
-      <gl-sprintf :message="__('Detected %{timeago} in pipeline %{pipelineLink}')">
-        <template #timeago>
-          <time-ago-tooltip :time="pipeline.created_at" />
-        </template>
-        <template v-if="pipelineUrl" #pipelineLink>
-          <gl-link :href="pipelineUrl" target="_blank">{{ pipeline.id }}</gl-link>
-        </template>
-      </gl-sprintf>
-    </span>
-
-    <time-ago-tooltip v-else class="ml-2" :time="vulnerability.created_at" />
+    <status-text
+      class="mx-2"
+      :vulnerability="vulnerability"
+      :pipeline="pipeline"
+      :pipeline-url="pipelineUrl"
+      :is-loading="isLoadingVulnerability"
+    />
 
     <label class="mb-0 ml-auto mr-2">{{ __('Status') }}</label>
-    <gl-loading-icon v-if="isLoading" />
+
+    <gl-loading-icon v-if="isLoadingVulnerability" />
     <vulnerability-state-dropdown
       v-else
-      :initial-state="state"
-      @change="onVulnerabilityStateChange"
+      :initial-state="vulnerability.state"
+      @change="changeVulnerabilityState"
     />
+
     <loading-button
       ref="create-issue-btn"
       class="align-items-center d-inline-flex align-self-stretch ml-2"
