@@ -113,6 +113,7 @@ describe Project do
       let(:expected_full_path) { "#{container.namespace.full_path}/somewhere" }
       let(:expected_repository_klass) { Repository }
       let(:expected_storage_klass) { Storage::Hashed }
+      let(:expected_web_url_path) { "#{container.namespace.full_path}/somewhere" }
     end
 
     it 'has an inverse relationship with merge requests' do
@@ -3901,7 +3902,7 @@ describe Project do
   end
 
   context 'legacy storage' do
-    set(:project) { create(:project, :repository, :legacy_storage) }
+    let_it_be(:project) { create(:project, :repository, :legacy_storage) }
     let(:gitlab_shell) { Gitlab::Shell.new }
     let(:project_storage) { project.send(:storage) }
 
@@ -4000,7 +4001,7 @@ describe Project do
   end
 
   context 'hashed storage' do
-    set(:project) { create(:project, :repository, skip_disk_validation: true) }
+    let_it_be(:project) { create(:project, :repository, skip_disk_validation: true) }
     let(:gitlab_shell) { Gitlab::Shell.new }
     let(:hash) { Digest::SHA2.hexdigest(project.id.to_s) }
     let(:hashed_prefix) { File.join('@hashed', hash[0..1], hash[2..3]) }
@@ -4090,7 +4091,7 @@ describe Project do
   end
 
   describe '#has_ci?' do
-    set(:project) { create(:project) }
+    let_it_be(:project, reload: true) { create(:project) }
     let(:repository) { double }
 
     before do
@@ -4134,7 +4135,7 @@ describe Project do
       Feature.get(:force_autodevops_on_by_default).enable_percentage_of_actors(0)
     end
 
-    set(:project) { create(:project) }
+    let_it_be(:project, reload: true) { create(:project) }
 
     subject { project.auto_devops_enabled? }
 
@@ -4269,7 +4270,7 @@ describe Project do
   end
 
   describe '#has_auto_devops_implicitly_enabled?' do
-    set(:project) { create(:project) }
+    let_it_be(:project, reload: true) { create(:project) }
 
     context 'when disabled in settings' do
       before do
@@ -4330,7 +4331,7 @@ describe Project do
   end
 
   describe '#has_auto_devops_implicitly_disabled?' do
-    set(:project) { create(:project) }
+    let_it_be(:project, reload: true) { create(:project) }
 
     before do
       allow(Feature).to receive(:enabled?).and_call_original
@@ -4408,7 +4409,7 @@ describe Project do
   end
 
   describe '#api_variables' do
-    set(:project) { create(:project) }
+    let_it_be(:project) { create(:project) }
 
     it 'exposes API v4 URL' do
       expect(project.api_variables.first[:key]).to eq 'CI_API_V4_URL'
@@ -4605,7 +4606,7 @@ describe Project do
   end
 
   describe '#write_repository_config' do
-    set(:project) { create(:project, :repository) }
+    let_it_be(:project) { create(:project, :repository) }
 
     it 'writes full path in .git/config when key is missing' do
       project.write_repository_config
@@ -4696,7 +4697,7 @@ describe Project do
   end
 
   describe '#has_active_hooks?' do
-    set(:project) { create(:project) }
+    let_it_be(:project) { create(:project) }
 
     it { expect(project.has_active_hooks?).to be_falsey }
 
@@ -4723,7 +4724,7 @@ describe Project do
   end
 
   describe '#has_active_services?' do
-    set(:project) { create(:project) }
+    let_it_be(:project) { create(:project) }
 
     it { expect(project.has_active_services?).to be_falsey }
 
@@ -5009,8 +5010,8 @@ describe Project do
   describe '#members_among' do
     let(:users) { create_list(:user, 3) }
 
-    set(:group) { create(:group) }
-    set(:project) { create(:project, namespace: group) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
 
     before do
       project.add_guest(users.first)
@@ -5581,6 +5582,32 @@ describe Project do
       it 'returns empty array' do
         expect(subject).to be_empty
       end
+    end
+  end
+
+  describe '#alerts_service_activated?' do
+    let!(:project) { create(:project) }
+
+    subject { project.alerts_service_activated? }
+
+    it { is_expected.to be_falsey }
+  end
+
+  describe '#self_monitoring?' do
+    let_it_be(:project) { create(:project) }
+
+    subject { project.self_monitoring? }
+
+    context 'when the project is instance self monitoring' do
+      before do
+        stub_application_setting(self_monitoring_project_id: project.id)
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context 'when the project is not self monitoring' do
+      it { is_expected.to be false }
     end
   end
 

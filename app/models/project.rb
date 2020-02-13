@@ -9,7 +9,6 @@ class Project < ApplicationRecord
   include AccessRequestable
   include Avatarable
   include CacheMarkdownField
-  include Referable
   include Sortable
   include AfterCommitQueue
   include CaseSensitivity
@@ -138,6 +137,7 @@ class Project < ApplicationRecord
   has_many :boards
 
   # Project services
+  has_one :alerts_service
   has_one :campfire_service
   has_one :discord_service
   has_one :drone_ci_service
@@ -321,6 +321,7 @@ class Project < ApplicationRecord
   accepts_nested_attributes_for :error_tracking_setting, update_only: true
   accepts_nested_attributes_for :metrics_setting, update_only: true, allow_destroy: true
   accepts_nested_attributes_for :grafana_integration, update_only: true, allow_destroy: true
+  accepts_nested_attributes_for :prometheus_service, update_only: true
 
   delegate :feature_available?, :builds_enabled?, :wiki_enabled?,
     :merge_requests_enabled?, :forking_enabled?, :issues_enabled?,
@@ -2328,6 +2329,14 @@ class Project < ApplicationRecord
 
   def limited_protected_branches(limit)
     protected_branches.limit(limit)
+  end
+
+  def alerts_service_activated?
+    false
+  end
+
+  def self_monitoring?
+    Gitlab::CurrentSettings.self_monitoring_project_id == id
   end
 
   private

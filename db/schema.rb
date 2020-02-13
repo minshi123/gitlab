@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_07_151640) do
+ActiveRecord::Schema.define(version: 2020_02_12_052620) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -344,6 +344,8 @@ ActiveRecord::Schema.define(version: 2020_02_07_151640) do
     t.boolean "updating_name_disabled_for_users", default: false, null: false
     t.integer "instance_administrators_group_id"
     t.integer "elasticsearch_indexed_field_length_limit", default: 0, null: false
+    t.integer "elasticsearch_max_bulk_size_mb", limit: 2, default: 10, null: false
+    t.integer "elasticsearch_max_bulk_concurrency", limit: 2, default: 10, null: false
     t.index ["custom_project_templates_group_id"], name: "index_application_settings_on_custom_project_templates_group_id"
     t.index ["file_template_project_id"], name: "index_application_settings_on_file_template_project_id"
     t.index ["instance_administration_project_id"], name: "index_applicationsettings_on_instance_administration_project_id"
@@ -675,6 +677,7 @@ ActiveRecord::Schema.define(version: 2020_02_07_151640) do
     t.bigint "resource_group_id"
     t.datetime_with_timezone "waiting_for_resource_at"
     t.boolean "processed"
+    t.integer "scheduling_type", limit: 2
     t.index ["artifacts_expire_at"], name: "index_ci_builds_on_artifacts_expire_at", where: "(artifacts_file <> ''::text)"
     t.index ["auto_canceled_by_id"], name: "index_ci_builds_on_auto_canceled_by_id"
     t.index ["commit_id", "artifacts_expire_at", "id"], name: "index_ci_builds_on_commit_id_and_artifacts_expireatandidpartial", where: "(((type)::text = 'Ci::Build'::text) AND ((retried = false) OR (retried IS NULL)) AND ((name)::text = ANY (ARRAY[('sast'::character varying)::text, ('dependency_scanning'::character varying)::text, ('sast:container'::character varying)::text, ('container_scanning'::character varying)::text, ('dast'::character varying)::text])))"
@@ -2955,7 +2958,7 @@ ActiveRecord::Schema.define(version: 2020_02_07_151640) do
     t.datetime_with_timezone "updated_at", null: false
     t.string "package_username", limit: 255, null: false
     t.string "package_channel", limit: 255, null: false
-    t.index ["package_id"], name: "index_packages_conan_metadata_on_package_id", unique: true
+    t.index ["package_id", "package_username", "package_channel"], name: "index_packages_conan_metadata_on_package_id_username_channel", unique: true
   end
 
   create_table "packages_dependencies", force: :cascade do |t|
@@ -3887,6 +3890,13 @@ ActiveRecord::Schema.define(version: 2020_02_07_151640) do
     t.string "issuer", null: false
     t.index ["subject", "issuer"], name: "index_smartcard_identities_on_subject_and_issuer", unique: true
     t.index ["user_id"], name: "index_smartcard_identities_on_user_id"
+  end
+
+  create_table "snippet_repositories", primary_key: "snippet_id", id: :bigint, default: nil, force: :cascade do |t|
+    t.bigint "shard_id", null: false
+    t.string "disk_path", limit: 80, null: false
+    t.index ["disk_path"], name: "index_snippet_repositories_on_disk_path", unique: true
+    t.index ["shard_id"], name: "index_snippet_repositories_on_shard_id"
   end
 
   create_table "snippet_user_mentions", force: :cascade do |t|
@@ -4960,6 +4970,8 @@ ActiveRecord::Schema.define(version: 2020_02_07_151640) do
   add_foreign_key "services", "projects", name: "fk_71cce407f9", on_delete: :cascade
   add_foreign_key "slack_integrations", "services", on_delete: :cascade
   add_foreign_key "smartcard_identities", "users", on_delete: :cascade
+  add_foreign_key "snippet_repositories", "shards", on_delete: :restrict
+  add_foreign_key "snippet_repositories", "snippets", on_delete: :cascade
   add_foreign_key "snippet_user_mentions", "notes", on_delete: :cascade
   add_foreign_key "snippet_user_mentions", "snippets", on_delete: :cascade
   add_foreign_key "snippets", "projects", name: "fk_be41fd4bb7", on_delete: :cascade
