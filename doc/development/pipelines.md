@@ -74,39 +74,14 @@ These common definitions are:
   suitable for Ruby/Rails tasks that may need a database running (e.g. tests).
 - `.default-cache`: Allows a job to use a default `cache` definition suitable for
   Ruby/Rails and frontend tasks.
-- `.default-only`: Restricts the cases where a job is created. This currently
-  includes `master`, `/^[\d-]+-stable(-ee)?$/` (stable branches),
-  `/^\d+-\d+-auto-deploy-\d+$/` (auto-deploy branches), `/^security\//` (security branches), `merge_requests`, `tags`.
-  Note that jobs won't be created for branches with this default configuration.
-- `.only:variables-canonical-dot-com`: Only creates a job if the project is
-  located under <https://gitlab.com/gitlab-org>.
-- `.only:variables_refs-canonical-dot-com-schedules`: Same as
-  `.only:variables-canonical-dot-com` but add the condition that pipeline is scheduled.
-- `.except:refs-deploy`: Don't create a job if the `ref` is an auto-deploy branch.
-- `.except:refs-master-tags-stable-deploy`: Don't create a job if the `ref` is one of:
-  - `master`
-  - a tag
-  - a stable branch
-  - an auto-deploy branch
-- `.only:kubernetes`: Only creates a job if a Kubernetes integration is enabled
-  on the project.
-- `.only-review`: This extends from:
-  - `.only:variables-canonical-dot-com`
-  - `.only:kubernetes`
-  - `.except:refs-master-tags-stable-deploy`
-- `.only-review-schedules`: This extends from:
-  - `.only:variables_refs-canonical-dot-com-schedules`
-  - `.only:kubernetes`
-  - `.except:refs-deploy`
 - `.use-pg9`: Allows a job to use the `postgres:9.6` and `redis:alpine` services.
 - `.use-pg10`: Allows a job to use the `postgres:10.9` and `redis:alpine` services.
 - `.use-pg9-ee`: Same as `.use-pg9` but also use the
   `docker.elastic.co/elasticsearch/elasticsearch:5.6.12` services.
 - `.use-pg10-ee`: Same as `.use-pg10` but also use the
   `docker.elastic.co/elasticsearch/elasticsearch:5.6.12` services.
-- `.only-ee`: Only creates a job for the `gitlab` or `gitlab-ee` project.
-- `.only-ee-as-if-foss`: Same as `.only-ee` but simulate the FOSS project by
-  setting the `FOSS_ONLY='1'` environment variable.
+- `.as-if-foss`: Simulate the FOSS project by setting the `FOSS_ONLY='1'`
+  environment variable.
 
 ## Changes detection
 
@@ -115,10 +90,6 @@ the cases where it should be created
 [based on the changes](../ci/yaml/README.md#onlychangesexceptchanges)
 from a commit or MR by extending from the following CI definitions:
 
-- `.only:changes-code`: Allows a job to only be created upon code-related changes.
-- `.only:changes-qa`: Allows a job to only be created upon QA-related changes.
-- `.only:changes-docs`: Allows a job to only be created upon docs-related changes.
-- `.only:changes-graphql`: Allows a job to only be created upon GraphQL-related changes.
 - `.only:changes-code-backstage`: Allows a job to only be created upon code-related or backstage-related (e.g. Danger, RuboCop, specs) changes.
 - `.only:changes-code-qa`: Allows a job to only be created upon code-related or QA-related changes.
 - `.only:changes-code-backstage-qa`: Allows a job to only be created upon code-related, backstage-related (e.g. Danger, RuboCop, specs) or QA-related changes.
@@ -128,116 +99,134 @@ for the list of exact patterns.**
 
 ## Rules conditions and changes patterns
 
-We're making use of the [`rules` keyword](https://docs.gitlab.com/ee/ci/yaml/#rules) but we're currently
-duplicating the `if` conditions and `changes` patterns lists since they cannot be shared across
-`include`d files as we do with `extends`.
+We're making use of the [`rules` keyword](https://docs.gitlab.com/ee/ci/yaml/#rules).
 
-**If you update an `if` condition or `changes`
-patterns list, make sure to mass-update those across all the CI config files (i.e. `.gitlab/ci/*.yml`).**
+All `rules` conditions and patterns are declared in
+<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/rules.gitlab-ci.yml>
 
-### Canonical/security namespace merge requests only
+### Conditions
 
-This condition limits jobs creation to merge requests under the `gitlab-org/` top-level group
-on GitLab.com only (i.e. this won't run for `master`, stable or auto-deploy branches).
-This is similar to the `.only:variables-canonical-dot-com` + `only:refs: [merge_requests]`
-CI definitions.
+#### Non-canonical namespace
 
-The definition for `if-canonical-dot-com-gitlab-org-groups-merge-request` can be
-seen in <https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/docs.gitlab-ci.yml>.
+The `if-not-canonical-namespace` condition matches if the project isn't in the
+canonical (`gitlab-org/`) or security (`gitlab-org/security`) namespace.
 
-### Canonical/security namespace tags only
+Useful to:
 
-This condition limits jobs creation to tags under the `gitlab-org/` top-level group
-on GitLab.com only.
-This is similar to the `.only:variables-canonical-dot-com` + `only:refs: [tags]` CI definition:
+- **not** create a job if the project is a fork (by using `when: never`)
+- create a job for forks (by using `when: on_success|manual`).
 
-The definition for `if-canonical-dot-com-gitlab-org-groups-tag` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/cng.gitlab-ci.yml>.
+#### Not EE
 
-### Canonical namespace `master` only
+The `if-not-ee` condition matches if the project isn't EE (i.e. project name
+isn't `gitlab` or `gitlab-ee`).
 
-This condition limits jobs creation to `master` pipelines for the `gitlab-org` top-level group
-on GitLab.com only.
-This is similar to the `.only:variables-canonical-dot-com` + `only:refs: [master]` CI definition:
+Useful to:
 
-The definition for `if-canonical-dot-com-gitlab-org-group-master-refs` can be
-seen in <https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/pages.gitlab-ci.yml>.
+- **not** create a job if the project is EE (by using `when: never`)
+- create a job only in the FOSS project (by using `when: on_success|manual`)
 
-### Canonical namespace schedules only
+#### Not FOSS
 
-This condition limits jobs creation to scheduled pipelines for the `gitlab-org` top-level group
-on GitLab.com only.
-This is similar to the `.only:variables-canonical-dot-com` + `only:refs: [schedules]` CI definition:
+The `if-not-foss` condition matches if the project isn't FOSS (i.e. project name
+isn't `gitlab-foss`, `gitlab-ce`, or `gitlabhq`).
 
-The definition for `if-canonical-dot-com-gitlab-org-group-schedule` can be seen
-in <https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/qa.gitlab-ci.yml>.
+Useful to:
 
-### Not canonical/security namespace
+- **not** create a job if the project is FOSS (by using `when: never`)
+- create a job only in the EE project (by using `when: on_success|manual`)
 
-This condition matches if the project isn't in the canonical/security namespace.
-Useful to **not** create a job if the project is a fork, or in other words, when
-a job should only run in the canonical projects.
+#### Default refs
 
-The definition for `if-not-canonical-namespace` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/frontend.gitlab-ci.yml>.
+The `if-default-refs` condition matches if the pipeline is for `master`,
+`/^[\d-]+-stable(-ee)?$/` (stable branches), `/^\d+-\d+-auto-deploy-\d+$/`
+(auto-deploy branches), `/^security\//` (security branches), merge requests, and
+tags.
 
-### Not EE
+Note that jobs won't be created for branches with this default configuration.
 
-This condition matches if the project isn't EE. Useful to **not** create a job if
-the project is GitLab, or in other words, when a job should only run in the GitLab
-FOSS project.
+#### `master` branch
 
-The definition for `if-not-ee` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/frontend.gitlab-ci.yml>.
+The `if-master-refs` condition matches if the current branch is `master`.
 
-### Default refs only
+#### `master` branch or tag
 
-This condition is the equivalent of `.default-only`.
+The `if-master-or-tag` condition matches if the pipeline is for the `master`
+branch or for a tag.
 
-The definition for `if-default-refs` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/frontend.gitlab-ci.yml>.
+#### merge request
 
-### `master` refs only
+The `if-merge-request` condition matches if the pipeline is for a merge request.
 
-This condition is the equivalent of `only:refs: [master]`.
+#### GitLab.com `gitlab-org` namespace scheduled pipelines
 
-The definition for `if-master-refs` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/frontend.gitlab-ci.yml>.
+The `if-dot-com-gitlab-org-schedule` condition limits jobs creation to scheduled
+pipelines for the `gitlab-org` group on GitLab.com.
 
-### Code changes patterns
+#### GitLab.com `gitlab-org` namespace `master` branch
 
-Similar patterns as for `.only:changes-code`:
+The `if-dot-com-gitlab-org-master` condition limits jobs creation to the
+`master` branch for the `gitlab-org` group on GitLab.com.
 
-The definition for `code-patterns` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/qa.gitlab-ci.yml>.
+#### GitLab.com `gitlab-org` namespace merge request
 
-### QA changes patterns
+The `if-dot-com-gitlab-org-merge-request` condition limits jobs creation to
+merge requests for the `gitlab-org` group on GitLab.com.
 
-Similar patterns as for `.only:changes-qa`:
+#### GitLab.com `gitlab-org`/`gitlab-org/security` namespace tag
 
-The definition for `qa-patterns` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/qa.gitlab-ci.yml>.
+The `if-canonical-dot-com-gitlab-org-and-security-tag` condition limits jobs
+creation to tags for the `gitlab-org` and `gitlab-org/security` groups on GitLab.com.
 
-### Docs changes patterns
+#### GitLab.com `gitlab-org`/`gitlab-org/security` namespace merge request
 
-Similar patterns as for `.only:changes-docs`:
+The `if-canonical-dot-com-gitlab-org-and-security-merge-request` condition
+limits jobs creation to merge requests for the `gitlab-org` and
+`gitlab-org/security` groups on GitLab.com.
 
-The definition for `docs-patterns` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/docs.gitlab-ci.yml>.
+#### Scheduled pipelines with `$CI_REPO_CACHE_CREDENTIALS`
 
-### Code and QA changes patterns
+The `if-cache-credentials-schedule` condition limits jobs to scheduled pipelines
+with the `$CI_REPO_CACHE_CREDENTIALS` variable set.
 
-Similar patterns as for `.only:changes-code-qa`:
+#### GitLab.com `gitlab-org/gitlab` project scheduled pipelines
 
-The definition for `code-qa-patterns` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/review.gitlab-ci.yml>.
+The `if-canonical-dot-com-ee-schedule` condition limits jobs to scheduled pipelines
+for the `gitlab-org/gitlab` project on GitLab.com.
 
-### Code, backstage and QA changes patterns
+### Change patterns
 
-Similar patterns as for `.only:changes-code-backstage-qa`:
+#### YAML
 
-The definition for `code-backstage-qa-patterns` can be seen in
-<https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/frontend.gitlab-ci.yml>.
+The `yaml-patterns` patterns allow a job to only be created upon YAML-related changes.
+
+#### Docs
+
+The `docs-patterns` patterns allow a job to only be created upon docs-related changes.
+
+#### Backstage
+
+The `backstage-patterns` patterns allow a job to only be created upon backstage-related changes.
+
+#### Code
+
+The `code-patterns` patterns allow a job to only be created upon code-related changes.
+
+#### QA
+
+The `qa-patterns` patterns allow a job to only be created upon QA-related changes.
+
+#### Code + backstage
+
+Combination of the `code-patterns`, and `backstage-patterns` patterns.
+
+#### Code + QA
+
+Combination of the `code-patterns`, and `qa-patterns` patterns.
+
+#### Code + backstage + QA
+
+Combination of the `code-patterns` `backstage-patterns`, and `qa-patterns` patterns.
 
 ## Directed acyclic graph
 
