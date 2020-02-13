@@ -16,3 +16,6 @@ OmniAuth.config.allowed_request_methods << :get if Gitlab.config.omniauth.auto_s
 OmniAuth.config.before_request_phase do |env|
   Gitlab::RequestForgeryProtection.call(env)
 end
+OmniAuth.config.logger.formatter = proc do |severity, datetime, progname, msg|
+  { severity: severity, timestamp: datetime.utc.iso8601(3), pid: $$, progname: progname, message: msg }.to_json << "\n"
+end
