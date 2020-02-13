@@ -60,33 +60,9 @@ describe MergeRequestWidgetEntity do
   end
 
   describe 'enabled_reports' do
-    it 'marks all reports as disabled by default' do
-      expect(subject.as_json).to include(:enabled_reports)
-      expect(subject.as_json[:enabled_reports]).to eq({
-        sast: false,
-        container_scanning: false,
-        dast: false,
-        dependency_scanning: false,
-        license_management: false
-      })
-    end
-
-    it 'marks reports as enabled if artifacts exist' do
-      allow(merge_request).to receive(:enabled_reports).and_return({
-        sast: true,
-        container_scanning: true,
-        dast: true,
-        dependency_scanning: true,
-        license_management: true
-      })
-      expect(subject.as_json).to include(:enabled_reports)
-      expect(subject.as_json[:enabled_reports]).to eq({
-        sast: true,
-        container_scanning: true,
-        dast: true,
-        dependency_scanning: true,
-        license_management: true
-      })
+    it 'returns statuses for all different reports' do
+      expect(subject.as_json[:enabled_reports].keys).to eq(%i(sast container_scanning dast
+                                                              dependency_scanning license_management license_scanning))
     end
   end
 
