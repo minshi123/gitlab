@@ -286,6 +286,7 @@ jest:
       - tmp/tests/frontend/
     reports:
       junit: junit_jest.xml
+  parallel: 2
 
 jest-foss:
   extends:
