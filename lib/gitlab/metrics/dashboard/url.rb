@@ -17,6 +17,7 @@ module Gitlab
             strong_memoize(:metrics_regex) do
               regex_for_project_metrics(
                 %r{
+                    (?:/-)?
                     /environments
                     /(?<environment>\d+)
                     /metrics
@@ -32,6 +33,7 @@ module Gitlab
             strong_memoize(:grafana_regex) do
               regex_for_project_metrics(
                 %r{
+                  (?:/-)?
                   /grafana
                   /metrics_dashboard
                 }x
@@ -63,7 +65,6 @@ module Gitlab
               (?<url>
                 #{gitlab_host_pattern}
                 #{project_path_pattern}
-                (?:/-)?
                 #{path_suffix_pattern}
                 #{query_pattern}
                 #{anchor_pattern}

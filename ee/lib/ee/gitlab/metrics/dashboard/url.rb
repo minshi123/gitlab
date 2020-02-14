@@ -14,9 +14,10 @@ module EE
             strong_memoize(:clusters_regex) do
               regex_for_project_metrics(
                 %r{
+                  (?:/-)?
                   /clusters
                   /(?<cluster_id>\d+)
-                  [/]?
+                  /?
                 }x
               )
             end
@@ -30,6 +31,7 @@ module EE
             strong_memoize(:alert_regex) do
               regex_for_project_metrics(
                 %r{
+                  (?:/-)?
                   /prometheus
                   /alerts
                   /(?<alert>\d+)
