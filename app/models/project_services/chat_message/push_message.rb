@@ -63,11 +63,7 @@ module ChatMessage
     def compose_commit_message(commit)
       author = commit[:author][:name]
       id = Commit.truncate_sha(commit[:id])
-      message = commit[:message]
-
-      if commit_message_html
-        message = message.gsub(Gitlab::Regex.breakline_regex, "<br/>\n")
-      end
+      message = commit.title
 
       url = commit[:url]
 
