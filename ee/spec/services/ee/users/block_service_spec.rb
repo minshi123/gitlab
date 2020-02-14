@@ -52,7 +52,7 @@ describe Users::BlockService do
           )
         end
 
-        it 'does not log audit event' do
+        it 'does not log any audit event' do
           expect { operation }.not_to change(AuditEvent, :count)
         end
       end
