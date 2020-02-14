@@ -213,14 +213,15 @@ Here is what this object can look like:
 
 ## Release Versioning 
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/194119) in GitLab 12.7 
+Release versions are manually assigned by the user. GitLab uses and recommends following [Semantic Versioning](https://semver.org/) for its releases: `(Major).(Minor).(Patch), as detailed in the [GitLab Policy for Versioning](https://docs.gitlab.com/ee/policy/maintenance.html#versioning). 
 
-Release versions are manually assigned by the user. GitLab recommends creating a nomenclature that meets your organization's practices. The nomenclature for release versions should follow a few guidelines: 
+For example, for GitLab version 10.5.7:
 
-  1. Release versions should be unique for each release, Example: v13.0
-  1. Releases that are secondary to a primary release, in the case of a patch, security fix, or hotfix, use a a suffix to a primary release, Example: v13.1
-  1. Release versions allow special characters, such as !,@,#,$,%,^,&,*,(,),_,-,+,={,},[,]
-  1. Release versions do not allow special characters, such as commas, periods, or slashes (/ or \) 
+- `10` represents the major version. The major release was 10.0.0, but often referred to as 10.0.
+- `5` represents the minor version. The minor release was 10.5.0, but often referred to as 10.5.
+- `7` represents the patch number.
+
+Any part of the version number can increment into multiple digits, for example, 13.10.11.
 
 <!-- ## Troubleshooting
 
