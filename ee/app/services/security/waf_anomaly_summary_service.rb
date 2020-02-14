@@ -5,6 +5,8 @@ module Security
   # Queries ES and retrieves both total nginx requests & modsec violations
   #
   class WafAnomalySummaryService < ::BaseService
+    INGRESS_CONTAINER_NAME = 'nginx-ingress-controller'
+
     def initialize(environment:, interval: 'day', from: 30.days.ago.iso8601, to: Time.zone.now.iso8601)
       @environment = environment
       @interval = interval
@@ -15,11 +17,18 @@ module Security
     def execute
       return if elasticsearch_client.nil?
 
+      # Use multi-search with single query as we'll be adding nginx later
+      # with https://gitlab.com/gitlab-org/gitlab/issues/14707
+      aggregate_results = elasticsearch_client.msearch(body: body)
+      nginx_results = aggregate_results['responses'].first
+
+      nginx_total_requests = nginx_results.dig("hits", "total").to_f
+
       {
-        total_traffic: 0,
+        total_traffic: nginx_total_requests,
         anomalous_traffic: 0.0,
         history: {
-          nominal: [],
+          nominal: histogram_from(nginx_results),
           anomalous: []
         },
         interval: @interval,
@@ -29,8 +38,113 @@ module Security
       }
     end
 
+    def body
+      aggregation = aggregations(@interval)
+
+      [
+        { index: indices },
+        {
+          query: nginx_requests_query,
+          aggs: aggregation,
+          size: 0 # no docs needed, only counts
+        }
+      ]
+    end
+
     def elasticsearch_client
       @client ||= @environment.deployment_platform.cluster.application_elastic_stack&.elasticsearch_client
+    end
+
+    private
+
+    # Construct a list of daily indices to be searched. We do this programmatically
+    # based on the requested timeframe to reduce the load of querying all previous
+    # indices
+    def indices
+      (@from.to_date..@to.to_date).map do |day|
+        "filebeat-*-#{day.strftime('%Y.%m.%d')}"
+      end
+    end
+
+    def nginx_requests_query
+      {
+        bool: {
+          must: [
+            {
+              range: {
+                '@timestamp' => {
+                  gte: @from,
+                  lte: @to
+                }
+              }
+            },
+            {
+              terms_set: {
+                message: {
+                  terms: environment_proxy_upstream_name_tokens,
+                  minimum_should_match_script: environment_proxy_upstream_name_tokens.length
+                }
+              }
+            },
+            {
+              match_phrase: {
+                'kubernetes.container.name' => {
+                  query: INGRESS_CONTAINER_NAME
+                }
+              }
+            },
+            {
+              match_phrase: {
+                'kubernetes.namespace' => {
+                  query: Gitlab::Kubernetes::Helm::NAMESPACE
+                }
+              }
+            },
+            {
+              match_phrase: {
+                stream: {
+                  query: 'stdout'
+                }
+              }
+            }
+          ]
+        }
+      }
+    end
+
+    def aggregations(interval)
+      {
+        counts: {
+          date_histogram: {
+            field: '@timestamp',
+            interval: interval,
+            order: {
+              '_key': 'asc'
+            }
+          }
+        }
+      }
+    end
+
+    def histogram_from(results)
+      buckets = results.dig('aggregations', 'counts', 'buckets') || []
+
+      buckets.map { |bucket| [bucket['key_as_string'], bucket['doc_count']] }
+    end
+
+    # Derive proxy upstream name to filter nginx log by environment
+    # See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/log-format/
+    #
+    # This depends on a static service name and port, as defaulted by auto-deploy job
+    def environment_proxy_upstream_name_tokens
+      [
+        @environment.deployment_namespace,
+        @environment.slug,
+        @environment.slug,
+        'auto',
+        'deploy',
+        '5000'
+      ]
     end
   end
 end
