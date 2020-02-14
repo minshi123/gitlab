@@ -11,7 +11,7 @@ module EE
     end
 
     def npm_package_registry_url
-      expose_url(api_v4_packages_npm_package_name_path)
+      expose_url(api_v4_packages_npm_package_name_path).gsub("/package_name", "")
     end
 
     def conan_package_registry_url
