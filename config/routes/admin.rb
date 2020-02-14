@@ -24,7 +24,7 @@ namespace :admin do
   end
 
   resource :session, only: [:new, :create] do
-    get 'destroy', action: :destroy, as: :destroy
+    post 'destroy', action: :destroy, as: :destroy
   end
 
   resource :impersonation, only: :destroy
@@ -107,7 +107,11 @@ namespace :admin do
     end
   end
 
-  resource :application_settings, only: [:show, :update] do
+  resource :application_settings, only: :update do
+    # This redirect should be removed with 13.0 release.
+    # https://gitlab.com/gitlab-org/gitlab/issues/199427
+    get '/', to: redirect('admin/application_settings/general'), as: nil
+
     resources :services, only: [:index, :edit, :update]
 
     get :usage_data
@@ -116,6 +120,11 @@ namespace :admin do
     put :clear_repository_check_states
     match :general, :integrations, :repository, :ci_cd, :reporting, :metrics_and_profiling, :network, :preferences, via: [:get, :patch]
     get :lets_encrypt_terms_of_service
+
+    post :create_self_monitoring_project
+    get :status_create_self_monitoring_project
+    delete :delete_self_monitoring_project
+    get :status_delete_self_monitoring_project
   end
 
   resources :labels

@@ -112,7 +112,7 @@ export default {
           displayHeader: !this.customStageFormActive,
         },
         {
-          title: __('Total Time'),
+          title: __('Time'),
           description: __('The time taken by each data entry gathered by that stage.'),
           classes: 'total-time-header pr-5 text-right',
           displayHeader: !this.customStageFormActive,
@@ -120,7 +120,25 @@ export default {
       ];
     },
     customStageInitialData() {
-      return this.isEditingCustomStage ? this.currentStage : {};
+      if (this.isEditingCustomStage) {
+        const {
+          id = null,
+          name = null,
+          startEventIdentifier = null,
+          startEventLabel: { id: startEventLabelId = null } = {},
+          endEventIdentifier = null,
+          endEventLabel: { id: endEventLabelId = null } = {},
+        } = this.currentStage;
+        return {
+          id,
+          name,
+          startEventIdentifier,
+          startEventLabelId,
+          endEventIdentifier,
+          endEventLabelId,
+        };
+      }
+      return {};
     },
   },
   methods: {

@@ -21,22 +21,15 @@ describe('Edit feature flag form', () => {
     },
   });
 
-  const factory = (featureFlagToggle = true) => {
-    wrapper = shallowMount(localVue.extend(EditFeatureFlag), {
+  const factory = () => {
+    wrapper = shallowMount(EditFeatureFlag, {
       localVue,
       propsData: {
         endpoint: `${TEST_HOST}/feature_flags.json'`,
         path: '/feature_flags',
         environmentsEndpoint: 'environments.json',
       },
-      provide: {
-        glFeatures: {
-          featureFlagToggle,
-          featureFlagIID: true,
-        },
-      },
       store,
-      sync: false,
     });
   };
 
@@ -84,18 +77,6 @@ describe('Edit feature flag form', () => {
 
   it('should set the value of the toggle to whether or not the flag is active', () => {
     expect(wrapper.find(GlToggle).props('value')).toBe(true);
-  });
-
-  describe('without featureFlagToggle', () => {
-    beforeEach(done => {
-      wrapper.destroy();
-      factory(false);
-      setImmediate(() => done());
-    });
-
-    it('should not render the toggle', () => {
-      expect(wrapper.find(GlToggle).exists()).toBe(false);
-    });
   });
 
   describe('with error', () => {

@@ -54,7 +54,6 @@ describe('AlertWidget', () => {
         ...defaultProps,
         ...propsData,
       },
-      sync: false,
     });
   };
   const findWidgetForm = () => wrapper.find({ ref: 'widgetForm' });
@@ -204,8 +203,10 @@ describe('AlertWidget', () => {
 
     findWidgetForm().vm.$emit('delete', { alert: alertPath });
 
-    expect(mockDeleteAlert).toHaveBeenCalledWith(alertPath);
-    expect(findAlertErrorMessage().exists()).toBe(false);
+    return wrapper.vm.$nextTick().then(() => {
+      expect(mockDeleteAlert).toHaveBeenCalledWith(alertPath);
+      expect(findAlertErrorMessage().exists()).toBe(false);
+    });
   });
 
   describe('when delete fails', () => {
@@ -227,6 +228,7 @@ describe('AlertWidget', () => {
       });
 
       findWidgetForm().vm.$emit('delete', { alert: alertPath });
+      return wrapper.vm.$nextTick();
     });
 
     it('shows error message', () => {

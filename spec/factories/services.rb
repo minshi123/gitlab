@@ -6,7 +6,7 @@ FactoryBot.define do
     type { 'Service' }
   end
 
-  factory :custom_issue_tracker_service, class: CustomIssueTrackerService do
+  factory :custom_issue_tracker_service, class: 'CustomIssueTrackerService' do
     project
     active { true }
     issue_tracker
@@ -41,6 +41,16 @@ FactoryBot.define do
         api_url: 'https://prometheus.example.com/',
         manual_configuration: true
       }
+    end
+  end
+
+  factory :alerts_service do
+    project
+    type { 'AlertsService' }
+    active { true }
+
+    trait :inactive do
+      active { false }
     end
   end
 

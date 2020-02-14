@@ -62,6 +62,23 @@ const addDiscussionCommentToStore = (store, createNote, query, queryVariables, d
   ];
 
   design.notesCount += 1;
+  if (
+    !design.issue.participants.edges.some(
+      participant => participant.node.username === createNote.note.author.username,
+    )
+  ) {
+    design.issue.participants.edges = [
+      ...design.issue.participants.edges,
+      {
+        __typename: 'UserEdge',
+        node: {
+          // eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings
+          __typename: 'User',
+          ...createNote.note.author,
+        },
+      },
+    ];
+  }
   store.writeQuery({
     query,
     variables: queryVariables,
@@ -101,6 +118,23 @@ const addImageDiffNoteToStore = (store, createImageDiffNote, query, variables) =
   const design = extractDesign(data);
   const notesCount = design.notesCount + 1;
   design.discussions.edges = [...design.discussions.edges, newDiscussion];
+  if (
+    !design.issue.participants.edges.some(
+      participant => participant.node.username === createImageDiffNote.note.author.username,
+    )
+  ) {
+    design.issue.participants.edges = [
+      ...design.issue.participants.edges,
+      {
+        __typename: 'UserEdge',
+        node: {
+          // eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings
+          __typename: 'User',
+          ...createImageDiffNote.note.author,
+        },
+      },
+    ];
+  }
   store.writeQuery({
     query,
     variables,
@@ -169,6 +203,8 @@ const onError = (data, message) => {
   throw new Error(data.errors);
 };
 
+const hasErrors = ({ errors = [] }) => errors?.length;
+
 /**
  * Updates a store after design deletion
  *
@@ -178,7 +214,7 @@ const onError = (data, message) => {
  * @param {Array} designs
  */
 export const updateStoreAfterDesignsDelete = (store, data, query, designs) => {
-  if (data.errors) {
+  if (hasErrors(data)) {
     onError(data, designDeletionError({ singular: designs.length === 1 }));
   } else {
     deleteDesignsFromStore(store, query, designs);
@@ -193,7 +229,7 @@ export const updateStoreAfterAddDiscussionComment = (
   queryVariables,
   discussionId,
 ) => {
-  if (data.errors) {
+  if (hasErrors(data)) {
     onError(data, ADD_DISCUSSION_COMMENT_ERROR);
   } else {
     addDiscussionCommentToStore(store, data, query, queryVariables, discussionId);
@@ -201,7 +237,7 @@ export const updateStoreAfterAddDiscussionComment = (
 };
 
 export const updateStoreAfterAddImageDiffNote = (store, data, query, queryVariables) => {
-  if (data.errors) {
+  if (hasErrors(data)) {
     onError(data, ADD_IMAGE_DIFF_NOTE_ERROR);
   } else {
     addImageDiffNoteToStore(store, data, query, queryVariables);
@@ -209,7 +245,7 @@ export const updateStoreAfterAddImageDiffNote = (store, data, query, queryVariab
 };
 
 export const updateStoreAfterUploadDesign = (store, data, query) => {
-  if (data.errors) {
+  if (hasErrors(data)) {
     onError(data, UPLOAD_DESIGN_ERROR);
   } else {
     addNewDesignToStore(store, data, query);

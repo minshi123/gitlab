@@ -49,12 +49,12 @@ module Gitlab
           lfs_token_check(login, password, project) ||
           oauth_access_token_check(login, password) ||
           personal_access_token_check(password) ||
-          deploy_token_check(login, password) ||
+          deploy_token_check(login, password, project) ||
           user_with_password_for_git(login, password) ||
           Gitlab::Auth::Result.new
 
         rate_limit!(rate_limiter, success: result.success?, login: login)
-        Gitlab::Auth::UniqueIpsLimiter.limit_user!(result.actor)
+        look_to_limit_user(result.actor)
 
         return result if result.success? || authenticate_using_internal_or_ldap_password?
 
@@ -127,6 +127,10 @@ module Gitlab
 
       def skip_rate_limit?(login:)
         ::Ci::Build::CI_REGISTRY_USER == login
+      end
+
+      def look_to_limit_user(actor)
+        Gitlab::Auth::UniqueIpsLimiter.limit_user!(actor) if actor.is_a?(User)
       end
 
       def authenticate_using_internal_or_ldap_password?
@@ -204,7 +208,7 @@ module Gitlab
         end.uniq
       end
 
-      def deploy_token_check(login, password)
+      def deploy_token_check(login, password, project)
         return unless password.present?
 
         token = DeployToken.active.find_by_token(password)
@@ -215,7 +219,7 @@ module Gitlab
         scopes = abilities_for_scopes(token.scopes)
 
         if valid_scoped_token?(token, all_available_scopes)
-          Gitlab::Auth::Result.new(token, token.project, :deploy_token, scopes)
+          Gitlab::Auth::Result.new(token, project, :deploy_token, scopes)
         end
       end
 

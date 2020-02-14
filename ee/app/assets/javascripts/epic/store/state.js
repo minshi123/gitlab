@@ -3,12 +3,12 @@ export default () => ({
   endpoint: '',
   updateEndpoint: '',
 
+  fullPath: '',
   groupPath: '',
   markdownPreviewPath: '',
   labelsPath: '',
   todoPath: '',
   todoDeletePath: '',
-  toggleSubscriptionPath: '',
 
   // URLs to use with links
   epicsWebUrl: '',
@@ -19,6 +19,7 @@ export default () => ({
   canUpdate: false,
   canDestroy: false,
   canAdmin: false,
+  allowSubEpics: false,
 
   // Epic Information
   epicId: 0,

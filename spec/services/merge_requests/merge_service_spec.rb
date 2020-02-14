@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 describe MergeRequests::MergeService do
-  set(:user) { create(:user) }
-  set(:user2) { create(:user) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:user2) { create(:user) }
   let(:merge_request) { create(:merge_request, :simple, author: user2, assignees: [user2]) }
   let(:project) { merge_request.project }
 
@@ -30,6 +30,11 @@ describe MergeRequests::MergeService do
 
       it { expect(merge_request).to be_valid }
       it { expect(merge_request).to be_merged }
+
+      it 'persists merge_commit_sha and nullifies in_progress_merge_commit_sha' do
+        expect(merge_request.merge_commit_sha).not_to be_nil
+        expect(merge_request.in_progress_merge_commit_sha).to be_nil
+      end
 
       it 'sends email to user2 about merge of new merge_request' do
         email = ActionMailer::Base.deliveries.last

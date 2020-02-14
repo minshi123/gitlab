@@ -46,7 +46,7 @@ describe('extractDiscussions', () => {
     };
   });
 
-  it('discards the edges.node artefacts of GraphQL', () => {
+  it('discards the edges.node artifacts of GraphQL', () => {
     expect(extractDiscussions(discussions)).toEqual([
       { id: 1, notes: ['a'] },
       { id: 2, notes: ['b'] },
@@ -98,6 +98,8 @@ describe('optimistic responses', () => {
             },
           },
         ],
+        errors: [],
+        skippedDesigns: [],
       },
     };
     expect(designUploadOptimisticResponse([{ name: 'test' }])).toEqual(expectedResponse);

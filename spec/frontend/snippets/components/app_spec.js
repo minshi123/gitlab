@@ -1,12 +1,13 @@
 import SnippetApp from '~/snippets/components/app.vue';
 import SnippetHeader from '~/snippets/components/snippet_header.vue';
+import SnippetTitle from '~/snippets/components/snippet_title.vue';
+import SnippetBlob from '~/snippets/components/snippet_blob_view.vue';
 import { GlLoadingIcon } from '@gitlab/ui';
 
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 
 describe('Snippet view app', () => {
   let wrapper;
-  const localVue = createLocalVue();
   const defaultProps = {
     snippetGid: 'gid://gitlab/PersonalSnippet/42',
   };
@@ -21,9 +22,7 @@ describe('Snippet view app', () => {
     };
 
     wrapper = shallowMount(SnippetApp, {
-      sync: false,
       mocks: { $apollo },
-      localVue,
       propsData: {
         ...props,
       },
@@ -38,8 +37,10 @@ describe('Snippet view app', () => {
     expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
   });
 
-  it('renders SnippetHeader component after the query is finished', () => {
+  it('renders all components after the query is finished', () => {
     createComponent();
     expect(wrapper.find(SnippetHeader).exists()).toBe(true);
+    expect(wrapper.find(SnippetTitle).exists()).toBe(true);
+    expect(wrapper.find(SnippetBlob).exists()).toBe(true);
   });
 });

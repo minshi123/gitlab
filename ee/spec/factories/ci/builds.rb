@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 FactoryBot.define do
-  factory :ee_ci_build, class: Ci::Build, parent: :ci_build do
+  factory :ee_ci_build, class: 'Ci::Build', parent: :ci_build do
     trait :protected_environment_failure do
       failed
       failure_reason { Ci::Build.failure_reasons[:protected_environment_failure] }
     end
 
-    %i[sast codequality dependency_scanning container_scanning dast performance license_management].each do |report_type|
+    %i[codequality container_scanning dast dependency_scanning license_management license_scanning performance sast].each do |report_type|
       trait "legacy_#{report_type}".to_sym do
         success
         artifacts

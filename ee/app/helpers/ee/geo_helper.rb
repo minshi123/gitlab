@@ -65,6 +65,25 @@ module EE
       )
     end
 
+    def selective_sync_types_json
+      options = {
+        ALL: {
+          label: s_('Geo|All projects'),
+          value: ''
+        },
+        NAMESPACES: {
+          label: s_('Geo|Projects in certain groups'),
+          value: 'namespaces'
+        },
+        SHARDS: {
+          label: s_('Geo|Projects in certain storage shards'),
+          value: 'shards'
+        }
+      }
+
+      options.to_json
+    end
+
     def status_loading_icon
       icon "spinner spin fw", class: 'js-geo-node-loading'
     end
@@ -95,12 +114,12 @@ module EE
     def geo_registry_status(registry)
       status_type = case registry.synchronization_state
                     when :failed then
-                      'status-type-failure'
+                      'text-danger-500'
                     when :synced then
-                      'status-type-success'
+                      'text-success-600'
                     end
 
-      content_tag(:div, class: "geo-status-content #{status_type}") do
+      content_tag(:div, class: "#{status_type}") do
         icon = geo_registry_status_icon(registry)
         text = geo_registry_status_text(registry)
 

@@ -16,8 +16,12 @@ GitLab's **Releases** are a way to track deliverables in your project. Consider 
 a snapshot in time of the source, build output, and other metadata or artifacts
 associated with a released version of your code.
 
-At the moment, you can create Release entries via the [Releases API](../../../api/releases/index.md);
-we recommend doing this as one of the last steps in your CI/CD release pipeline.
+There are several ways to create a Release:
+
+- In the interface, when you create a new Git tag.
+- In the interface, by adding a release note to an existing Git tag.
+- Using the [Releases API](../../../api/releases/index.md): we recommend doing this as one of the last
+  steps in your CI/CD release pipeline.
 
 ## Getting started with Releases
 
@@ -90,6 +94,29 @@ project.
 
 ![Releases list](img/releases.png)
 
+### Number of Releases
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/36667) in GitLab 12.8.
+
+The incremental number of Releases is displayed on the project's details page. When clicked,
+it takes you to the list of Releases.
+
+![Number of Releases](img/releases_count_v12_8.png "Incremental counter of Releases")
+
+For private projects, the number of Releases is displayed to users with Reporter
+[permissions](../../permissions.md#releases-permissions) or higher. For public projects,
+it is displayed to every user regardless of their permission level.
+
+### Upcoming Releases
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/38105) in GitLab 12.1.
+
+A Release may be created ahead of time by specifying a future `released_at` date. Until
+the `released_at` date and time is reached, an **Upcoming Release** badge will appear next to the
+Release tag. Once the `released_at` date and time has passed, the badge is automatically removed.
+
+![An upcoming release](img/upcoming_release_v12_7.png)
+
 ## Editing a release
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/26016) in GitLab 12.6.
@@ -135,8 +162,9 @@ drag and drop files to it. Release notes are stored in GitLab's database.
 There are several ways to add release notes:
 
 - In the interface, when you create a new Git tag.
-- In the interface, by adding a note to an existing Git tag.
-- Using the GitLab API.
+- In the interface, by adding a release note to an existing Git tag.
+- Using the [Releases API](../../../api/releases/index.md): (we recommend doing this as one of the last
+  steps in your CI/CD release pipeline).
 
 To create a new tag, navigate to your project's **Repository > Tags** and
 click **New tag**. From there, you can fill the form with all the information
@@ -148,7 +176,7 @@ You can also edit an existing tag to add release notes:
 
 ![tags](img/tags_12_5.png "Addition of note to an existing tag")
 
-## Release evidence
+## Release Evidence
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/26019) in GitLab 12.6.
 
@@ -211,17 +239,34 @@ Here is what this object can look like:
 }
 ```
 
-## Release Versioning 
+### Enabling Release Evidence display **(CORE ONLY)**
 
-Release versions are manually assigned by the user. GitLab uses and recommends following [Semantic Versioning](https://semver.org/) for its releases: `(Major).(Minor).(Patch), as detailed in the [GitLab Policy for Versioning](https://docs.gitlab.com/ee/policy/maintenance.html#versioning). 
+This feature comes with the `:release_evidence_collection` feature flag
+disabled by default in GitLab self-managed instances. To turn it on,
+ask a GitLab administrator with Rails console access to run the following
+command:
 
-For example, for GitLab version 10.5.7:
+```ruby
+Feature.enable(:release_evidence_collection)
+```
 
-- `10` represents the major version. The major release was 10.0.0, but often referred to as 10.0.
-- `5` represents the minor version. The minor release was 10.5.0, but often referred to as 10.5.
-- `7` represents the patch number.
+NOTE: **Note:**
+Please note that Release Evidence's data is collected regardless of this
+feature flag, which only enables or disables the display of the data on the
+Releases page.
 
-Any part of the version number can increment into multiple digits, for example, 13.10.11.
+### Scheduled Evidence creation
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/23697) in GitLab 12.8.
+
+When the `released_at` date and time is not provided, the date and time of Release
+creation is used. The Evidence collection background job is immediately executed.
+
+If a future `released_at` is specified, the Release becomes an **Upcoming Release**. In this
+case, the Evidence is scheduled to be collected at the `released_at` date and time, via a
+background job.
+
+If a past `released_at` is used, no Evidence is collected for the Release.
 
 <!-- ## Troubleshooting
 

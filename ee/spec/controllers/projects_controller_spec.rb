@@ -42,7 +42,7 @@ describe ProjectsController do
             id: project.path
           }
 
-      expect(response).to have_gitlab_http_status(404)
+      expect(response).to have_gitlab_http_status(:not_found)
     end
   end
 
@@ -133,7 +133,7 @@ describe ProjectsController do
         it 'does not create the project from project template' do
           expect { post :create, params: { project: templates_params } }.not_to change { Project.count }
 
-          expect(response).to have_gitlab_http_status(200)
+          expect(response).to have_gitlab_http_status(:ok)
           expect(response.body).to match(/Template name .* is unknown or invalid/)
         end
       end
@@ -154,7 +154,7 @@ describe ProjectsController do
           }
       project.reload
 
-      expect(response).to have_gitlab_http_status(302)
+      expect(response).to have_gitlab_http_status(:found)
       params.except(:repository_size_limit).each do |param, value|
         expect(project.public_send(param)).to eq(value)
       end
@@ -177,7 +177,7 @@ describe ProjectsController do
           }
       project.reload
 
-      expect(response).to have_gitlab_http_status(302)
+      expect(response).to have_gitlab_http_status(:found)
       expect(project.approver_groups.pluck(:group_id)).to contain_exactly(params[:approver_group_ids])
       expect(project.approvers.pluck(:user_id)).to contain_exactly(params[:approver_ids])
     end
@@ -196,7 +196,7 @@ describe ProjectsController do
           }
       project.reload
 
-      expect(response).to have_gitlab_http_status(302)
+      expect(response).to have_gitlab_http_status(:found)
       params.each do |param, value|
         expect(project.public_send(param)).to eq(value)
       end
@@ -218,7 +218,7 @@ describe ProjectsController do
           }
       project.reload
 
-      expect(response).to have_gitlab_http_status(302)
+      expect(response).to have_gitlab_http_status(:found)
       expect(project.service_desk_enabled).to eq(true)
     end
 
@@ -317,6 +317,63 @@ describe ProjectsController do
         end
       end
     end
+
+    context 'merge request approvers settings' do
+      shared_examples 'merge request approvers rules' do
+        using RSpec::Parameterized::TableSyntax
+
+        where(:license_value, :setting_value, :param_value, :final_value) do
+          false | false | false | false
+          false | true  | false | false
+          false | false | true  | true
+          false | true  | true  | true
+          true  | false | false | false
+          true  | true  | false | nil
+          true  | false | true  | true
+          true  | true  | true  | nil
+        end
+
+        with_them do
+          before do
+            stub_licensed_features(admin_merge_request_approvers_rules: license_value)
+            stub_application_setting(app_setting => setting_value)
+          end
+
+          it 'updates project if needed' do
+            put :update,
+              params: {
+                namespace_id: project.namespace,
+                id: project,
+                project: { setting => param_value }
+              }
+            project.reload
+
+            expect(project[setting]).to eq(final_value)
+          end
+        end
+      end
+
+      describe ':disable_overriding_approvers_per_merge_request' do
+        it_behaves_like 'merge request approvers rules' do
+          let(:app_setting) { :disable_overriding_approvers_per_merge_request }
+          let(:setting) { :disable_overriding_approvers_per_merge_request }
+        end
+      end
+
+      describe ':merge_requests_author_approval' do
+        it_behaves_like 'merge request approvers rules' do
+          let(:app_setting) { :prevent_merge_requests_author_approval }
+          let(:setting) { :merge_requests_author_approval }
+        end
+      end
+
+      describe ':merge_requests_disable_committers_approval' do
+        it_behaves_like 'merge request approvers rules' do
+          let(:app_setting) { :prevent_merge_requests_committers_approval }
+          let(:setting) { :merge_requests_disable_committers_approval }
+        end
+      end
+    end
   end
 
   describe '#download_export' do
@@ -406,14 +463,14 @@ describe ProjectsController do
 
     context 'feature is available' do
       before do
-        stub_licensed_features(marking_project_for_deletion: true)
+        stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
       end
 
       it 'marks project for deletion' do
         delete :destroy, params: { namespace_id: project.namespace, id: project }
 
         expect(project.reload.marked_for_deletion?).to be_truthy
-        expect(response).to have_gitlab_http_status(302)
+        expect(response).to have_gitlab_http_status(:found)
         expect(response).to redirect_to(project_path(project))
       end
 
@@ -424,7 +481,7 @@ describe ProjectsController do
 
         delete :destroy, params: { namespace_id: project.namespace, id: project }
 
-        expect(response).to have_gitlab_http_status(200)
+        expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template(:edit)
         expect(flash[:alert]).to include(message)
       end
@@ -436,7 +493,7 @@ describe ProjectsController do
           delete :destroy, params: { namespace_id: project.namespace, id: project }
 
           expect(project.marked_for_deletion?).to be_falsey
-          expect(response).to have_gitlab_http_status(302)
+          expect(response).to have_gitlab_http_status(:found)
           expect(response).to redirect_to(dashboard_projects_path)
         end
       end
@@ -444,14 +501,14 @@ describe ProjectsController do
 
     context 'feature is not available' do
       before do
-        stub_licensed_features(marking_project_for_deletion: false)
+        stub_licensed_features(adjourned_deletion_for_projects_and_groups: false)
       end
 
       it 'deletes project right away' do
         delete :destroy, params: { namespace_id: project.namespace, id: project }
 
         expect(project.marked_for_deletion?).to be_falsey
-        expect(response).to have_gitlab_http_status(302)
+        expect(response).to have_gitlab_http_status(:found)
         expect(response).to redirect_to(dashboard_projects_path)
       end
     end
@@ -471,7 +528,7 @@ describe ProjectsController do
 
       expect(project.reload.marked_for_deletion_at).to be_nil
       expect(project.reload.archived).to be_falsey
-      expect(response).to have_gitlab_http_status(302)
+      expect(response).to have_gitlab_http_status(:found)
       expect(response).to redirect_to(edit_project_path(project))
     end
 
@@ -481,7 +538,7 @@ describe ProjectsController do
 
       post :restore, params: { namespace_id: project.namespace, project_id: project }
 
-      expect(response).to have_gitlab_http_status(200)
+      expect(response).to have_gitlab_http_status(:ok)
       expect(response).to render_template(:edit)
       expect(flash[:alert]).to include(message)
     end

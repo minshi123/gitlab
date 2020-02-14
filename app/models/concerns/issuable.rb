@@ -13,6 +13,7 @@ module Issuable
   include CacheMarkdownField
   include Participable
   include Mentionable
+  include Milestoneable
   include Subscribable
   include StripAttribute
   include Awardable
@@ -56,7 +57,6 @@ module Issuable
     belongs_to :author, class_name: 'User'
     belongs_to :updated_by, class_name: 'User'
     belongs_to :last_edited_by, class_name: 'User'
-    belongs_to :milestone
 
     has_many :notes, as: :noteable, inverse_of: :noteable, dependent: :destroy do # rubocop:disable Cop/ActiveRecordDependent
       def authors_loaded?
@@ -89,18 +89,13 @@ module Issuable
     # to avoid breaking the existing Issuables which may have their descriptions longer
     validates :description, length: { maximum: DESCRIPTION_LENGTH_MAX }, allow_blank: true, on: :create
     validate :description_max_length_for_new_records_is_valid, on: :update
-    validate :milestone_is_valid
 
     before_validation :truncate_description_on_import!
+    after_save :store_mentions!, if: :any_mentionable_attributes_changed?
 
     scope :authored, ->(user) { where(author_id: user) }
     scope :recent, -> { reorder(id: :desc) }
     scope :of_projects, ->(ids) { where(project_id: ids) }
-    scope :of_milestones, ->(ids) { where(milestone_id: ids) }
-    scope :any_milestone, -> { where('milestone_id IS NOT NULL') }
-    scope :with_milestone, ->(title) { left_joins_milestones.where(milestones: { title: title }) }
-    scope :any_release, -> { joins_milestone_releases }
-    scope :with_release, -> (tag, project_id) { joins_milestone_releases.where( milestones: { releases: { tag: tag, project_id: project_id } } ) }
     scope :opened, -> { with_state(:opened) }
     scope :only_opened, -> { with_state(:opened) }
     scope :closed, -> { with_state(:closed) }
@@ -114,23 +109,11 @@ module Issuable
       where("NOT EXISTS (SELECT TRUE FROM #{to_ability_name}_assignees WHERE #{to_ability_name}_id = #{to_ability_name}s.id)")
     end
     scope :assigned_to, ->(u) do
-      where("EXISTS (SELECT TRUE FROM #{to_ability_name}_assignees WHERE user_id = ? AND #{to_ability_name}_id = #{to_ability_name}s.id)", u.id)
+      assignees_table = Arel::Table.new("#{to_ability_name}_assignees")
+      sql = assignees_table.project('true').where(assignees_table[:user_id].in(u)).where(Arel::Nodes::SqlLiteral.new("#{to_ability_name}_id = #{to_ability_name}s.id"))
+      where("EXISTS (#{sql.to_sql})")
     end
     # rubocop:enable GitlabSecurity/SqlInjection
-
-    scope :left_joins_milestones,    -> { joins("LEFT OUTER JOIN milestones ON #{table_name}.milestone_id = milestones.id") }
-    scope :order_milestone_due_desc, -> { left_joins_milestones.reorder(Arel.sql('milestones.due_date IS NULL, milestones.id IS NULL, milestones.due_date DESC')) }
-    scope :order_milestone_due_asc,  -> { left_joins_milestones.reorder(Arel.sql('milestones.due_date IS NULL, milestones.id IS NULL, milestones.due_date ASC')) }
-
-    scope :without_release, -> do
-      joins("LEFT OUTER JOIN milestone_releases ON #{table_name}.milestone_id = milestone_releases.milestone_id")
-        .where('milestone_releases.release_id IS NULL')
-    end
-
-    scope :joins_milestone_releases, -> do
-      joins("JOIN milestone_releases ON #{table_name}.milestone_id = milestone_releases.milestone_id
-             JOIN releases ON milestone_releases.release_id = releases.id").distinct
-    end
 
     scope :without_label, -> { joins("LEFT OUTER JOIN label_links ON label_links.target_type = '#{name}' AND label_links.target_id = #{table_name}.id").where(label_links: { id: nil }) }
     scope :any_label, -> { joins(:label_links).group(:id) }
@@ -148,6 +131,10 @@ module Issuable
 
     strip_attributes :title
 
+    def self.locking_enabled?
+      false
+    end
+
     # We want to use optimistic lock for cases when only title or description are involved
     # http://api.rubyonrails.org/classes/ActiveRecord/Locking/Optimistic.html
     def locking_enabled?
@@ -163,10 +150,6 @@ module Issuable
     end
 
     private
-
-    def milestone_is_valid
-      errors.add(:milestone_id, message: "is invalid") if respond_to?(:milestone_id) && milestone_id.present? && !milestone_available?
-    end
 
     def description_max_length_for_new_records_is_valid
       if new_record? && description.length > Issuable::DESCRIPTION_LENGTH_MAX
@@ -267,7 +250,7 @@ module Issuable
                 Gitlab::Database.nulls_last_order('highest_priority', direction))
     end
 
-    def order_labels_priority(direction = 'ASC', excluded_labels: [], extra_select_columns: [])
+    def order_labels_priority(direction = 'ASC', excluded_labels: [], extra_select_columns: [], with_cte: false)
       params = {
         target_type: name,
         target_column: "#{table_name}.id",
@@ -283,12 +266,13 @@ module Issuable
       ] + extra_select_columns
 
       select(select_columns.join(', '))
-        .group(arel_table[:id])
+        .group(issue_grouping_columns(use_cte: with_cte))
         .reorder(Gitlab::Database.nulls_last_order('highest_priority', direction))
     end
 
-    def with_label(title, sort = nil)
-      if title.is_a?(Array) && title.size > 1
+    def with_label(title, sort = nil, not_query: false)
+      multiple_labels = title.is_a?(Array) && title.size > 1
+      if multiple_labels && !not_query
         joins(:labels).where(labels: { title: title }).group(*grouping_columns(sort)).having("COUNT(DISTINCT labels.title) = #{title.size}")
       else
         joins(:labels).where(labels: { title: title })
@@ -311,6 +295,18 @@ module Issuable
       grouping_columns
     end
 
+    # Includes all table keys in group by clause when sorting
+    # preventing errors in postgres when using CTE search optimisation
+    #
+    # Returns an array of arel columns
+    def issue_grouping_columns(use_cte: false)
+      if use_cte
+        [arel_table[:state]] + attribute_names.map { |attr| arel_table[attr.to_sym] }
+      else
+        arel_table[:id]
+      end
+    end
+
     def to_ability_name
       model_name.singular
     end
@@ -330,10 +326,6 @@ module Issuable
 
   def resource_parent
     project
-  end
-
-  def milestone_available?
-    project_id == milestone&.project_id || project.ancestors_upto.compact.include?(milestone&.group)
   end
 
   def assignee_or_author?(user)
@@ -481,13 +473,6 @@ module Issuable
   #
   def wipless_title_changed(old_title)
     old_title != title
-  end
-
-  ##
-  # Overridden on EE module
-  #
-  def supports_milestone?
-    respond_to?(:milestone_id)
   end
 end
 

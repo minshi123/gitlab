@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
+require 'rspec-parameterized'
 
 describe Gitlab::SidekiqCluster::CLI do
   let(:cli) { described_class.new('/dev/null') }
   let(:default_options) do
-    { env: 'test', directory: Dir.pwd, max_concurrency: 50, dryrun: false }
+    { env: 'test', directory: Dir.pwd, max_concurrency: 50, min_concurrency: 0, dryrun: false }
+  end
+
+  before do
+    stub_env('RAILS_ENV', 'test')
   end
 
   describe '#run' do
@@ -17,9 +22,9 @@ describe Gitlab::SidekiqCluster::CLI do
 
     context 'with arguments' do
       before do
-        expect(cli).to receive(:write_pid)
-        expect(cli).to receive(:trap_signals)
-        expect(cli).to receive(:start_loop)
+        allow(cli).to receive(:write_pid)
+        allow(cli).to receive(:trap_signals)
+        allow(cli).to receive(:start_loop)
       end
 
       it 'starts the Sidekiq workers' do
@@ -32,7 +37,7 @@ describe Gitlab::SidekiqCluster::CLI do
 
       context 'with --negate flag' do
         it 'starts Sidekiq workers for all queues in all_queues.yml except the ones in argv' do
-          expect(Gitlab::SidekiqConfig).to receive(:worker_queues).and_return(['baz'])
+          expect(Gitlab::SidekiqConfig::CliMethods).to receive(:worker_queues).and_return(['baz'])
           expect(Gitlab::SidekiqCluster).to receive(:start)
                                               .with([['baz']], default_options)
                                               .and_return([])
@@ -43,7 +48,7 @@ describe Gitlab::SidekiqCluster::CLI do
 
       context 'with --max-concurrency flag' do
         it 'starts Sidekiq workers for specified queues with a max concurrency' do
-          expect(Gitlab::SidekiqConfig).to receive(:worker_queues).and_return(%w(foo bar baz))
+          expect(Gitlab::SidekiqConfig::CliMethods).to receive(:worker_queues).and_return(%w(foo bar baz))
           expect(Gitlab::SidekiqCluster).to receive(:start)
                                               .with([%w(foo bar baz), %w(solo)], default_options.merge(max_concurrency: 2))
                                               .and_return([])
@@ -52,14 +57,104 @@ describe Gitlab::SidekiqCluster::CLI do
         end
       end
 
+      context 'with --min-concurrency flag' do
+        it 'starts Sidekiq workers for specified queues with a min concurrency' do
+          expect(Gitlab::SidekiqConfig::CliMethods).to receive(:worker_queues).and_return(%w(foo bar baz))
+          expect(Gitlab::SidekiqCluster).to receive(:start)
+                                              .with([%w(foo bar baz), %w(solo)], default_options.merge(min_concurrency: 2))
+                                              .and_return([])
+
+          cli.run(%w(foo,bar,baz solo --min-concurrency 2))
+        end
+      end
+
       context 'queue namespace expansion' do
         it 'starts Sidekiq workers for all queues in all_queues.yml with a namespace in argv' do
-          expect(Gitlab::SidekiqConfig).to receive(:worker_queues).and_return(['cronjob:foo', 'cronjob:bar'])
+          expect(Gitlab::SidekiqConfig::CliMethods).to receive(:worker_queues).and_return(['cronjob:foo', 'cronjob:bar'])
           expect(Gitlab::SidekiqCluster).to receive(:start)
                                               .with([['cronjob', 'cronjob:foo', 'cronjob:bar']], default_options)
                                               .and_return([])
 
           cli.run(%w(cronjob))
+        end
+      end
+
+      context 'with --experimental-queue-selector' do
+        where do
+          {
+            'memory-bound queues' => {
+              query: 'resource_boundary=memory',
+              included_queues: %w(project_export),
+              excluded_queues: %w(merge)
+            },
+            'memory- or CPU-bound queues' => {
+              query: 'resource_boundary=memory,cpu',
+              included_queues: %w(auto_merge:auto_merge_process project_export),
+              excluded_queues: %w(merge)
+            },
+            'latency-sensitive CI queues' => {
+              query: 'feature_category=continuous_integration&latency_sensitive=true',
+              included_queues: %w(pipeline_cache:expire_job_cache pipeline_cache:expire_pipeline_cache),
+              excluded_queues: %w(merge)
+            },
+            'CPU-bound latency-sensitive CI queues' => {
+              query: 'feature_category=continuous_integration&latency_sensitive=true&resource_boundary=cpu',
+              included_queues: %w(pipeline_cache:expire_pipeline_cache),
+              excluded_queues: %w(pipeline_cache:expire_job_cache merge)
+            },
+            'CPU-bound latency-sensitive non-CI queues' => {
+              query: 'feature_category!=continuous_integration&latency_sensitive=true&resource_boundary=cpu',
+              included_queues: %w(new_issue),
+              excluded_queues: %w(pipeline_cache:expire_pipeline_cache)
+            },
+            'CI and SCM queues' => {
+              query: 'feature_category=continuous_integration|feature_category=source_code_management',
+              included_queues: %w(pipeline_cache:expire_job_cache merge),
+              excluded_queues: %w(mailers)
+            }
+          }
+        end
+
+        with_them do
+          it 'expands queues by attributes' do
+            expect(Gitlab::SidekiqCluster).to receive(:start) do |queues, opts|
+              expect(opts).to eq(default_options)
+              expect(queues.first).to include(*included_queues)
+              expect(queues.first).not_to include(*excluded_queues)
+
+              []
+            end
+
+            cli.run(%W(--experimental-queue-selector #{query}))
+          end
+
+          it 'works when negated' do
+            expect(Gitlab::SidekiqCluster).to receive(:start) do |queues, opts|
+              expect(opts).to eq(default_options)
+              expect(queues.first).not_to include(*included_queues)
+              expect(queues.first).to include(*excluded_queues)
+
+              []
+            end
+
+            cli.run(%W(--negate --experimental-queue-selector #{query}))
+          end
+        end
+
+        it 'expands multiple queue groups correctly' do
+          expect(Gitlab::SidekiqCluster)
+            .to receive(:start)
+                  .with([['chat_notification'], ['project_export']], default_options)
+                  .and_return([])
+
+          cli.run(%w(--experimental-queue-selector feature_category=chatops&latency_sensitive=true resource_boundary=memory&feature_category=importers))
+        end
+
+        it 'errors on an invalid query multiple queue groups correctly' do
+          expect(Gitlab::SidekiqCluster).not_to receive(:start)
+
+          expect { cli.run(%w(--experimental-queue-selector unknown_field=chatops)) }
+            .to raise_error(Gitlab::SidekiqConfig::CliMethods::QueryError)
         end
       end
     end
@@ -80,6 +175,53 @@ describe Gitlab::SidekiqCluster::CLI do
         expect(Gitlab::SidekiqCluster).not_to receive(:write_pid)
 
         cli.write_pid
+      end
+    end
+  end
+
+  describe '#wait_for_termination' do
+    it 'waits for termination of all sub-processes and succeeds after 3 checks' do
+      expect(Gitlab::SidekiqCluster).to receive(:any_alive?)
+        .with(an_instance_of(Array)).and_return(true, true, true, false)
+
+      expect(Gitlab::SidekiqCluster).to receive(:pids_alive)
+        .with([]).and_return([])
+
+      expect(Gitlab::SidekiqCluster).to receive(:signal_processes)
+        .with([], :KILL)
+
+      stub_const("Gitlab::SidekiqCluster::CLI::CHECK_TERMINATE_INTERVAL_SECONDS", 0.1)
+      stub_const("Gitlab::SidekiqCluster::CLI::TERMINATE_TIMEOUT_SECONDS", 1)
+      cli.wait_for_termination
+    end
+
+    context 'with hanging workers' do
+      before do
+        expect(cli).to receive(:write_pid)
+        expect(cli).to receive(:trap_signals)
+        expect(cli).to receive(:start_loop)
+      end
+
+      it 'hard kills workers after timeout expires' do
+        worker_pids = [101, 102, 103]
+        expect(Gitlab::SidekiqCluster).to receive(:start)
+                                            .with([['foo']], default_options)
+                                            .and_return(worker_pids)
+
+        expect(Gitlab::SidekiqCluster).to receive(:any_alive?)
+          .with(worker_pids).and_return(true).at_least(10).times
+
+        expect(Gitlab::SidekiqCluster).to receive(:pids_alive)
+          .with(worker_pids).and_return([102])
+
+        expect(Gitlab::SidekiqCluster).to receive(:signal_processes)
+          .with([102], :KILL)
+
+        cli.run(%w(foo))
+
+        stub_const("Gitlab::SidekiqCluster::CLI::CHECK_TERMINATE_INTERVAL_SECONDS", 0.1)
+        stub_const("Gitlab::SidekiqCluster::CLI::TERMINATE_TIMEOUT_SECONDS", 1)
+        cli.wait_for_termination
       end
     end
   end

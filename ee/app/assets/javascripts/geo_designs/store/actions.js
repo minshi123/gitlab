@@ -1,5 +1,6 @@
 import Api from 'ee/api';
 import createFlash from '~/flash';
+import toast from '~/vue_shared/plugins/global_toast';
 import { __ } from '~/locale';
 import {
   parseIntPagination,
@@ -44,6 +45,51 @@ export const fetchDesigns = ({ state, dispatch }) => {
     })
     .catch(() => {
       dispatch('receiveDesignsError');
+    });
+};
+
+// Initiate All Design Syncs
+export const requestInitiateAllDesignSyncs = ({ commit }) =>
+  commit(types.REQUEST_INITIATE_ALL_DESIGN_SYNCS);
+export const receiveInitiateAllDesignSyncsSuccess = ({ commit, dispatch }, { action }) => {
+  toast(__(`All designs are being scheduled for ${action}`));
+  commit(types.RECEIVE_INITIATE_ALL_DESIGN_SYNCS_SUCCESS);
+  dispatch('fetchDesigns');
+};
+export const receiveInitiateAllDesignSyncsError = ({ commit }) => {
+  createFlash(__(`There was an error syncing the Design Repositories.`));
+  commit(types.RECEIVE_INITIATE_ALL_DESIGN_SYNCS_ERROR);
+};
+
+export const initiateAllDesignSyncs = ({ dispatch }, action) => {
+  dispatch('requestInitiateAllDesignSyncs');
+
+  Api.initiateAllGeoDesignSyncs(action)
+    .then(() => dispatch('receiveInitiateAllDesignSyncsSuccess', { action }))
+    .catch(() => {
+      dispatch('receiveInitiateAllDesignSyncsError');
+    });
+};
+
+// Initiate Design Sync
+export const requestInitiateDesignSync = ({ commit }) => commit(types.REQUEST_INITIATE_DESIGN_SYNC);
+export const receiveInitiateDesignSyncSuccess = ({ commit, dispatch }, { name, action }) => {
+  toast(__(`${name} is scheduled for ${action}`));
+  commit(types.RECEIVE_INITIATE_DESIGN_SYNC_SUCCESS);
+  dispatch('fetchDesigns');
+};
+export const receiveInitiateDesignSyncError = ({ commit }, { name }) => {
+  createFlash(__(`There was an error syncing project '${name}'`));
+  commit(types.RECEIVE_INITIATE_DESIGN_SYNC_ERROR);
+};
+
+export const initiateDesignSync = ({ dispatch }, { projectId, name, action }) => {
+  dispatch('requestInitiateDesignSync');
+
+  Api.initiateGeoDesignSync({ projectId, action })
+    .then(() => dispatch('receiveInitiateDesignSyncSuccess', { name, action }))
+    .catch(() => {
+      dispatch('receiveInitiateDesignSyncError', { name });
     });
 };
 

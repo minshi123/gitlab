@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :environment, class: Environment do
+  factory :environment, class: 'Environment' do
     sequence(:name) { |n| "environment#{n}" }
 
     association :project, :repository
@@ -45,7 +45,7 @@ FactoryBot.define do
       self.when { 'manual' }
     end
 
-    trait :auto_stopped do
+    trait :auto_stoppable do
       auto_stop_at { 1.day.ago }
     end
 

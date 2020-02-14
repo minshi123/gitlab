@@ -38,13 +38,14 @@ This is an optional way to deploy Gitaly which can benefit GitLab
 installations that are larger than a single machine. Most
 installations will be better served with the default configuration
 used by Omnibus and the GitLab source installation guide.
+Follow transition to Gitaly on its own server, [Gitaly servers will need to be upgraded before other servers in your cluster](https://docs.gitlab.com/omnibus/update/#upgrading-gitaly-servers).
 
 Starting with GitLab 11.4, Gitaly is able to serve all Git requests without
 requiring a shared NFS mount for Git repository data.
 Between 11.4 and 11.8 the exception was the
 [Elasticsearch indexer](https://gitlab.com/gitlab-org/gitlab-elasticsearch-indexer).
 But since 11.8 the indexer uses Gitaly for data access as well. NFS can still
-be leveraged for redudancy on block level of the Git data. But only has to
+be leveraged for redundancy on block level of the Git data. But only has to
 be mounted on the Gitaly server.
 
 From GitLab v11.8 to v12.2, it is possible to use Elasticsearch in conjunction with
@@ -163,10 +164,20 @@ Git operations in GitLab will result in an API error.
    postgresql['enable'] = false
    redis['enable'] = false
    nginx['enable'] = false
-   prometheus['enable'] = false
    unicorn['enable'] = false
    sidekiq['enable'] = false
    gitlab_workhorse['enable'] = false
+
+   # If you don't want to run monitoring services uncomment the following (not recommended)
+   # alertmanager['enable'] = false
+   # gitlab_exporter['enable'] = false
+   # grafana['enable'] = false
+   # node_exporter['enable'] = false
+   # prometheus['enable'] = false
+
+   # Enable prometheus monitoring - comment out if you disable monitoring services above.
+   # This makes Prometheus listen on all interfaces. You must use firewalls to restrict access to this address/port.
+   prometheus['listen_address'] = '0.0.0.0:9090'
 
    # Prevent database connections during 'gitlab-ctl reconfigure'
    gitlab_rails['rake_cache_clear'] = false
@@ -190,9 +201,14 @@ Git operations in GitLab will result in an API error.
 
 1. Append the following to `/etc/gitlab/gitlab.rb` for each respective server:
 
+   <!--
+   updates to following example must also be made at
+   https://gitlab.com/gitlab-org/charts/gitlab/blob/master/doc/advanced/external-gitaly/external-omnibus-gitaly.md#configure-omnibus-gitlab
+   -->
+
    On `gitaly1.internal`:
 
-   ```
+   ```ruby
    git_data_dirs({
      'default' => {
        'path' => '/var/opt/gitlab/git-data'
@@ -205,7 +221,7 @@ Git operations in GitLab will result in an API error.
 
    On `gitaly2.internal`:
 
-   ```
+   ```ruby
    git_data_dirs({
      'storage2' => {
        'path' => '/srv/gitlab/git-data'
@@ -293,7 +309,7 @@ can read and write to `/mnt/gitlab/storage2`.
 1. Save the file and [reconfigure GitLab](../restart_gitlab.md#omnibus-gitlab-reconfigure).
 1. Tail the logs to see the requests:
 
-   ```sh
+   ```shell
    sudo gitlab-ctl tail gitaly
    ```
 
@@ -327,7 +343,7 @@ can read and write to `/mnt/gitlab/storage2`.
 1. Save the file and [restart GitLab](../restart_gitlab.md#installations-from-source).
 1. Tail the logs to see the requests:
 
-   ```sh
+   ```shell
    tail -f /home/git/gitlab/log/gitaly.log
    ```
 
@@ -336,9 +352,9 @@ coming in. One sure way to trigger a Gitaly request is to clone a repository
 from your GitLab server over HTTP.
 
 DANGER: **Danger:**
-If you have [custom server-side Git hooks](../custom_hooks.md) configured,
+If you have [Server hooks](../server_hooks.md) configured,
 either per repository or globally, you must move these to the Gitaly node.
-If you have multiple Gitaly nodes, copy your custom hook(s) to all nodes.
+If you have multiple Gitaly nodes, copy your server hook(s) to all nodes.
 
 ### Disabling the Gitaly service in a cluster environment
 
@@ -374,7 +390,7 @@ To disable Gitaly on a client node:
 
 ## TLS support
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/22602) in GitLab 11.8.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/22602) in GitLab 11.8.
 
 Gitaly supports TLS encryption. To be able to communicate
 with a Gitaly instance that listens for secure connections you will need to use `tls://` URL
@@ -419,7 +435,7 @@ To configure Gitaly with TLS:
 1. Save the file and [reconfigure GitLab](../restart_gitlab.md#omnibus-gitlab-reconfigure) on client node(s).
 1. On the Gitaly server, create the `/etc/gitlab/ssl` directory and copy your key and certificate there:
 
-   ```sh
+   ```shell
    sudo mkdir -p /etc/gitlab/ssl
    sudo chmod 755 /etc/gitlab/ssl
    sudo cp key.pem cert.pem /etc/gitlab/ssl/
@@ -475,7 +491,7 @@ To configure Gitaly with TLS:
 1. Save the file and [restart GitLab](../restart_gitlab.md#installations-from-source) on client node(s).
 1. Create the `/etc/gitlab/ssl` directory and copy your key and certificate there:
 
-   ```sh
+   ```shell
    sudo mkdir -p /etc/gitlab/ssl
    sudo chmod 700 /etc/gitlab/ssl
    sudo cp key.pem cert.pem /etc/gitlab/ssl/
@@ -503,7 +519,7 @@ To configure Gitaly with TLS:
 To observe what type of connections are actually being used in a
 production environment you can use the following Prometheus query:
 
-```
+```prometheus
 sum(rate(gitaly_connections_total[5m])) by (type)
 ```
 
@@ -560,14 +576,14 @@ a few things that you need to do:
 
 1. Make sure the [`git` user home directory](https://docs.gitlab.com/omnibus/settings/configuration.html#moving-the-home-directory-for-a-user) is on local disk.
 1. Configure [database lookup of SSH keys](../operations/fast_ssh_key_lookup.md)
-   to eliminate the need for a shared authorized_keys file.
+   to eliminate the need for a shared `authorized_keys` file.
 1. Configure [object storage for job artifacts](../job_artifacts.md#using-object-storage)
    including [incremental logging](../job_logs.md#new-incremental-logging-architecture).
 1. Configure [object storage for LFS objects](../lfs/lfs_administration.md#storing-lfs-objects-in-remote-object-storage).
 1. Configure [object storage for uploads](../uploads.md#using-object-storage-core-only).
-1. Configure [object storage for Merge Request Diffs](../merge_request_diffs.md#using-object-storage).
-1. Configure [object storage for Packages](../packages/index.md#using-object-storage) (Optional Feature).
-1. Configure [object storage for Dependency Proxy](../packages/dependency_proxy.md#using-object-storage) (Optional Feature).
+1. Configure [object storage for merge request diffs](../merge_request_diffs.md#using-object-storage).
+1. Configure [object storage for packages](../packages/index.md#using-object-storage) (optional feature).
+1. Configure [object storage for dependency proxy](../packages/dependency_proxy.md#using-object-storage) (optional feature).
 
 NOTE: **Note:**
 One current feature of GitLab that still requires a shared directory (NFS) is
@@ -602,7 +618,7 @@ This will limit the number of in-flight RPC calls for the given RPC's.
 The limit is applied per repository. In the example above, each on the
 Gitaly server can have at most 20 simultaneous PostUploadPack calls in
 flight, and the same for SSHUploadPack. If another request comes in for
-a repository that hase used up its 20 slots, that request will get
+a repository that has used up its 20 slots, that request will get
 queued.
 
 You can observe the behavior of this queue via the Gitaly logs and via
@@ -632,14 +648,14 @@ machine.
 Use Prometheus to see what the current authentication behavior of your
 GitLab installation is.
 
-```
+```prometheus
 sum(rate(gitaly_authentications_total[5m])) by (enforced, status)
 ```
 
 In a system where authentication is configured correctly, and where you
 have live traffic, you will see something like this:
 
-```
+```prometheus
 {enforced="true",status="ok"}  4424.985419441742
 ```
 
@@ -668,7 +684,7 @@ gitaly['auth_transitioning'] = true
 After you have applied this, your Prometheus query should return
 something like this:
 
-```
+```prometheus
 {enforced="false",status="would be ok"}  4424.985419441742
 ```
 
@@ -714,7 +730,7 @@ gitaly['auth_transitioning'] = false
 Refresh your Prometheus query. You should now see the same kind of
 result as you did in the beginning:
 
-```
+```prometheus
 {enforced="true",status="ok"}  4424.985419441742
 ```
 
@@ -746,7 +762,7 @@ Git implementation itself.
 
 Because Rugged+Unicorn was so efficient, GitLab's application code ended
 up with lots of duplicate Git object lookups (like looking up the
-`master` commmit a dozen times in one request). We could write
+`master` commit a dozen times in one request). We could write
 inefficient code without being punished for it.
 
 When we migrated these Git lookups to Gitaly calls, we were suddenly
@@ -840,7 +856,7 @@ your GitLab / Gitaly server already at `/opt/gitlab/embedded/bin/gitaly-debug`.
 If you're investigating an older GitLab version you can compile this
 tool offline and copy the executable to your server:
 
-```sh
+```shell
 git clone https://gitlab.com/gitlab-org/gitaly.git
 cd cmd/gitaly-debug
 GOOS=linux GOARCH=amd64 go build -o gitaly-debug
@@ -848,26 +864,32 @@ GOOS=linux GOARCH=amd64 go build -o gitaly-debug
 
 To see the help page of `gitaly-debug` for a list of supported sub-commands, run:
 
-```sh
+```shell
 gitaly-debug -h
 ```
 
 ### Commits, pushes, and clones return a 401
 
-```
+```plaintext
 remote: GitLab: 401 Unauthorized
 ```
 
 You will need to sync your `gitlab-secrets.json` file with your GitLab
 app nodes.
 
-### Client side GRPC logs
+### Client side gRPC logs
 
 Gitaly uses the [gRPC](https://grpc.io/) RPC framework. The Ruby gRPC
 client has its own log file which may contain useful information when
 you are seeing Gitaly errors. You can control the log level of the
 gRPC client with the `GRPC_LOG_LEVEL` environment variable. The
 default level is `WARN`.
+
+You can run a GRPC trace with:
+
+```shell
+GRPC_TRACE=all GRPC_VERBOSITY=DEBUG sudo gitlab-rake gitlab:gitaly:check
+```
 
 ### Observing `gitaly-ruby` traffic
 
@@ -886,7 +908,7 @@ Assuming your `grpc_client_handled_total` counter only observes Gitaly,
 the following query shows you RPCs are (most likely) internally
 implemented as calls to `gitaly-ruby`:
 
-```
+```prometheus
 sum(rate(grpc_client_handled_total[5m])) by (grpc_method) > 0
 ```
 
@@ -903,7 +925,7 @@ Confirm the following are all true:
 - When any user performs a `git push` to any repository on this Gitaly node, it
   fails with the following error (note the `401 Unauthorized`):
 
-  ```sh
+  ```shell
   remote: GitLab: 401 Unauthorized
   To <REMOTE_URL>
   ! [remote rejected] branch-name -> branch-name (pre-receive hook declined)
@@ -911,13 +933,13 @@ Confirm the following are all true:
   ```
 
 - When any user adds or modifies a file from the repository using the GitLab
-  UI, it immediatley fails with a red `401 Unauthorized` banner.
+  UI, it immediately fails with a red `401 Unauthorized` banner.
 - Creating a new project and [initializing it with a README](../../gitlab-basics/create-project.md#blank-projects)
   successfully creates the project but doesn't create the README.
 - When [tailing the logs](https://docs.gitlab.com/omnibus/settings/logs.html#tail-logs-in-a-console-on-the-server) on an app node and reproducing the error, you get `401` errors
   when reaching the `/api/v4/internal/allowed` endpoint:
 
-  ```sh
+  ```shell
   # api_json.log
   {
     "time": "2019-07-18T00:30:14.967Z",
@@ -987,7 +1009,7 @@ If you are having trouble connecting to a Gitaly node with command line (CLI) to
 
 Verify that you can reach Gitaly via TCP:
 
-```bash
+```shell
 sudo gitlab-rake gitlab:tcp_check[GITALY_SERVER_IP,GITALY_LISTEN_PORT]
 ```
 
@@ -997,7 +1019,7 @@ If you use proxy servers in your command line environment, such as Bash, these c
 
 If you use Bash or a compatible command line environment, run the following commands to determine whether you have proxy servers configured:
 
-```bash
+```shell
 echo $http_proxy
 echo $https_proxy
 ```
@@ -1006,7 +1028,7 @@ If either of these variables have a value, your Gitaly CLI connections may be ge
 
 To remove the proxy setting, run the following commands (depending on which variables had values):
 
-```bash
+```shell
 unset http_proxy
 unset https_proxy
 ```

@@ -6,9 +6,12 @@ describe API::EpicLinks do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:epic) { create(:epic, group: group) }
+  let(:features_when_forbidden) { { epics: true, subepics: false } }
 
   shared_examples 'user does not have access' do
-    it 'returns 403 when epics feature is disabled' do
+    it 'returns 403 when subepics feature is disabled' do
+      stub_licensed_features(features_when_forbidden)
+
       group.add_developer(user)
 
       subject
@@ -37,14 +40,15 @@ describe API::EpicLinks do
 
   describe 'GET /groups/:id/epics/:epic_iid/epics' do
     let(:url) { "/groups/#{group.path}/epics/#{epic.iid}/epics" }
+    let(:features_when_forbidden) { { epics: false } }
 
     subject { get api(url, user) }
 
     it_behaves_like 'user does not have access'
 
-    context 'when epics feature is enabled' do
+    context 'when subepics feature is enabled' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
       end
 
       let!(:child_epic1) { create(:epic, group: group, parent: epic, relative_position: 200) }
@@ -70,9 +74,9 @@ describe API::EpicLinks do
 
     it_behaves_like 'user does not have access'
 
-    context 'when epics feature is enabled' do
+    context 'when subepics feature is enabled' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
       end
 
       context 'when user is guest' do
@@ -119,9 +123,9 @@ describe API::EpicLinks do
 
     it_behaves_like 'user does not have access'
 
-    context 'when epics feature is enabled' do
+    context 'when subepics feature is enabled' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
       end
 
       context 'when user is guest' do
@@ -135,14 +139,31 @@ describe API::EpicLinks do
       end
 
       context 'when user is developer' do
-        it 'returns 201 status' do
+        before do
           group.add_developer(user)
+        end
 
+        it 'returns 201 status' do
           subject
 
           expect(response).to have_gitlab_http_status(201)
           expect(response).to match_response_schema('public_api/v4/linked_epic', dir: 'ee')
           expect(epic.reload.children).to include(Epic.last)
+        end
+
+        context 'and epic has errors' do
+          it 'returns 400 error' do
+            child_epic = Epic.new(title: 'with errors')
+            errors = ActiveModel::Errors.new(child_epic).tap { |e| e.add(:parent_id, "error message") }
+            allow(child_epic).to receive(:errors).and_return(errors)
+            allow_next_instance_of(Epics::CreateService) do |service|
+              allow(service).to receive(:execute).and_return(child_epic)
+            end
+
+            subject
+
+            expect(response).to have_gitlab_http_status(400)
+          end
         end
       end
     end
@@ -159,9 +180,9 @@ describe API::EpicLinks do
 
     it_behaves_like 'user does not have access'
 
-    context 'when epics are enabled' do
+    context 'when subepics are enabled' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
       end
 
       context 'when user has permissions to reorder epics' do
@@ -198,9 +219,9 @@ describe API::EpicLinks do
 
     it_behaves_like 'user does not have access'
 
-    context 'when epics feature is enabled' do
+    context 'when subepics feature is enabled' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
       end
 
       context 'when user is guest' do

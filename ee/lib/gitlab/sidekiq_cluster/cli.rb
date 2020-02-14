@@ -7,11 +7,17 @@ require 'time'
 module Gitlab
   module SidekiqCluster
     class CLI
+      CHECK_TERMINATE_INTERVAL_SECONDS = 1
+      # How long to wait in total when asking for a clean termination
+      # Sidekiq default to self-terminate is 25s
+      TERMINATE_TIMEOUT_SECONDS = 30
+
       CommandError = Class.new(StandardError)
 
       def initialize(log_output = STDERR)
         # As recommended by https://github.com/mperham/sidekiq/wiki/Advanced-Options#concurrency
         @max_concurrency = 50
+        @min_concurrency = 0
         @environment = ENV['RAILS_ENV'] || 'development'
         @pid = nil
         @interval = 5
@@ -35,22 +41,37 @@ module Gitlab
 
         option_parser.parse!(argv)
 
-        queue_groups = SidekiqCluster.parse_queues(argv)
+        all_queues = SidekiqConfig::CliMethods.all_queues(@rails_path)
+        queue_names = SidekiqConfig::CliMethods.worker_queues(@rails_path)
 
-        all_queues = SidekiqConfig.worker_queues(@rails_path)
-
-        queue_groups.map! do |queues|
-          SidekiqConfig.expand_queues(queues, all_queues)
-        end
+        queue_groups =
+          if @experimental_queue_selector
+            # When using the experimental queue query syntax, we treat
+            # each queue group as a worker attribute query, and resolve
+            # the queues for the queue group using this query.
+            argv.map do |queues|
+              SidekiqConfig::CliMethods.query_workers(queues, all_queues)
+            end
+          else
+            SidekiqCluster.parse_queues(argv).map do |queues|
+              SidekiqConfig::CliMethods.expand_queues(queues, queue_names)
+            end
+          end
 
         if @negate_queues
-          queue_groups.map! { |queues| all_queues - queues }
+          queue_groups.map! { |queues| queue_names - queues }
         end
 
         @logger.info("Starting cluster with #{queue_groups.length} processes")
 
-        @processes = SidekiqCluster.start(queue_groups, env: @environment, directory: @rails_path,
-          max_concurrency: @max_concurrency, dryrun: @dryrun)
+        @processes = SidekiqCluster.start(
+          queue_groups,
+          env: @environment,
+          directory: @rails_path,
+          max_concurrency: @max_concurrency,
+          min_concurrency: @min_concurrency,
+          dryrun: @dryrun
+        )
 
         return if @dryrun
 
@@ -63,10 +84,30 @@ module Gitlab
         SidekiqCluster.write_pid(@pid) if @pid
       end
 
+      def monotonic_time
+        Process.clock_gettime(Process::CLOCK_MONOTONIC, :float_second)
+      end
+
+      def continue_waiting?(deadline)
+        SidekiqCluster.any_alive?(@processes) && monotonic_time < deadline
+      end
+
+      def hard_stop_stuck_pids
+        SidekiqCluster.signal_processes(SidekiqCluster.pids_alive(@processes), :KILL)
+      end
+
+      def wait_for_termination
+        deadline = monotonic_time + TERMINATE_TIMEOUT_SECONDS
+        sleep(CHECK_TERMINATE_INTERVAL_SECONDS) while continue_waiting?(deadline)
+
+        hard_stop_stuck_pids
+      end
+
       def trap_signals
         SidekiqCluster.trap_terminate do |signal|
           @alive = false
           SidekiqCluster.signal_processes(@processes, signal)
+          wait_for_termination
         end
 
         SidekiqCluster.trap_forward do |signal|
@@ -103,6 +144,10 @@ module Gitlab
             @max_concurrency = int.to_i
           end
 
+          opt.on('--min-concurrency INT', 'Minimum threads to use with Sidekiq (default: 0)') do |int|
+            @min_concurrency = int.to_i
+          end
+
           opt.on('-e', '--environment ENV', 'The application environment') do |env|
             @environment = env
           end
@@ -113,6 +158,10 @@ module Gitlab
 
           opt.on('-r', '--require PATH', 'Location of the Rails application') do |path|
             @rails_path = path
+          end
+
+          opt.on('--experimental-queue-selector', 'EXPERIMENTAL: Run workers based on the provided selector') do |experimental_queue_selector|
+            @experimental_queue_selector = experimental_queue_selector
           end
 
           opt.on('-n', '--negate', 'Run workers for all queues in sidekiq_queues.yml except the given ones') do

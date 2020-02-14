@@ -15,6 +15,7 @@ class Analytics::ProductivityAnalyticsController < Analytics::ApplicationControl
   before_action -> {
     authorize_view_by_action!(:view_productivity_analytics)
   }
+
   before_action -> {
     push_frontend_feature_flag(:productivity_analytics_scatterplot_enabled, default_enabled: true)
   }
@@ -85,8 +86,8 @@ class Analytics::ProductivityAnalyticsController < Analytics::ApplicationControl
 
   def allowed_request_params
     params.permit(
-      :merged_at_after,
-      :merged_at_before,
+      :merged_after,
+      :merged_before,
       :author_username,
       :milestone_title,
       label_name: []

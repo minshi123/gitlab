@@ -3,7 +3,7 @@
 include ActionDispatch::TestProcess
 
 FactoryBot.define do
-  factory :ci_build, class: Ci::Build do
+  factory :ci_build, class: 'Ci::Build' do
     name { 'test' }
     stage { 'test' }
     stage_idx { 0 }
@@ -11,6 +11,7 @@ FactoryBot.define do
     tag { false }
     add_attribute(:protected) { false }
     created_at { 'Di 29. Okt 09:50:00 CET 2013' }
+    scheduling_type { 'stage' }
     pending
 
     options do

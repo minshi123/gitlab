@@ -6,6 +6,7 @@ class Packages::Package < ApplicationRecord
   # package_files must be destroyed by ruby code in order to properly remove carrierwave uploads and update project statistics
   has_many :package_files, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
   has_many :dependency_links, inverse_of: :package, class_name: 'Packages::DependencyLink'
+  has_many :tags, inverse_of: :package, class_name: 'Packages::Tag'
   has_one :conan_metadatum, inverse_of: :package
   has_one :maven_metadatum, inverse_of: :package
   has_one :build_info, inverse_of: :package
@@ -22,8 +23,9 @@ class Packages::Package < ApplicationRecord
     format: { with: Gitlab::Regex.package_name_regex }
 
   validates :name,
-    uniqueness: { scope: %i[project_id version package_type] }
+    uniqueness: { scope: %i[project_id version package_type] }, unless: :conan?
 
+  validate :valid_conan_package_recipe, if: :conan?
   validate :valid_npm_package_name, if: :npm?
   validate :package_already_taken, if: :npm?
 
@@ -38,9 +40,19 @@ class Packages::Package < ApplicationRecord
     joins(:conan_metadatum).where(packages_conan_metadata: { package_channel: package_channel })
   end
 
+  scope :with_conan_username, ->(package_username) do
+    joins(:conan_metadatum).where(packages_conan_metadata: { package_username: package_username })
+  end
+
   scope :has_version, -> { where.not(version: nil) }
+  scope :processed, -> do
+    where.not(package_type: :nuget).or(
+      where.not(name: Packages::Nuget::CreatePackageService::TEMPORARY_PACKAGE_NAME)
+    )
+  end
   scope :preload_files, -> { preload(:package_files) }
   scope :last_of_each_version, -> { where(id: all.select('MAX(id) AS id').group(:version)) }
+  scope :limit_recent, ->(limit) { order_created_desc.limit(limit) }
 
   # Sorting
   scope :order_created, -> { reorder('created_at ASC') }
@@ -74,9 +86,14 @@ class Packages::Package < ApplicationRecord
     pluck(:name)
   end
 
+  def self.pluck_versions
+    pluck(:version)
+  end
+
   def self.sort_by_attribute(method)
     case method.to_s
     when 'created_asc' then order_created
+    when 'created_at_asc' then order_created
     when 'name_asc' then order_name
     when 'name_desc' then order_name_desc
     when 'version_asc' then order_version
@@ -91,6 +108,20 @@ class Packages::Package < ApplicationRecord
   end
 
   private
+
+  def valid_conan_package_recipe
+    recipe_exists = project.packages
+                           .conan
+                           .includes(:conan_metadatum)
+                           .with_name(name)
+                           .with_version(version)
+                           .with_conan_channel(conan_metadatum.package_channel)
+                           .with_conan_username(conan_metadatum.package_username)
+                           .id_not_in(id)
+                           .exists?
+
+    errors.add(:base, 'Package recipe already exists') if recipe_exists
+  end
 
   def valid_npm_package_name
     return unless project&.root_namespace

@@ -12,6 +12,7 @@ const getDefaultProps = () => ({
   featureFlags: [
     {
       id: 1,
+      iid: 1,
       active: true,
       name: 'flag name',
       description: 'flag description',
@@ -41,7 +42,6 @@ describe('Feature flag table', () => {
   const createWrapper = (propsData, opts = {}) => {
     wrapper = shallowMount(FeatureFlagsTable, {
       propsData,
-      sync: false,
       ...opts,
     });
   };
@@ -57,10 +57,7 @@ describe('Feature flag table', () => {
 
   describe('with an active scope and a standard rollout strategy', () => {
     beforeEach(() => {
-      props.featureFlags[0].iid = 1;
-      createWrapper(props, {
-        provide: { glFeatures: { featureFlagIID: true } },
-      });
+      createWrapper(props);
     });
 
     it('Should render a table', () => {
@@ -116,7 +113,7 @@ describe('Feature flag table', () => {
 
     beforeEach(() => {
       props.featureFlags[0].update_path = props.featureFlags[0].destroy_path;
-      createWrapper(props, { provide: { glFeatures: { featureFlagToggle: true } } });
+      createWrapper(props);
       toggle = wrapper.find(GlToggle);
     });
 
@@ -129,7 +126,9 @@ describe('Feature flag table', () => {
       toggle.vm.$emit('change');
       const flag = { ...props.featureFlags[0], active: !props.featureFlags[0].active };
 
-      expect(wrapper.emitted('toggle-flag')).toEqual([[flag]]);
+      return wrapper.vm.$nextTick().then(() => {
+        expect(wrapper.emitted('toggle-flag')).toEqual([[flag]]);
+      });
     });
   });
 
@@ -158,5 +157,13 @@ describe('Feature flag table', () => {
 
       expect(trimText(envColumn.find('.badge-inactive').text())).toBe('scope');
     });
+  });
+
+  it('renders a feature flag without an iid', () => {
+    delete props.featureFlags[0].iid;
+    createWrapper(props);
+
+    expect(wrapper.find('.js-feature-flag-id').exists()).toBe(true);
+    expect(trimText(wrapper.find('.js-feature-flag-id').text())).toBe('');
   });
 });

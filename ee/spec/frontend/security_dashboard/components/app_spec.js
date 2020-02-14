@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import { TEST_HOST } from 'helpers/test_constants';
 
@@ -8,12 +8,11 @@ import SecurityDashboardTable from 'ee/security_dashboard/components/security_da
 import VulnerabilityChart from 'ee/security_dashboard/components/vulnerability_chart.vue';
 import VulnerabilityCountList from 'ee/security_dashboard/components/vulnerability_count_list.vue';
 import VulnerabilitySeverity from 'ee/security_dashboard/components/vulnerability_severity.vue';
+import LoadingError from 'ee/security_dashboard/components/loading_error.vue';
 
 import createStore from 'ee/security_dashboard/store';
 import { getParameterValues } from '~/lib/utils/url_utility';
 import axios from '~/lib/utils/axios_utils';
-
-const localVue = createLocalVue();
 
 const pipelineId = 123;
 const vulnerabilitiesEndpoint = `${TEST_HOST}/vulnerabilities`;
@@ -41,9 +40,7 @@ describe('Security Dashboard app', () => {
   const createComponent = props => {
     store = createStore();
     wrapper = shallowMount(SecurityDashboardApp, {
-      localVue,
       store,
-      sync: false,
       methods: {
         lockFilter: lockFilterSpy,
         setPipelineId: setPipelineIdSpy,
@@ -104,7 +101,7 @@ describe('Security Dashboard app', () => {
       const newCount = 3;
 
       beforeEach(() => {
-        localVue.set(store.state.vulnerabilities.pageInfo, 'total', newCount);
+        store.state.vulnerabilities.pageInfo = { total: newCount };
       });
 
       it('emits a vulnerabilitiesCountChanged event', () => {
@@ -160,12 +157,7 @@ describe('Security Dashboard app', () => {
 
   describe('dismissed vulnerabilities', () => {
     beforeEach(() => {
-      getParameterValues.mockImplementation(() => [true]);
       setup();
-    });
-
-    afterEach(() => {
-      getParameterValues.mockRestore();
     });
 
     it.each`
@@ -177,6 +169,27 @@ describe('Security Dashboard app', () => {
       getParameterValues.mockImplementation(() => getParameterValuesReturnValue);
       createComponent();
       expect(wrapper.vm.$store.state.filters.hideDismissed).toBe(expected);
+    });
+  });
+
+  describe('on error', () => {
+    beforeEach(() => {
+      setup();
+      createComponent();
+    });
+
+    it.each([401, 403])('displays an error on error %s', errorCode => {
+      store.dispatch('vulnerabilities/receiveVulnerabilitiesError', errorCode);
+      return wrapper.vm.$nextTick().then(() => {
+        expect(wrapper.find(LoadingError).exists()).toBe(true);
+      });
+    });
+
+    it.each([404, 500])('does not display an error on error %s', errorCode => {
+      store.dispatch('vulnerabilities/receiveVulnerabilitiesError', errorCode);
+      return wrapper.vm.$nextTick().then(() => {
+        expect(wrapper.find(LoadingError).exists()).toBe(false);
+      });
     });
   });
 });

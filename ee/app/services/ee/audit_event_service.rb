@@ -44,6 +44,8 @@ module EE
             change: "access_level",
             from: old_access_level,
             to: member.human_access,
+            expiry_from: @details[:old_expiry],
+            expiry_to: member.expires_at,
             author_name: @author.name,
             target_id: user_id,
             target_type: "User",
@@ -116,6 +118,10 @@ module EE
         entity_type: 'User',
         details: @details
       )
+    end
+
+    def for_user(full_path = @entity.full_path)
+      for_custom_model('user', full_path)
     end
 
     def for_project

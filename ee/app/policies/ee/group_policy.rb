@@ -9,6 +9,7 @@ module EE
       with_scope :subject
       condition(:ldap_synced) { @subject.ldap_synced? }
       condition(:epics_available) { @subject.feature_available?(:epics) }
+      condition(:subepics_available) { @subject.feature_available?(:subepics) }
       condition(:contribution_analytics_available) do
         @subject.feature_available?(:contribution_analytics)
       end
@@ -57,7 +58,6 @@ module EE
         enable :admin_list
         enable :admin_board
         enable :read_prometheus
-        enable :view_code_analytics
         enable :view_productivity_analytics
         enable :view_type_of_work_charts
         enable :read_group_timelogs
@@ -94,6 +94,10 @@ module EE
         enable :create_epic
         enable :admin_epic
         enable :update_epic
+      end
+
+      rule { reporter & subepics_available }.policy do
+        enable :admin_epic_link
       end
 
       rule { owner & epics_available }.enable :destroy_epic
@@ -133,6 +137,11 @@ module EE
       end
 
       rule { security_dashboard_enabled & developer }.enable :read_group_security_dashboard
+
+      rule { admin | owner }.policy do
+        enable :read_group_compliance_dashboard
+        enable :read_group_credentials_inventory
+      end
 
       rule { needs_new_sso_session }.policy do
         prevent :read_group

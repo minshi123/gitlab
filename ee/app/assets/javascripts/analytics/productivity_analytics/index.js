@@ -11,6 +11,7 @@ import {
   buildGroupFromDataset,
   buildProjectFromDataset,
 } from './utils';
+import { parseBoolean } from '~/lib/utils/common_utils';
 
 export default () => {
   const container = document.getElementById('js-productivity-analytics');
@@ -26,12 +27,12 @@ export default () => {
     authorUsername,
     labelName,
     milestoneTitle,
-    mergedAtAfter,
-    mergedAtBefore,
+    mergedAfter,
+    mergedBefore,
   } = container.dataset;
 
-  const mergedAtAfterDate = new Date(mergedAtAfter);
-  const mergedAtBeforeDate = new Date(mergedAtBefore);
+  const mergedAfterDate = new Date(mergedAfter);
+  const mergedBeforeDate = new Date(mergedBefore);
 
   const { endpoint, emptyStateSvgPath, noAccessSvgPath } = appContainer.dataset;
   const minDate = timeframeContainer.dataset.startDate
@@ -39,11 +40,13 @@ export default () => {
     : null;
 
   const group = buildGroupFromDataset(container.dataset);
+  const hideGroupDropDown = parseBoolean(container.dataset.hideGroupDropDown);
+
   let project = null;
 
   let initialData = {
-    mergedAtAfter: mergedAtAfterDate,
-    mergedAtBefore: mergedAtBeforeDate,
+    mergedAfter: mergedAfterDate,
+    mergedBefore: mergedBeforeDate,
     minDate,
   };
 
@@ -126,6 +129,7 @@ export default () => {
         props: {
           group,
           project,
+          hideGroupDropDown,
         },
         on: {
           groupSelected: this.onGroupSelected,
@@ -152,8 +156,8 @@ export default () => {
       return h(DateRange, {
         props: {
           show: this.groupNamespace !== null,
-          startDate: mergedAtAfterDate,
-          endDate: mergedAtBeforeDate,
+          startDate: mergedAfterDate,
+          endDate: mergedBeforeDate,
           minDate,
         },
         on: {

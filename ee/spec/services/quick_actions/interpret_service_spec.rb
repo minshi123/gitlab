@@ -368,9 +368,9 @@ describe QuickActions::InterpretService do
         end
       end
 
-      context 'when epics are enabled' do
+      context 'when subepics are enabled' do
         before do
-          stub_licensed_features(epics: true)
+          stub_licensed_features(epics: true, subepics: true)
         end
 
         context 'when a user does not have permissions to add epic relations' do
@@ -501,9 +501,9 @@ describe QuickActions::InterpretService do
         end
       end
 
-      context 'when epics are enabled' do
+      context 'when subepics are enabled' do
         before do
-          stub_licensed_features(epics: true)
+          stub_licensed_features(epics: true, subepics: true)
           epic.reload
         end
 
@@ -595,8 +595,9 @@ describe QuickActions::InterpretService do
         end
       end
 
-      context 'when epics are disabled' do
+      context 'when subepics are disabled' do
         before do
+          stub_licensed_features(epics: true, subepics: false)
           group.add_developer(current_user)
         end
 
@@ -671,9 +672,9 @@ describe QuickActions::InterpretService do
         end
       end
 
-      context 'when epics are enabled' do
+      context 'when subepics are enabled' do
         before do
-          stub_licensed_features(epics: true)
+          stub_licensed_features(epics: true, subepics: true)
         end
 
         it 'unassigns an issue from an epic' do
@@ -964,17 +965,6 @@ describe QuickActions::InterpretService do
       end
     end
 
-    describe 'unassign command with non-existent assignee reference' do
-      let(:content) { "/unassign @#{user.username} @#{user3.username}" }
-      let(:issue) { create(:issue, project: project, assignees: [user, user2]) }
-
-      it 'ignores non-existent assignee references' do
-        _, explanations = service.explain(content, issue)
-
-        expect(explanations).to eq(["Removes assignee @#{user.username}."])
-      end
-    end
-
     describe 'weight command' do
       let(:content) { '/weight 4' }
 
@@ -989,7 +979,7 @@ describe QuickActions::InterpretService do
       let(:epic2) { create(:epic, group: group) }
 
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
         group.add_developer(current_user)
       end
 

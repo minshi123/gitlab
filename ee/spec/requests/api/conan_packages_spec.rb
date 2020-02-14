@@ -12,6 +12,8 @@ describe API::ConanPackages do
 
   let(:base_secret) { SecureRandom.base64(64) }
   let(:auth_token) { personal_access_token.token }
+  let(:job) { create(:ci_build, user: user) }
+  let(:job_token) { job.token }
 
   let(:headers) do
     { 'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials('foo', auth_token) }
@@ -40,6 +42,14 @@ describe API::ConanPackages do
 
     it 'responds with 200 OK when valid token is provided' do
       jwt = build_jwt(personal_access_token)
+      get api('/packages/conan/v1/ping'), headers: build_token_auth_header(jwt.encoded)
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response.headers['X-Conan-Server-Capabilities']).to eq("")
+    end
+
+    it 'responds with 200 OK when valid job token is provided' do
+      jwt = build_jwt_from_job(job)
       get api('/packages/conan/v1/ping'), headers: build_token_auth_header(jwt.encoded)
 
       expect(response).to have_gitlab_http_status(:ok)
@@ -137,21 +147,41 @@ describe API::ConanPackages do
 
           payload = JSONWebToken::HMACToken.decode(
             response.body, jwt_secret).first
-          expect(payload['pat']).to eq(personal_access_token.id)
-          expect(payload['u']).to eq(personal_access_token.user_id)
+          expect(payload['access_token']).to eq(personal_access_token.id)
+          expect(payload['user_id']).to eq(personal_access_token.user_id)
 
           duration = payload['exp'] - payload['iat']
           expect(duration).to eq(1.hour)
         end
       end
     end
+
+    context 'with valid job token' do
+      let(:auth_token) { job_token }
+
+      it 'responds with 200' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
   end
 
   describe 'GET /api/v4/packages/conan/v1/users/check_credentials' do
-    it 'responds with a 200 OK' do
+    it 'responds with a 200 OK with PAT' do
       get api('/packages/conan/v1/users/check_credentials'), headers: headers
 
       expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    context 'with job token' do
+      let(:auth_token) { job_token }
+
+      it 'responds with a 200 OK with job token' do
+        get api('/packages/conan/v1/users/check_credentials'), headers: headers
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
     end
 
     it 'responds with a 401 Unauthorized when an invalid token is used' do
@@ -206,7 +236,7 @@ describe API::ConanPackages do
       end
 
       it 'returns not found' do
-        allow(ConanPackagePresenter).to receive(:new)
+        allow(::Packages::Conan::PackagePresenter).to receive(:new)
           .with(
             'aa/bb@%{project}/ccc' % { project: ::Packages::ConanMetadatum.package_username_from(full_path: project.full_path) },
             user,
@@ -262,10 +292,10 @@ describe API::ConanPackages do
     let(:jwt) { build_jwt(personal_access_token) }
     let(:headers) { build_token_auth_header(jwt.encoded) }
     let(:conan_package_reference) { '123456789' }
-    let(:presenter) { double('ConanPackagePresenter') }
+    let(:presenter) { double('::Packages::Conan::PackagePresenter') }
 
     before do
-      allow(ConanPackagePresenter).to receive(:new)
+      allow(::Packages::Conan::PackagePresenter).to receive(:new)
         .with(package.conan_recipe, user, package.project)
         .and_return(presenter)
     end
@@ -452,7 +482,7 @@ describe API::ConanPackages do
         subject
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(response.content_type.to_s).to eq('application/octet-stream')
+        expect(response.media_type).to eq('application/octet-stream')
       end
     end
 
@@ -468,7 +498,7 @@ describe API::ConanPackages do
         subject
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(response.content_type.to_s).to eq('application/octet-stream')
+        expect(response.media_type).to eq('application/octet-stream')
       end
     end
 
@@ -483,7 +513,7 @@ describe API::ConanPackages do
         subject
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(response.content_type.to_s).to eq('application/octet-stream')
+        expect(response.media_type).to eq('application/octet-stream')
       end
 
       it 'denies download when not enough permissions' do
@@ -555,6 +585,8 @@ describe API::ConanPackages do
       context 'with object storage disabled' do
         context 'without a file from workhorse' do
           let(:params) { { file: nil } }
+
+          it_behaves_like 'package workhorse uploads'
 
           it 'rejects the request' do
             subject
@@ -656,7 +688,7 @@ describe API::ConanPackages do
         subject
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(response.content_type.to_s).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
+        expect(response.media_type).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
       end
 
       it 'rejects request without a valid token' do
@@ -680,7 +712,7 @@ describe API::ConanPackages do
 
         subject
 
-        expect(response).to have_gitlab_http_status(:error)
+        expect(response).to have_gitlab_http_status(:forbidden)
       end
 
       context 'when using remote storage' do
@@ -693,7 +725,7 @@ describe API::ConanPackages do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
-            expect(response.content_type.to_s).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
+            expect(response.media_type).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
             expect(json_response).not_to have_key('TempPath')
             expect(json_response['RemoteObject']).to have_key('ID')
             expect(json_response['RemoteObject']).to have_key('GetURL')
@@ -712,7 +744,7 @@ describe API::ConanPackages do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
-            expect(response.content_type.to_s).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
+            expect(response.media_type).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
             expect(json_response['TempPath']).to eq(::Packages::PackageFileUploader.workhorse_local_upload_path)
             expect(json_response['RemoteObject']).to be_nil
           end

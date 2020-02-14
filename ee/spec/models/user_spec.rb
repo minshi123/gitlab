@@ -74,16 +74,6 @@ describe User do
       end
     end
 
-    describe 'bots & humans' do
-      it 'returns corresponding users' do
-        human = create(:user)
-        bot = create(:user, :bot)
-
-        expect(described_class.humans).to match_array([human])
-        expect(described_class.bots).to match_array([bot])
-      end
-    end
-
     describe 'with_invalid_expires_at_tokens' do
       it 'only includes users with invalid tokens' do
         valid_pat = create(:personal_access_token, expires_at: 7.days.from_now)
@@ -94,6 +84,18 @@ describe User do
 
         expect(users_with_invalid_tokens).to contain_exactly(invalid_pat1.user, invalid_pat2.user)
         expect(users_with_invalid_tokens).not_to include valid_pat.user
+      end
+    end
+
+    describe '.active_without_ghosts' do
+      let_it_be(:user1) { create(:user, :external) }
+      let_it_be(:user2) { create(:user, state: 'blocked') }
+      let_it_be(:user3) { create(:user, ghost: true) }
+      let_it_be(:user4) { create(:user, bot_type: 'support_bot') }
+      let_it_be(:user5) { create(:user, state: 'blocked', bot_type: 'support_bot') }
+
+      it 'returns all active users including active bots but ghost users' do
+        expect(described_class.active_without_ghosts).to match_array([user1, user4])
       end
     end
   end
@@ -136,7 +138,7 @@ describe User do
       end
     end
 
-    context '#auditor?' do
+    describe '#auditor?' do
       it "returns true for an auditor user if the addon is enabled" do
         stub_licensed_features(auditor_user: true)
 
@@ -626,19 +628,143 @@ describe User do
     end
 
     context 'when user is active' do
-      let(:project_guest_user) { create(:project_member, :guest).user }
+      context 'when user is internal' do
+        using RSpec::Parameterized::TableSyntax
 
-      context 'user is guest' do
-        it 'returns false if license is ultimate' do
-          create(:license, plan: License::ULTIMATE_PLAN)
-
-          expect(project_guest_user.using_license_seat?).to eq false
+        where(:bot_type) do
+          User.bot_types.keys
         end
 
-        it 'returns true if license is not ultimate' do
-          create(:license, plan: License::STARTER_PLAN)
+        with_them do
+          context 'when user is a bot' do
+            let(:user) { create(:user, bot_type: bot_type) }
 
-          expect(project_guest_user.using_license_seat?).to eq true
+            it 'returns false' do
+              expect(user.using_license_seat?).to eq false
+            end
+          end
+        end
+
+        context 'when user is a ghost' do
+          let(:user) { create(:user, ghost: true) }
+
+          it 'returns false' do
+            expect(user.using_license_seat?).to eq false
+          end
+        end
+      end
+
+      context 'when user is not internal' do
+        context 'when license is nil (core/free/default)' do
+          before do
+            allow(License).to receive(:current).and_return(nil)
+          end
+
+          it 'returns false if license is nil (core/free/default)' do
+            expect(user.using_license_seat?).to eq false
+          end
+        end
+
+        context 'user is guest' do
+          let(:project_guest_user) { create(:project_member, :guest).user }
+
+          it 'returns false if license is ultimate' do
+            create(:license, plan: License::ULTIMATE_PLAN)
+
+            expect(project_guest_user.using_license_seat?).to eq false
+          end
+
+          it 'returns true if license is not ultimate and not nil' do
+            create(:license, plan: License::STARTER_PLAN)
+
+            expect(project_guest_user.using_license_seat?).to eq true
+          end
+        end
+
+        context 'user is admin without projects' do
+          let(:user) { create(:user, admin: true) }
+
+          it 'returns false if license is ultimate' do
+            create(:license, plan: License::ULTIMATE_PLAN)
+
+            expect(user.using_license_seat?).to eq false
+          end
+
+          it 'returns true if license is not ultimate and not nil' do
+            create(:license, plan: License::STARTER_PLAN)
+
+            expect(user.using_license_seat?).to eq true
+          end
+        end
+      end
+    end
+  end
+
+  describe '#using_gitlab_com_seat?' do
+    let(:user) { create(:user) }
+
+    context 'when Gitlab.com? is false' do
+      before do
+        allow(Gitlab).to receive(:com?).and_return(false)
+      end
+
+      it 'returns false' do
+        expect(user.using_gitlab_com_seat?(nil)).to eq(false)
+      end
+    end
+
+    context 'when Gitlab.com? is true' do
+      let(:namespace) { create(:namespace) }
+
+      before do
+        allow(Gitlab).to receive(:com?).and_return(true)
+        allow(namespace).to receive(:gold_plan?).and_return(false)
+        allow(namespace).to receive(:free_plan?).and_return(false)
+      end
+
+      context 'when namespace is nil' do
+        let(:namespace) { nil }
+
+        it 'returns false' do
+          expect(user.using_gitlab_com_seat?(namespace)).to eq(false)
+        end
+      end
+
+      context 'when namespace is on a free plan' do
+        before do
+          allow(namespace).to receive(:free_plan?).and_return(true)
+        end
+
+        it 'returns false' do
+          expect(user.using_gitlab_com_seat?(namespace)).to eq(false)
+        end
+      end
+
+      context 'when namespace is on a gold plan' do
+        before do
+          allow(namespace).to receive(:gold_plan?).and_return(true)
+        end
+
+        context 'user is not a guest' do
+          let(:user) { create(:project_member, :developer).user }
+
+          it 'returns true' do
+            expect(user.using_gitlab_com_seat?(namespace)).to eq(true)
+          end
+        end
+
+        context 'user is guest' do
+          let(:user) { create(:project_member, :guest).user }
+
+          it 'returns false' do
+            expect(user.using_gitlab_com_seat?(namespace)).to eq(false)
+          end
+        end
+      end
+
+      context 'when namespace is on a plan that is not free or gold' do
+        it 'returns true' do
+          expect(user.using_gitlab_com_seat?(namespace)).to eq(true)
         end
       end
     end
@@ -697,6 +823,116 @@ describe User do
         username = described_class.username_suggestion(name)
 
         expect(username).to eq('')
+      end
+    end
+  end
+
+  describe '#ab_feature_enabled?' do
+    let(:experiment_user) { create(:user) }
+    let(:new_user) { create(:user) }
+    let(:new_fresh_user) { create(:user) }
+    let(:control_user) { create(:user) }
+    let(:users_of_different_groups) { [experiment_user, new_user, new_fresh_user, control_user] }
+
+    before do
+      create(:user_preference, user: experiment_user, feature_filter_type: UserPreference::FEATURE_FILTER_EXPERIMENT)
+      create(:user_preference, user: new_user, feature_filter_type: UserPreference::FEATURE_FILTER_UNKNOWN)
+      create(:user_preference, user: new_fresh_user, feature_filter_type: nil)
+      create(:user_preference, user: control_user, feature_filter_type: UserPreference::FEATURE_FILTER_CONTROL)
+    end
+
+    context 'when not on Gitlab.com' do
+      before do
+        allow(Gitlab).to receive(:com?).and_return(false)
+      end
+
+      it 'returns false' do
+        users_of_different_groups.each do |user|
+          expect(user.ab_feature_enabled?(:discover_security, percentage: 100)).to eq(false)
+        end
+      end
+    end
+
+    context 'when on Gitlab.com' do
+      before do
+        allow(Gitlab).to receive(:com?).and_return(true)
+      end
+
+      context 'when on a secondary Geo' do
+        before do
+          allow(Gitlab::Geo).to receive(:secondary?).and_return(true)
+        end
+
+        it 'returns false' do
+          users_of_different_groups.each do |user|
+            expect(user.ab_feature_enabled?(:discover_security, percentage: 100)).to eq(false)
+          end
+        end
+      end
+
+      context 'when not on a secondary Geo' do
+        before do
+          allow(Gitlab::Geo).to receive(:secondary?).and_return(false)
+        end
+
+        context 'for any feature except discover_security' do
+          it 'raises runtime error' do
+            users_of_different_groups.each do |user|
+              expect do
+                user.ab_feature_enabled?(:any_other_feature, percentage: 100)
+              end.to raise_error(RuntimeError, 'Currently only discover_security feature is supported')
+            end
+          end
+        end
+
+        context 'when discover_security feature flag is disabled' do
+          before do
+            stub_feature_flags(discover_security: false)
+          end
+
+          it 'returns false' do
+            users_of_different_groups.each do |user|
+              expect(user.ab_feature_enabled?(:discover_security, percentage: 100)).to eq(false)
+            end
+          end
+        end
+
+        context 'when discover_security feature flag is enabled' do
+          it 'returns false when in control group' do
+            expect(control_user.ab_feature_enabled?(:discover_security, percentage: 100)).to eq(false)
+          end
+
+          it 'returns true for experiment group' do
+            expect(experiment_user.ab_feature_enabled?(:discover_security, percentage: 100)).to eq(true)
+          end
+
+          it 'assigns to control or experiment group when feature_filter_type is nil' do
+            new_fresh_user.ab_feature_enabled?(:discover_security, percentage: 100)
+
+            expect(new_fresh_user.user_preference.feature_filter_type).not_to eq(UserPreference::FEATURE_FILTER_UNKNOWN)
+          end
+
+          it 'assigns to control or experiment group when feature_filter_type is zero' do
+            new_user.ab_feature_enabled?(:discover_security, percentage: 100)
+
+            expect(new_user.user_preference.feature_filter_type).not_to eq(UserPreference::FEATURE_FILTER_UNKNOWN)
+          end
+
+          it 'returns false for zero percentage' do
+            expect(experiment_user.ab_feature_enabled?(:discover_security, percentage: 0)).to eq(false)
+          end
+
+          it 'returns false when no percentage is provided' do
+            expect(experiment_user.ab_feature_enabled?(:discover_security)).to eq(false)
+          end
+
+          it 'returns true when 100% control percentage is provided' do
+            Feature.get(:discover_security_control).enable_percentage_of_time(100)
+
+            expect(experiment_user.ab_feature_enabled?(:discover_security)).to eq(true)
+            expect(experiment_user.user_preference.feature_filter_type).to eq(UserPreference::FEATURE_FILTER_EXPERIMENT)
+          end
+        end
       end
     end
   end

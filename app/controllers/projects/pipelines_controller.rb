@@ -80,6 +80,12 @@ class Projects::PipelinesController < Projects::ApplicationController
     end
   end
 
+  def destroy
+    ::Ci::DestroyPipelineService.new(project, current_user).execute(pipeline)
+
+    redirect_to project_pipelines_path(project), status: :see_other
+  end
+
   def builds
     render_show
   end
@@ -170,6 +176,16 @@ class Projects::PipelinesController < Projects::ApplicationController
             .represent(pipeline_test_report)
         end
       end
+    end
+  end
+
+  def test_reports_count
+    return unless Feature.enabled?(:junit_pipeline_view, project)
+
+    begin
+      render json: { total_count: pipeline.test_reports_count }.to_json
+    rescue Gitlab::Ci::Parsers::ParserError
+      render json: { total_count: 0 }.to_json
     end
   end
 

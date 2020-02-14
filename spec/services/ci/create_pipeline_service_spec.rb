@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Ci::CreatePipelineService do
   include ProjectForksHelper
 
-  set(:project) { create(:project, :repository) }
+  let_it_be(:project, reload: true) { create(:project, :repository) }
   let(:user) { create(:admin) }
   let(:ref_name) { 'refs/heads/master' }
 
@@ -362,11 +362,11 @@ describe Ci::CreatePipelineService do
 
             context 'when build that is not marked as interruptible is running' do
               it 'cancels running outdated pipelines', :sidekiq_might_not_need_inline do
-                pipeline_on_previous_commit
-                  .builds
-                  .find_by_name('build_2_1')
-                  .tap(&:enqueue!)
-                  .run!
+                build_2_1 = pipeline_on_previous_commit
+                  .builds.find_by_name('build_2_1')
+
+                build_2_1.enqueue!
+                build_2_1.reset.run!
 
                 pipeline
 
@@ -377,12 +377,12 @@ describe Ci::CreatePipelineService do
           end
 
           context 'when an uninterruptible build is running' do
-            it 'does not cancel running outdated pipelines', :sidekiq_might_not_need_inline do
-              pipeline_on_previous_commit
-                .builds
-                .find_by_name('build_3_1')
-                .tap(&:enqueue!)
-                .run!
+            it 'does not cancel running outdated pipelines', :sidekiq_inline do
+              build_3_1 = pipeline_on_previous_commit
+                .builds.find_by_name('build_3_1')
+
+              build_3_1.enqueue!
+              build_3_1.reset.run!
 
               pipeline
 
@@ -499,7 +499,7 @@ describe Ci::CreatePipelineService do
         it 'pull it from Auto-DevOps' do
           pipeline = execute_service
           expect(pipeline).to be_auto_devops_source
-          expect(pipeline.builds.map(&:name)).to eq %w[test code_quality build]
+          expect(pipeline.builds.map(&:name)).to match_array(%w[test code_quality build])
         end
       end
 
@@ -940,7 +940,7 @@ describe Ci::CreatePipelineService do
           expect(resource_group.resources.first.build).to eq(nil)
         end
 
-        context 'when resourc group key includes predefined variables' do
+        context 'when resource group key includes predefined variables' do
           let(:resource_group_key) { '$CI_COMMIT_REF_NAME-$CI_JOB_NAME' }
 
           it 'interpolates the variables into the key correctly' do
@@ -965,6 +965,70 @@ describe Ci::CreatePipelineService do
 
           expect(pipeline).to be_persisted
           expect(pipeline.builds.find_by(name: 'rspec').options[:job_timeout]).to eq 123
+        end
+      end
+    end
+
+    context 'with release' do
+      shared_examples_for 'a successful release pipeline' do
+        before do
+          stub_feature_flags(ci_release_generation: true)
+          stub_ci_pipeline_yaml_file(YAML.dump(config))
+        end
+
+        it 'is valid config' do
+          pipeline = execute_service
+          build = pipeline.builds.first
+          expect(pipeline).to be_kind_of(Ci::Pipeline)
+          expect(pipeline).to be_valid
+          expect(pipeline.yaml_errors).not_to be_present
+          expect(pipeline).to be_persisted
+          expect(build).to be_kind_of(Ci::Build)
+          expect(build.options).to eq(config[:release].except(:stage, :only).with_indifferent_access)
+        end
+      end
+
+      context 'simple example' do
+        it_behaves_like 'a successful release pipeline' do
+          let(:config) do
+            {
+              release: {
+                script: ["make changelog | tee release_changelog.txt"],
+                release: {
+                  tag_name: "v0.06",
+                  description: "./release_changelog.txt"
+                }
+              }
+            }
+          end
+        end
+      end
+
+      context 'example with all release metadata' do
+        it_behaves_like 'a successful release pipeline' do
+          let(:config) do
+            {
+              release: {
+                script: ["make changelog | tee release_changelog.txt"],
+                release: {
+                  name: "Release $CI_TAG_NAME",
+                  tag_name: "v0.06",
+                  description: "./release_changelog.txt",
+                  assets: {
+                    links: [
+                      {
+                        name: "cool-app.zip",
+                        url: "http://my.awesome.download.site/1.0-$CI_COMMIT_SHORT_SHA.zip"
+                      },
+                      {
+                        url: "http://my.awesome.download.site/1.0-$CI_COMMIT_SHORT_SHA.exe"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          end
         end
       end
     end
@@ -1057,21 +1121,6 @@ describe Ci::CreatePipelineService do
       end
 
       it_behaves_like 'when ref is protected'
-    end
-
-    context 'when ref is not protected' do
-      context 'when trigger belongs to no one' do
-        let(:user) {}
-        let(:trigger) { create(:ci_trigger, owner: nil) }
-        let(:trigger_request) { create(:ci_trigger_request, trigger: trigger) }
-        let(:pipeline) { execute_service(trigger_request: trigger_request) }
-
-        it 'creates an unprotected pipeline' do
-          expect(pipeline).to be_persisted
-          expect(pipeline).not_to be_protected
-          expect(Ci::Pipeline.count).to eq(1)
-        end
-      end
     end
 
     context 'when pipeline is running for a tag' do
@@ -1424,15 +1473,6 @@ describe Ci::CreatePipelineService do
               end
             end
           end
-
-          context 'when merge request is not specified' do
-            let(:merge_request) { nil }
-
-            it 'does not create a detached merge request pipeline' do
-              expect(pipeline).not_to be_persisted
-              expect(pipeline.errors[:merge_request]).to eq(["can't be blank"])
-            end
-          end
         end
 
         context "when config does not have merge_requests keywords" do
@@ -1461,17 +1501,6 @@ describe Ci::CreatePipelineService do
                 target_project: project,
                 target_branch: 'master')
             end
-
-            it 'does not create a detached merge request pipeline' do
-              expect(pipeline).not_to be_persisted
-
-              expect(pipeline.errors[:base])
-                .to eq(['No stages / jobs for this pipeline.'])
-            end
-          end
-
-          context 'when merge request is not specified' do
-            let(:merge_request) { nil }
 
             it 'does not create a detached merge request pipeline' do
               expect(pipeline).not_to be_persisted
@@ -1574,6 +1603,7 @@ describe Ci::CreatePipelineService do
 
       context 'when source is web' do
         let(:source) { :web }
+        let(:merge_request) { nil }
 
         context "when config has merge_requests keywords" do
           let(:config) do
@@ -1595,30 +1625,11 @@ describe Ci::CreatePipelineService do
             }
           end
 
-          context 'when merge request is specified' do
-            let(:merge_request) do
-              create(:merge_request,
-                source_project: project,
-                source_branch: Gitlab::Git.ref_name(ref_name),
-                target_project: project,
-                target_branch: 'master')
-            end
-
-            it 'does not create a merge request pipeline' do
-              expect(pipeline).not_to be_persisted
-              expect(pipeline.errors[:merge_request]).to eq(["must be blank"])
-            end
-          end
-
-          context 'when merge request is not specified' do
-            let(:merge_request) { nil }
-
-            it 'creates a branch pipeline' do
-              expect(pipeline).to be_persisted
-              expect(pipeline).to be_web
-              expect(pipeline.merge_request).to be_nil
-              expect(pipeline.builds.order(:stage_id).pluck(:name)).to eq(%w[build pages])
-            end
+          it 'creates a branch pipeline' do
+            expect(pipeline).to be_persisted
+            expect(pipeline).to be_web
+            expect(pipeline.merge_request).to be_nil
+            expect(pipeline.builds.order(:stage_id).pluck(:name)).to eq(%w[build pages])
           end
         end
       end
@@ -1701,9 +1712,9 @@ describe Ci::CreatePipelineService do
       let(:ref_name)    { 'refs/heads/master' }
       let(:pipeline)    { execute_service }
       let(:build_names) { pipeline.builds.pluck(:name) }
-      let(:regular_job) { pipeline.builds.find_by(name: 'regular-job') }
-      let(:rules_job)   { pipeline.builds.find_by(name: 'rules-job') }
-      let(:delayed_job) { pipeline.builds.find_by(name: 'delayed-job') }
+      let(:regular_job) { find_job('regular-job') }
+      let(:rules_job)   { find_job('rules-job') }
+      let(:delayed_job) { find_job('delayed-job') }
 
       shared_examples 'rules jobs are excluded' do
         it 'only persists the job without rules' do
@@ -1712,6 +1723,10 @@ describe Ci::CreatePipelineService do
           expect(rules_job).to be_nil
           expect(delayed_job).to be_nil
         end
+      end
+
+      def find_job(name)
+        pipeline.builds.find_by(name: name)
       end
 
       before do
@@ -1733,6 +1748,12 @@ describe Ci::CreatePipelineService do
                 - if: $CI_COMMIT_REF_NAME =~ /master/
                   when: manual
 
+            negligible-job:
+              script: "exit 1"
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /master/
+                  allow_failure: true
+
             delayed-job:
               script: "echo See you later, World!"
               rules:
@@ -1751,11 +1772,23 @@ describe Ci::CreatePipelineService do
         context 'with matches' do
           it 'creates a pipeline with the vanilla and manual jobs' do
             expect(pipeline).to be_persisted
-            expect(build_names).to contain_exactly('regular-job', 'delayed-job', 'master-job')
+            expect(build_names).to contain_exactly(
+              'regular-job', 'delayed-job', 'master-job', 'negligible-job'
+            )
           end
 
           it 'assigns job:when values to the builds' do
-            expect(pipeline.builds.pluck(:when)).to contain_exactly('on_success', 'delayed', 'manual')
+            expect(find_job('regular-job').when).to eq('on_success')
+            expect(find_job('master-job').when).to eq('manual')
+            expect(find_job('negligible-job').when).to eq('on_success')
+            expect(find_job('delayed-job').when).to eq('delayed')
+          end
+
+          it 'assigns job:allow_failure values to the builds' do
+            expect(find_job('regular-job').allow_failure).to eq(false)
+            expect(find_job('master-job').allow_failure).to eq(false)
+            expect(find_job('negligible-job').allow_failure).to eq(true)
+            expect(find_job('delayed-job').allow_failure).to eq(false)
           end
 
           it 'assigns start_in for delayed jobs' do
@@ -1778,6 +1811,7 @@ describe Ci::CreatePipelineService do
               rules:
                 - if: $VAR == 'present' && $OTHER || $CI_COMMIT_REF_NAME
                   when: manual
+                  allow_failure: true
           EOY
         end
 
@@ -1785,6 +1819,7 @@ describe Ci::CreatePipelineService do
           expect(pipeline).to be_persisted
           expect(build_names).to contain_exactly('regular-job')
           expect(regular_job.when).to eq('manual')
+          expect(regular_job.allow_failure).to eq(true)
         end
       end
 
@@ -1811,6 +1846,13 @@ describe Ci::CreatePipelineService do
                   - README.md
                   when: delayed
                   start_in: 4 hours
+
+            negligible-job:
+              script: "can be failed sometimes"
+              rules:
+                - changes:
+                  - README.md
+                  allow_failure: true
           EOY
         end
 
@@ -1823,7 +1865,7 @@ describe Ci::CreatePipelineService do
           it 'creates two jobs' do
             expect(pipeline).to be_persisted
             expect(build_names)
-              .to contain_exactly('regular-job', 'rules-job', 'delayed-job')
+              .to contain_exactly('regular-job', 'rules-job', 'delayed-job', 'negligible-job')
           end
 
           it 'sets when: for all jobs' do
@@ -1831,6 +1873,10 @@ describe Ci::CreatePipelineService do
             expect(rules_job.when).to eq('manual')
             expect(delayed_job.when).to eq('delayed')
             expect(delayed_job.options[:start_in]).to eq('4 hours')
+          end
+
+          it 'sets allow_failure: for negligible job' do
+            expect(find_job('negligible-job').allow_failure).to eq(true)
           end
         end
 
@@ -1873,12 +1919,14 @@ describe Ci::CreatePipelineService do
 
             rules-job:
               script: "echo hello world, $CI_COMMIT_REF_NAME"
+              allow_failure: true
               rules:
                 - changes:
                   - README.md
                   when: manual
                 - if: $CI_COMMIT_REF_NAME == "master"
                   when: on_success
+                  allow_failure: false
 
             delayed-job:
               script: "echo See you later, World!"
@@ -1887,6 +1935,7 @@ describe Ci::CreatePipelineService do
                   - README.md
                   when: delayed
                   start_in: 4 hours
+                  allow_failure: true
                 - if: $CI_COMMIT_REF_NAME == "master"
                   when: delayed
                   start_in: 1 hour
@@ -1910,6 +1959,12 @@ describe Ci::CreatePipelineService do
             expect(rules_job.when).to eq('manual')
             expect(delayed_job.when).to eq('delayed')
             expect(delayed_job.options[:start_in]).to eq('4 hours')
+          end
+
+          it 'sets allow_failure: for all jobs' do
+            expect(regular_job.allow_failure).to eq(false)
+            expect(rules_job.allow_failure).to eq(true)
+            expect(delayed_job.allow_failure).to eq(true)
           end
         end
 
@@ -1950,6 +2005,7 @@ describe Ci::CreatePipelineService do
                 - if: $CI_COMMIT_REF_NAME =~ /master/
                   changes: [README.md]
                   when: on_success
+                  allow_failure: true
                 - if: $CI_COMMIT_REF_NAME =~ /master/
                   changes: [app.rb]
                   when: manual
@@ -1967,6 +2023,7 @@ describe Ci::CreatePipelineService do
             expect(regular_job).to be_persisted
             expect(rules_job).to be_persisted
             expect(rules_job.when).to eq('manual')
+            expect(rules_job.allow_failure).to eq(false)
           end
         end
 
@@ -1989,6 +2046,150 @@ describe Ci::CreatePipelineService do
           let(:ref_name) { 'refs/heads/feature' }
 
           it_behaves_like 'rules jobs are excluded'
+        end
+      end
+
+      context 'with complex if: allow_failure usages' do
+        let(:config) do
+          <<-EOY
+            job-1:
+              script: "exit 1"
+              allow_failure: true
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /master/
+                  allow_failure: false
+
+            job-2:
+              script: "exit 1"
+              allow_failure: true
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /nonexistant-branch/
+                  allow_failure: false
+
+            job-3:
+              script: "exit 1"
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /nonexistant-branch/
+                  allow_failure: true
+
+            job-4:
+              script: "exit 1"
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /master/
+                  allow_failure: false
+
+            job-5:
+              script: "exit 1"
+              allow_failure: false
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /master/
+                  allow_failure: true
+
+            job-6:
+              script: "exit 1"
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /nonexistant-branch/
+                  allow_failure: false
+                - allow_failure: true
+          EOY
+        end
+
+        it 'creates a pipeline' do
+          expect(pipeline).to be_persisted
+          expect(build_names).to contain_exactly('job-1', 'job-4', 'job-5', 'job-6')
+        end
+
+        it 'assigns job:allow_failure values to the builds' do
+          expect(find_job('job-1').allow_failure).to eq(false)
+          expect(find_job('job-4').allow_failure).to eq(false)
+          expect(find_job('job-5').allow_failure).to eq(true)
+          expect(find_job('job-6').allow_failure).to eq(true)
+        end
+      end
+
+      context 'with complex if: allow_failure & when usages' do
+        let(:config) do
+          <<-EOY
+            job-1:
+              script: "exit 1"
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /master/
+                  when: manual
+
+            job-2:
+              script: "exit 1"
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /master/
+                  when: manual
+                  allow_failure: true
+
+            job-3:
+              script: "exit 1"
+              allow_failure: true
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /master/
+                  when: manual
+
+            job-4:
+              script: "exit 1"
+              allow_failure: true
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /master/
+                  when: manual
+                  allow_failure: false
+
+            job-5:
+              script: "exit 1"
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /nonexistant-branch/
+                  when: manual
+                  allow_failure: false
+                - when: always
+                  allow_failure: true
+
+            job-6:
+              script: "exit 1"
+              allow_failure: false
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /master/
+                  when: manual
+
+            job-7:
+              script: "exit 1"
+              allow_failure: false
+              rules:
+                - if: $CI_COMMIT_REF_NAME =~ /nonexistant-branch/
+                  when: manual
+                - when: :on_failure
+                  allow_failure: true
+          EOY
+        end
+
+        it 'creates a pipeline' do
+          expect(pipeline).to be_persisted
+          expect(build_names).to contain_exactly(
+            'job-1', 'job-2', 'job-3', 'job-4', 'job-5', 'job-6', 'job-7'
+          )
+        end
+
+        it 'assigns job:allow_failure values to the builds' do
+          expect(find_job('job-1').allow_failure).to eq(false)
+          expect(find_job('job-2').allow_failure).to eq(true)
+          expect(find_job('job-3').allow_failure).to eq(true)
+          expect(find_job('job-4').allow_failure).to eq(false)
+          expect(find_job('job-5').allow_failure).to eq(true)
+          expect(find_job('job-6').allow_failure).to eq(false)
+          expect(find_job('job-7').allow_failure).to eq(true)
+        end
+
+        it 'assigns job:when values to the builds' do
+          expect(find_job('job-1').when).to eq('manual')
+          expect(find_job('job-2').when).to eq('manual')
+          expect(find_job('job-3').when).to eq('manual')
+          expect(find_job('job-4').when).to eq('manual')
+          expect(find_job('job-5').when).to eq('always')
+          expect(find_job('job-6').when).to eq('manual')
+          expect(find_job('job-7').when).to eq('on_failure')
         end
       end
     end

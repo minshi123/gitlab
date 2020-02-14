@@ -1,8 +1,6 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import GraphGroup from '~/monitoring/components/graph_group.vue';
 import Icon from '~/vue_shared/components/icon.vue';
-
-const localVue = createLocalVue();
 
 describe('Graph group component', () => {
   let wrapper;
@@ -12,10 +10,8 @@ describe('Graph group component', () => {
   const findCaretIcon = () => wrapper.find(Icon);
 
   const createComponent = propsData => {
-    wrapper = shallowMount(localVue.extend(GraphGroup), {
+    wrapper = shallowMount(GraphGroup, {
       propsData,
-      sync: false,
-      localVue,
     });
   };
 
@@ -36,25 +32,23 @@ describe('Graph group component', () => {
       expect(findCaretIcon().props('name')).toBe('angle-down');
     });
 
-    it('should show the angle-right caret icon when the user collapses the group', done => {
+    it('should show the angle-right caret icon when the user collapses the group', () => {
       wrapper.vm.collapse();
 
-      wrapper.vm.$nextTick(() => {
+      return wrapper.vm.$nextTick(() => {
         expect(findContent().isVisible()).toBe(false);
         expect(findCaretIcon().props('name')).toBe('angle-right');
-        done();
       });
     });
 
-    it('should show the open the group when collapseGroup is set to true', done => {
+    it('should show the open the group when collapseGroup is set to true', () => {
       wrapper.setProps({
         collapseGroup: true,
       });
 
-      wrapper.vm.$nextTick(() => {
+      return wrapper.vm.$nextTick(() => {
         expect(findContent().isVisible()).toBe(true);
         expect(findCaretIcon().props('name')).toBe('angle-down');
-        done();
       });
     });
 
@@ -106,13 +100,12 @@ describe('Graph group component', () => {
         expect(findCaretIcon().exists()).toBe(false);
       });
 
-      it('should show the panel content when clicked', done => {
+      it('should show the panel content when clicked', () => {
         wrapper.vm.collapse();
 
-        wrapper.vm.$nextTick(() => {
+        return wrapper.vm.$nextTick(() => {
           expect(findContent().isVisible()).toBe(true);
           expect(findCaretIcon().exists()).toBe(false);
-          done();
         });
       });
     });

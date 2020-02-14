@@ -1,13 +1,20 @@
 import MockAdapter from 'axios-mock-adapter';
 import testAction from 'helpers/vuex_action_helper';
+import flash from '~/flash';
+import toast from '~/vue_shared/plugins/global_toast';
+import axios from '~/lib/utils/axios_utils';
 import * as actions from 'ee/geo_designs/store/actions';
 import * as types from 'ee/geo_designs/store/mutation_types';
 import createState from 'ee/geo_designs/store/state';
-import flash from '~/flash';
-import axios from '~/lib/utils/axios_utils';
-import { MOCK_BASIC_FETCH_DATA_MAP, MOCK_BASIC_FETCH_RESPONSE } from '../mock_data';
+import { ACTION_TYPES } from 'ee/geo_designs/store/constants';
+import {
+  MOCK_BASIC_FETCH_DATA_MAP,
+  MOCK_BASIC_FETCH_RESPONSE,
+  MOCK_BASIC_POST_RESPONSE,
+} from '../mock_data';
 
 jest.mock('~/flash');
+jest.mock('~/vue_shared/plugins/global_toast');
 
 describe('GeoDesigns Store Actions', () => {
   let state;
@@ -42,16 +49,18 @@ describe('GeoDesigns Store Actions', () => {
   });
 
   describe('receiveDesignsError', () => {
-    it('should commit mutation RECEIVE_DESIGNS_ERROR and call flash', done => {
+    it('should commit mutation RECEIVE_DESIGNS_ERROR', () => {
       testAction(
         actions.receiveDesignsError,
         null,
         state,
         [{ type: types.RECEIVE_DESIGNS_ERROR }],
         [],
-        done,
+        () => {
+          expect(flash).toHaveBeenCalledTimes(1);
+          flash.mockClear();
+        },
       );
-      expect(flash).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -98,7 +107,6 @@ describe('GeoDesigns Store Actions', () => {
 
   describe('queryParams', () => {
     beforeEach(() => {
-      mock = new MockAdapter(axios);
       mock
         .onGet()
         .replyOnce(200, MOCK_BASIC_FETCH_RESPONSE.data, MOCK_BASIC_FETCH_RESPONSE.headers);
@@ -157,6 +165,201 @@ describe('GeoDesigns Store Actions', () => {
             { type: 'receiveDesignsSuccess', payload: MOCK_BASIC_FETCH_DATA_MAP },
           ],
           fetchDesignsCall,
+        );
+      });
+    });
+  });
+
+  describe('requestInitiateAllDesignSyncs', () => {
+    it('should commit mutation REQUEST_INITIATE_ALL_DESIGN_SYNCS', done => {
+      testAction(
+        actions.requestInitiateAllDesignSyncs,
+        null,
+        state,
+        [{ type: types.REQUEST_INITIATE_ALL_DESIGN_SYNCS }],
+        [],
+        done,
+      );
+    });
+  });
+
+  describe('receiveInitiateAllDesignSyncsSuccess', () => {
+    it('should commit mutation RECEIVE_INITIATE_ALL_DESIGN_SYNCS_SUCCESS and call fetchDesigns and toast', () => {
+      testAction(
+        actions.receiveInitiateAllDesignSyncsSuccess,
+        { action: ACTION_TYPES.RESYNC },
+        state,
+        [{ type: types.RECEIVE_INITIATE_ALL_DESIGN_SYNCS_SUCCESS }],
+        [{ type: 'fetchDesigns' }],
+        () => {
+          expect(toast).toHaveBeenCalledTimes(1);
+          toast.mockClear();
+        },
+      );
+    });
+  });
+
+  describe('receiveInitiateAllDesignSyncsError', () => {
+    it('should commit mutation RECEIVE_INITIATE_ALL_DESIGN_SYNCS_ERROR', () => {
+      testAction(
+        actions.receiveInitiateAllDesignSyncsError,
+        ACTION_TYPES.RESYNC,
+        state,
+        [{ type: types.RECEIVE_INITIATE_ALL_DESIGN_SYNCS_ERROR }],
+        [],
+        () => {
+          expect(flash).toHaveBeenCalledTimes(1);
+          flash.mockClear();
+        },
+      );
+    });
+  });
+
+  describe('initiateAllDesignSyncs', () => {
+    let action;
+
+    describe('on success', () => {
+      beforeEach(() => {
+        action = ACTION_TYPES.RESYNC;
+
+        mock.onPost().replyOnce(201, MOCK_BASIC_POST_RESPONSE);
+      });
+
+      it('should dispatch the request and success actions', done => {
+        testAction(
+          actions.initiateAllDesignSyncs,
+          action,
+          state,
+          [],
+          [
+            { type: 'requestInitiateAllDesignSyncs' },
+            { type: 'receiveInitiateAllDesignSyncsSuccess', payload: { action } },
+          ],
+          done,
+        );
+      });
+    });
+
+    describe('on error', () => {
+      beforeEach(() => {
+        action = ACTION_TYPES.RESYNC;
+
+        mock.onPost().replyOnce(500);
+      });
+
+      it('should dispatch the request and error actions', done => {
+        testAction(
+          actions.initiateAllDesignSyncs,
+          action,
+          state,
+          [],
+          [
+            { type: 'requestInitiateAllDesignSyncs' },
+            { type: 'receiveInitiateAllDesignSyncsError' },
+          ],
+          done,
+        );
+      });
+    });
+  });
+
+  describe('requestInitiateDesignSync', () => {
+    it('should commit mutation REQUEST_INITIATE_DESIGN_SYNC', done => {
+      testAction(
+        actions.requestInitiateDesignSync,
+        null,
+        state,
+        [{ type: types.REQUEST_INITIATE_DESIGN_SYNC }],
+        [],
+        done,
+      );
+    });
+  });
+
+  describe('receiveInitiateDesignSyncSuccess', () => {
+    it('should commit mutation RECEIVE_INITIATE_DESIGN_SYNC_SUCCESS and call fetchDesigns and toast', () => {
+      testAction(
+        actions.receiveInitiateDesignSyncSuccess,
+        { action: ACTION_TYPES.RESYNC, projectName: 'test' },
+        state,
+        [{ type: types.RECEIVE_INITIATE_DESIGN_SYNC_SUCCESS }],
+        [{ type: 'fetchDesigns' }],
+        () => {
+          expect(toast).toHaveBeenCalledTimes(1);
+          toast.mockClear();
+        },
+      );
+    });
+  });
+
+  describe('receiveInitiateDesignSyncError', () => {
+    it('should commit mutation RECEIVE_INITIATE_DESIGN_SYNC_ERROR', () => {
+      testAction(
+        actions.receiveInitiateDesignSyncError,
+        { action: ACTION_TYPES.RESYNC, projectId: 1, projectName: 'test' },
+        state,
+        [{ type: types.RECEIVE_INITIATE_DESIGN_SYNC_ERROR }],
+        [],
+        () => {
+          expect(flash).toHaveBeenCalledTimes(1);
+          flash.mockClear();
+        },
+      );
+    });
+  });
+
+  describe('initiateDesignSync', () => {
+    let action;
+    let projectId;
+    let name;
+
+    describe('on success', () => {
+      beforeEach(() => {
+        action = ACTION_TYPES.RESYNC;
+        projectId = 1;
+        name = 'test';
+
+        mock.onPut().replyOnce(201, MOCK_BASIC_POST_RESPONSE);
+      });
+
+      it('should dispatch the request and success actions', done => {
+        testAction(
+          actions.initiateDesignSync,
+          { projectId, name, action },
+          state,
+          [],
+          [
+            { type: 'requestInitiateDesignSync' },
+            { type: 'receiveInitiateDesignSyncSuccess', payload: { name, action } },
+          ],
+          done,
+        );
+      });
+    });
+
+    describe('on error', () => {
+      beforeEach(() => {
+        action = ACTION_TYPES.RESYNC;
+        projectId = 1;
+        name = 'test';
+
+        mock.onPut().replyOnce(500);
+      });
+
+      it('should dispatch the request and error actions', done => {
+        testAction(
+          actions.initiateDesignSync,
+          { projectId, name, action },
+          state,
+          [],
+          [
+            { type: 'requestInitiateDesignSync' },
+            {
+              type: 'receiveInitiateDesignSyncError',
+              payload: { name: 'test' },
+            },
+          ],
+          done,
         );
       });
     });

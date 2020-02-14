@@ -36,7 +36,8 @@ module Gitlab
               interruptible: true,
               allow_failure: false,
               when: "on_success",
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
           end
         end
@@ -66,7 +67,8 @@ module Gitlab
               ],
               allow_failure: false,
               when: 'on_success',
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
           end
         end
@@ -126,7 +128,8 @@ module Gitlab
               interruptible: true,
               allow_failure: false,
               when: "on_success",
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
           end
         end
@@ -282,6 +285,7 @@ module Gitlab
                   allow_failure: false,
                   when: "on_success",
                   yaml_variables: [],
+                  scheduling_type: :stage,
                   options: { script: ["rspec"] },
                   only: { refs: ["branches"] } }] },
            { name: "deploy",
@@ -293,6 +297,7 @@ module Gitlab
                   allow_failure: false,
                   when: "on_success",
                   yaml_variables: [],
+                  scheduling_type: :stage,
                   options: { script: ["cap prod"] },
                   only: { refs: ["tags"] } }] },
            { name: ".post",
@@ -642,7 +647,8 @@ module Gitlab
               },
               allow_failure: false,
               when: "on_success",
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
           end
 
@@ -674,7 +680,8 @@ module Gitlab
               },
               allow_failure: false,
               when: "on_success",
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
           end
         end
@@ -702,7 +709,8 @@ module Gitlab
               },
               allow_failure: false,
               when: "on_success",
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
           end
 
@@ -728,7 +736,8 @@ module Gitlab
               },
               allow_failure: false,
               when: "on_success",
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
           end
         end
@@ -1250,7 +1259,8 @@ module Gitlab
             },
             when: "on_success",
             allow_failure: false,
-            yaml_variables: []
+            yaml_variables: [],
+            scheduling_type: :stage
           })
         end
 
@@ -1268,6 +1278,72 @@ module Gitlab
 
             expect(builds.size).to eq(1)
             expect(builds.first[:options][:artifacts][:when]).to eq(when_state)
+          end
+        end
+
+        it "gracefully handles errors in artifacts type" do
+          config = <<~YAML
+          test:
+            script:
+              - echo "Hello world"
+            artifacts:
+              - paths:
+              - test/
+          YAML
+
+          expect { described_class.new(config) }.to raise_error(described_class::ValidationError)
+        end
+      end
+
+      describe "release" do
+        let(:processor) { Gitlab::Ci::YamlProcessor.new(YAML.dump(config)) }
+        let(:config) do
+          {
+            stages: ["build", "test", "release"], # rubocop:disable Style/WordArray
+            release: {
+              stage: "release",
+              only: ["tags"],
+              script: ["make changelog | tee release_changelog.txt"],
+              release: {
+                tag_name: "$CI_COMMIT_TAG",
+                name: "Release $CI_TAG_NAME",
+                description: "./release_changelog.txt",
+                assets: {
+                  links: [
+                    {
+                      name: "cool-app.zip",
+                      url: "http://my.awesome.download.site/1.0-$CI_COMMIT_SHORT_SHA.zip"
+                    },
+                    {
+                      name: "cool-app.exe",
+                      url: "http://my.awesome.download.site/1.0-$CI_COMMIT_SHORT_SHA.exe"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        end
+
+        context 'with feature flag active' do
+          before do
+            stub_feature_flags(ci_release_generation: true)
+          end
+
+          it "returns release info" do
+            expect(processor.stage_builds_attributes('release').first[:options])
+              .to eq(config[:release].except(:stage, :only))
+          end
+        end
+
+        context 'with feature flag inactive' do
+          before do
+            stub_feature_flags(ci_release_generation: false)
+          end
+
+          it 'raises error' do
+            expect { processor }.to raise_error(
+              'jobs:release config release features are not enabled: release')
           end
         end
       end
@@ -1538,7 +1614,8 @@ module Gitlab
               },
               when: "on_success",
               allow_failure: false,
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             )
             expect(subject.builds[4]).to eq(
               stage: "test",
@@ -1552,7 +1629,8 @@ module Gitlab
               ],
               when: "on_success",
               allow_failure: false,
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :dag
             )
           end
         end
@@ -1578,7 +1656,8 @@ module Gitlab
               },
               when: "on_success",
               allow_failure: false,
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             )
             expect(subject.builds[4]).to eq(
               stage: "test",
@@ -1594,7 +1673,8 @@ module Gitlab
               ],
               when: "on_success",
               allow_failure: false,
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :dag
             )
           end
         end
@@ -1616,7 +1696,8 @@ module Gitlab
               ],
               when: "on_success",
               allow_failure: false,
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :dag
             )
           end
         end
@@ -1646,7 +1727,8 @@ module Gitlab
               ],
               when: "on_success",
               allow_failure: false,
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :dag
             )
           end
         end
@@ -1668,6 +1750,39 @@ module Gitlab
           let(:dependencies) { %w(build2) }
 
           it { expect { subject }.to raise_error(Gitlab::Ci::YamlProcessor::ValidationError, 'jobs:test1 dependencies the build2 should be part of needs') }
+        end
+
+        context 'needs with a Hash type and dependencies with a string type that are mismatching' do
+          let(:needs) do
+            [
+              "build1",
+              { job: "build2" }
+            ]
+          end
+          let(:dependencies) { %w(build3) }
+
+          it { expect { subject }.to raise_error(Gitlab::Ci::YamlProcessor::ValidationError, 'jobs:test1 dependencies the build3 should be part of needs') }
+        end
+
+        context 'needs with an array type and dependency with a string type' do
+          let(:needs) { %w(build1) }
+          let(:dependencies) { 'deploy' }
+
+          it { expect { subject }.to raise_error(Gitlab::Ci::YamlProcessor::ValidationError, 'jobs:test1 dependencies should be an array of strings') }
+        end
+
+        context 'needs with a string type and dependency with an array type' do
+          let(:needs) { 'build1' }
+          let(:dependencies) { %w(deploy) }
+
+          it { expect { subject }.to raise_error(Gitlab::Ci::YamlProcessor::ValidationError, 'jobs:test1:needs config can only be a hash or an array') }
+        end
+
+        context 'needs with a Hash type and dependency with a string type' do
+          let(:needs) { { job: 'build1' } }
+          let(:dependencies) { 'deploy' }
+
+          it { expect { subject }.to raise_error(Gitlab::Ci::YamlProcessor::ValidationError, 'jobs:test1 dependencies should be an array of strings') }
         end
       end
 
@@ -1750,7 +1865,8 @@ module Gitlab
               },
               when: "on_success",
               allow_failure: false,
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
           end
         end
@@ -1796,7 +1912,8 @@ module Gitlab
               },
               when: "on_success",
               allow_failure: false,
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
             expect(subject.second).to eq({
               stage: "build",
@@ -1808,7 +1925,8 @@ module Gitlab
               },
               when: "on_success",
               allow_failure: false,
-              yaml_variables: []
+              yaml_variables: [],
+              scheduling_type: :stage
             })
           end
         end

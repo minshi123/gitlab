@@ -46,6 +46,27 @@ module EE
         !PushRule.global&.commit_committer_check
       end
 
+      with_scope :global
+      condition(:owner_cannot_modify_approvers_rules) do
+        License.feature_available?(:admin_merge_request_approvers_rules) &&
+          ::Gitlab::CurrentSettings.current_application_settings
+            .disable_overriding_approvers_per_merge_request
+      end
+
+      with_scope :global
+      condition(:owner_cannot_modify_merge_request_author_setting) do
+        License.feature_available?(:admin_merge_request_approvers_rules) &&
+          ::Gitlab::CurrentSettings.current_application_settings
+            .prevent_merge_requests_author_approval
+      end
+
+      with_scope :global
+      condition(:owner_cannot_modify_merge_request_committer_setting) do
+        License.feature_available?(:admin_merge_request_approvers_rules) &&
+          ::Gitlab::CurrentSettings.current_application_settings
+            .prevent_merge_requests_committers_approval
+      end
+
       with_scope :subject
       condition(:commit_committer_check_available) do
         @subject.feature_available?(:commit_committer_check)
@@ -93,6 +114,11 @@ module EE
       with_scope :subject
       condition(:design_management_disabled) do
         !@subject.design_management_enabled?
+      end
+
+      with_scope :subject
+      condition(:code_review_analytics_enabled) do
+        @subject.feature_available?(:code_review_analytics, @user)
       end
 
       condition(:group_timelogs_available) do
@@ -165,6 +191,7 @@ module EE
         enable :read_project_security_dashboard
         enable :create_vulnerability
         enable :admin_vulnerability
+        enable :admin_vulnerability_issue_link
       end
 
       rule { threat_monitoring_enabled & (auditor | can?(:developer_access)) }.enable :read_threat_monitoring
@@ -195,6 +222,10 @@ module EE
         enable :update_approvers
         enable :destroy_package
         enable :admin_feature_flags_client
+        enable :modify_approvers_rules
+        enable :modify_approvers_list
+        enable :modify_merge_request_author_setting
+        enable :modify_merge_request_committer_setting
       end
 
       rule { license_management_enabled & can?(:maintainer_access) }.enable :admin_software_license_policy
@@ -219,6 +250,7 @@ module EE
       rule { auditor & ~developer }.policy do
         prevent :create_vulnerability
         prevent :admin_vulnerability
+        prevent :admin_vulnerability_issue_link
       end
 
       rule { auditor & ~guest }.policy do
@@ -291,6 +323,22 @@ module EE
         prevent :read_project
       end
 
+      rule { owner_cannot_modify_approvers_rules & ~admin }.policy do
+        prevent :modify_approvers_rules
+      end
+
+      rule { owner_cannot_modify_merge_request_author_setting & ~admin }.policy do
+        prevent :modify_merge_request_author_setting
+      end
+
+      rule { owner_cannot_modify_merge_request_committer_setting & ~admin }.policy do
+        prevent :modify_merge_request_committer_setting
+      end
+
+      rule { owner_cannot_modify_approvers_rules & ~admin }.policy do
+        prevent :modify_approvers_list
+      end
+
       rule { web_ide_terminal_available & can?(:create_pipeline) & can?(:maintainer_access) }.enable :create_web_ide_terminal
 
       # Design abilities could also be prevented in the issue policy.
@@ -302,12 +350,13 @@ module EE
       end
 
       rule { build_service_proxy_enabled }.enable :build_service_proxy_enabled
+
+      rule { can?(:read_merge_request) & code_review_analytics_enabled }.enable :read_code_review_analytics
     end
 
     override :lookup_access_level!
     def lookup_access_level!
       return ::Gitlab::Access::NO_ACCESS if needs_new_sso_session?
-      return ::Gitlab::Access::REPORTER if alert_bot?
       return ::Gitlab::Access::REPORTER if support_bot? && service_desk_enabled?
       return ::Gitlab::Access::NO_ACCESS if visual_review_bot?
 

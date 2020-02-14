@@ -42,15 +42,9 @@ export default {
       'active',
     ]),
     title() {
-      return this.hasFeatureFlagsIID
+      return this.iid
         ? `^${this.iid} ${this.name}`
         : sprintf(s__('Edit %{name}'), { name: this.name });
-    },
-    hasFeatureFlagsIID() {
-      return this.glFeatures.featureFlagIID && this.iid;
-    },
-    hasFeatureFlagToggle() {
-      return this.glFeatures.featureFlagToggle;
     },
   },
   created() {
@@ -74,12 +68,7 @@ export default {
 
     <template v-else-if="!isLoading && !hasError">
       <div class="d-flex align-items-center mb-3 mt-3">
-        <gl-toggle
-          v-if="hasFeatureFlagToggle"
-          :value="active"
-          class="m-0 mr-3"
-          @change="toggleActive"
-        />
+        <gl-toggle :value="active" class="m-0 mr-3" @change="toggleActive" />
         <h3 class="page-title m-0">{{ title }}</h3>
       </div>
 
@@ -94,7 +83,7 @@ export default {
         :cancel-path="path"
         :submit-text="__('Save changes')"
         :environments-endpoint="environmentsEndpoint"
-        :active="active || !hasFeatureFlagToggle"
+        :active="active"
         @handleSubmit="data => updateFeatureFlag(data)"
       />
     </template>

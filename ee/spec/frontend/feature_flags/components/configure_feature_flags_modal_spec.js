@@ -21,15 +21,15 @@ describe('Configure Feature Flags Modal', () => {
 
     wrapper = shallowMount(Component, {
       propsData,
-      sync: false,
-      attachToDocument: true,
     });
   });
 
   describe('rotate token', () => {
     it('should emit a `token` event on click', () => {
       wrapper.find(GlButton).vm.$emit('click');
-      expect(wrapper.emitted('token')).toEqual([[]]);
+      return wrapper.vm.$nextTick().then(() => {
+        expect(wrapper.emitted('token')).toEqual([[]]);
+      });
     });
 
     it('should display an error if there is a rotate error', () => {

@@ -50,7 +50,6 @@ describe('SidebarDatePicker', () => {
         ...mockDatePickerProps,
         ...props,
       },
-      sync: false,
     });
   };
 
@@ -64,7 +63,6 @@ describe('SidebarDatePicker', () => {
 
     const anotherWrapper = shallowMount(SidebarDatepicker, {
       propsData: mockDatePickerProps,
-      sync: false,
     });
 
     const firstInputName = wrapper.find('input').attributes('name');
@@ -210,7 +208,9 @@ describe('SidebarDatePicker', () => {
     createComponent({ showToggleSidebar: true });
     wrapper.find(ToggleSidebar).vm.$emit('toggle');
 
-    expect(wrapper.emitted().toggleCollapse).toBeDefined();
+    return wrapper.vm.$nextTick().then(() => {
+      expect(wrapper.emitted().toggleCollapse).toBeDefined();
+    });
   });
 
   it('renders expected template', () => {

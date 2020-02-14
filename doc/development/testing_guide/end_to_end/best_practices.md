@@ -14,7 +14,7 @@ Now, realize that almost all tests need the user to be logged in, and that we ne
 
 Now, multiply the number of tests per 2 seconds, and as your test suite grows, the time to run it grows with it, and this is not sustainable.
 
-An alternative to perform a login in a cheaper way would be having an endpoint (available only for testing) where we could pass the user's credentials as encrypted values as query strings, and then we would be redirected to the logged in home page if the credentials are valid. Let's say that, on average, this process takes only 200 miliseconds.
+An alternative to perform a login in a cheaper way would be having an endpoint (available only for testing) where we could pass the user's credentials as encrypted values as query strings, and then we would be redirected to the logged in home page if the credentials are valid. Let's say that, on average, this process takes only 200 milliseconds.
 
 You see the point right?
 
@@ -78,7 +78,7 @@ That's not possible if a test leaves the browser logged in when it finishes. Nor
 
 For an example see: <https://gitlab.com/gitlab-org/gitlab/issues/34736>
 
-Ideally, any actions peformed in an `after(:context)` (or [`before(:context)`](#limit-the-use-of-beforeall-and-after-hooks)) block would be performed via the API. But if it's necessary to do so via the UI (e.g., if API functionality doesn't exist), make sure to log out at the end of the block.
+Ideally, any actions performed in an `after(:context)` (or [`before(:context)`](#limit-the-use-of-beforeall-and-after-hooks)) block would be performed via the API. But if it's necessary to do so via the UI (e.g., if API functionality doesn't exist), make sure to log out at the end of the block.
 
 ```ruby
 after(:all) do

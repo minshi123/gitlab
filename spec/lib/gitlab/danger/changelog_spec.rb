@@ -34,6 +34,7 @@ describe Gitlab::Danger::Changelog do
       { docs: nil, none: nil }
     ].each do |categories|
       let(:changes_by_category) { categories }
+
       it "is falsy when categories don't require a changelog" do
         is_expected.to be_falsy
       end
@@ -102,18 +103,6 @@ describe Gitlab::Danger::Changelog do
 
     it 'returns the labels formatted' do
       is_expected.to eq('~backstage, ~ci-build, ~meta')
-    end
-  end
-
-  describe '#sanitized_mr_title' do
-    subject { changelog.sanitized_mr_title }
-
-    [
-      'WIP: My MR title',
-      'My MR title'
-    ].each do |mr_title|
-      let(:mr_json) { { "title" => mr_title } }
-      it { is_expected.to eq("My MR title") }
     end
   end
 

@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module Ci
-  class Build < CommitStatus
-    include Ci::Processable
+  class Build < Ci::Processable
     include Ci::Metadatable
     include Ci::Contextable
     include Ci::PipelineDelegator
@@ -11,7 +10,6 @@ module Ci
     include ObjectStorage::BackgroundMove
     include Presentable
     include Importable
-    include Gitlab::Utils::StrongMemoize
     include HasRef
     include IgnorableColumns
 
@@ -24,6 +22,7 @@ module Ci
     belongs_to :trigger_request
     belongs_to :erased_by, class_name: 'User'
     belongs_to :resource_group, class_name: 'Ci::ResourceGroup', inverse_of: :builds
+    belongs_to :pipeline, class_name: 'Ci::Pipeline', foreign_key: :commit_id
 
     RUNNER_FEATURES = {
       upload_multiple_artifacts: -> (build) { build.publishes_artifacts_reports? },
@@ -173,6 +172,9 @@ module Ci
     scope :queued_before, ->(time) { where(arel_table[:queued_at].lt(time)) }
     scope :order_id_desc, -> { order('ci_builds.id DESC') }
 
+    PROJECT_ROUTE_AND_NAMESPACE_ROUTE = { project: [:project_feature, :route, { namespace: :route }] }.freeze
+    scope :preload_project_and_pipeline_project, -> { preload(PROJECT_ROUTE_AND_NAMESPACE_ROUTE, pipeline: PROJECT_ROUTE_AND_NAMESPACE_ROUTE) }
+
     acts_as_taggable
 
     add_authentication_token_field :token, encrypted: :optional
@@ -267,7 +269,7 @@ module Ci
       end
 
       before_transition on: :enqueue_preparing do |build|
-        build.any_unmet_prerequisites? # If false is returned, it stops the transition
+        !build.any_unmet_prerequisites? # If false is returned, it stops the transition
       end
 
       after_transition created: :scheduled do |build|
@@ -446,10 +448,6 @@ module Ci
     def retry_on_reason_or_always?
       options_retry_when.include?(failure_reason.to_s) ||
         options_retry_when.include?('always')
-    end
-
-    def latest?
-      !retried?
     end
 
     def any_unmet_prerequisites?
@@ -765,8 +763,8 @@ module Ci
         end
     end
 
-    def has_expiring_artifacts?
-      artifacts_expire_at.present? && artifacts_expire_at > Time.now
+    def has_expiring_archive_artifacts?
+      has_expiring_artifacts? && job_artifacts_archive.present?
     end
 
     def keep_artifacts!
@@ -820,7 +818,7 @@ module Ci
       depended_jobs = depends_on_builds
 
       # find all jobs that are needed
-      if Feature.enabled?(:ci_dag_support, project, default_enabled: true) && needs.exists?
+      if Feature.enabled?(:ci_dag_support, project, default_enabled: true) && scheduling_type_dag?
         depended_jobs = depended_jobs.where(name: needs.artifacts.select(:name))
       end
 
@@ -980,6 +978,10 @@ module Ci
         value = value.is_a?(Integer) ? { max: value } : value.to_h
         value.with_indifferent_access
       end
+    end
+
+    def has_expiring_artifacts?
+      artifacts_expire_at.present? && artifacts_expire_at > Time.now
     end
   end
 end

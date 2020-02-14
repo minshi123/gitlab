@@ -3,7 +3,7 @@
 include ActionDispatch::TestProcess
 
 FactoryBot.define do
-  factory :ci_job_artifact, class: Ci::JobArtifact do
+  factory :ci_job_artifact, class: 'Ci::JobArtifact' do
     job factory: :ci_build
     file_type { :archive }
     file_format { :zip }
@@ -136,6 +136,16 @@ FactoryBot.define do
       after(:build) do |artifact, evaluator|
         artifact.file = fixture_file_upload(
           Rails.root.join('spec/fixtures/codequality/codequality.json'), 'application/json')
+      end
+    end
+
+    trait :lsif do
+      file_type { :lsif }
+      file_format { :raw }
+
+      after(:build) do |artifact, evaluator|
+        artifact.file = fixture_file_upload(
+          Rails.root.join('spec/fixtures/lsif.json.gz'), 'application/octet-stream')
       end
     end
 

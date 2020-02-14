@@ -34,10 +34,9 @@ describe('ProductivityApp component', () => {
   const mainChartData = { 1: 2, 2: 3 };
 
   const createComponent = (scatterplotEnabled = true) => {
-    wrapper = shallowMount(localVue.extend(ProductivityApp), {
+    wrapper = shallowMount(ProductivityApp, {
       localVue,
       store,
-      sync: false,
       propsData,
       methods: {
         ...actionSpies,
@@ -87,8 +86,8 @@ describe('ProductivityApp component', () => {
         wrapper.vm.$store.dispatch('filters/setInitialData', {
           skipFetch: true,
           data: {
-            mergedAtAfter: new Date('2019-09-01'),
-            mergedAtBefore: new Date('2019-09-02'),
+            mergedAfter: new Date('2019-09-01'),
+            mergedBefore: new Date('2019-09-02'),
           },
         });
         wrapper.vm.$store.dispatch('filters/setGroupNamespace', 'gitlab-org');
@@ -270,6 +269,7 @@ describe('ProductivityApp component', () => {
                     beforeEach(() => {
                       jest.spyOn(store, 'dispatch');
                       findCommitBasedMetricChart().vm.$emit('metricTypeChange', 'loc_per_commit');
+                      return wrapper.vm.$nextTick();
                     });
 
                     it('should call setMetricType  when `metricTypeChange` is emitted on the metric chart', () => {
@@ -326,6 +326,7 @@ describe('ProductivityApp component', () => {
                       beforeEach(() => {
                         jest.spyOn(store, 'dispatch');
                         findScatterplotMetricChart().vm.$emit('metricTypeChange', 'loc_per_commit');
+                        return wrapper.vm.$nextTick();
                       });
 
                       it('should call setMetricType  when `metricTypeChange` is emitted on the metric chart', () => {

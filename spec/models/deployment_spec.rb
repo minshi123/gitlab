@@ -10,6 +10,7 @@ describe Deployment do
   it { is_expected.to belong_to(:cluster).class_name('Clusters::Cluster') }
   it { is_expected.to belong_to(:user) }
   it { is_expected.to belong_to(:deployable) }
+  it { is_expected.to have_one(:deployment_cluster) }
   it { is_expected.to have_many(:deployment_merge_requests) }
   it { is_expected.to have_many(:merge_requests).through(:deployment_merge_requests) }
 
@@ -17,6 +18,7 @@ describe Deployment do
   it { is_expected.to delegate_method(:commit).to(:project) }
   it { is_expected.to delegate_method(:commit_title).to(:commit).as(:try) }
   it { is_expected.to delegate_method(:manual_actions).to(:deployable).as(:try) }
+  it { is_expected.to delegate_method(:kubernetes_namespace).to(:deployment_cluster).as(:kubernetes_namespace) }
 
   it { is_expected.to validate_presence_of(:ref) }
   it { is_expected.to validate_presence_of(:sha) }
@@ -47,6 +49,22 @@ describe Deployment do
       let(:scope) { :project }
       let(:scope_attrs) { { project: instance.project } }
       let(:usage) { :deployments }
+    end
+  end
+
+  describe '.stoppable' do
+    subject { described_class.stoppable }
+
+    context 'when deployment is stoppable' do
+      let!(:deployment) { create(:deployment, :success, on_stop: 'stop-review') }
+
+      it { is_expected.to eq([deployment]) }
+    end
+
+    context 'when deployment is not stoppable' do
+      let!(:deployment) { create(:deployment, :failed) }
+
+      it { is_expected.to be_empty }
     end
   end
 
@@ -399,6 +417,29 @@ describe Deployment do
 
       expect(deploy.merge_requests).to include(mr1, mr2)
     end
+
+    it 'ignores already linked merge requests' do
+      deploy = create(:deployment)
+      mr1 = create(
+        :merge_request,
+        :merged,
+        target_project: deploy.project,
+        source_project: deploy.project
+      )
+
+      deploy.link_merge_requests(deploy.project.merge_requests)
+
+      mr2 = create(
+        :merge_request,
+        :merged,
+        target_project: deploy.project,
+        source_project: deploy.project
+      )
+
+      deploy.link_merge_requests(deploy.project.merge_requests)
+
+      expect(deploy.merge_requests).to include(mr1, mr2)
+    end
   end
 
   describe '#previous_environment_deployment' do
@@ -472,7 +513,7 @@ describe Deployment do
     end
   end
 
-  context '#update_status' do
+  describe '#update_status' do
     let(:deploy) { create(:deployment, status: :running) }
 
     it 'changes the status' do

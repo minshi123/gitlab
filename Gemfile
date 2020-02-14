@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '5.2.3'
+gem 'rails', '6.0.2'
 
 gem 'bootsnap', '~> 1.4'
 
@@ -19,14 +19,14 @@ gem 'default_value_for', '~> 3.3.0'
 gem 'pg', '~> 1.1'
 
 gem 'rugged', '~> 0.28'
-gem 'grape-path-helpers', '~> 1.1'
+gem 'grape-path-helpers', '~> 1.2'
 
 gem 'faraday', '~> 0.12'
 gem 'marginalia', '~> 1.8.0'
 
 # Authentication libraries
 gem 'devise', '~> 4.6'
-gem 'doorkeeper', '~> 4.3'
+gem 'doorkeeper', '~> 4.4.3'
 gem 'doorkeeper-openid_connect', '~> 1.5'
 gem 'omniauth', '~> 1.8'
 gem 'omniauth-auth0', '~> 2.0.0'
@@ -65,9 +65,9 @@ gem 'u2f', '~> 0.2.1'
 
 # GitLab Pages
 gem 'validates_hostname', '~> 1.0.6'
-gem 'rubyzip', '~> 1.3.0', require: 'zip'
+gem 'rubyzip', '~> 2.0.0', require: 'zip'
 # GitLab Pages letsencrypt support
-gem 'acme-client', '~> 2.0.2'
+gem 'acme-client', '~> 2.0.5'
 
 # Browser detection
 gem 'browser', '~> 2.5'
@@ -84,10 +84,10 @@ gem 'net-ldap'
 # API
 gem 'grape', '~> 1.1.0'
 gem 'grape-entity', '~> 0.7.1'
-gem 'rack-cors', '~> 1.0.0', require: 'rack/cors'
+gem 'rack-cors', '~> 1.0.6', require: 'rack/cors'
 
 # GraphQL API
-gem 'graphql', '~> 1.9.11'
+gem 'graphql', '~> 1.9.12'
 # NOTE: graphiql-rails v1.5+ doesn't work: https://gitlab.com/gitlab-org/gitlab/issues/31771
 # TODO: remove app/views/graphiql/rails/editors/show.html.erb when https://github.com/rmosolgo/graphiql-rails/pull/71 is released:
 # https://gitlab.com/gitlab-org/gitlab/issues/31747
@@ -129,9 +129,9 @@ gem 'unf', '~> 0.1.4'
 gem 'seed-fu', '~> 2.3.7'
 
 # Search
-gem 'elasticsearch-model', '~> 0.1.9'
-gem 'elasticsearch-rails', '~> 0.1.9', require: 'elasticsearch/rails/instrumentation'
-gem 'elasticsearch-api',   '5.0.3'
+gem 'elasticsearch-model', '~> 6.1'
+gem 'elasticsearch-rails', '~> 6.1', require: 'elasticsearch/rails/instrumentation'
+gem 'elasticsearch-api',   '~> 6.8'
 gem 'aws-sdk'
 gem 'faraday_middleware-aws-signers-v4'
 
@@ -142,14 +142,14 @@ gem 'gitlab-markup', '~> 1.7.0'
 gem 'github-markup', '~> 1.7.0', require: 'github/markup'
 gem 'commonmarker', '~> 0.20'
 gem 'RedCloth', '~> 4.3.2'
-gem 'rdoc', '~> 6.0'
+gem 'rdoc', '~> 6.1.2'
 gem 'org-ruby', '~> 0.9.12'
 gem 'creole', '~> 0.5.0'
 gem 'wikicloth', '0.8.1'
 gem 'asciidoctor', '~> 2.0.10'
 gem 'asciidoctor-include-ext', '~> 0.3.1', require: false
 gem 'asciidoctor-plantuml', '0.0.10'
-gem 'rouge', '~> 3.11.0'
+gem 'rouge', '~> 3.15.0'
 gem 'truncato', '~> 0.7.11'
 gem 'bootstrap_form', '~> 4.2.0'
 gem 'nokogiri', '~> 1.10.5'
@@ -249,7 +249,7 @@ gem 'asana', '~> 0.9'
 gem 'ruby-fogbugz', '~> 0.2.1'
 
 # Kubernetes integration
-gem 'kubeclient', '~> 4.4.0'
+gem 'kubeclient', '~> 4.6.0'
 
 # Sanitize user input
 gem 'sanitize', '~> 4.6'
@@ -283,7 +283,7 @@ gem 'rack-proxy', '~> 0.6.0'
 gem 'sassc-rails', '~> 2.1.0'
 gem 'uglifier', '~> 2.7.2'
 
-gem 'addressable', '~> 2.5.2'
+gem 'addressable', '~> 2.7'
 gem 'font-awesome-rails', '~> 4.7'
 gem 'gemojione', '~> 3.3'
 gem 'gon', '~> 6.2'
@@ -301,11 +301,11 @@ gem 'sentry-raven', '~> 2.9'
 gem 'premailer-rails', '~> 1.10.3'
 
 # LabKit: Tracing and Correlation
-gem 'gitlab-labkit', '~> 0.5'
+gem 'gitlab-labkit', '0.9.1'
 
 # I18n
 gem 'ruby_parser', '~> 3.8', require: false
-gem 'rails-i18n', '~> 5.1'
+gem 'rails-i18n', '~> 6.0'
 gem 'gettext_i18n_rails', '~> 1.8.0'
 gem 'gettext_i18n_rails_js', '~> 1.3'
 gem 'gettext', '~> 3.2.2', require: false, group: :development
@@ -327,7 +327,7 @@ group :metrics do
   gem 'influxdb', '~> 0.2', require: false
 
   # Prometheus
-  gem 'prometheus-client-mmap', '~> 0.9.10'
+  gem 'prometheus-client-mmap', '~> 0.10.0'
   gem 'raindrops', '~> 0.18'
 end
 
@@ -349,7 +349,7 @@ end
 group :development, :test do
   gem 'bullet', '~> 6.0.2', require: !!ENV['ENABLE_BULLET']
   gem 'pry-byebug', '~> 3.5.1', platform: :mri
-  gem 'pry-rails', '~> 0.3.4'
+  gem 'pry-rails', '~> 0.3.9'
 
   gem 'awesome_print', require: false
 
@@ -381,11 +381,13 @@ group :development, :test do
 
   gem 'knapsack', '~> 1.17'
 
-  gem 'stackprof', '~> 0.2.13', require: false
-
   gem 'simple_po_parser', '~> 1.1.2', require: false
 
   gem 'timecop', '~> 0.8.0'
+
+  gem 'png_quantizator', '~> 0.2.1', require: false
+
+  gem 'parallel', '~> 1.19', require: false
 end
 
 # Gems required in omnibus-gitlab pipeline
@@ -415,7 +417,7 @@ group :test do
   gem 'guard-rspec'
 end
 
-gem 'octokit', '~> 4.9'
+gem 'octokit', '~> 4.15'
 
 gem 'mail_room', '~> 0.10.0'
 
@@ -423,6 +425,7 @@ gem 'email_reply_trimmer', '~> 0.1'
 gem 'html2text'
 
 gem 'ruby-prof', '~> 1.0.0'
+gem 'stackprof', '~> 0.2.15', require: false
 gem 'rbtrace', '~> 0.4', require: false
 gem 'memory_profiler', '~> 0.9', require: false
 gem 'benchmark-memory', '~> 0.1', require: false
@@ -452,7 +455,7 @@ group :ed25519 do
 end
 
 # Gitaly GRPC protocol definitions
-gem 'gitaly', '~> 1.73.0'
+gem 'gitaly', '~> 1.86.0'
 
 gem 'grpc', '~> 1.24.0'
 
@@ -479,3 +482,13 @@ gem 'countries', '~> 3.0'
 gem 'retriable', '~> 3.1.2'
 
 gem 'liquid', '~> 4.0'
+
+# LRU cache
+gem 'lru_redux'
+
+gem 'erubi', '~> 1.9.0'
+
+# Locked as long as quoted-printable encoding issues are not resolved
+# Monkey-patched in `config/initializers/mail_encoding_patch.rb`
+# See https://gitlab.com/gitlab-org/gitlab/issues/197386
+gem 'mail', '= 2.7.1'

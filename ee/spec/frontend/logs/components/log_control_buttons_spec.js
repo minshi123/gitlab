@@ -19,10 +19,7 @@ describe('LogControlButtons', () => {
   const findRefreshBtn = () => wrapper.find('.js-refresh-log');
 
   const initWrapper = () => {
-    wrapper = shallowMount(LogControlButtons, {
-      attachToDocument: true,
-      sync: false,
-    });
+    wrapper = shallowMount(LogControlButtons);
   };
 
   afterEach(() => {
@@ -50,7 +47,9 @@ describe('LogControlButtons', () => {
 
     findRefreshBtn().vm.$emit('click');
 
-    expect(wrapper.emitted('refresh')).toHaveLength(1);
+    return wrapper.vm.$nextTick().then(() => {
+      expect(wrapper.emitted('refresh')).toHaveLength(1);
+    });
   });
 
   describe('when scrolling actions are enabled', () => {

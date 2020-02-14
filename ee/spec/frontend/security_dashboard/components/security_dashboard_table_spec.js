@@ -12,7 +12,7 @@ import {
   REQUEST_VULNERABILITIES,
 } from 'ee/security_dashboard/store/modules/vulnerabilities/mutation_types';
 
-import mockDataVulnerabilities from '../store/vulnerabilities/data/mock_data_vulnerabilities.json';
+import mockDataVulnerabilities from '../store/vulnerabilities/data/mock_data_vulnerabilities';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -27,7 +27,6 @@ describe('Security Dashboard Table', () => {
     wrapper = shallowMount(SecurityDashboardTable, {
       localVue,
       store,
-      sync: false,
     });
     store.state.vulnerabilities.vulnerabilitiesEndpoint = vulnerabilitiesEndpoint;
   });
@@ -93,7 +92,6 @@ describe('Security Dashboard Table', () => {
       wrapper = shallowMount(SecurityDashboardTable, {
         localVue,
         store,
-        sync: false,
         slots: {
           emptyState: '<div class="customEmptyState">Hello World</div>',
         },

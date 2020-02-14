@@ -8,10 +8,11 @@ module Gitlab
       attr_reader :vulnerable, :filters
 
       HISTORY_RANGE = 3.months
+      NoProjectIDsError = Class.new(StandardError)
 
-      def initialize(vulnerable, filters)
+      def initialize(vulnerable, params:)
         @vulnerable = vulnerable
-        @filters = filters
+        @filters = params
       end
 
       def findings_counter
