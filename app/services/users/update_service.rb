@@ -22,6 +22,8 @@ module Users
       assign_attributes
       assign_identity
 
+      @user.update_canonical_email if @user.email_changed?
+
       if @user.save(validate: validate) && update_status
         notify_success(user_exists)
       else

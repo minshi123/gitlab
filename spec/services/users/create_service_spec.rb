@@ -8,10 +8,11 @@ describe Users::CreateService do
 
     context 'with an admin user' do
       let(:service) { described_class.new(admin_user, params) }
+      let(:email) { 'jd@example.com' }
 
       context 'when required parameters are provided' do
         let(:params) do
-          { name: 'John Doe', username: 'jduser', email: 'jd@example.com', password: 'mydummypass' }
+          { name: 'John Doe', username: 'jduser', email: email, password: 'mydummypass' }
         end
 
         it 'returns a persisted user' do
@@ -29,6 +30,20 @@ describe Users::CreateService do
             password: params[:password],
             created_by_id: admin_user.id
           )
+        end
+
+        context 'generates a canonicalized email record if needed' do
+          before do
+            expect_any_instance_of(User).to receive(:canonicalize_email).and_return(email)
+          end
+
+          it 'creates a new record' do
+            user = service.execute
+            user.reload
+
+            expect(user.user_canonical_email).not_to be_nil
+            expect(user.user_canonical_email.canonical_email).to eq email
+          end
         end
 
         context 'when the current_user is not persisted' do

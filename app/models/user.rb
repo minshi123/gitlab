@@ -168,6 +168,7 @@ class User < ApplicationRecord
   has_one :user_preference
   has_one :user_detail
   has_one :user_highest_role
+  has_one :user_canonical_email
 
   #
   # Validations
@@ -1681,6 +1682,17 @@ class User < ApplicationRecord
     callouts = callouts.with_dismissed_after(ignore_dismissal_earlier_than) if ignore_dismissal_earlier_than
 
     callouts.any?
+  end
+
+  def update_canonical_email
+    canonical_email = canonicalize_email
+
+    if canonical_email
+      build_user_canonical_email(canonical_email: canonical_email) unless user_canonical_email
+      self.user_canonical_email.canonical_email = canonical_email
+    else
+      self.user_canonical_email&.delete
+    end
   end
 
   def gitlab_employee?

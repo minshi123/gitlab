@@ -30,6 +30,8 @@ module Users
 
       build_identity(user)
 
+      user.update_canonical_email
+
       user
     end
 

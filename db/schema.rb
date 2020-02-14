@@ -4269,6 +4269,16 @@ ActiveRecord::Schema.define(version: 2020_03_19_203901) do
     t.index ["user_id"], name: "index_user_callouts_on_user_id"
   end
 
+  create_table "user_canonical_emails", force: :cascade do |t|
+    t.datetime_with_timezone "created_at", null: false
+    t.datetime_with_timezone "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.string "canonical_email", null: false
+    t.index ["canonical_email"], name: "index_user_canonical_emails_on_canonical_email"
+    t.index ["user_id", "canonical_email"], name: "index_user_canonical_emails_on_user_id_and_canonical_email", unique: true
+    t.index ["user_id"], name: "index_user_canonical_emails_on_user_id", unique: true
+  end
+
   create_table "user_custom_attributes", id: :serial, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
