@@ -14,6 +14,8 @@ module Geo
     # Called by Packages::PackageFile on create
     def publish_created_event
       publish(:created, **created_params)
+
+      calculate_checksum if needs_checksum?
     end
 
     # Called by Gitlab::Geo::Replicator#consume
@@ -31,8 +33,16 @@ module Geo
       ::Geo::BlobDownloadService.new(replicator: self).execute
     end
 
+    def calculate_checksum
+      ::Geo::BlobVerificationPrimaryService.new(replicator: self).execute
+    end
+
     def created_params
       { model_record_id: model_record.id }
+    end
+
+    def needs_checksum?
+      false
     end
   end
 end

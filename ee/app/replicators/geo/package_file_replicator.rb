@@ -13,5 +13,9 @@ module Geo
     def model
       ::Packages::PackageFile
     end
+
+    def verification_needed?
+      model_record.needs_checksum?
+    end
   end
 end
