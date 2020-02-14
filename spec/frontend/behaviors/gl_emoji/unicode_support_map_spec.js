@@ -6,14 +6,14 @@ describe('Unicode Support Map', () => {
     const stringSupportMap = 'stringSupportMap';
 
     beforeEach(() => {
-      spyOn(AccessorUtilities, 'isLocalStorageAccessSafe');
-      spyOn(window.localStorage, 'getItem');
-      spyOn(window.localStorage, 'setItem');
-      spyOn(JSON, 'parse');
-      spyOn(JSON, 'stringify').and.returnValue(stringSupportMap);
+      jest.spyOn(AccessorUtilities, 'isLocalStorageAccessSafe').mockImplementation(() => {});
+      jest.spyOn(window.localStorage, 'getItem').mockImplementation(() => {});
+      jest.spyOn(window.localStorage, 'setItem').mockImplementation(() => {});
+      jest.spyOn(JSON, 'parse').mockImplementation(() => {});
+      jest.spyOn(JSON, 'stringify').mockReturnValue(stringSupportMap);
     });
 
-    describe('if isLocalStorageAvailable is `true`', function() {
+    describe('if isLocalStorageAvailable is `true`', () => {
       beforeEach(() => {
         AccessorUtilities.isLocalStorageAccessSafe.and.returnValue(true);
 
@@ -36,7 +36,7 @@ describe('Unicode Support Map', () => {
       });
     });
 
-    describe('if isLocalStorageAvailable is `false`', function() {
+    describe('if isLocalStorageAvailable is `false`', () => {
       beforeEach(() => {
         AccessorUtilities.isLocalStorageAccessSafe.and.returnValue(false);
 
@@ -44,7 +44,7 @@ describe('Unicode Support Map', () => {
       });
 
       it('should not call .getItem or .setItem', () => {
-        expect(window.localStorage.getItem.calls.count()).toBe(1);
+        expect(window.localStorage.getItem.mock.calls.length).toBe(1);
         expect(window.localStorage.setItem).not.toHaveBeenCalled();
       });
     });
