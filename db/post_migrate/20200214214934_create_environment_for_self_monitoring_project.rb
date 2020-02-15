@@ -22,5 +22,7 @@ class CreateEnvironmentForSelfMonitoringProject < ActiveRecord::Migration[6.0]
     SQL
   end
 
-  def down; end
+  def down
+    # no-op
+  end
 end
