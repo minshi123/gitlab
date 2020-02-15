@@ -58,6 +58,9 @@ export default {
     canExpandDown() {
       return this.isBottom || !this.isTop;
     },
+    diffFile() {
+      return utils.findDiffFile(this.diffFiles, this.fileHash);
+    },
   },
   created() {
     this.EXPAND_DOWN = EXPAND_DOWN;
@@ -65,14 +68,32 @@ export default {
   },
   methods: {
     ...mapActions('diffs', ['loadMoreLines']),
-    getPrevLineNumber(oldLineNumber, newLineNumber) {
-      const diffFile = utils.findDiffFile(this.diffFiles, this.fileHash);
-      const indexForInline = utils.findIndexInInlineLines(diffFile.highlighted_diff_lines, {
+    getInlinePreviousLineNumber(oldLineNumber, newLineNumber) {
+      const index = utils.findIndexInInlineLines(this.diffFile.highlighted_diff_lines, {
         oldLineNumber,
         newLineNumber,
       });
-      const prevLine = diffFile.highlighted_diff_lines[indexForInline - 2];
-      return (prevLine && prevLine.new_line) || 0;
+      const prevLine = this.diffFile.highlighted_diff_lines[index - 2];
+
+      return prevLine?.new_line || 0;
+    },
+    getParallelPreviousLineNumber(oldLineNumber, newLineNumber) {
+      const index = utils.findIndexInParallelLines(this.diffFile.parallel_diff_lines, {
+        oldLineNumber,
+        newLineNumber,
+      });
+      const prevLine = this.diffFile.parallel_diff_lines[index - 2];
+
+      return prevLine?.right?.new_line || 0;
+    },
+    getPrevLineNumber(oldLineNumber, newLineNumber) {
+      const lineNumberGettersByViewType = {
+        inline: 'getInlinePreviousLineNumber',
+        parallel: 'getParallelPreviousLineNumber',
+      };
+      const getter = lineNumberGettersByViewType[this.diffViewType];
+
+      return this[getter](oldLineNumber, newLineNumber);
     },
     callLoadMoreLines(
       endpoint,
