@@ -1,7 +1,9 @@
 import getUnicodeSupportMap from '~/emoji/support/unicode_support_map';
 import AccessorUtilities from '~/lib/utils/accessor';
+import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 
 describe('Unicode Support Map', () => {
+  useLocalStorageSpy();
   describe('getUnicodeSupportMap', () => {
     const stringSupportMap = 'stringSupportMap';
 
@@ -15,14 +17,14 @@ describe('Unicode Support Map', () => {
 
     describe('if isLocalStorageAvailable is `true`', () => {
       beforeEach(() => {
-        AccessorUtilities.isLocalStorageAccessSafe.and.returnValue(true);
+        jest.spyOn(AccessorUtilities, 'isLocalStorageAccessSafe').mockReturnValue(true);
 
         getUnicodeSupportMap();
       });
 
       it('should call .getItem and .setItem', () => {
-        const getArgs = window.localStorage.getItem.calls.allArgs();
-        const setArgs = window.localStorage.setItem.calls.allArgs();
+        const getArgs = window.localStorage.getItem.mock.calls;
+        const setArgs = window.localStorage.setItem.mock.calls;
 
         expect(getArgs[0][0]).toBe('gl-emoji-version');
         expect(getArgs[1][0]).toBe('gl-emoji-user-agent');
@@ -38,7 +40,7 @@ describe('Unicode Support Map', () => {
 
     describe('if isLocalStorageAvailable is `false`', () => {
       beforeEach(() => {
-        AccessorUtilities.isLocalStorageAccessSafe.and.returnValue(false);
+        jest.spyOn(AccessorUtilities, 'isLocalStorageAccessSafe').mockReturnValue(false);
 
         getUnicodeSupportMap();
       });
