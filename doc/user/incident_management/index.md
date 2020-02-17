@@ -69,6 +69,15 @@ TIP: **Tip:**
 Both GitLab-hosted and Grafana metrics can also be
 [embedded in issue templates](../project/integrations/prometheus.md#embedding-metrics-in-issue-templates).
 
+### Chart Context Menu
+
+From each of the chart panels, you can access the context menu by clicking the **{ellipsis_v}** **More actions** dropdown box above the upper right corner of the panel to take actions related to the chart's data.
+
+The options are:
+
+- [View logs](../project/integrations/prometheus.md#view-pod-logs-ultimate)
+- [Download CSV](../project/integrations/prometheus.md#downloading-data-as-csv)
+
 ### GitLab-hosted metrics
 
 Learn how to embed [GitLab hosted metric charts](../project/integrations/prometheus.md#embedding-metric-charts-within-gitlab-flavored-markdown).
