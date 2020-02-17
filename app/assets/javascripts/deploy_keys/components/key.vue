@@ -1,5 +1,5 @@
 <script>
-import _ from 'underscore';
+import { findIndex, head, tail } from 'lodash';
 import { s__, sprintf } from '~/locale';
 import icon from '~/vue_shared/components/icon.vue';
 import tooltip from '~/vue_shared/directives/tooltip';
@@ -48,7 +48,7 @@ export default {
       const projects = [...this.deployKey.deploy_keys_projects];
 
       if (this.projectId !== null) {
-        const indexOfCurrentProject = _.findIndex(
+        const indexOfCurrentProject = findIndex(
           projects,
           project =>
             project &&
@@ -66,10 +66,10 @@ export default {
       return projects;
     },
     firstProject() {
-      return _.head(this.projects);
+      return head(this.projects);
     },
     restProjects() {
-      return _.tail(this.projects);
+      return tail(this.projects);
     },
     restProjectsTooltip() {
       return sprintf(s__('DeployKeys|Expand %{count} other projects'), {
