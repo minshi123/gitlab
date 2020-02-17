@@ -114,7 +114,7 @@ export default {
     dismissalFeedback() {
       return (
         this.vulnerability &&
-        (this.vulnerability.dismissal_feedback || this.vulnerability.dismissalFeedback)
+        (this.vulnerability.dismissalFeedback || this.vulnerability.dismissal_feedback)
       );
     },
     isEditingExistingFeedback() {
