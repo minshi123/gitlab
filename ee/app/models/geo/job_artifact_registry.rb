@@ -16,4 +16,18 @@ class Geo::JobArtifactRegistry < Geo::BaseRegistry
       where(success: false)
     end
   end
+
+  def self.registry_consistency_worker_enabled?
+    Feature.enabled?(:geo_job_artifact_registry_ssot_sync)
+  end
+
+  def self.finder_class
+    ::Geo::JobArtifactRegistryFinder
+  end
+
+  # If false, RegistryConsistencyService will frequently check the end of the
+  # table to quickly handle new replicables.
+  def self.has_create_events?
+    false
+  end
 end
