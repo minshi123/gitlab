@@ -37,7 +37,6 @@ module Projects
       private
 
       def render_show
-        @deploy_keys = DeployKeysPresenter.new(@project, current_user: current_user)
         @deploy_tokens = @project.deploy_tokens.active
 
         define_deploy_token
