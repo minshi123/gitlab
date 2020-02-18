@@ -258,16 +258,18 @@ module EE
     end
 
     def billed_user_ids(requested_hosted_plan = nil)
-      if [actual_plan_name, requested_hosted_plan].include?(Plan::GOLD)
-        (billed_group_members.non_guests.distinct.pluck(:user_id) |
-        billed_project_members.non_guests.distinct.pluck(:user_id) |
-        billed_shared_group_members.non_guests.distinct.pluck(:user_id) |
-        billed_invited_group_members.non_guests.distinct.pluck(:user_id))
-      else
-        (billed_group_members.distinct.pluck(:user_id) |
-        billed_project_members.distinct.pluck(:user_id) |
-        billed_shared_group_members.distinct.pluck(:user_id) |
-        billed_invited_group_members.distinct.pluck(:user_id))
+      strong_memoize(:billed_user_ids) do
+        if [actual_plan_name, requested_hosted_plan].include?(Plan::GOLD)
+          (billed_group_members.non_guests.distinct.pluck(:user_id) |
+          billed_project_members.non_guests.distinct.pluck(:user_id) |
+          billed_shared_group_members.non_guests.distinct.pluck(:user_id) |
+          billed_invited_group_members.non_guests.distinct.pluck(:user_id))
+        else
+          (billed_group_members.distinct.pluck(:user_id) |
+          billed_project_members.distinct.pluck(:user_id) |
+          billed_shared_group_members.distinct.pluck(:user_id) |
+          billed_invited_group_members.distinct.pluck(:user_id))
+        end
       end
     end
 
