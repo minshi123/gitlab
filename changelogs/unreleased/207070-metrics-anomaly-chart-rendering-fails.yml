@@ -1,0 +1,6 @@
+---
+title: 25399 Fix anomaly series by ensuring options for axis are extended in the time
+  series
+merge_request:
+author:
+type: fixed
