@@ -71,6 +71,8 @@ Both GitLab-hosted and Grafana metrics can also be
 
 ### Chart Context Menu
 
+> [Introduced](<https://gitlab.com/gitlab-org/gitlab/issues/201846>) in GitLab 12.8.
+
 From each of the chart panels, you can access the context menu by clicking the **{ellipsis_v}** **More actions** dropdown box above the upper right corner of the panel to take actions related to the chart's data.
 
 The options are:
