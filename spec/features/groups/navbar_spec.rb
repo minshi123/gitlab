@@ -10,7 +10,10 @@ describe 'Group navbar' do
     {
       nav_item: _('Analytics'),
       nav_sub_items: [
-        _('Contribution Analytics')
+        _('CI / CD Analytics'),
+        (_('Code Review') if Gitlab.ee?),
+        _('Repository Analytics'),
+        _('Value Stream Analytics')
       ]
     }
   end
