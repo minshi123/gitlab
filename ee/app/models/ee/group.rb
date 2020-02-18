@@ -254,16 +254,20 @@ module EE
     # one single array of unique user_ids.
     override :billable_members_count
     def billable_members_count(requested_hosted_plan = nil)
+      billed_user_ids(requested_hosted_plan).count
+    end
+
+    def billed_user_ids(requested_hosted_plan = nil)
       if [actual_plan_name, requested_hosted_plan].include?(Plan::GOLD)
         (billed_group_members.non_guests.distinct.pluck(:user_id) |
         billed_project_members.non_guests.distinct.pluck(:user_id) |
         billed_shared_group_members.non_guests.distinct.pluck(:user_id) |
-        billed_invited_group_members.non_guests.distinct.pluck(:user_id)).count
+        billed_invited_group_members.non_guests.distinct.pluck(:user_id))
       else
         (billed_group_members.distinct.pluck(:user_id) |
         billed_project_members.distinct.pluck(:user_id) |
         billed_shared_group_members.distinct.pluck(:user_id) |
-        billed_invited_group_members.distinct.pluck(:user_id)).count
+        billed_invited_group_members.distinct.pluck(:user_id))
       end
     end
 
