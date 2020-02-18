@@ -162,7 +162,11 @@ module Gitlab
       end
 
       def truncated?
-        size && (size > loaded_size)
+        truncated = size && (size > loaded_size)
+
+        record_metric_truncated(truncated)
+
+        truncated
       end
 
       # Valid LFS object pointer is a text file consisting of
@@ -201,6 +205,14 @@ module Gitlab
       alias_method :external_size, :lfs_size
 
       private
+
+      def record_metric_truncated(bool)
+        if bool
+          self.class.gitlab_blob_truncated_true.increment
+        else
+          self.class.gitlab_blob_truncated_false.increment
+        end
+      end
 
       def has_lfs_version_key?
         !empty? && text_in_repo? && data.start_with?("version https://git-lfs.github.com/spec")
