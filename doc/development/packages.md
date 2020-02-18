@@ -156,13 +156,13 @@ The MVC must support [Personal Access Tokens](https://docs.gitlab.com/ee/user/pr
 
 For OAuth authentication, its support is already done for the APIs. You can see an example in the [npm API](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/lib/api/npm_packages.rb#L14).
 
-For [Basic Access autentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication), its support is done by override a specific function from the API helpers. You can see an example in the [Conan API](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/lib/api/conan_packages.rb#L425). For this authentication mecanism, keep in mind that some clients can send first an unauthenticated request, wait for the 401 Unauthorized response with the [`WWW-Authenticate`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate) field to then re execute the same request but in an authenticated way. This particular case is more involved as GitLab needs to handle the 401 Unauthorized response. the [Nuget API](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/lib/api/nuget_packages.rb#L44-57) supports this case.
+For [Basic Access autentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication), its support is done by override a specific function from the API helpers. You can see an example in the [Conan API](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/lib/api/conan_packages.rb). For this authentication mechanism, keep in mind that some clients can send first an unauthenticated request, wait for the 401 Unauthorized response with the [`WWW-Authenticate`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate) field to then re execute the same request but in an authenticated way. This particular case is more involved as GitLab needs to handle the 401 Unauthorized response. the [Nuget API](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/lib/api/nuget_packages.rb) supports this case.
 
 #### Authorization
 
 There are project and group level permissions for `read_package`, `create_package`, and `destroy_package`. Each
 endpoint should
-[authorize the requesting user](https://gitlab.com/gitlab-org/gitlab/blob/398fef1ca26ae2b2c3dc89750f6b20455a1e5507/ee/lib/api/conan_packages.rb#L84)
+[authorize the requesting user](https://gitlab.com/gitlab-org/gitlab/blob/398fef1ca26ae2b2c3dc89750f6b20455a1e5507/ee/lib/api/conan_packages.rb)
 against the project or group before continuing.
 
 #### Database and handling metadata
@@ -192,7 +192,7 @@ and file location rather than the file itself. An overview of this process can b
 [development documentation](uploads.md#direct-upload).
 
 In terms of code, this means a route will need to be added to the
-[GitLab Workhorse project](https://gitlab.com/gitlab-org/gitlab-workhorse) for each level of remote being added
+[GitLab Workhorse project](https://gitlab.com/gitlab-org/gitlab-workhorse) for upload endpoint being added
 (instance, group, project). [This merge request](https://gitlab.com/gitlab-org/gitlab-workhorse/-/merge_requests/412/diffs)
 demonstrates adding an instance-level endpoint for Conan to workhorse. You can also see the Maven project level endpoint
 implemented in the same file.
