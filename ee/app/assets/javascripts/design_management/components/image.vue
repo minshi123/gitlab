@@ -46,13 +46,17 @@ export default {
       requestIdleCallback(this.setBaseImageSize, { timeout: 1000 });
     },
     onWindowResize() {
-      const { contentImg } = this.$refs;
-      if (!contentImg) return;
+      if (this.imageStyle) {
+        const { contentImg } = this.$refs;
+        if (!contentImg) return;
 
-      this.onResize({
-        width: contentImg.offsetWidth,
-        height: contentImg.offsetHeight,
-      });
+        this.onResize({
+          width: contentImg.offsetWidth,
+          height: contentImg.offsetHeight,
+        });
+      } else {
+        this.setBaseImageSize();
+      }
     },
     setBaseImageSize() {
       const { contentImg } = this.$refs;
@@ -68,6 +72,13 @@ export default {
       this.$emit('resize', { width, height });
     },
     zoom(amount) {
+      if (amount === 1) {
+        this.imageStyle = null;
+        this.$nextTick(() => {
+          this.setBaseImageSize();
+        });
+        return;
+      }
       const width = this.baseImageSize.width * amount;
       const height = this.baseImageSize.height * amount;
 
