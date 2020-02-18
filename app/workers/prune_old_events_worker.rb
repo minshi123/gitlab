@@ -2,9 +2,12 @@
 
 class PruneOldEventsWorker
   include ApplicationWorker
-  include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
+  # rubocop:disable Scalability/CronWorkerContext
+  # This worker does not perform work scoped to a context
+  include CronjobQueue
+  # rubocop:enable Scalability/CronWorkerContext
 
-  feature_category_not_owned!
+  feature_category :users
 
   DELETE_LIMIT = 10_000
 

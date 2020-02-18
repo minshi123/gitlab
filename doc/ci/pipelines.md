@@ -144,6 +144,13 @@ The union of A, B, and C is (1, 4) and (6, 7). Therefore, the total running time
 (4 - 1) + (7 - 6) => 4
 ```
 
+### How pipeline quotas are used
+
+Each user has a personal pipeline quota that tracks the usage of shared runners in all personal projects.
+Each group has a [usage quota](../subscriptions/index.md#ci-pipeline-minutes) that tracks the usage of shared runners for all projects created within the group.
+
+When a pipeline is triggered, regardless of who triggered it, the pipeline quota for the project owner's [namespace](../user/group/index.md#namespaces) is used. In this case, the namespace can be the user or group that owns the project.
+
 ### Expanding and collapsing job log sections
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/14664) in GitLab
@@ -158,6 +165,43 @@ In the following example:
 - Three sections are expanded and can be collapsed.
 
 ![Collapsible sections](img/collapsible_log_v12_6.png)
+
+#### Custom collapsible sections
+
+You can create collapsible sections in job logs by manually outputting special codes
+that GitLab will use to determine what sections to collapse:
+
+- Section start marker: `section_start:UNIX_TIMESTAMP:SECTION_NAME\r\e[0K` + `TEXT_OF_SECTION_HEADER`
+- Section end marker: `section_end:UNIX_TIMESTAMP:SECTION_NAME\r\e[0K`
+
+You must add these codes to the script section of the CI configuration. For example,
+using `echo`:
+
+```yaml
+job1:
+  script:
+    - echo -e "section_start:`date +%s`:my_first_section\r\e[0KHeader of the 1st collapsible section"
+    - echo 'this line should be hidden when collapsed'
+    - echo -e "section_end:`date +%s`:my_first_section\r\e[0K"
+```
+
+In the example above:
+
+- `date +%s`: The Unix timestamp (for example `1560896352`).
+- `my_first_section`: The name given to the section.
+- `\r\e[0K`: Prevents the section markers from displaying in the rendered (colored)
+  job log, but they are displayed in the raw job log. To see them, in the top right
+  of the job log, click **{doc-text}** (**Show complete raw**).
+  - `\r`: carriage return.
+  - `\e[0K`: clear line ANSI escape code.
+
+Sample raw job log:
+
+```plaintext
+section_start:1560896352:my_first_section\r\e[0KHeader of the 1st collapsible section
+this line should be hidden when collapsed
+section_end:1560896353:my_first_section\r\e[0K
+```
 
 ## Configuring pipelines
 
