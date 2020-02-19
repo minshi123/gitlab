@@ -32,25 +32,14 @@ describe 'EE > Projects > Licenses > Maintainer views policies', :js do
     let(:report) { JSON.parse(fixture_file('security_reports/gl-license-management-report-v2.json', dir: 'ee')) }
     let(:known_licenses) { report['licenses'].find_all { |license| license['url'].present? } }
 
-    def dependencies_for(spdx_id)
-      report['dependencies']
-        .find_all { |dependency| dependency['licenses'].include?(spdx_id) }
-        .map { |dependency| dependency['name'] }
-    end
-
-    def display_name_for(license)
-      SoftwareLicense
-        .where(spdx_identifier: license['id']).limit(1)
-        .pluck(:name)[0] || license['name']
-    end
-
     it 'displays licenses detected in the most recent scan report' do
       known_licenses.each do |license|
         selector = "div[data-spdx-id='#{license['id']}'"
         expect(page).to have_selector(selector)
 
         row = page.find(selector)
-        expect(row).to have_content(display_name_for(license))
+        policy = policy_for(license)
+        expect(row).to have_content(policy&.name || license['name'])
         expect(row).to have_content(dependencies_for(license['id']).join(' and '))
       end
     end
@@ -69,6 +58,16 @@ describe 'EE > Projects > Licenses > Maintainer views policies', :js do
         expect(row).to have_content(mit.name)
         expect(row).to have_content(mit_policy.classification.titlecase)
       end
+    end
+
+    def dependencies_for(spdx_id)
+      report['dependencies']
+        .find_all { |dependency| dependency['licenses'].include?(spdx_id) }
+        .map { |dependency| dependency['name'] }
+    end
+
+    def policy_for(license)
+      SoftwareLicensePolicy.by_spdx(license['id']).first
     end
   end
 end
