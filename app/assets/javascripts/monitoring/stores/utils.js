@@ -9,7 +9,7 @@ export const gqClient = createGqClient(
   },
 );
 
-export const uniqMetricsId = metric => `${metric.metric_id}_${metric.id}`;
+export const uniqMetricsId = metric => `${metric.metric_id || metric.metricId}_${metric.id}`;
 
 /**
  * Project path has a leading slash that doesn't work well
