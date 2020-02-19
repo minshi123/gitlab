@@ -21,10 +21,10 @@ const normalizePanelMetrics = (metrics, defaultLabel) =>
  */
 const findMetricInDashboard = (metricId, dashboard) => {
   let res = null;
-  dashboard.panel_groups.forEach(group => {
+  dashboard.panelGroups.forEach(group => {
     group.panels.forEach(panel => {
       panel.metrics.forEach(metric => {
-        if (metric.metric_id === metricId) {
+        if (metric.metricId === metricId) {
           res = metric;
         }
       });
@@ -88,7 +88,7 @@ export default {
   [types.RECEIVE_METRICS_DATA_SUCCESS](state, dashboard) {
     state.dashboard = {
       ...dashboard,
-      panel_groups: dashboard.panel_groups.map((group, i) => {
+      panelGroups: dashboard.panelGroups.map((group, i) => {
         const key = `${slugify(group.group || 'default')}-${i}`;
         let { panels = [] } = group;
 
@@ -106,7 +106,7 @@ export default {
       }),
     };
 
-    if (!state.dashboard.panel_groups.length) {
+    if (!state.dashboard.panelGroups.length) {
       state.emptyState = 'noData';
     }
   },
@@ -206,7 +206,7 @@ export default {
     state.showErrorBanner = enabled;
   },
   [types.SET_PANEL_GROUP_METRICS](state, payload) {
-    const panelGroup = state.dashboard.panel_groups.find(pg => payload.key === pg.key);
+    const panelGroup = state.dashboard.panelGroups.find(pg => payload.key === pg.key);
     panelGroup.panels = payload.panels;
   },
   [types.SET_ENVIRONMENTS_FILTER](state, searchTerm) {
