@@ -7,7 +7,7 @@ class AvatarUploader < GitlabUploader
   prepend ObjectStorage::Extension::RecordsUploads
   include UploadTypeCheck::Concern
 
-  check_upload_type extensions: AvatarUploader::SAFE_IMAGE_EXT
+  MIME_WHITELIST = %w[image/png image/jpeg image/gif image/bmp image/tiff image/vnd.microsoft.icon].freeze
 
   def exists?
     model.avatar.file && model.avatar.file.present?
@@ -27,6 +27,10 @@ class AvatarUploader < GitlabUploader
 
   def mounted_as
     super || 'avatar'
+  end
+
+  def content_type_whitelist
+    MIME_WHITELIST
   end
 
   private

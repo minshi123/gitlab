@@ -47,15 +47,11 @@ describe AvatarUploader do
     end
   end
 
-  context 'upload type check' do
-    AvatarUploader::SAFE_IMAGE_EXT.each do |ext|
-      context "#{ext} extension" do
-        it_behaves_like 'type checked uploads', filenames: "image.#{ext}"
-      end
-    end
-
-    context 'skip image/svg+xml integrity check' do
-      it_behaves_like 'skipped type checked uploads', filenames: 'image.svg'
+  context 'upload non-whitelisted file content type' do
+    it 'will deny upload' do
+      path = File.join('spec', 'fixtures', 'git-cheat-sheet.pdf')
+      fixture_file = fixture_file_upload(path)
+      expect { uploader.store!(fixture_file) }.to raise_exception(CarrierWave::IntegrityError)
     end
   end
 end
