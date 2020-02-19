@@ -54,5 +54,21 @@ describe 'EE > Projects > Licenses > Maintainer views policies', :js do
         expect(row).to have_content(dependencies_for(license['id']).join(' and '))
       end
     end
+
+    context "when viewing the configured policies" do
+      before do
+        click_link('Policies')
+        wait_for_requests
+      end
+
+      it 'displays the classification' do
+        selector = "div[data-qa-selector='admin_license_compliance_row']"
+        expect(page).to have_selector(selector)
+
+        row = page.find(selector)
+        expect(row).to have_content(mit.name)
+        expect(row).to have_content(mit_policy.classification.titlecase)
+      end
+    end
   end
 end
