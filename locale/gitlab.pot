@@ -13462,6 +13462,12 @@ msgstr ""
 msgid "PackageRegistry|NuGet Command"
 msgstr ""
 
+msgid "PackageRegistry|Pipeline %{linkStart}%{linkEnd} triggered %{timestamp} by %{author}"
+msgstr ""
+
+msgid "PackageRegistry|Published to the repository at %{timestamp}"
+msgstr ""
+
 msgid "PackageRegistry|Registry Setup"
 msgstr ""
 
