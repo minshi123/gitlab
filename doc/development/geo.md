@@ -509,6 +509,9 @@ that need to be taken care of:
 - Health Check. If we can perform some pre-cheсks and make node unhealthy if something is wrong, we should do that.
   The `rake gitlab:geo:check` command has to be updated too.
 
+We started developing a new Geo Self-Service framework which makes it a lot easier to add a new data type.
+You can read more details in [Geo self-service framework (alpha)](geo/framework.md). Keep in mind it's currently in alfa.
+
 ## History of communication channel
 
 The communication channel has changed since first iteration, you can
