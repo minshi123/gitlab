@@ -4310,7 +4310,7 @@ msgstr ""
 msgid "ClusterIntegration|Learn more about %{help_link_start}zones%{help_link_end}."
 msgstr ""
 
-msgid "ClusterIntegration|Learn more about %{startLink}ModSecurity%{endLink}"
+msgid "ClusterIntegration|Learn more about %{linkStart}ModSecurity%{linkEnd}"
 msgstr ""
 
 msgid "ClusterIntegration|Learn more about %{startLink}Regions %{externalLinkIcon}%{endLink}."
@@ -4593,6 +4593,9 @@ msgid "ClusterIntegration|Something went wrong while uninstalling %{title}"
 msgstr ""
 
 msgid "ClusterIntegration|Something went wrong while updating Knative domain name."
+msgstr ""
+
+msgid "ClusterIntegration|Something went wrong while updating the Web Application Firewall."
 msgstr ""
 
 msgid "ClusterIntegration|Specifying a domain will allow you to use Auto Review Apps and Auto Deploy stages for %{auto_devops_start}Auto DevOps%{auto_devops_end}. The domain should have a wildcard DNS configured matching the domain."
@@ -11310,31 +11313,19 @@ msgstr ""
 msgid "LicenseCompliance|Add licenses manually to approve or blacklist"
 msgstr ""
 
-msgid "LicenseCompliance|Approve"
+msgid "LicenseCompliance|Allow"
 msgstr ""
 
-msgid "LicenseCompliance|Approve license"
-msgstr ""
-
-msgid "LicenseCompliance|Approve license?"
-msgstr ""
-
-msgid "LicenseCompliance|Approved"
-msgstr ""
-
-msgid "LicenseCompliance|Blacklist"
-msgstr ""
-
-msgid "LicenseCompliance|Blacklist license"
-msgstr ""
-
-msgid "LicenseCompliance|Blacklist license?"
-msgstr ""
-
-msgid "LicenseCompliance|Blacklisted"
+msgid "LicenseCompliance|Allowed"
 msgstr ""
 
 msgid "LicenseCompliance|Cancel"
+msgstr ""
+
+msgid "LicenseCompliance|Denied"
+msgstr ""
+
+msgid "LicenseCompliance|Deny"
 msgstr ""
 
 msgid "LicenseCompliance|Here you can approve or blacklist licenses for this project. Using %{ci} or %{license} will allow you to see if there are any unmanaged licenses and approve or blacklist them in merge request."
@@ -11376,6 +11367,9 @@ msgid "LicenseCompliance|License details"
 msgstr ""
 
 msgid "LicenseCompliance|License name"
+msgstr ""
+
+msgid "LicenseCompliance|License review"
 msgstr ""
 
 msgid "LicenseCompliance|Packages"
@@ -11423,6 +11417,9 @@ msgstr ""
 msgid "Licenses|Components"
 msgstr ""
 
+msgid "Licenses|Detected in Project"
+msgstr ""
+
 msgid "Licenses|Displays licenses detected in the project, based on the %{linkStart}latest pipeline%{linkEnd} scan"
 msgstr ""
 
@@ -11436,6 +11433,15 @@ msgid "Licenses|License Compliance"
 msgstr ""
 
 msgid "Licenses|Name"
+msgstr ""
+
+msgid "Licenses|Policies"
+msgstr ""
+
+msgid "Licenses|Policy"
+msgstr ""
+
+msgid "Licenses|Specified policies in this project"
 msgstr ""
 
 msgid "Licenses|The license list details information about the licenses used within your project."
@@ -13483,7 +13489,7 @@ msgstr ""
 msgid "PackageRegistry|You are about to delete version %{boldStart}%{version}%{boldEnd} of %{boldStart}%{name}%{boldEnd}. Are you sure?"
 msgstr ""
 
-msgid "PackageRegistry|You may also need to setup authentication using an auth token.  %{linkStart}See the documentation%{linkEnd} to find out more."
+msgid "PackageRegistry|You may also need to setup authentication using an auth token. %{linkStart}See the documentation%{linkEnd} to find out more."
 msgstr ""
 
 msgid "PackageRegistry|npm"

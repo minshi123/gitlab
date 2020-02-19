@@ -124,6 +124,8 @@ module Gitlab
           self.__send__("#{key}=", options[key.to_sym]) # rubocop:disable GitlabSecurity/PublicSend
         end
 
+        record_metric_blob_size
+
         # Retain the actual size before it is encoded
         @loaded_size = @data.bytesize if @data
         @loaded_all_data = @loaded_size == size
@@ -212,6 +214,12 @@ module Gitlab
         else
           self.class.gitlab_blob_truncated_false.increment
         end
+      end
+
+      def record_metric_blob_size
+        return unless size
+
+        self.class.gitlab_blob_size.observe({}, size)
       end
 
       def has_lfs_version_key?
