@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_13_220211) do
+ActiveRecord::Schema.define(version: 2020_02_19_113357) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3425,6 +3425,7 @@ ActiveRecord::Schema.define(version: 2020_02_13_220211) do
     t.integer "marked_for_deletion_by_user_id"
     t.boolean "autoclose_referenced_issues"
     t.string "suggestion_commit_message", limit: 255
+    t.integer "drop_older_active_deployments", limit: 2
     t.index "lower((name)::text)", name: "index_projects_on_lower_name"
     t.index ["created_at", "id"], name: "index_projects_api_created_at_id_desc", order: { id: :desc }
     t.index ["created_at", "id"], name: "index_projects_api_vis20_created_at", where: "(visibility_level = 20)"

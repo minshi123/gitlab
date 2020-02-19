@@ -77,6 +77,7 @@ class Project < ApplicationRecord
   default_value_for :remove_source_branch_after_merge, true
   default_value_for :autoclose_referenced_issues, true
   default_value_for(:ci_config_path) { Gitlab::CurrentSettings.default_ci_config_path }
+  default_value_for :drop_older_active_deployments, 1
 
   add_authentication_token_field :runners_token, encrypted: -> { Feature.enabled?(:projects_tokens_optional_encryption, default_enabled: true) ? :optional : :required }
 
@@ -483,6 +484,7 @@ class Project < ApplicationRecord
   end
 
   enum auto_cancel_pending_pipelines: { disabled: 0, enabled: 1 }
+  enum drop_older_active_deployments: { disabled: 0, enabled: 1 }, _suffix: true
 
   chronic_duration_attr :build_timeout_human_readable, :build_timeout,
     default: 3600, error_message: _('Maximum job timeout has a value which could not be accepted')
