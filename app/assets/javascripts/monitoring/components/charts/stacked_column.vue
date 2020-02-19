@@ -37,7 +37,7 @@ export default {
       return this.graphData.y_label !== undefined ? this.graphData.y_label : '';
     },
     xAxisType() {
-      return this.graphData.x_type !== undefined ? this.graphData.x_type : 'category';
+      return this.graphData.xType !== undefined ? this.graphData.xType : 'category';
     },
     groupBy() {
       return this.graphData.metrics[0].result[0].values.map(val => val[0]);

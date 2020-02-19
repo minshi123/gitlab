@@ -56,7 +56,7 @@ describe('Time series component', () => {
     );
 
     // Pick the second panel group and the first panel in it
-    [mockGraphData] = store.state.monitoringDashboard.dashboard.panel_groups[1].panels;
+    [mockGraphData] = store.state.monitoringDashboard.dashboard.panelGroups[0].panels;
 
     makeTimeSeriesChart = (graphData, type) =>
       shallowMount(TimeSeries, {
@@ -200,7 +200,7 @@ describe('Time series component', () => {
           });
 
           it('formats tooltip content', () => {
-            const name = 'Pod average';
+            const name = 'Total';
             const value = '5.556';
             const dataIndex = 0;
             const seriesLabel = timeSeriesChart.find(GlChartSeriesLabel);
@@ -451,7 +451,7 @@ describe('Time series component', () => {
         it('constructs a label for the chart y-axis', () => {
           const { yAxis } = getChartOptions();
 
-          expect(yAxis[0].name).toBe('Memory Used per Pod');
+          expect(yAxis[0].name).toBe('Total Memory Used');
         });
       });
     });

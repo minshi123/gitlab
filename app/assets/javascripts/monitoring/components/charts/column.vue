@@ -52,7 +52,7 @@ export default {
         : '';
     },
     xAxisType() {
-      return this.graphData.x_type !== undefined ? this.graphData.x_type : 'category';
+      return this.graphData.xType !== undefined ? this.graphData.xType : 'category';
     },
     dataZoomConfig() {
       const handleIcon = this.svgs['scroll-handle'];

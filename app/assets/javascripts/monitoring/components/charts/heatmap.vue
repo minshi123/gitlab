@@ -43,9 +43,9 @@ export default {
     },
     yAxisLabels() {
       return this.result.values.map(val => {
-        const [yLabel] = val;
+        const [y_label] = val;
 
-        return dateformat(new Date(yLabel), 'HH:MM:ss');
+        return dateformat(new Date(y_label), 'HH:MM:ss');
       });
     },
     result() {
