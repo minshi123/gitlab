@@ -19,6 +19,7 @@ describe 'registrations/welcome' do
 
     it { is_expected.to have_button('Continue') }
     it { is_expected.to have_selector('#progress-bar') }
+    it { is_expected.to have_selector('label[for="user_setup_for_company"]', text: 'Who will be using this GitLab subscription?') }
   end
 
   context 'not in paid_signup_flow' do
@@ -26,5 +27,6 @@ describe 'registrations/welcome' do
 
     it { is_expected.to have_button('Get started!') }
     it { is_expected.not_to have_selector('#progress-bar') }
+    it { is_expected.to have_selector('label[for="user_setup_for_company"]', text: 'Who will be using GitLab?') }
   end
 end

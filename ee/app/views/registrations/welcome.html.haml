@@ -19,7 +19,7 @@
             .form-text.text-muted= _('This will help us personalize your onboarding experience.')
         .row
           .form-group.col-sm-12
-            = f.label :setup_for_company, _('Who will be using this GitLab subscription?'), class: 'label-bold'
+            = f.label :setup_for_company, in_paid_signup_flow? ? _('Who will be using this GitLab subscription?') : _('Who will be using GitLab?') , class: 'label-bold'
             .d-flex.flex-column.flex-lg-row
               .flex-grow-1
                 = f.radio_button :setup_for_company, true
