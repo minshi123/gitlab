@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_13_220211) do
+ActiveRecord::Schema.define(version: 2020_02_19_113817) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -4146,6 +4146,18 @@ ActiveRecord::Schema.define(version: 2020_02_13_220211) do
     t.index ["user_id", "key"], name: "index_user_custom_attributes_on_user_id_and_key", unique: true
   end
 
+  create_table "user_details", primary_key: "false", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "bio", limit: 255, default: "", null: false
+    t.string "location", limit: 255, default: "", null: false
+    t.string "organization", limit: 255, default: "", null: false
+    t.string "linkedin", limit: 2048, default: "", null: false
+    t.string "twitter", limit: 2048, default: "", null: false
+    t.string "skype", limit: 2048, default: "", null: false
+    t.string "website_url", limit: 2048, default: "", null: false
+    t.index ["user_id"], name: "index_user_details_on_user_id", unique: true
+  end
+
   create_table "user_interacted_projects", id: false, force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "project_id", null: false
@@ -5002,6 +5014,7 @@ ActiveRecord::Schema.define(version: 2020_02_13_220211) do
   add_foreign_key "u2f_registrations", "users"
   add_foreign_key "user_callouts", "users", on_delete: :cascade
   add_foreign_key "user_custom_attributes", "users", on_delete: :cascade
+  add_foreign_key "user_details", "users"
   add_foreign_key "user_interacted_projects", "projects", name: "fk_722ceba4f7", on_delete: :cascade
   add_foreign_key "user_interacted_projects", "users", name: "fk_0894651f08", on_delete: :cascade
   add_foreign_key "user_preferences", "users", on_delete: :cascade
