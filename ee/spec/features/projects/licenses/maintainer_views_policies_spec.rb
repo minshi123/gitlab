@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe 'EE > Projects > Licenses > Maintainer views policies' do
+describe 'EE > Projects > Licenses > Maintainer views policies', :js do
   let(:project) { create(:project) }
   let(:maintainer) do
     create(:user).tap do |user|
@@ -17,19 +17,17 @@ describe 'EE > Projects > Licenses > Maintainer views policies' do
   end
 
   context 'when policies are not configured' do
-    let(:help_path) { help_page_path('user/application_security/license_compliance/index') }
-
     before do
       visit path
     end
 
     it 'displays a link to the documentation to configure license compliance' do
       expect(page).to have_content('License Compliance')
-      expect(page).to have_selector("div[data-documentation-path='#{help_path}']")
+      expect(page).to have_content('Learn more about license compliance')
     end
   end
 
-  context "when a policy is configured", :js do
+  context "when a policy is configured" do
     let!(:mit) { create(:software_license, :mit) }
     let!(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
     let!(:pipeline) { create(:ee_ci_pipeline, project: project, builds: [create(:ee_ci_build, :license_scan_v2, :success)]) }
