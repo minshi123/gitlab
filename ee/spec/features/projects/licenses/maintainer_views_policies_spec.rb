@@ -15,7 +15,6 @@ describe 'EE > Projects > Licenses > Maintainer views policies' do
     sign_in(maintainer)
     stub_licensed_features(license_management: true)
     visit path
-    wait_for_requests
   end
 
   context 'when policies are not configured' do
@@ -32,12 +31,16 @@ describe 'EE > Projects > Licenses > Maintainer views policies' do
     let!(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
     let!(:pipeline) { create(:ee_ci_pipeline, project: project, builds: [create(:ee_ci_build, :license_scan_v2, :success)]) }
 
+    before do
+      wait_for_requests
+    end
+
     it 'displays licenses detected in the most recent scan report' do
       expect(page).to have_content(mit.name)
     end
 
     it 'displays the classification for detected licenses' do
-      expect(page).to have_content(mit.classification)
+      expect(page).to have_content(mit_policy.classification)
     end
   end
 end
