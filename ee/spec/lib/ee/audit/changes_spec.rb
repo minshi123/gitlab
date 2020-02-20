@@ -19,7 +19,7 @@ describe EE::Audit::Changes do
     describe 'non audit changes' do
       context 'when audited column is not changed' do
         it 'does not call the audit event service' do
-          user.update!(name: 'new name')
+          user.update!(name: 'Scrooge McDuck')
 
           expect { foo_instance.audit_changes(:email) }.not_to change { SecurityEvent.count }
         end
@@ -29,7 +29,7 @@ describe EE::Audit::Changes do
         let(:user) { build(:user) }
 
         it 'does not call the audit event service' do
-          user.update!(name: 'new name')
+          user.update!(name: 'Scrooge McDuck')
 
           expect { foo_instance.audit_changes(:name) }.not_to change { SecurityEvent.count }
         end
@@ -38,9 +38,20 @@ describe EE::Audit::Changes do
 
     describe 'audit changes' do
       it 'calls the audit event service' do
-        user.update!(name: 'new name')
+        user.update!(name: 'Scrooge McDuck')
 
-        expect { foo_instance.audit_changes(:name) }.to change { SecurityEvent.count }.by(1)
+        foo_instance.audit_changes(:name)
+
+        aggregate_failures 'audit event service interactions' do
+          expect(AuditEventService).to have_received(:new)
+            .with(
+              current_user, user,
+              action: :update, column: :name,
+              from: 'Donald Duck', to: 'Scrooge McDuck'
+            )
+          expect(audit_event_service).to have_received(:for_changes).with(user)
+          expect(audit_event_service).to have_received(:security_event)
+        end
       end
     end
   end
