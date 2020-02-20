@@ -89,13 +89,10 @@ class GitlabProjectImport
   end
 
   def with_gc_counter
-    gc_counts_before = GC.stat.select { |k, v| k =~ /count/ }
+    GC.start # perform a full mark-and-sweep
     yield
-    gc_counts_after = GC.stat.select { |k, v| k =~ /count/ }
-    stats = gc_counts_before.merge(gc_counts_after) { |k, vb, va| va - vb }
-    puts "Total GC count: #{stats[:count]}"
-    puts "Minor GC count: #{stats[:minor_gc_count]}"
-    puts "Major GC count: #{stats[:major_gc_count]}"
+    puts "GC stats:"
+    puts GC.stat.pretty_inspect
   end
 
   def with_measure_time
