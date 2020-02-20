@@ -1,7 +1,7 @@
-import testAction from 'spec/helpers/vuex_action_helper';
+import testAction from 'helpers/vuex_action_helper';
 import * as actions from '~/create_cluster/gke_cluster/store/actions';
 import { createStore } from '~/create_cluster/gke_cluster/store';
-import { gapi } from '../helpers';
+import gapi from '../helpers';
 import { selectedProjectMock, selectedZoneMock, selectedMachineTypeMock } from '../mock_data';
 
 describe('GCP Cluster Dropdown Store Actions', () => {
@@ -12,62 +12,59 @@ describe('GCP Cluster Dropdown Store Actions', () => {
   });
 
   describe('setProject', () => {
-    it('should set project', done => {
+    it('should set project', () => {
       testAction(
         actions.setProject,
         selectedProjectMock,
         { selectedProject: {} },
         [{ type: 'SET_PROJECT', payload: selectedProjectMock }],
         [],
-        done,
       );
     });
   });
 
   describe('setZone', () => {
-    it('should set zone', done => {
+    it('should set zone', () => {
       testAction(
         actions.setZone,
         selectedZoneMock,
         { selectedZone: '' },
         [{ type: 'SET_ZONE', payload: selectedZoneMock }],
         [],
-        done,
       );
     });
   });
 
   describe('setMachineType', () => {
-    it('should set machine type', done => {
+    it('should set machine type', () => {
       testAction(
         actions.setMachineType,
         selectedMachineTypeMock,
         { selectedMachineType: '' },
         [{ type: 'SET_MACHINE_TYPE', payload: selectedMachineTypeMock }],
         [],
-        done,
       );
     });
   });
 
   describe('setIsValidatingProjectBilling', () => {
-    it('should set machine type', done => {
+    it('should set machine type', () => {
       testAction(
         actions.setIsValidatingProjectBilling,
         true,
         { isValidatingProjectBilling: null },
         [{ type: 'SET_IS_VALIDATING_PROJECT_BILLING', payload: true }],
         [],
-        done,
       );
     });
   });
 
   describe('async fetch methods', () => {
     let originalGapi;
+
     beforeAll(() => {
       originalGapi = window.gapi;
-      window.gapi = gapi();
+      window.gapi = gapi;
     });
 
     afterAll(() => {
