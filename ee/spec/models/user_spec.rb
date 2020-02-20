@@ -700,7 +700,7 @@ describe User do
 
       context 'when namespace is on a gold plan' do
         before do
-          create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:gold_plan))
+          create(:gitlab_subscription, namespace: namespace.root_ancestor, hosted_plan: create(:gold_plan))
         end
 
         context 'user is a guest' do
@@ -712,6 +712,28 @@ describe User do
         end
 
         context 'user is not a guest' do
+          before do
+            namespace.add_developer(user)
+          end
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'when user is within project' do
+          let(:group) { create(:group) }
+          let(:namespace) { create(:project, namespace: group) }
+
+          before do
+            namespace.add_developer(user)
+          end
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'when user is within subgroup' do
+          let(:group) { create(:group) }
+          let(:namespace) { create(:group, parent: group) }
+
           before do
             namespace.add_developer(user)
           end

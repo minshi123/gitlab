@@ -260,7 +260,7 @@ module EE
     def using_gitlab_com_seat?(namespace)
       ::Gitlab.com? &&
       namespace.present? &&
-      !namespace.free_plan? &&
+      !namespace.root_ancestor.free_plan? &&
       namespace.root_ancestor.billed_user_ids.include?(self.id)
     end
 
