@@ -971,8 +971,7 @@ describe Namespace do
                                                               project_guest.id,
                                                               project_developer.id,
                                                               invited_group_developer.id,
-                                                              invited_group_guest.id
-                                                            ])
+                                                              invited_group_guest.id])
               end
             end
           end
