@@ -60,6 +60,13 @@ if you clone the wiki repository locally. All uploaded files prior to GitLab
 11.3 are stored in GitLab itself. If you want them to be part of the wiki's Git
 repository, you will have to upload them again.
 
+### Special characters in page titles
+
+Wiki pages are stored as files in a Git repository, so certain characters have a special meaning:
+
+- Slashes (`/`) can't be used, because they're used as path separator.
+- Hyphens (`-`) are converted into whitespace.
+
 ### Length restrictions for file and directory names
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/24364) in GitLab 12.8.
