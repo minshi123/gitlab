@@ -53,15 +53,12 @@ module BulkInsertSafe
     private
 
     def _bulk_insert_attributes(items)
-      all_attributes = []
-      items.each do |item|
+      items.map do |item|
         attributes = item.attributes
         attributes.delete('id') unless attributes['id']
         yield attributes if block_given?
-        all_attributes << attributes
+        attributes
       end
-
-      all_attributes
     end
 
     def _bulk_insert_callback_allowed?(name, args)
