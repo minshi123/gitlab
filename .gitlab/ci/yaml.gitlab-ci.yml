@@ -6,7 +6,7 @@ lint-ci-gitlab:
     - .default-retry
     - .yaml:rules
   image: sdesbure/yamllint:latest
-  dependencies: []
+  needs: []
   variables:
     LINT_PATHS: .gitlab-ci.yml .gitlab/ci lib/gitlab/ci/templates changelogs
   script:

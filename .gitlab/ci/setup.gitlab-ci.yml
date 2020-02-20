@@ -23,7 +23,7 @@ cache gems:
   extends:
     - .default-tags
     - .default-retry
-  dependencies: []
+  needs: []
 
 gitlab_git_test:
   extends:
