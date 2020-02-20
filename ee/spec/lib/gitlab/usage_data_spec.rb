@@ -81,6 +81,8 @@ describe Gitlab::UsageData do
         ldap_users
         license_management_jobs
         licenses_list_views
+        merge_requests_with_required_codeowners
+        merge_requests_with_optional_codeowners
         operations_dashboard_default_dashboard
         operations_dashboard_users_with_projects_added
         pod_logs_usages_total
@@ -220,6 +222,16 @@ describe Gitlab::UsageData do
 
     it 'counts the projects actively requiring code owner approval' do
       expect(described_class.system_usage_data[:counts][:projects_enforcing_code_owner_approval]).to eq(1)
+    end
+  end
+
+  describe 'merge requests using codeowners approvals' do
+    it 'counts the correct number of optional and required rules' do
+      create_list(:code_owner_rule, 4, approvals_required: 2)
+      create_list(:code_owner_rule, 2)
+
+      expect(described_class.system_usage_data[:counts][:merge_requests_with_optional_codeowners]).to eq(2)
+      expect(described_class.system_usage_data[:counts][:merge_requests_with_required_codeowners]).to eq(4)
     end
   end
 
