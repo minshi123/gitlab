@@ -683,6 +683,12 @@ describe User do
       it { is_expected.to be_falsey }
     end
 
+    context 'when user is not active' do
+      let(:user) { create(:user, :blocked) }
+
+      it { is_expected.to be_falsey }
+    end
+
     context 'when Gitlab.com? is true' do
       before do
         allow(Gitlab).to receive(:com?).and_return(true)
