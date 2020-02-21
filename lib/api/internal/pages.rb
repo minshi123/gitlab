@@ -24,7 +24,7 @@ module API
             requires :host, type: String, desc: 'The host to query for'
           end
           get "/" do
-            host = Namespace.find_by_pages_host(params[:host]) || PagesDomain.find_by_domain(params[:host])
+            host = Namespace.find_by_pages_host(params[:host]) || PagesDomain.find_by_domain_case_insensitive(params[:host])
             no_content! unless host
 
             virtual_domain = host.pages_virtual_domain

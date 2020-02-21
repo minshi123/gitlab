@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_20_180944) do
+ActiveRecord::Schema.define(version: 2020_02_21_023320) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3065,6 +3065,7 @@ ActiveRecord::Schema.define(version: 2020_02_20_180944) do
     t.boolean "wildcard", default: false, null: false
     t.integer "usage", limit: 2, default: 0, null: false
     t.integer "scope", limit: 2, default: 2, null: false
+    t.index "lower((domain)::text)", name: "index_pages_domains_on_domain_lowercase"
     t.index ["certificate_source", "certificate_valid_not_after"], name: "index_pages_domains_need_auto_ssl_renewal", where: "(auto_ssl_enabled = true)"
     t.index ["domain", "wildcard"], name: "index_pages_domains_on_domain_and_wildcard", unique: true
     t.index ["project_id", "enabled_until"], name: "index_pages_domains_on_project_id_and_enabled_until"
