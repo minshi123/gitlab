@@ -50,6 +50,39 @@ describe MergeRequests::RemoveApprovalService do
 
         execute!
       end
+
+      context 'approvals metrics calculation' do
+        let(:analytics_mock) { spy('::Analytics::RefreshApprovalsData') }
+
+        before do
+          allow(::Analytics::RefreshApprovalsData)
+            .to receive(:new).with(merge_request).and_return(analytics_mock)
+        end
+
+        context 'when code_review_analytics project feature is available' do
+          before do
+            stub_licensed_features(code_review_analytics: true)
+          end
+
+          it 'calls for RefreshApprovalsData' do
+            service.execute(merge_request)
+
+            expect(analytics_mock).to have_received(:execute).with(force: true)
+          end
+        end
+
+        context 'when code_review_analytics is not available' do
+          before do
+            stub_licensed_features(code_review_analytics: false)
+          end
+
+          it 'does not call for RefreshApprovalsData' do
+            service.execute(merge_request)
+
+            expect(analytics_mock).not_to have_received(:execute)
+          end
+        end
+      end
     end
 
     context 'with an approved merge request' do
