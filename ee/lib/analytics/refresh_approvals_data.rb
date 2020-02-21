@@ -2,22 +2,18 @@
 
 module Analytics
   class RefreshApprovalsData
-    def initialize(*merge_requests)
-      @merge_requests = merge_requests
-    end
-
-    def execute(force: false)
-      merge_requests.each do |mr|
-        metrics = mr.ensure_metrics
-
-        next if !force && metrics.first_approved_at
-
-        metrics.update!(first_approved_at: ProductivityCalculator.new(mr).first_approved_at)
-      end
-    end
+    include MergeRequestMetricsRefresh
 
     private
 
-    attr_reader :merge_requests
+    def metric_already_present?(metrics)
+      metrics.first_approved_at
+    end
+
+    def update_metric!(metrics)
+      metrics.update!(
+        first_approved_at: MergeRequestMetricsCalculator.new(metrics.merge_request).first_approved_at
+      )
+    end
   end
 end
