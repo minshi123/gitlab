@@ -3156,4 +3156,446 @@ export const findings = [
     blob_path:
       '/secure-team-test/dependency-list-test/-/blob/4f893b5307903bb02fad9b432891392e03af65fd/yarn.lock',
   },
+
+  // From
+  // https://gitlab.com/gitlab-examples/security/simply-simple-notes/-/security/dashboard/?project_id=15310444&scope=dismissed&page=1&days=90
+  {
+    id: 1083224,
+    report_type: 'dast',
+    name: 'X-Frame-Options Header Not Set',
+    severity: 'medium',
+    confidence: 'medium',
+    scanner: {
+      external_id: 'zaproxy',
+      name: 'ZAProxy',
+    },
+    identifiers: [
+      {
+        external_type: 'ZAProxy_PluginId',
+        external_id: '10020',
+        name: 'X-Frame-Options Header Not Set',
+        url: 'https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md',
+      },
+      {
+        external_type: 'CWE',
+        external_id: '16',
+        name: 'CWE-16',
+        url: 'https://cwe.mitre.org/data/definitions/16.html',
+      },
+      {
+        external_type: 'WASC',
+        external_id: '15',
+        name: 'WASC-15',
+        url:
+          'http://projects.webappsec.org/w/page/13246974/Threat%20Classification%20Reference%20Grid',
+      },
+    ],
+    project_fingerprint: '12267388ce4e4ab1accaf21c02deb352a7185b58',
+    create_vulnerability_feedback_issue_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_merge_request_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_dismissal_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    project: {
+      id: 15310444,
+      name: 'simply-simple-notes',
+      full_path: '/gitlab-examples/security/simply-simple-notes',
+      full_name: 'GitLab-examples / security / simply-simple-notes',
+    },
+    dismissal_feedback: null,
+    issue_feedback: null,
+    merge_request_feedback: null,
+    description:
+      "X-Frame-Options header is not included in the HTTP response to protect against 'ClickJacking' attacks.",
+    links: [
+      {
+        url:
+          'http://blogs.msdn.com/b/ieinternals/archive/2010/03/30/combating-clickjacking-with-x-frame-options.aspx',
+      },
+    ],
+    location: {
+      param: 'X-Frame-Options',
+      method: 'GET',
+      hostname: 'https://35.193.92.65',
+      path: '/',
+    },
+    remediations: null,
+    solution:
+      "Most modern Web browsers support the X-Frame-Options HTTP header. Ensure it's set on all web pages returned by your site (if you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. ALLOW-FROM allows specific websites to frame the web page in supported web browsers).",
+    state: 'detected',
+    blob_path: '',
+  },
+  {
+    id: 1083225,
+    report_type: 'dast',
+    name: 'Incomplete or No Cache-control and Pragma HTTP Header Set',
+    severity: 'low',
+    confidence: 'medium',
+    scanner: {
+      external_id: 'zaproxy',
+      name: 'ZAProxy',
+    },
+    identifiers: [
+      {
+        external_type: 'ZAProxy_PluginId',
+        external_id: '10015',
+        name: 'Incomplete or No Cache-control and Pragma HTTP Header Set',
+        url: 'https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md',
+      },
+      {
+        external_type: 'CWE',
+        external_id: '525',
+        name: 'CWE-525',
+        url: 'https://cwe.mitre.org/data/definitions/525.html',
+      },
+      {
+        external_type: 'WASC',
+        external_id: '13',
+        name: 'WASC-13',
+        url:
+          'http://projects.webappsec.org/w/page/13246974/Threat%20Classification%20Reference%20Grid',
+      },
+    ],
+    project_fingerprint: '848f94fe8447cfc4e8a68d434a9f794323b3f095',
+    create_vulnerability_feedback_issue_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_merge_request_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_dismissal_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    project: {
+      id: 15310444,
+      name: 'simply-simple-notes',
+      full_path: '/gitlab-examples/security/simply-simple-notes',
+      full_name: 'GitLab-examples / security / simply-simple-notes',
+    },
+    dismissal_feedback: null,
+    issue_feedback: null,
+    merge_request_feedback: null,
+    description:
+      'The cache-control and pragma HTTP header have not been set properly or are missing allowing the browser and proxies to cache content.',
+    links: [
+      {
+        url: 'https://www.owasp.org/index.php/Session_Management_Cheat_Sheet#Web_Content_Caching',
+      },
+    ],
+    location: {
+      param: 'Cache-Control',
+      method: 'GET',
+      hostname: 'https://35.193.92.65',
+      path: '/',
+    },
+    remediations: null,
+    solution:
+      'Whenever possible ensure the cache-control HTTP header is set with no-cache, no-store, must-revalidate; and that the pragma HTTP header is set with no-cache.',
+    state: 'detected',
+    blob_path: '',
+  },
+  {
+    id: 1083226,
+    report_type: 'dast',
+    name: 'Web Browser XSS Protection Not Enabled',
+    severity: 'low',
+    confidence: 'medium',
+    scanner: {
+      external_id: 'zaproxy',
+      name: 'ZAProxy',
+    },
+    identifiers: [
+      {
+        external_type: 'ZAProxy_PluginId',
+        external_id: '10016',
+        name: 'Web Browser XSS Protection Not Enabled',
+        url: 'https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md',
+      },
+      {
+        external_type: 'CWE',
+        external_id: '933',
+        name: 'CWE-933',
+        url: 'https://cwe.mitre.org/data/definitions/933.html',
+      },
+      {
+        external_type: 'WASC',
+        external_id: '14',
+        name: 'WASC-14',
+        url:
+          'http://projects.webappsec.org/w/page/13246974/Threat%20Classification%20Reference%20Grid',
+      },
+    ],
+    project_fingerprint: 'd5483a1cc23a663f7f40a83264396397a9bee8ab',
+    create_vulnerability_feedback_issue_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_merge_request_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_dismissal_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    project: {
+      id: 15310444,
+      name: 'simply-simple-notes',
+      full_path: '/gitlab-examples/security/simply-simple-notes',
+      full_name: 'GitLab-examples / security / simply-simple-notes',
+    },
+    dismissal_feedback: null,
+    issue_feedback: null,
+    merge_request_feedback: null,
+    description:
+      "Web Browser XSS Protection is not enabled, or is disabled by the configuration of the 'X-XSS-Protection' HTTP response header on the web server",
+    links: [
+      {
+        url: 'https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet',
+      },
+      {
+        url: 'https://www.veracode.com/blog/2014/03/guidelines-for-setting-security-headers/',
+      },
+    ],
+    location: {
+      param: 'X-XSS-Protection',
+      method: 'GET',
+      hostname: 'https://35.193.92.65',
+      path: '/',
+    },
+    remediations: null,
+    solution:
+      "Ensure that the web browser's XSS filter is enabled, by setting the X-XSS-Protection HTTP response header to '1'.",
+    state: 'detected',
+    blob_path: '',
+  },
+  {
+    id: 1083227,
+    report_type: 'dast',
+    name: 'X-Content-Type-Options Header Missing',
+    severity: 'low',
+    confidence: 'medium',
+    scanner: {
+      external_id: 'zaproxy',
+      name: 'ZAProxy',
+    },
+    identifiers: [
+      {
+        external_type: 'CWE',
+        external_id: '16',
+        name: 'CWE-16',
+        url: 'https://cwe.mitre.org/data/definitions/16.html',
+      },
+      {
+        external_type: 'WASC',
+        external_id: '15',
+        name: 'WASC-15',
+        url:
+          'http://projects.webappsec.org/w/page/13246974/Threat%20Classification%20Reference%20Grid',
+      },
+      {
+        external_type: 'ZAProxy_PluginId',
+        external_id: '10021',
+        name: 'X-Content-Type-Options Header Missing',
+        url: 'https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md',
+      },
+    ],
+    project_fingerprint: 'a9b4daaa58292bac4bad5c1c3cf56398f25112f8',
+    create_vulnerability_feedback_issue_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_merge_request_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_dismissal_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    project: {
+      id: 15310444,
+      name: 'simply-simple-notes',
+      full_path: '/gitlab-examples/security/simply-simple-notes',
+      full_name: 'GitLab-examples / security / simply-simple-notes',
+    },
+    dismissal_feedback: null,
+    issue_feedback: null,
+    merge_request_feedback: null,
+    description:
+      "The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, potentially causing the response body to be interpreted and displayed as a content type other than the declared content type. Current (early 2014) and legacy versions of Firefox will use the declared content type (if one is set), rather than performing MIME-sniffing.",
+    links: [
+      {
+        url: 'http://msdn.microsoft.com/en-us/library/ie/gg622941%28v=vs.85%29.aspx',
+      },
+      {
+        url: 'https://www.owasp.org/index.php/List_of_useful_HTTP_headers',
+      },
+    ],
+    location: {
+      param: 'X-Content-Type-Options',
+      method: 'GET',
+      hostname: 'https://35.193.92.65',
+      path: '/',
+    },
+    remediations: null,
+    solution:
+      "Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.If possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing.",
+    state: 'detected',
+    blob_path: '',
+  },
+  {
+    id: 1083233,
+    report_type: 'container_scanning',
+    name: 'CVE-2018-20843 in expat',
+    severity: 'unknown',
+    confidence: 'unknown',
+    scanner: {
+      external_id: 'clair',
+      name: 'Clair',
+    },
+    identifiers: [
+      {
+        external_type: 'cve',
+        external_id: 'CVE-2018-20843',
+        name: 'CVE-2018-20843',
+        url: 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20843',
+      },
+    ],
+    project_fingerprint: '7cd325b2569af43679faa1a9053cce14242bd1ff',
+    create_vulnerability_feedback_issue_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_merge_request_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_dismissal_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    project: {
+      id: 15310444,
+      name: 'simply-simple-notes',
+      full_path: '/gitlab-examples/security/simply-simple-notes',
+      full_name: 'GitLab-examples / security / simply-simple-notes',
+    },
+    dismissal_feedback: null,
+    issue_feedback: null,
+    merge_request_feedback: null,
+    description: 'expat:2.2.5-r0 is affected by CVE-2018-20843',
+    links: [
+      {
+        url: 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20843',
+      },
+    ],
+    location: {
+      image:
+        'registry.gitlab.com/gitlab-examples/security/simply-simple-notes/master:1c0696712993e70a68dda9e3d5bba5fe38432f97',
+      operating_system: 'alpine:v3.7',
+      dependency: {
+        package: {
+          name: 'expat',
+        },
+        version: '2.2.5-r0',
+      },
+    },
+    remediations: null,
+    solution: 'Upgrade expat from 2.2.5-r0 to 2.2.7-r0',
+    state: 'detected',
+    blob_path: '',
+  },
+  {
+    id: 1083234,
+    report_type: 'container_scanning',
+    name: 'CVE-2019-14697 in musl',
+    severity: 'unknown',
+    confidence: 'unknown',
+    scanner: {
+      external_id: 'clair',
+      name: 'Clair',
+    },
+    identifiers: [
+      {
+        external_type: 'cve',
+        external_id: 'CVE-2019-14697',
+        name: 'CVE-2019-14697',
+        url: 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14697',
+      },
+    ],
+    project_fingerprint: '42bf25f6f1ae68d50326c73f61cff192b73cc62e',
+    create_vulnerability_feedback_issue_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_merge_request_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_dismissal_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    project: {
+      id: 15310444,
+      name: 'simply-simple-notes',
+      full_path: '/gitlab-examples/security/simply-simple-notes',
+      full_name: 'GitLab-examples / security / simply-simple-notes',
+    },
+    dismissal_feedback: null,
+    issue_feedback: null,
+    merge_request_feedback: null,
+    description: 'musl:1.1.18-r3 is affected by CVE-2019-14697',
+    links: [
+      {
+        url: 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14697',
+      },
+    ],
+    location: {
+      image:
+        'registry.gitlab.com/gitlab-examples/security/simply-simple-notes/master:1c0696712993e70a68dda9e3d5bba5fe38432f97',
+      operating_system: 'alpine:v3.7',
+      dependency: {
+        package: {
+          name: 'musl',
+        },
+        version: '1.1.18-r3',
+      },
+    },
+    remediations: null,
+    solution: 'Upgrade musl from 1.1.18-r3 to 1.1.18-r4',
+    state: 'detected',
+    blob_path: '',
+  },
+  {
+    id: 1083235,
+    report_type: 'container_scanning',
+    name: 'CVE-2019-15903 in expat',
+    severity: 'unknown',
+    confidence: 'unknown',
+    scanner: {
+      external_id: 'clair',
+      name: 'Clair',
+    },
+    identifiers: [
+      {
+        external_type: 'cve',
+        external_id: 'CVE-2019-15903',
+        name: 'CVE-2019-15903',
+        url: 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15903',
+      },
+    ],
+    project_fingerprint: '7aa76f5895f1c668e3bf448170744749f2f791b4',
+    create_vulnerability_feedback_issue_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_merge_request_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    create_vulnerability_feedback_dismissal_path:
+      '/gitlab-examples/security/simply-simple-notes/-/vulnerability_feedback',
+    project: {
+      id: 15310444,
+      name: 'simply-simple-notes',
+      full_path: '/gitlab-examples/security/simply-simple-notes',
+      full_name: 'GitLab-examples / security / simply-simple-notes',
+    },
+    dismissal_feedback: null,
+    issue_feedback: null,
+    merge_request_feedback: null,
+    description: 'expat:2.2.5-r0 is affected by CVE-2019-15903',
+    links: [
+      {
+        url: 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15903',
+      },
+    ],
+    location: {
+      image:
+        'registry.gitlab.com/gitlab-examples/security/simply-simple-notes/master:1c0696712993e70a68dda9e3d5bba5fe38432f97',
+      operating_system: 'alpine:v3.7',
+      dependency: {
+        package: {
+          name: 'expat',
+        },
+        version: '2.2.5-r0',
+      },
+    },
+    remediations: null,
+    solution: 'Upgrade expat from 2.2.5-r0 to 2.2.7-r1',
+    state: 'detected',
+    blob_path: '',
+  },
 ];
