@@ -39,14 +39,16 @@ module BulkInsertableAssociations
       association_class_for(association) < BulkInsertSafe
     end
 
-    def bulk_insert_on_save(association, items)
+    def bulk_insert_on_save(association, items, batch_size: BulkInsertSafe::DEFAULT_BATCH_SIZE)
       unless supports_bulk_insert?(association)
         raise NotBulkInsertSafeError.new("#{association} does not support bulk inserts; " \
           "the associated type must include the `BulkInsertSafe` concern")
       end
 
-      pending_association_items[association] ||= []
-      pending_association_items[association] += items
+      pending_association_items[association] ||= {}
+      pending_association_items[association][:batch_size] = batch_size
+      pending_association_items[association][:items] ||= []
+      pending_association_items[association][:items] += items
     end
 
     # Returns a hash of association symbols mapped to a list of AR instances
@@ -54,11 +56,13 @@ module BulkInsertableAssociations
     def flush_pending_bulk_inserts(model_instance)
       return {} unless pending_association_items&.any?
 
-      pending_association_items.each do |association, items|
+      pending_association_items.each do |association, config|
+        items = config[:items]
+        batch_size = config[:batch_size]
         association_class = association_class_for(association)
         # Note that we suppress validations here because we already run validations
         # on all pending bulk-inserts when we `save` the parent
-        association_class.bulk_insert(items, validate: false) do |item_attributes|
+        association_class.bulk_insert(items, validate: false, batch_size: batch_size) do |item_attributes|
           # wires up the foreign key column with the owner of this association
           owner_id_attribute = reflections[association.to_s].foreign_key
           item_attributes[owner_id_attribute] = model_instance.id
@@ -69,8 +73,8 @@ module BulkInsertableAssociations
     end
 
     def validate_pending_bulk_inserts(model_instance)
-      pending_association_items.each do |key, items|
-        items.each do |item|
+      pending_association_items.each do |key, config|
+        config[:items].each do |item|
           unless item.valid?
             item.errors.full_messages.each do |item_error|
               model_instance.errors.add(key, item_error)

@@ -97,7 +97,11 @@ describe BulkInsertableAssociations do
 
       it 'returns all stored items' do
         flushed_items = items.each { |item| item.bulk_parent_id = parent.id }
-        expect(BulkParent.flush_pending_bulk_inserts(parent)).to eq(bulk_foos: flushed_items)
+
+        result = BulkParent.flush_pending_bulk_inserts(parent)
+
+        expect(result).to have_key(:bulk_foos)
+        expect(result[:bulk_foos]).to eq(items: flushed_items, batch_size: BulkInsertSafe::DEFAULT_BATCH_SIZE)
       end
 
       it 'clears all pending items' do
@@ -109,12 +113,12 @@ describe BulkInsertableAssociations do
 
     context 'with multiple threads' do
       it 'isolates writes between threads' do
-        attributes1 = create_items(parent: parent)
-        attributes2 = create_items(parent: parent)
+        items1 = create_items(parent: parent)
+        items2 = create_items(parent: parent)
 
         [
           Thread.new do
-            parent.bulk_insert_on_save(:bulk_foos, attributes1)
+            parent.bulk_insert_on_save(:bulk_foos, items1)
             # this allows another thread to execute, potentially overwriting this
             # thread's bulk-insert state
             Thread.pass
@@ -122,41 +126,52 @@ describe BulkInsertableAssociations do
           end,
           Thread.new do
             # this should not also insert the other thread's pending items
-            parent.bulk_insert_on_save(:bulk_foos, attributes2)
+            parent.bulk_insert_on_save(:bulk_foos, items2)
             parent.save!
           end
         ].map(&:join)
 
-        expect(BulkFoo.count).to eq(attributes1.size + attributes2.size)
+        expect(BulkFoo.count).to eq(items1.size + items2.size)
       end
     end
 
     context 'with multiple parent models' do
       it 'isolates writes between models' do
-        attributes1 = create_items(parent: parent)
-        attributes2 = create_items(parent: another_parent, klass: BulkBar)
+        items1 = create_items(parent: parent)
+        items2 = create_items(parent: another_parent, klass: BulkBar)
 
-        parent.bulk_insert_on_save(:bulk_foos, attributes1)
-        another_parent.bulk_insert_on_save(:bulk_bars, attributes2)
+        parent.bulk_insert_on_save(:bulk_foos, items1)
+        another_parent.bulk_insert_on_save(:bulk_bars, items2)
 
-        expect { parent.save! }.to change { BulkFoo.count }.by(attributes1.size)
-        expect { another_parent.save! }.to change { BulkBar.count }.by(attributes2.size)
+        expect { parent.save! }.to change { BulkFoo.count }.by(items1.size)
+        expect { another_parent.save! }.to change { BulkBar.count }.by(items2.size)
       end
     end
 
     context 'with multiple associations' do
       it 'isolates writes between associations' do
-        attributes1 = create_items(parent: parent, klass: BulkFoo)
-        attributes2 = create_items(parent: parent, klass: BulkBar)
+        items1 = create_items(parent: parent, klass: BulkFoo)
+        items2 = create_items(parent: parent, klass: BulkBar)
 
-        parent.bulk_insert_on_save(:bulk_foos, attributes1)
-        parent.bulk_insert_on_save(:bulk_bars, attributes2)
+        parent.bulk_insert_on_save(:bulk_foos, items1)
+        parent.bulk_insert_on_save(:bulk_bars, items2)
 
         expect { parent.save! }.to(
-          change { BulkFoo.count }.from(0).to(attributes1.size)
+          change { BulkFoo.count }.from(0).to(items1.size)
         .and(
-          change { BulkBar.count }.from(0).to(attributes2.size)
+          change { BulkBar.count }.from(0).to(items2.size)
         ))
+      end
+    end
+
+    context 'passing bulk insert arguments' do
+      it 'forwards :batch_size and :validate to bulk_insert' do
+        items = create_items(parent: parent, klass: BulkFoo)
+        expect(BulkFoo).to receive(:bulk_insert).with(items, validate: false, batch_size: 50).and_return true
+
+        parent.bulk_insert_on_save(:bulk_foos, items, batch_size: 50)
+
+        parent.save
       end
     end
 
