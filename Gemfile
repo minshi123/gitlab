@@ -149,7 +149,7 @@ gem 'wikicloth', '0.8.1'
 gem 'asciidoctor', '~> 2.0.10'
 gem 'asciidoctor-include-ext', '~> 0.3.1', require: false
 gem 'asciidoctor-plantuml', '0.0.10'
-gem 'rouge', '~> 3.15.0'
+gem 'rouge', '~> 3.16.0'
 gem 'truncato', '~> 0.7.11'
 gem 'bootstrap_form', '~> 4.2.0'
 gem 'nokogiri', '~> 1.10.5'
@@ -355,7 +355,7 @@ group :development, :test do
 
   gem 'database_cleaner', '~> 1.7.0'
   gem 'factory_bot_rails', '~> 5.1.0'
-  gem 'rspec-rails', '~> 4.0.0.beta3'
+  gem 'rspec-rails', '~> 4.0.0.beta4'
 
   # Prevent occasions where minitest is not bundled in packaged versions of ruby (see #3826)
   gem 'minitest', '~> 5.11.0'

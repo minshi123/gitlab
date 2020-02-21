@@ -534,6 +534,9 @@ msgstr ""
 msgid "(removed)"
 msgstr ""
 
+msgid "*"
+msgstr ""
+
 msgid "+ %{amount} more"
 msgstr ""
 
@@ -1542,6 +1545,9 @@ msgid "All default stages are currently visible"
 msgstr ""
 
 msgid "All email addresses will be used to identify your commits."
+msgstr ""
+
+msgid "All environments"
 msgstr ""
 
 msgid "All features are enabled for blank projects, from templates, or when importing, but you can disable them afterward in the project settings."
@@ -4304,7 +4310,7 @@ msgstr ""
 msgid "ClusterIntegration|Learn more about %{help_link_start}zones%{help_link_end}."
 msgstr ""
 
-msgid "ClusterIntegration|Learn more about %{startLink}ModSecurity%{endLink}"
+msgid "ClusterIntegration|Learn more about %{linkStart}ModSecurity%{linkEnd}"
 msgstr ""
 
 msgid "ClusterIntegration|Learn more about %{startLink}Regions %{externalLinkIcon}%{endLink}."
@@ -4587,6 +4593,9 @@ msgid "ClusterIntegration|Something went wrong while uninstalling %{title}"
 msgstr ""
 
 msgid "ClusterIntegration|Something went wrong while updating Knative domain name."
+msgstr ""
+
+msgid "ClusterIntegration|Something went wrong while updating the Web Application Firewall."
 msgstr ""
 
 msgid "ClusterIntegration|Specifying a domain will allow you to use Auto Review Apps and Auto Deploy stages for %{auto_devops_start}Auto DevOps%{auto_devops_end}. The domain should have a wildcard DNS configured matching the domain."
@@ -7035,6 +7044,9 @@ msgstr ""
 msgid "Elasticsearch integration. Elasticsearch AWS IAM."
 msgstr ""
 
+msgid "Elasticsearch returned status code: %{status_code}"
+msgstr ""
+
 msgid "Elastic|None. Select namespaces to index."
 msgstr ""
 
@@ -7057,6 +7069,12 @@ msgid "Email not verified. Please verify your email in Salesforce."
 msgstr ""
 
 msgid "Email patch"
+msgstr ""
+
+msgid "Email restrictions"
+msgstr ""
+
+msgid "Email restrictions for sign-ups"
 msgstr ""
 
 msgid "Email the pipelines status to a list of recipients."
@@ -7165,6 +7183,9 @@ msgid "Enable and configure Prometheus metrics."
 msgstr ""
 
 msgid "Enable classification control using an external service"
+msgstr ""
+
+msgid "Enable email restrictions for sign ups"
 msgstr ""
 
 msgid "Enable error tracking"
@@ -8383,6 +8404,9 @@ msgid "Fetching licenses failed. The request endpoint was not found."
 msgstr ""
 
 msgid "Fetching licenses failed. You are not permitted to perform this action."
+msgstr ""
+
+msgid "File"
 msgstr ""
 
 msgid "File Hooks"
@@ -11301,31 +11325,19 @@ msgstr ""
 msgid "LicenseCompliance|Add licenses manually to approve or blacklist"
 msgstr ""
 
-msgid "LicenseCompliance|Approve"
+msgid "LicenseCompliance|Allow"
 msgstr ""
 
-msgid "LicenseCompliance|Approve license"
-msgstr ""
-
-msgid "LicenseCompliance|Approve license?"
-msgstr ""
-
-msgid "LicenseCompliance|Approved"
-msgstr ""
-
-msgid "LicenseCompliance|Blacklist"
-msgstr ""
-
-msgid "LicenseCompliance|Blacklist license"
-msgstr ""
-
-msgid "LicenseCompliance|Blacklist license?"
-msgstr ""
-
-msgid "LicenseCompliance|Blacklisted"
+msgid "LicenseCompliance|Allowed"
 msgstr ""
 
 msgid "LicenseCompliance|Cancel"
+msgstr ""
+
+msgid "LicenseCompliance|Denied"
+msgstr ""
+
+msgid "LicenseCompliance|Deny"
 msgstr ""
 
 msgid "LicenseCompliance|Here you can approve or blacklist licenses for this project. Using %{ci} or %{license} will allow you to see if there are any unmanaged licenses and approve or blacklist them in merge request."
@@ -11367,6 +11379,9 @@ msgid "LicenseCompliance|License details"
 msgstr ""
 
 msgid "LicenseCompliance|License name"
+msgstr ""
+
+msgid "LicenseCompliance|License review"
 msgstr ""
 
 msgid "LicenseCompliance|Packages"
@@ -11414,6 +11429,9 @@ msgstr ""
 msgid "Licenses|Components"
 msgstr ""
 
+msgid "Licenses|Detected in Project"
+msgstr ""
+
 msgid "Licenses|Displays licenses detected in the project, based on the %{linkStart}latest pipeline%{linkEnd} scan"
 msgstr ""
 
@@ -11427,6 +11445,15 @@ msgid "Licenses|License Compliance"
 msgstr ""
 
 msgid "Licenses|Name"
+msgstr ""
+
+msgid "Licenses|Policies"
+msgstr ""
+
+msgid "Licenses|Policy"
+msgstr ""
+
+msgid "Licenses|Specified policies in this project"
 msgstr ""
 
 msgid "Licenses|The license list details information about the licenses used within your project."
@@ -13474,7 +13501,7 @@ msgstr ""
 msgid "PackageRegistry|You are about to delete version %{boldStart}%{version}%{boldEnd} of %{boldStart}%{name}%{boldEnd}. Are you sure?"
 msgstr ""
 
-msgid "PackageRegistry|You may also need to setup authentication using an auth token.  %{linkStart}See the documentation%{linkEnd} to find out more."
+msgid "PackageRegistry|You may also need to setup authentication using an auth token. %{linkStart}See the documentation%{linkEnd} to find out more."
 msgstr ""
 
 msgid "PackageRegistry|npm"
@@ -16031,13 +16058,13 @@ msgstr ""
 msgid "Removing a project places it into a read-only state until %{date}, at which point the project will be permanently removed."
 msgstr ""
 
-msgid "Removing group will cause all child projects and resources to be removed."
-msgstr ""
-
 msgid "Removing license…"
 msgstr ""
 
 msgid "Removing the project will delete its repository and all related resources including issues, merge requests etc."
+msgstr ""
+
+msgid "Removing this group also removes all child projects, including archived projects, and their resources."
 msgstr ""
 
 msgid "Rename file"
@@ -16357,6 +16384,9 @@ msgid "Restrict access by IP address"
 msgstr ""
 
 msgid "Restrict membership by email"
+msgstr ""
+
+msgid "Restricts sign-ups for email addresses that match the given regex. See the %{supported_syntax_link_start}supported syntax%{supported_syntax_link_end} for more information."
 msgstr ""
 
 msgid "Resume"
@@ -19425,6 +19455,12 @@ msgstr ""
 msgid "There was an error fetching the Designs"
 msgstr ""
 
+msgid "There was an error fetching the environments information."
+msgstr ""
+
+msgid "There was an error fetching the variables."
+msgstr ""
+
 msgid "There was an error fetching value stream analytics stages."
 msgstr ""
 
@@ -21367,6 +21403,9 @@ msgstr ""
 msgid "Value Stream Analytics gives an overview of how much time it takes to go from idea to production in your project."
 msgstr ""
 
+msgid "Variable"
+msgstr ""
+
 msgid "Variables"
 msgstr ""
 
@@ -23068,6 +23107,12 @@ msgid "is not a descendant of the Group owning the template"
 msgstr ""
 
 msgid "is not a valid X509 certificate."
+msgstr ""
+
+msgid "is not a valid regular expression"
+msgstr ""
+
+msgid "is not allowed for sign-up"
 msgstr ""
 
 msgid "is not an email you own"
