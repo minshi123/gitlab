@@ -408,8 +408,8 @@ describe('Time series component', () => {
             deploymentFormatter = getChartOptions().yAxis[1].axisLabel.formatter;
           });
 
-          it('rounds to 3 decimal places', () => {
-            expect(dataFormatter(0.88888)).toBe('0.889');
+          it('rounds to 2 decimal places', () => {
+            expect(dataFormatter(0.88888)).toBe('0.89');
           });
 
           it('deployment formatter is set as is required to display a tooltip', () => {

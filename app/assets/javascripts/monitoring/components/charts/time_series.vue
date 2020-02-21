@@ -4,7 +4,6 @@ import { GlLink, GlButton, GlTooltip, GlResizeObserverDirective } from '@gitlab/
 import { GlAreaChart, GlLineChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
 import dateFormat from 'dateformat';
 import { s__, __ } from '~/locale';
-import { roundOffFloat } from '~/lib/utils/common_utils';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import Icon from '~/vue_shared/components/icon.vue';
 import {
@@ -18,6 +17,7 @@ import {
 } from '../../constants';
 import { makeDataSeries } from '~/helpers/monitor_helper';
 import { graphDataValidatorForValues } from '../../utils';
+import { getFormatter } from '~/lib/utils/unit_format';
 
 /**
  * A "virtual" coordinates system for the deployment icons.
@@ -165,14 +165,20 @@ export default {
       const { yAxis, xAxis } = this.option;
       const option = omit(this.option, ['series', 'yAxis', 'xAxis']);
 
+      const yAxisLabel = this.graphData.y_label;
+      const yAxisFormat = this.graphData.yFormat || 'number';
+      const yAxisPrecision = this.graphData.yPrecision || 2;
+
+      const axisLabelFormatter = getFormatter(yAxisFormat);
+
       const dataYAxis = {
-        name: this.yAxisLabel,
+        name: yAxisLabel,
         nameGap: 50, // same as gitlab-ui's default
         nameLocation: 'center', // same as gitlab-ui's default
         boundaryGap: [0.1, 0.1],
         scale: true,
         axisLabel: {
-          formatter: num => roundOffFloat(num, 3).toString(),
+          formatter: num => axisLabelFormatter(num, yAxisPrecision, 10),
         },
         ...yAxis,
       };
@@ -280,9 +286,6 @@ export default {
           color: this.primaryColor,
         },
       };
-    },
-    yAxisLabel() {
-      return `${this.graphData.y_label}`;
     },
   },
   mounted() {
