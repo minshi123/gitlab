@@ -1,5 +1,33 @@
 # frozen_string_literal: true
 
+# ActiveRecord model classes can mix in this concern if they own associations
+# who declare themselves to be eligible for bulk-insertion via `BulkInsertSafe`.
+# This allows the caller to schedule association items to be written in bulk
+# whenever the owner is `save`d.
+#
+# USAGE:
+#
+#   class MergeRequestDiff < ApplicationRecord
+#     include BulkInsertableAssociations
+#
+#     # target association class must `include BulkInsertSafe`
+#     has_many :merge_request_diff_commits
+#   end
+#
+#   diff = MergeRequestDiff.new(...)
+#   diff_commits = [MergeRequestDiffCommit.new(...), ...]
+#   diff.bulk_insert_on_save(:merge_request_diff_commits, diff_commits)
+#   ...
+#   diff.save # this will also write all `diff_commits` in bulk
+#
+# If you are not sure whether the owning type defines `bulk_insert_on_save`
+# you can also "attempt" a bulk-insertion via the `try_bulk_insert_on_save`
+# helper. It will return `true` or `false` to indicate success.
+#
+# Note that just like `BulkInsertSafe.bulk_insert`, validations will run for
+# all items that are scheduled for bulk-insertions. It also supports the
+# :batch_size option to specify how many items should be inserted at once.
+#
 module BulkInsertableAssociations
   extend ActiveSupport::Concern
 
@@ -13,7 +41,8 @@ module BulkInsertableAssociations
 
     def bulk_insert_on_save(association, items)
       unless supports_bulk_insert?(association)
-        raise NotBulkInsertSafeError.new("#{association} does not support bulk inserts")
+        raise NotBulkInsertSafeError.new("#{association} does not support bulk inserts; " \
+          "the associated type must include the `BulkInsertSafe` concern")
       end
 
       pending_association_items[association] ||= []
