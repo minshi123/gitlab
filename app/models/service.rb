@@ -32,8 +32,12 @@ class Service < ApplicationRecord
   belongs_to :project, inverse_of: :services
   has_one :service_hook
 
-  validates :project_id, presence: true, unless: proc { |service| service.template? }
+  validates :project_id, presence: true, unless: -> { template? || instance? }
   validates :type, presence: true
+  validates :template, uniqueness: { scope: :type }, if: -> { template? }
+  validates :instance, uniqueness: { scope: :type }, if: -> { instance? }
+  validates :project_id, uniqueness: { scope: :type }, unless: -> { template? || instance? }
+  validate :validate_is_instance_or_template
 
   scope :visible, -> { where.not(type: 'GitlabIssueTrackerService') }
   scope :issue_trackers, -> { where(category: 'issue_tracker') }
@@ -72,6 +76,10 @@ class Service < ApplicationRecord
 
   def template?
     template
+  end
+
+  def instance?
+    instance
   end
 
   def category
@@ -332,6 +340,10 @@ class Service < ApplicationRecord
   end
 
   private
+
+  def validate_is_instance_or_template
+    errors.add(:template, 'The service should be a service template or instance-level integration') if template? && instance?
+  end
 
   def cache_project_has_external_issue_tracker
     if project && !project.destroyed?

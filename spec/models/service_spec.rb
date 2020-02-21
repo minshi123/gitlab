@@ -10,8 +10,54 @@ describe Service do
     it { is_expected.to have_one :issue_tracker_data }
   end
 
-  describe 'Validations' do
+  describe 'validations' do
     it { is_expected.to validate_presence_of(:type) }
+
+    it 'validates presence of project_id if not template', :aggregate_failures do
+      expect(build(:service, project_id: nil, template: true)).to be_valid
+      expect(build(:service, project_id: nil, template: false)).to be_invalid
+    end
+
+    it 'validates presence of project_id if not instance', :aggregate_failures do
+      expect(build(:service, project_id: nil, instance: true)).to be_valid
+      expect(build(:service, project_id: nil, instance: false)).to be_invalid
+    end
+
+    it 'validates service is template or instance' do
+      expect(build(:service, project_id: nil, template: true, instance: true)).to be_invalid
+    end
+
+    context 'with an existing service template' do
+      before do
+        create(:service, type: 'Service', template: true)
+      end
+
+      it 'validates only one service template per type' do
+        expect(build(:service, type: 'Service', template: true)).to be_invalid
+      end
+    end
+
+    context 'with an existing instance service' do
+      before do
+        create(:service, type: 'Service', instance: true)
+      end
+
+      it 'validates only one service instance per type' do
+        expect(build(:service, type: 'Service', instance: true)).to be_invalid
+      end
+    end
+
+    context 'with an existing service' do
+      let(:project) { create(:project) }
+
+      before do
+        create(:service, project: project, type: 'Service', template: false, instance: false)
+      end
+
+      it 'validates only one service type per project' do
+        expect(build(:service, project: project, type: 'Service', template: false, instance: false)).to be_invalid
+      end
+    end
   end
 
   describe 'Scopes' do
