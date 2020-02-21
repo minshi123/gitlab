@@ -3296,7 +3296,8 @@ CREATE TABLE public.issues (
     duplicated_to_id integer,
     promoted_to_epic_id integer,
     health_status smallint,
-    external_key character varying(255)
+    external_key character varying(255),
+    sprint_id bigint
 );
 
 CREATE SEQUENCE public.issues_id_seq
@@ -3871,7 +3872,8 @@ CREATE TABLE public.merge_requests (
     allow_maintainer_to_push boolean,
     state_id smallint DEFAULT 1 NOT NULL,
     rebase_jid character varying,
-    squash_commit_sha bytea
+    squash_commit_sha bytea,
+    sprint_id bigint
 );
 
 CREATE TABLE public.merge_requests_closing_issues (
@@ -5991,6 +5993,32 @@ CREATE SEQUENCE public.spam_logs_id_seq
 
 ALTER SEQUENCE public.spam_logs_id_seq OWNED BY public.spam_logs.id;
 
+CREATE TABLE public.sprints (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    start_date date,
+    due_date date,
+    iid integer,
+    cached_markdown_version integer,
+    project_id bigint,
+    group_id bigint,
+    title character varying(255) NOT NULL,
+    state character varying(255),
+    title_html text,
+    description text,
+    description_html text
+);
+
+CREATE SEQUENCE public.sprints_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.sprints_id_seq OWNED BY public.sprints.id;
+
 CREATE TABLE public.status_page_settings (
     project_id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -7495,6 +7523,8 @@ ALTER TABLE ONLY public.software_licenses ALTER COLUMN id SET DEFAULT nextval('p
 
 ALTER TABLE ONLY public.spam_logs ALTER COLUMN id SET DEFAULT nextval('public.spam_logs_id_seq'::regclass);
 
+ALTER TABLE ONLY public.sprints ALTER COLUMN id SET DEFAULT nextval('public.sprints_id_seq'::regclass);
+
 ALTER TABLE ONLY public.status_page_settings ALTER COLUMN project_id SET DEFAULT nextval('public.status_page_settings_project_id_seq'::regclass);
 
 ALTER TABLE ONLY public.subscriptions ALTER COLUMN id SET DEFAULT nextval('public.subscriptions_id_seq'::regclass);
@@ -8411,6 +8441,9 @@ ALTER TABLE ONLY public.software_licenses
 
 ALTER TABLE ONLY public.spam_logs
     ADD CONSTRAINT spam_logs_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.sprints
+    ADD CONSTRAINT sprints_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.status_page_settings
     ADD CONSTRAINT status_page_settings_pkey PRIMARY KEY (project_id);
@@ -9428,6 +9461,8 @@ CREATE INDEX index_issues_on_promoted_to_epic_id ON public.issues USING btree (p
 
 CREATE INDEX index_issues_on_relative_position ON public.issues USING btree (relative_position);
 
+CREATE INDEX index_issues_on_sprint_id ON public.issues USING btree (sprint_id);
+
 CREATE INDEX index_issues_on_title_trigram ON public.issues USING gin (title public.gin_trgm_ops);
 
 CREATE INDEX index_issues_on_updated_at ON public.issues USING btree (updated_at);
@@ -9589,6 +9624,8 @@ CREATE INDEX index_merge_requests_on_milestone_id ON public.merge_requests USING
 CREATE INDEX index_merge_requests_on_source_branch ON public.merge_requests USING btree (source_branch);
 
 CREATE INDEX index_merge_requests_on_source_project_id_and_source_branch ON public.merge_requests USING btree (source_project_id, source_branch);
+
+CREATE INDEX index_merge_requests_on_sprint_id ON public.merge_requests USING btree (sprint_id);
 
 CREATE INDEX index_merge_requests_on_target_branch ON public.merge_requests USING btree (target_branch);
 
@@ -10204,6 +10241,18 @@ CREATE INDEX index_software_licenses_on_spdx_identifier ON public.software_licen
 
 CREATE UNIQUE INDEX index_software_licenses_on_unique_name ON public.software_licenses USING btree (name);
 
+CREATE INDEX index_sprints_on_description_trigram ON public.sprints USING gin (description public.gin_trgm_ops);
+
+CREATE INDEX index_sprints_on_due_date ON public.sprints USING btree (due_date);
+
+CREATE INDEX index_sprints_on_group_id ON public.sprints USING btree (group_id);
+
+CREATE UNIQUE INDEX index_sprints_on_project_id_and_iid ON public.sprints USING btree (project_id, iid);
+
+CREATE INDEX index_sprints_on_title ON public.sprints USING btree (title);
+
+CREATE INDEX index_sprints_on_title_trigram ON public.sprints USING gin (title public.gin_trgm_ops);
+
 CREATE INDEX index_status_page_settings_on_project_id ON public.status_page_settings USING btree (project_id);
 
 CREATE INDEX index_subscriptions_on_project_id ON public.subscriptions USING btree (project_id);
@@ -10638,6 +10687,9 @@ ALTER TABLE ONLY public.push_event_payloads
 ALTER TABLE ONLY public.ci_builds
     ADD CONSTRAINT fk_3a9eaa254d FOREIGN KEY (stage_id) REFERENCES public.ci_stages(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.issues
+    ADD CONSTRAINT fk_3b8c72ea56 FOREIGN KEY (sprint_id) REFERENCES public.sprints(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY public.epics
     ADD CONSTRAINT fk_3c1fd1cccc FOREIGN KEY (due_date_sourcing_milestone_id) REFERENCES public.milestones(id) ON DELETE SET NULL;
 
@@ -10754,6 +10806,9 @@ ALTER TABLE ONLY public.vulnerabilities
 
 ALTER TABLE ONLY public.labels
     ADD CONSTRAINT fk_7de4989a69 FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.merge_requests
+    ADD CONSTRAINT fk_7e85395a64 FOREIGN KEY (sprint_id) REFERENCES public.sprints(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.merge_request_metrics
     ADD CONSTRAINT fk_7f28d925f3 FOREIGN KEY (merged_by_id) REFERENCES public.users(id) ON DELETE SET NULL;
@@ -11592,6 +11647,9 @@ ALTER TABLE ONLY public.application_settings
 ALTER TABLE ONLY public.clusters_kubernetes_namespaces
     ADD CONSTRAINT fk_rails_7e7688ecaf FOREIGN KEY (cluster_id) REFERENCES public.clusters(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.sprints
+    ADD CONSTRAINT fk_rails_80aa8a1f95 FOREIGN KEY (group_id) REFERENCES public.namespaces(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY public.approval_merge_request_rules_users
     ADD CONSTRAINT fk_rails_80e6801803 FOREIGN KEY (approval_merge_request_rule_id) REFERENCES public.approval_merge_request_rules(id) ON DELETE CASCADE;
 
@@ -11981,6 +12039,9 @@ ALTER TABLE ONLY public.merge_request_metrics
 
 ALTER TABLE ONLY public.draft_notes
     ADD CONSTRAINT fk_rails_e753681674 FOREIGN KEY (merge_request_id) REFERENCES public.merge_requests(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.sprints
+    ADD CONSTRAINT fk_rails_e8206c9686 FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.description_versions
     ADD CONSTRAINT fk_rails_e8f4caf9c7 FOREIGN KEY (epic_id) REFERENCES public.epics(id) ON DELETE CASCADE;
@@ -12997,6 +13058,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200213204737
 20200213220159
 20200213220211
+20200213224220
 20200214025454
 20200214034836
 20200214085940
@@ -13045,6 +13107,10 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200303055348
 20200303074328
 20200303181648
+20200304023245
+20200304023851
+20200304024025
+20200304024042
 20200304085423
 20200304090155
 20200304121828
