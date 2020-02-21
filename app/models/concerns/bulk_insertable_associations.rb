@@ -40,6 +40,8 @@ module BulkInsertableAssociations
     end
 
     def bulk_insert_on_save(association, items, batch_size: BulkInsertSafe::DEFAULT_BATCH_SIZE)
+      return if items.empty?
+
       unless supports_bulk_insert?(association)
         raise NotBulkInsertSafeError.new("#{association} does not support bulk inserts; " \
           "the associated type must include the `BulkInsertSafe` concern")

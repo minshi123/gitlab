@@ -87,6 +87,14 @@ describe BulkInsertableAssociations do
       end
     end
 
+    context 'when items are empty' do
+      it 'does nothing' do
+        parent.bulk_insert_on_save(:bulk_foos, [])
+
+        expect { parent.save }.not_to change { BulkFoo.count }
+      end
+    end
+
     context 'flushing explicitly' do
       let(:items) { create_items(parent: parent) }
 
