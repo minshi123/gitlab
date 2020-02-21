@@ -9,7 +9,6 @@ class Milestone < ApplicationRecord
   Upcoming = MilestoneStruct.new('Upcoming', '#upcoming', -2)
   Started = MilestoneStruct.new('Started', '#started', -3)
 
-  include CacheMarkdownField
   include AtomicInternalId
   include IidRoutes
   include Sortable
@@ -21,12 +20,6 @@ class Milestone < ApplicationRecord
   include Gitlab::SQL::Pattern
 
   prepend_if_ee('::EE::Milestone') # rubocop: disable Cop/InjectEnterpriseEditionModule
-
-  cache_markdown_field :title, pipeline: :single_line
-  cache_markdown_field :description
-
-  belongs_to :project
-  belongs_to :group
 
   has_many :milestone_releases
   has_many :releases, through: :milestone_releases
@@ -139,10 +132,6 @@ class Milestone < ApplicationRecord
     end
   end
 
-  def self.reference_prefix
-    '%'
-  end
-
   def self.reference_pattern
     # NOTE: The iid pattern only matches when all characters on the expression
     # are digits, so it will match %2 but not %2.1 because that's probably a
@@ -215,36 +204,11 @@ class Milestone < ApplicationRecord
     }
   end
 
-  ##
-  # Returns the String necessary to reference this Milestone in Markdown. Group
-  # milestones only support name references, and do not support cross-project
-  # references.
-  #
-  # format - Symbol format to use (default: :iid, optional: :name)
-  #
-  # Examples:
-  #
-  #   Milestone.first.to_reference                           # => "%1"
-  #   Milestone.first.to_reference(format: :name)            # => "%\"goal\""
-  #   Milestone.first.to_reference(cross_namespace_project)  # => "gitlab-org/gitlab-foss%1"
-  #   Milestone.first.to_reference(same_namespace_project)   # => "gitlab-foss%1"
-  #
-  def to_reference(from = nil, format: :name, full: false)
-    format_reference = milestone_format_reference(format)
-    reference = "#{self.class.reference_prefix}#{format_reference}"
-
-    if project
-      "#{project.to_reference_base(from, full: full)}#{reference}"
-    else
-      reference
-    end
-  end
-
   def reference_link_text(from = nil)
     self.class.reference_prefix + self.title
   end
 
-  def milestoneish_id
+  def timebox_id
     id
   end
 
@@ -316,18 +280,12 @@ class Milestone < ApplicationRecord
     end
   end
 
-  def milestone_format_reference(format = :iid)
-    raise ArgumentError, _('Unknown format') unless [:iid, :name].include?(format)
-
+  def timebox_format_reference(format = :iid)
     if group_milestone? && format == :iid
       raise ArgumentError, _('Cannot refer to a group milestone by an internal id!')
     end
 
-    if format == :name && !name.include?('"')
-      %("#{name}")
-    else
-      iid
-    end
+    super
   end
 
   def sanitize_title(value)

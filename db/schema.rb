@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_12_052620) do
+ActiveRecord::Schema.define(version: 2020_02_13_224220) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3963,6 +3963,28 @@ ActiveRecord::Schema.define(version: 2020_02_12_052620) do
     t.boolean "recaptcha_verified", default: false, null: false
   end
 
+  create_table "sprints", force: :cascade do |t|
+    t.datetime_with_timezone "created_at", null: false
+    t.datetime_with_timezone "updated_at", null: false
+    t.date "start_date"
+    t.date "due_date"
+    t.integer "iid"
+    t.integer "cached_markdown_version"
+    t.bigint "project_id"
+    t.bigint "group_id"
+    t.string "title", limit: 255, null: false
+    t.string "state", limit: 255
+    t.text "title_html"
+    t.text "description"
+    t.text "description_html"
+    t.index ["description"], name: "index_sprints_on_description_trigram", opclass: :gin_trgm_ops, using: :gin
+    t.index ["due_date"], name: "index_sprints_on_due_date"
+    t.index ["group_id"], name: "index_sprints_on_group_id"
+    t.index ["project_id", "iid"], name: "index_sprints_on_project_id_and_iid", unique: true
+    t.index ["title"], name: "index_sprints_on_title"
+    t.index ["title"], name: "index_sprints_on_title_trigram", opclass: :gin_trgm_ops, using: :gin
+  end
+
   create_table "subscriptions", id: :serial, force: :cascade do |t|
     t.integer "user_id"
     t.integer "subscribable_id"
@@ -4968,6 +4990,8 @@ ActiveRecord::Schema.define(version: 2020_02_12_052620) do
   add_foreign_key "snippets", "projects", name: "fk_be41fd4bb7", on_delete: :cascade
   add_foreign_key "software_license_policies", "projects", on_delete: :cascade
   add_foreign_key "software_license_policies", "software_licenses", on_delete: :cascade
+  add_foreign_key "sprints", "namespaces", column: "group_id", on_delete: :cascade
+  add_foreign_key "sprints", "projects", on_delete: :cascade
   add_foreign_key "subscriptions", "projects", on_delete: :cascade
   add_foreign_key "suggestions", "notes", on_delete: :cascade
   add_foreign_key "system_note_metadata", "description_versions", name: "fk_fbd87415c9", on_delete: :nullify
