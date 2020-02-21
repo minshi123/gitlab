@@ -182,7 +182,7 @@ module Gitlab
 
         # if object is a hash we can create simple object
         # as it means that this is 1-to-1 vs 1-to-many
-        sub_data_hash =
+        current_item =
           if sub_data_hash.is_a?(Array)
             build_relations(
               sub_relation_key,
@@ -199,11 +199,17 @@ module Gitlab
         relation_class = relation_key.to_s.classify.constantize rescue nil
         # When the child relation data is missing or can be postponed for bulk-insertion
         # we consider it processed and clear out the key; otherwise, we map it to the key.
-        if sub_data_hash.nil? || relation_class&.try_bulk_insert_on_save(sub_relation_key, sub_data_hash)
+        if current_item.nil? || try_bulk_insert_on_save(relation_class, sub_relation_key, current_item)
           data_hash.delete(sub_relation_key)
         else
-          data_hash[sub_relation_key] = sub_data_hash
+          data_hash[sub_relation_key] = current_item
         end
+      end
+
+      def try_bulk_insert_on_save(relation_class, sub_relation_key, items)
+        return unless importable_class == Project && Feature.enabled?(:import_bulk_inserts, @importable.group)
+
+        relation_class&.try_bulk_insert_on_save(sub_relation_key, items)
       end
 
       def group_model?(relation_object)
