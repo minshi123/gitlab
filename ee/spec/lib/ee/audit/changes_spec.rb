@@ -4,8 +4,10 @@ require 'spec_helper'
 
 describe EE::Audit::Changes do
   describe '.audit_changes' do
-    let(:user) { create(:user) }
-    let(:foo_instance) { Class.new { include EE::Audit::Changes }.new }
+    let(:current_user) { create(:user, name: 'Mickey Mouse') }
+    let(:user) { create(:user, name: 'Donald Duck') }
+
+    subject(:foo_instance) { Class.new { include EE::Audit::Changes }.new }
 
     before do
       stub_licensed_features(extended_audit_events: true)
