@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Admin::ElasticsearchController < Admin::ApplicationController
-  before_action :check_elasticsearch_web_indexing_feature_flag!
+  before_action :check_elasticsearch_web_indexing_feature_flag!, only: :enqueue_index
 
   def check_elasticsearch_web_indexing_feature_flag!
     render_404 unless Feature.enabled?(:elasticsearch_web_indexing, default_enabled: true) && Gitlab::Elastic::Helper.index_exists?

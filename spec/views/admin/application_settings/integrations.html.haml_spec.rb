@@ -11,6 +11,7 @@ describe 'admin/application_settings/integrations.html.haml' do
     before do
       assign(:application_setting, app_settings)
       allow(Gitlab::Sourcegraph).to receive(:feature_available?).and_return(sourcegraph_flag)
+      allow(Gitlab::Elastic::Helper).to receive(:index_exists?).and_return(true)
     end
 
     context 'when sourcegraph feature is enabled' do
