@@ -860,7 +860,7 @@ describe Namespace do
           expect(group.billed_user_ids).to match_array([developer.id])
         end
 
-        context 'when group has a project and users invited to it' do
+        context 'when group has a project and users are invited to it' do
           let(:project) { create(:project, namespace: group) }
           let(:project_developer) { create(:user) }
 
