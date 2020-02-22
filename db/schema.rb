@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_20_180944) do
+ActiveRecord::Schema.define(version: 2020_02_22_055543) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -2805,6 +2805,7 @@ ActiveRecord::Schema.define(version: 2020_02_20_180944) do
     t.text "change_position"
     t.boolean "resolved_by_push"
     t.bigint "review_id"
+    t.boolean "confidential", default: false
     t.index ["author_id"], name: "index_notes_on_author_id"
     t.index ["commit_id"], name: "index_notes_on_commit_id"
     t.index ["created_at"], name: "index_notes_on_created_at"
