@@ -994,11 +994,6 @@ $ide-commit-header-height: 48px;
 }
 
 .ide-context-header {
-  .ide-merge-requests-dropdown.dropdown-menu {
-    width: 385px;
-    max-height: initial;
-  }
-
   .avatar-container {
     flex: 0 0 auto;
     margin-right: 0;
@@ -1047,6 +1042,25 @@ $ide-commit-header-height: 48px;
   min-width: 60px;
 }
 
+.ide-sidebar {
+  width: auto;
+  min-width: 60px;
+
+  .multi-file-commit-panel-inner {
+    background-color: $white-light;
+  }
+}
+
+.ide-left-sidebar {
+  &.multi-file-commit-panel {
+    padding-right: 0;
+  }
+
+  .multi-file-commit-panel-inner {
+    width: 340px;
+  }
+}
+
 .ide-right-sidebar {
   .ide-activity-bar {
     border-left: 1px solid $white-dark;
@@ -1054,9 +1068,8 @@ $ide-commit-header-height: 48px;
 
   .multi-file-commit-panel-inner {
     width: 350px;
-    padding: $grid-size $gl-padding;
-    background-color: $white-light;
     border-left: 1px solid $white-dark;
+    padding: $grid-size $gl-padding;
   }
 
   .ide-right-sidebar-clientside {
