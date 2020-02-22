@@ -42,7 +42,11 @@ export default {
 </script>
 
 <template>
-  <ide-tree-list :viewer-type="viewer" header-class="ide-review-header">
+  <ide-tree-list
+    :viewer-type="viewer"
+    header-class="ide-review-header"
+    class="multi-file-commit-panel-inner-content"
+  >
     <template slot="header">
       <div class="ide-review-button-holder">
         {{ __('Review') }}

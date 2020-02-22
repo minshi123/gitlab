@@ -32,7 +32,7 @@ export default {
 </script>
 
 <template>
-  <ide-tree-list viewer-type="editor">
+  <ide-tree-list viewer-type="editor" class="multi-file-commit-panel-inner-content">
     <template slot="header">
       {{ __('Edit') }}
       <div class="ide-tree-actions ml-auto d-flex">

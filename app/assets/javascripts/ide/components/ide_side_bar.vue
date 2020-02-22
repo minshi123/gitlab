@@ -79,7 +79,7 @@ export default {
 <template>
   <div
     data-qa-selector="ide_left_sidebar"
-    class="ide-sidebar multi-file-commit-panel ide-right-sidebar flex-row-reverse"
+    class="ide-sidebar multi-file-commit-panel ide-left-sidebar flex-row-reverse h-100"
   >
     <template v-if="loading">
       <resizable-panel :collapsible="false" :initial-width="width" :min-size="width" :side="side">
@@ -104,7 +104,7 @@ export default {
             v-for="tabView in shownTabViews"
             v-show="isActiveView(tabView.name)"
             :key="tabView.name"
-            class="flex-fill js-tab-view"
+            class="flex-fill js-tab-view min-height-0"
           >
             <component :is="currentActivityView" />
           </div>
