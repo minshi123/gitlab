@@ -94,6 +94,25 @@ describe API::ProjectPackages do
           let(:packages) { [package3, package1, package2] }
         end
       end
+
+      describe 'filtering on package type' do
+        let!(:package1) { create(:conan_package, project: project) }
+        let!(:package2) { create(:maven_package, project: project) }
+        let!(:package3) { create(:npm_package, project: project) }
+        let!(:package4) { create(:nuget_package, project: project) }
+
+        context 'package types' do
+          %w[conan maven npm nuget].each do |package_type|
+            it "returns #{package_type} packages" do
+              url = package_type_url(package_type)
+              get api(url, user)
+
+              expect(json_response.length).to eq(1)
+              expect(json_response.map { |package| package['package_type'] }).to contain_exactly(package_type)
+            end
+          end
+        end
+      end
     end
 
     context 'packages feature disabled' do
@@ -302,5 +321,9 @@ describe API::ProjectPackages do
         expect(response).to have_gitlab_http_status(403)
       end
     end
+  end
+
+  def package_type_url(package_type = :conan)
+    "/projects/#{project.id}/packages?package_type=#{package_type}"
   end
 end
