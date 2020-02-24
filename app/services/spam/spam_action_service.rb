@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Spam
-  class SpamCheckService
-    include AkismetMethods
+  class SpamActionService
+    include SpamConstants
 
     attr_accessor :target, :request, :options
     attr_reader :spam_log
@@ -28,27 +28,38 @@ module Spam
         # update the spam log accordingly.
         SpamLog.verify_recaptcha!(user_id: user_id, id: spam_log_id)
       else
-        # Otherwise, it goes to Akismet for spam check.
-        # If so, it assigns spammable object as "spam" and creates a SpamLog record.
-        possible_spam = check(api)
-        target.spam = possible_spam unless target.allow_possible_spam?
-        target.spam_log = spam_log
+        return unless request
+        return unless check_for_spam?
+
+        perform_spam_service_check(api)
       end
     end
 
+    delegate :check_for_spam?, to: :target
+
     private
 
-    def check(api)
-      return unless request
-      return unless check_for_spam?
-      return unless akismet.spam?
+    def perform_spam_service_check(api)
+      # since we can check for spam, and recaptcha is not verified,
+      # ask the SpamVerdictService what to do with the target.
+      spam_verdict_service.execute.tap do |result|
+        case result
+        when REQUIRE_RECAPTCHA
+          create_spam_log(api)
 
-      create_spam_log(api)
-      true
-    end
+          break if target.allow_possible_spam?
 
-    def check_for_spam?
-      target.check_for_spam?
+          # TODO: remove spam! declaration
+          target.spam!
+          target.needs_recaptcha!
+        when DISALLOW
+          # TODO: remove `unless target.allow_possible_spam?` once this flag has been passed to `SpamVerdictService`
+          target.spam! unless target.allow_possible_spam?
+          create_spam_log(api)
+        when ALLOW
+          target.clear_spam_flags!
+        end
+      end
     end
 
     def create_spam_log(api)
@@ -63,6 +74,14 @@ module Spam
           via_api: api
         }
       )
+
+      target.spam_log = spam_log
+    end
+
+    def spam_verdict_service
+      SpamVerdictService.new(target: target,
+                             request: @request,
+                             options: options)
     end
   end
 end
