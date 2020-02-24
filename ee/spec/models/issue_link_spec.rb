@@ -60,6 +60,17 @@ describe IssueLink do
       expect(described_class.blocked_issue_ids([link1.target_id, link2.source_id, link3.source_id]))
         .to match_array([link1.target_id, link2.source_id])
     end
+
+    context 'when status argument is set to opened' do
+      it 'returns only opened issue ids' do
+        link1 = create(:issue_link, source: create(:issue, state: :closed), link_type: described_class::TYPE_BLOCKS)
+        link2 = create(:issue_link, source: create(:issue, state: :opened), link_type: described_class::TYPE_BLOCKS)
+        link3 = create(:issue_link, link_type: described_class::TYPE_RELATES_TO)
+
+        expect(described_class.blocked_issue_ids([link1.target_id, link2.target_id, link3.target_id], state: :opened))
+          .to match_array([link2.target_id])
+      end
+    end
   end
 
   describe '.inverse_link_type' do
