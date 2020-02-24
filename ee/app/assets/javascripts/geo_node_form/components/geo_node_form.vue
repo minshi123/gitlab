@@ -1,4 +1,5 @@
 <script>
+import { mapActions } from 'vuex';
 import { GlFormGroup, GlFormInput, GlFormCheckbox, GlButton } from '@gitlab/ui';
 import { visitUrl } from '~/lib/utils/url_utility';
 import GeoNodeFormCore from './geo_node_form_core.vue';
@@ -56,6 +57,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['createGeoNode', 'updateGeoNode']),
     redirect() {
       visitUrl('/admin/geo/nodes');
     },
@@ -64,6 +66,13 @@ export default {
     },
     removeSyncOption({ key, index }) {
       this.nodeData[key].splice(index, 1);
+    },
+    saveNode() {
+      if (this.node) {
+        this.updateGeoNode(this.nodeData);
+      } else {
+        this.createGeoNode(this.nodeData);
+      }
     },
   },
 };
@@ -115,7 +124,9 @@ export default {
       </gl-form-group>
     </section>
     <section class="d-flex align-items-center mt-4">
-      <gl-button id="node-save-button" variant="success">{{ __('Save') }}</gl-button>
+      <gl-button id="node-save-button" variant="success" @click="saveNode">{{
+        node ? __('Update') : __('Save')
+      }}</gl-button>
       <gl-button id="node-cancel-button" class="ml-auto" @click="redirect">{{
         __('Cancel')
       }}</gl-button>

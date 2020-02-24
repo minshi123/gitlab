@@ -12,4 +12,22 @@ export default {
     state.isLoading = false;
     state.synchronizationNamespaces = [];
   },
+  [types.REQUEST_CREATE_GEO_NODE](state) {
+    state.isLoading = true;
+  },
+  [types.RECEIVE_CREATE_GEO_NODE_SUCCESS](state) {
+    state.isLoading = false;
+  },
+  [types.RECEIVE_CREATE_GEO_NODE_ERROR](state) {
+    state.isLoading = false;
+  },
+  [types.REQUEST_UPDATE_GEO_NODE](state) {
+    state.isLoading = true;
+  },
+  [types.RECEIVE_UPDATE_GEO_NODE_SUCCESS](state) {
+    state.isLoading = false;
+  },
+  [types.RECEIVE_UPDATE_GEO_NODE_ERROR](state) {
+    state.isLoading = false;
+  },
 };

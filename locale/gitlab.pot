@@ -12589,6 +12589,9 @@ msgstr ""
 msgid "Name has already been taken"
 msgstr ""
 
+msgid "Name must be between 1 and 255 characters"
+msgstr ""
+
 msgid "Name new label"
 msgstr ""
 
@@ -19486,6 +19489,9 @@ msgstr ""
 msgid "There was an error creating the issue"
 msgstr ""
 
+msgid "There was an error creating this Geo Node"
+msgstr ""
+
 msgid "There was an error deleting the To Do."
 msgstr ""
 
@@ -19553,6 +19559,9 @@ msgid "There was an error syncing the Design Repositories."
 msgstr ""
 
 msgid "There was an error trying to validate your query"
+msgstr ""
+
+msgid "There was an error updating this Geo Node"
 msgstr ""
 
 msgid "There was an error when reseting email token."
@@ -20640,6 +20649,9 @@ msgid "U2F only works with HTTPS-enabled websites. Contact your administrator fo
 msgstr ""
 
 msgid "URL"
+msgstr ""
+
+msgid "URL must be a valid url (ex: 'https://gitlab.com')"
 msgstr ""
 
 msgid "URL of the external storage that will serve the repository static objects (e.g. archives, blobs, ...)."
