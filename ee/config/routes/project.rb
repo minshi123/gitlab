@@ -48,9 +48,10 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           end
         end
 
-        resources :designs, only: [], constraints: { id: /\d+/ } do
-          member do
-            get '(*ref)', action: 'show', as: '', constraints: { ref: Gitlab::PathRegex.git_reference_regex }
+        namespace :design_management do
+          namespace :designs, path: 'designs/:design_id/:sha', constraints: -> (req) { Gitlab::Git.commit_id?(req.params[:sha]) } do
+            resource :raw_image, only: :show
+            resources :resized_image, only: :show, constraints: -> (req) { DesignManagement::DESIGN_IMAGE_SIZES.include?(req.params[:id]) }
           end
         end
 

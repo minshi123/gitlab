@@ -2,14 +2,16 @@
 
 require 'spec_helper'
 
-describe Projects::DesignsController do
+describe Projects::DesignManagement::Designs::RawImagesController do
   include DesignManagementTestHelpers
 
-  let_it_be(:project) { create(:project, :public) }
+  let_it_be(:project) { create(:project, :private) }
   let_it_be(:issue) { create(:issue, project: project) }
+  let_it_be(:viewer) { issue.author }
   let(:file) { fixture_file_upload('spec/fixtures/dk.png', '`/png') }
   let(:lfs_pointer) { Gitlab::Git::LfsPointerFile.new(file.read) }
   let(:design) { create(:design, :with_lfs_file, file: lfs_pointer.pointer, issue: issue) }
+  let(:version) { design.versions.first }
   let(:filename) { design.filename }
 
   before do
@@ -22,22 +24,47 @@ describe Projects::DesignsController do
         params: {
           namespace_id: project.namespace,
           project_id: project,
-          id: design.id,
-          ref: 'HEAD'
+          design_id: design.id,
+          sha: version.sha
       })
+    end
+
+    before do
+      sign_in(viewer)
+    end
+
+    context 'when the user does not have permission' do
+      let_it_be(:viewer) { create(:user) }
+
+      specify do
+        subject
+
+        expect(response).to have_gitlab_http_status(404)
+      end
     end
 
     # For security, .svg images should only ever be served with Content-Disposition: attachment.
     # If these specs ever fail we must assess whether we should be serving svg images.
     # See https://gitlab.com/gitlab-org/gitlab/issues/12771
     describe 'Response headers' do
-      it 'serves LFS files with `Content-Disposition: attachment`' do
-        lfs_object = create(:lfs_object, file: file, oid: lfs_pointer.sha256, size: lfs_pointer.size)
-        create(:lfs_objects_project, project: project, lfs_object: lfs_object, repository_type: :design)
+      context 'when the design is an LFS file' do
+        before do
+          lfs_object = create(:lfs_object, file: file, oid: lfs_pointer.sha256, size: lfs_pointer.size)
+          create(:lfs_objects_project, project: project, lfs_object: lfs_object, repository_type: :design)
+        end
 
-        subject
+        it 'serves files with `Content-Disposition: attachment`' do
+          subject
 
-        expect(response.header['Content-Disposition']).to eq(%Q(attachment; filename=\"#{filename}\"; filename*=UTF-8''#{filename}))
+          expect(response.header['Content-Disposition']).to eq(%Q(attachment; filename=\"#{filename}\"; filename*=UTF-8''#{filename}))
+        end
+
+        it 'sets appropriate caching headers' do
+          subject
+
+          expect(response.header['ETag']).to be_present
+          expect(response.header['Cache-Control']).to eq("max-age=60, private")
+        end
       end
 
       context 'when the design is not an LFS file' do

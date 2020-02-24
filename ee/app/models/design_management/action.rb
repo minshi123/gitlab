@@ -30,8 +30,14 @@ module DesignManagement
         all
       when DesignManagement::Version
         where(arel_table[:version_id].lteq(version.id))
+      when ::Gitlab::Git::COMMIT_ID
+        versions = DesignManagement::Version.arel_table
+
+        where(arel_table[:version_id].lteq(
+          versions.project(versions[:id]).where(versions[:sha].eq(version))
+        ))
       else
-        raise "Expected a DesignManagement::Version, got #{version}"
+        raise ArgumentError, "Expected a DesignManagement::Version, got #{version}"
       end
     end
   end
