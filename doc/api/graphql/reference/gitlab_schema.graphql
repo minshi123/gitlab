@@ -5374,6 +5374,16 @@ type Project {
   """
   issue(
     """
+    Id of a user assigned to the issues, "none" and "any" values supported
+    """
+    assigneeId: String
+
+    """
+    Username of a user assigned to the issues
+    """
+    assigneeUsername: String
+
+    """
     Issues closed after this date
     """
     closedAfter: Time
@@ -5409,6 +5419,11 @@ type Project {
     labelName: [String]
 
     """
+    Milesones applied to this issue
+    """
+    milestoneTitle: [String]
+
+    """
     Search query for finding issues by title or description
     """
     search: String
@@ -5442,6 +5457,16 @@ type Project {
     Returns the elements in the list that come after the specified cursor.
     """
     after: String
+
+    """
+    Id of a user assigned to the issues, "none" and "any" values supported
+    """
+    assigneeId: String
+
+    """
+    Username of a user assigned to the issues
+    """
+    assigneeUsername: String
 
     """
     Returns the elements in the list that come before the specified cursor.
@@ -5492,6 +5517,11 @@ type Project {
     Returns the last _n_ elements from the list.
     """
     last: Int
+
+    """
+    Milesones applied to this issue
+    """
+    milestoneTitle: [String]
 
     """
     Search query for finding issues by title or description

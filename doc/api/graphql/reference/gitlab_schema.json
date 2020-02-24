@@ -717,6 +717,40 @@
                   "defaultValue": null
                 },
                 {
+                  "name": "milestoneTitle",
+                  "description": "Milesones applied to this issue",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "assigneeUsername",
+                  "description": "Username of a user assigned to the issues",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "assigneeId",
+                  "description": "Id of a user assigned to the issues, \"none\" and \"any\" values supported",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "createdBefore",
                   "description": "Issues created before this date",
                   "type": {
@@ -858,6 +892,40 @@
                       "name": "String",
                       "ofType": null
                     }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "milestoneTitle",
+                  "description": "Milesones applied to this issue",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "assigneeUsername",
+                  "description": "Username of a user assigned to the issues",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "assigneeId",
+                  "description": "Id of a user assigned to the issues, \"none\" and \"any\" values supported",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
                   },
                   "defaultValue": null
                 },
