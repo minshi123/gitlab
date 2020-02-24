@@ -281,8 +281,8 @@ in your project's sidebar, and you'll see the licenses displayed, where:
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/22465) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.8.
 
-The Policies tab allows you to see your project's software license policies
-and the associated classifications for each one of them.
+The **Policies** tab allows you to see your project's software license policies
+and the associated classifications for each.
 
 Policies can be configured by maintainers of the project.
 
