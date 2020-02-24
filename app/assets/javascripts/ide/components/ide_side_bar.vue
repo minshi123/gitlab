@@ -79,7 +79,7 @@ export default {
 <template>
   <div
     data-qa-selector="ide_left_sidebar"
-    class="ide-sidebar multi-file-commit-panel ide-left-sidebar flex-row-reverse h-100"
+    class="ide-sidebar ide-left-sidebar flex-row-reverse d-flex h-100"
   >
     <template v-if="loading">
       <resizable-panel :collapsible="false" :initial-width="width" :min-size="width" :side="side">

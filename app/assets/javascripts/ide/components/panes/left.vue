@@ -47,7 +47,7 @@ export default {
 </script>
 
 <template>
-  <div class="h-100">
+  <div class=" multi-file-commit-panel flex-column h-100">
     <ide-project-header :project="currentProject" v-if="currentProject" />
     <ide-side-bar :tabs="tabs" :side="'left'" :width="340" />
   </div>
