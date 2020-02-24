@@ -47,7 +47,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="h-100">
     <ide-project-header :project="currentProject" v-if="currentProject" />
     <ide-side-bar :tabs="tabs" :side="'left'" :width="340" />
   </div>
