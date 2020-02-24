@@ -166,14 +166,20 @@ export default {
       const { yAxis, xAxis } = this.option;
       const option = omit(this.option, ['series', 'yAxis', 'xAxis']);
 
+      const yAxisLabel = this.graphData.y_label;
+      const yAxisFormat = this.graphData.yFormat || 'number';
+      const yAxisPrecision = this.graphData.yPrecision || 2;
+
+      const axisLabelFormatter = getFormatter(yAxisFormat);
+
       const dataYAxis = {
-        name: this.yAxisLabel,
+        name: yAxisLabel,
         nameGap: 50, // same as gitlab-ui's default
         nameLocation: 'center', // same as gitlab-ui's default
         boundaryGap: [0.1, 0.1],
         scale: true,
         axisLabel: {
-          formatter: num => yValFormatter(num, 3),
+          formatter: num => axisLabelFormatter(num, yAxisPrecision, 10),
         },
         ...yAxis,
       };
@@ -281,9 +287,6 @@ export default {
           color: this.primaryColor,
         },
       };
-    },
-    yAxisLabel() {
-      return `${this.graphData.y_label}`;
     },
   },
   created() {
