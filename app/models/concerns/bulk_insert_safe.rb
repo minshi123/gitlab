@@ -61,35 +61,64 @@ module BulkInsertSafe
       super
     end
 
+    # This method does not raise errors in case of:
+    # - validation failures
+    # - primary key collisions
+    #
+    # Duplicate rows are ignored. Returns false if any items failed to validate, true otherwise.
     def bulk_insert(items, validate: true, batch_size: DEFAULT_BATCH_SIZE, &handle_attributes)
-      return true if items.empty?
-      return false if validate && !items.all?(&:valid?)
-
-      items.each_slice(batch_size) do |item_batch|
-        insert_all(_bulk_insert_attributes(item_batch, &handle_attributes))
-      end
-
-      true
+      _bulk_insert_internal(
+        items, validate: validate, batch_size: batch_size, raise_errors: false, &handle_attributes
+      )
     end
 
+    # Unlike `bulk_insert`, this method raises errors in case of:
+    # - validation failures
+    # - primary key collisions
+    #
+    # Returns true if all items succeeded to be inserted.
     def bulk_insert!(items, validate: true, batch_size: DEFAULT_BATCH_SIZE, &handle_attributes)
-      return true if items.empty?
-
-      items.each(&:validate!) if validate
-      items.each_slice(batch_size) do |item_batch|
-        insert_all!(_bulk_insert_attributes(item_batch, &handle_attributes))
-      end
-
-      true
+      _bulk_insert_internal(
+        items, validate: validate, batch_size: batch_size, raise_errors: true, &handle_attributes
+      )
     end
 
     private
 
-    def _bulk_insert_attributes(items)
-      items.map do |item|
-        attributes = item.attributes
-        primary_key = item.class.primary_key
+    def _bulk_insert_internal(items, validate:, batch_size:, raise_errors:, &handle_attributes)
+      return true if items.empty?
 
+      success = true
+      items.each_slice(batch_size) do |item_batch|
+        valid_attributes, invalid_attributes =
+          _bulk_insert_item_attributes(item_batch, validate, raise_errors, &handle_attributes)
+
+        if invalid_attributes.any?
+          success = false
+          break
+        end
+
+        if raise_errors
+          insert_all!(valid_attributes)
+        else
+          insert_all(valid_attributes)
+        end
+      end
+      success
+    end
+
+    def _bulk_insert_item_attributes(items, validate_items, raise_errors)
+      valid_attributes = []
+      invalid_attributes = []
+      items.each do |item|
+        attributes = item.attributes
+
+        if validate_items && !_bulk_insert_validate_item(item, raise_errors)
+          invalid_attributes << attributes
+          next
+        end
+
+        primary_key = item.class.primary_key
         # Drop `primary_key` column entries that have a `nil` value, as that would
         # most certainly lead to constraint violations upon insertion when the
         # primary key is a :serial column.
@@ -99,7 +128,17 @@ module BulkInsertSafe
 
         yield attributes if block_given?
 
-        attributes
+        valid_attributes << attributes
+      end
+      [valid_attributes, invalid_attributes]
+    end
+
+    def _bulk_insert_validate_item(item, raise_errors)
+      if raise_errors
+        item.validate!
+        true
+      else
+        item.valid?
       end
     end
 
