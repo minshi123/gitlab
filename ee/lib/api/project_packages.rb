@@ -29,8 +29,8 @@ module API
       end
       get ':id/packages' do
         packages = if params[:package_type]
-                     ::Packages::PackageFinder
-                      .new(user_project, nil, params[:package_type]).execute
+                     ::Packages::PackageTypeFinder
+                      .new(user_project, declared(params)).execute
                    else
                      user_project.packages
                    end
