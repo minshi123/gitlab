@@ -262,17 +262,17 @@ module EE
           (billed_group_members.non_guests.distinct.pluck(:user_id) +
           billed_project_members.non_guests.distinct.pluck(:user_id) +
           billed_shared_group_members.non_guests.distinct.pluck(:user_id) +
-          billed_invited_group_members.non_guests.distinct.pluck(:user_id))
+          billed_invited_group_members.non_guests.distinct.pluck(:user_id)).to_set
         end
       else
         strong_memoize(:non_gold_billed_user_ids) do
           (billed_group_members.distinct.pluck(:user_id) +
           billed_project_members.distinct.pluck(:user_id) +
           billed_shared_group_members.distinct.pluck(:user_id) +
-          billed_invited_group_members.distinct.pluck(:user_id))
+          billed_invited_group_members.distinct.pluck(:user_id)).to_set
         end
       end
-    end.to_set
+    end
 
     def packages_feature_available?
       ::Gitlab.config.packages.enabled && feature_available?(:packages)
