@@ -193,4 +193,72 @@ describe ProjectsHelper do
       end
     end
   end
+
+  describe 'status_page_setting methods' do
+    let(:project) { create(:project) }
+
+    before do
+      helper.instance_variable_set(:@project, project)
+    end
+
+    describe '#status_page_setting_enabled?' do
+      subject { helper.status_page_setting_enabled? }
+
+      it { is_expected.to eq(nil) }
+
+      context 'status page setting integration exists' do
+        let!(:status_page_setting) { create(:status_page_setting, project: project) }
+
+        it { is_expected.to eq(status_page_setting.enabled) }
+      end
+    end
+
+    describe '#status_page_setting_aws_access_key' do
+      subject { helper.status_page_setting_aws_access_key }
+
+      it { is_expected.to eq(nil) }
+
+      context 'status page setting integration exists' do
+        let!(:status_page_setting) { create(:status_page_setting, project: project) }
+
+        it { is_expected.to eq(status_page_setting.aws_access_key) }
+      end
+    end
+
+    describe '#status_page_setting_masked_aws_secret_key' do
+      subject { helper.status_page_setting_masked_aws_secret_key }
+
+      it { is_expected.to eq(nil) }
+
+      context 'status page setting integration exists' do
+        let!(:status_page_setting) { create(:status_page_setting, project: project) }
+
+        it { is_expected.to eq(status_page_setting.masked_aws_secret_key) }
+      end
+    end
+
+    describe '#status_page_setting_aws_region' do
+      subject { helper.status_page_setting_aws_region }
+
+      it { is_expected.to eq(nil) }
+
+      context 'status page setting integration exists' do
+        let!(:status_page_setting) { create(:status_page_setting, project: project) }
+
+        it { is_expected.to eq(status_page_setting.aws_region) }
+      end
+    end
+
+    describe '#status_page_setting_aws_s3_bucket_name' do
+      subject { helper.status_page_setting_aws_s3_bucket_name }
+
+      it { is_expected.to eq(nil) }
+
+      context 'status page setting integration exists' do
+        let!(:status_page_setting) { create(:status_page_setting, project: project) }
+
+        it { is_expected.to eq(status_page_setting.aws_s3_bucket_name) }
+      end
+    end
+  end
 end

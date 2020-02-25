@@ -285,5 +285,25 @@ module EE
     def can_import_members?
       super && !membership_locked?
     end
+
+    def status_page_setting_enabled?
+      @project.status_page_setting&.enabled?
+    end
+
+    def status_page_setting_aws_access_key
+      @project.status_page_setting&.aws_access_key
+    end
+
+    def status_page_setting_masked_aws_secret_key
+      @project.status_page_setting&.masked_aws_secret_key
+    end
+
+    def status_page_setting_aws_region
+      @project.status_page_setting&.aws_region
+    end
+
+    def status_page_setting_aws_s3_bucket_name
+      @project.status_page_setting&.aws_s3_bucket_name
+    end
   end
 end
