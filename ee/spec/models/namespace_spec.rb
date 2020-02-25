@@ -836,7 +836,7 @@ describe Namespace do
       let(:user) { create(:user) }
 
       it 'returns 1' do
-        expect(user.namespace.billed_user_ids).to eq(user.id)
+        expect(user.namespace.billed_user_ids).to eq([user.id])
       end
     end
 
