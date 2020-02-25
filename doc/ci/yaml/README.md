@@ -105,7 +105,7 @@ The following table lists available parameters for jobs:
 | [`tags`](#tags)                                    | List of tags which are used to select Runner.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | [`allow_failure`](#allow_failure)                  | Allow job to fail. Failed job doesn't contribute to commit status.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | [`when`](#when)                                    | When to run job. Also available: `when:manual` and `when:delayed`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| [`environment`](#environment)                      | Name of an environment to which the job deploys. Also available: `environment:name`, `environment:url`, `environment:on_stop`, and `environment:action`.                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| [`environment`](#environment)                      | Name of an environment to which the job deploys. Also available: `environment:name`, `environment:url`, `environment:on_stop`, `environment:auto_stop_in` and `environment:action`.                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [`cache`](#cache)                                  | List of files that should be cached between subsequent runs. Also available: `cache:paths`, `cache:key`, `cache:untracked`, and `cache:policy`.                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | [`artifacts`](#artifacts)                          | List of files and directories to attach to a job on success. Also available: `artifacts:paths`, `artifacts:expose_as`, `artifacts:name`, `artifacts:untracked`, `artifacts:when`, `artifacts:expire_in`, `artifacts:reports`, and `artifacts:reports:junit`.<br><br>In GitLab [Enterprise Edition](https://about.gitlab.com/pricing/), these are available: `artifacts:reports:codequality`, `artifacts:reports:sast`, `artifacts:reports:dependency_scanning`, `artifacts:reports:container_scanning`, `artifacts:reports:dast`, `artifacts:reports:license_management`, `artifacts:reports:performance` and `artifacts:reports:metrics`. |
 | [`dependencies`](#dependencies)                    | Restrict which artifacts are passed to a specific job by providing a list of jobs to fetch artifacts from.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -1453,6 +1453,29 @@ The `stop_review_app` job is **required** to have the following keywords defined
 - `stage` should be the same as the `review_app` in order for the environment
   to stop automatically when the branch is deleted
 
+#### `environment:auto_stop_in`
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/20956) in GitLab 12.8.
+
+The `auto_stop_in` keyword is for specifying life period of the environment,
+that when expired, GitLab GitLab automatically stops them.
+
+For example,
+
+```yaml
+review_app:
+  script: deploy-review-app
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    auto_stop_in: 1 day
+```
+
+When `review_app` job is executed and a review app is created, a life period of
+the environment is set to `1 day`.
+
+For more information, see
+[the environments auto-stop documentation](../environments.md#environments-auto-stop)
+
 #### `environment:kubernetes`
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/27630) in GitLab 12.6.
@@ -1641,7 +1664,7 @@ cache:
     - node_modules
 ```
 
-In this example we are creating a cache for Ruby and Nodejs dependencies that
+In this example we are creating a cache for Ruby and Node.js dependencies that
 is tied to current versions of the `Gemfile.lock` and `package.json` files. Whenever one of
 these files changes, a new cache key is computed and a new cache is created. Any future
 job runs using the same `Gemfile.lock` and `package.json`  with `cache:key:files` will
@@ -2248,6 +2271,7 @@ and bring back the old behavior.
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/47063) in GitLab 12.2.
 > - In GitLab 12.3, maximum number of jobs in `needs` array raised from five to 50.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/30631) in GitLab 12.8, `needs: []` lets jobs start immediately.
 
 The `needs:` keyword enables executing jobs out-of-order, allowing you to implement
 a [directed acyclic graph](../directed_acyclic_graph/index.md) in your `.gitlab-ci.yml`.
@@ -2263,6 +2287,10 @@ linux:build:
 
 mac:build:
   stage: build
+
+lint:
+  stage: test
+  needs: []
 
 linux:rspec:
   stage: test
@@ -2284,7 +2312,9 @@ production:
   stage: deploy
 ```
 
-This example creates three paths of execution:
+This example creates four paths of execution:
+
+- Linter: the `lint` job will run immediately without waiting for the `build` stage to complete because it has no needs (`needs: []`).
 
 - Linux path: the `linux:rspec` and `linux:rubocop` jobs will be run as soon
   as the `linux:build` job finishes without waiting for `mac:build` to finish.
@@ -2308,9 +2338,6 @@ This example creates three paths of execution:
   - For self-managed instances, the limit is:
     - 10, if the `ci_dag_limit_needs` feature flag is enabled (default).
     - 50, if the `ci_dag_limit_needs` feature flag is disabled.
-- It is impossible for now to have `needs: []` (empty needs), the job always needs to
-  depend on something, unless this is the job in the first stage. However, support for
-  an empty needs array [is planned](https://gitlab.com/gitlab-org/gitlab/issues/30631).
 - If `needs:` refers to a job that is marked as `parallel:`.
   the current job will depend on all parallel jobs created.
 - `needs:` is similar to `dependencies:` in that it needs to use jobs from prior stages,

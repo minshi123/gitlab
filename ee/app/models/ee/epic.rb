@@ -52,7 +52,7 @@ module EE
 
       has_many :epic_issues
       has_many :issues, through: :epic_issues
-      has_many :user_mentions, class_name: "EpicUserMention"
+      has_many :user_mentions, class_name: "EpicUserMention", dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent
 
       validates :group, presence: true
       validate :validate_parent, on: :create
@@ -275,12 +275,12 @@ module EE
     def to_reference(from = nil, full: false)
       reference = "#{self.class.reference_prefix}#{iid}"
 
-      return reference unless (cross_reference?(from) && !group.projects.include?(from)) || full
+      return reference unless (cross_referenced?(from) && !group.projects.include?(from)) || full
 
       "#{group.full_path}#{reference}"
     end
 
-    def cross_reference?(from)
+    def cross_referenced?(from)
       from && from != group
     end
 

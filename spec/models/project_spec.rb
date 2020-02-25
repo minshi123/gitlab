@@ -153,6 +153,16 @@ describe Project do
         expect(project.container_expiration_policy).to be_persisted
       end
 
+      it 'does not create another container expiration policy if there is already one' do
+        project = build(:project)
+
+        expect do
+          container_expiration_policy = create(:container_expiration_policy, project: project)
+
+          expect(project.container_expiration_policy).to eq(container_expiration_policy)
+        end.to change { ContainerExpirationPolicy.count }.by(1)
+      end
+
       it 'automatically creates a Pages metadata row' do
         expect(project.pages_metadatum).to be_an_instance_of(ProjectPagesMetadatum)
         expect(project.pages_metadatum).to be_persisted
@@ -1299,8 +1309,8 @@ describe Project do
 
   describe '.trending' do
     let(:group)    { create(:group, :public) }
-    let(:project1) { create(:project, :public, group: group) }
-    let(:project2) { create(:project, :public, group: group) }
+    let(:project1) { create(:project, :public, :repository, group: group) }
+    let(:project2) { create(:project, :public, :repository, group: group) }
 
     before do
       create_list(:note_on_commit, 2, project: project1)
@@ -1979,6 +1989,23 @@ describe Project do
       project.import_state.finish
 
       expect(project.reload.import_url).to eq('http://test.com')
+    end
+
+    it 'saves the url credentials percent decoded' do
+      url = 'http://user:pass%21%3F%40@github.com/t.git'
+      project = build(:project, import_url: url)
+
+      # When the credentials are not decoded this expectation fails
+      expect(project.import_url).to eq(url)
+      expect(project.import_data.credentials).to eq(user: 'user', password: 'pass!?@')
+    end
+
+    it 'saves url with no credentials' do
+      url = 'http://github.com/t.git'
+      project = build(:project, import_url: url)
+
+      expect(project.import_url).to eq(url)
+      expect(project.import_data.credentials).to eq(user: nil, password: nil)
     end
   end
 
@@ -5590,7 +5617,21 @@ describe Project do
 
     subject { project.alerts_service_activated? }
 
-    it { is_expected.to be_falsey }
+    context 'when project has an activated alerts service' do
+      before do
+        create(:alerts_service, project: project)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when project has an inactive alerts service' do
+      before do
+        create(:alerts_service, :inactive, project: project)
+      end
+
+      it { is_expected.to be_falsey }
+    end
   end
 
   describe '#self_monitoring?' do

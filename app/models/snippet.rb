@@ -17,7 +17,6 @@ class Snippet < ApplicationRecord
   include HasRepository
   extend ::Gitlab::Utils::Override
 
-  ignore_column :storage_version, remove_with: '12.9', remove_after: '2020-03-22'
   ignore_column :repository_storage, remove_with: '12.10', remove_after: '2020-04-22'
 
   cache_markdown_field :title, pipeline: :single_line
@@ -41,7 +40,7 @@ class Snippet < ApplicationRecord
   belongs_to :project
 
   has_many :notes, as: :noteable, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
-  has_many :user_mentions, class_name: "SnippetUserMention"
+  has_many :user_mentions, class_name: "SnippetUserMention", dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent
   has_one :snippet_repository, inverse_of: :snippet
 
   delegate :name, :email, to: :author, prefix: true, allow_nil: true
@@ -65,6 +64,8 @@ class Snippet < ApplicationRecord
             if: :content_changed?
 
   validates :visibility_level, inclusion: { in: Gitlab::VisibilityLevel.values }
+
+  after_save :store_mentions!, if: :any_mentionable_attributes_changed?
 
   # Scopes
   scope :are_internal, -> { where(visibility_level: Snippet::INTERNAL) }

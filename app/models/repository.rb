@@ -134,15 +134,6 @@ class Repository
     end
   end
 
-  # the opts are:
-  #  - :path
-  #  - :limit
-  #  - :offset
-  #  - :skip_merges
-  #  - :after
-  #  - :before
-  #  - :all
-  #  - :first_parent
   def commits(ref = nil, opts = {})
     options = {
       repo: raw_repository,
@@ -155,7 +146,8 @@ class Repository
       after: opts[:after],
       before: opts[:before],
       all: !!opts[:all],
-      first_parent: !!opts[:first_parent]
+      first_parent: !!opts[:first_parent],
+      order: opts[:order]
     }
 
     commits = Gitlab::Git::Commit.where(options)
@@ -1001,10 +993,10 @@ class Repository
     raw_repository.ls_files(actual_ref)
   end
 
-  def search_files_by_content(query, ref)
+  def search_files_by_content(query, ref, options = {})
     return [] if empty? || query.blank?
 
-    raw_repository.search_files_by_content(query, ref)
+    raw_repository.search_files_by_content(query, ref, options)
   end
 
   def search_files_by_name(query, ref)
