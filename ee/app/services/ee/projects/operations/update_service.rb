@@ -13,6 +13,7 @@ module EE
             .merge(tracing_setting_params)
             .merge(alerting_setting_params)
             .merge(incident_management_setting_params)
+            .merge(status_page_setting_params)
         end
 
         private
@@ -45,6 +46,10 @@ module EE
 
         def incident_management_setting_params
           params.slice(:incident_management_setting_attributes)
+        end
+
+        def status_page_setting_params
+          params.slice(:status_page_setting_attributes)
         end
       end
     end

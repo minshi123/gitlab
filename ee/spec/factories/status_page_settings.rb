@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :status_page_setting, class: StatusPageSetting do
+  factory :status_page_setting, class: 'StatusPageSetting' do
     project
     aws_s3_bucket_name { 'bucket' }
     aws_region { 'ap-southeast-2' }
