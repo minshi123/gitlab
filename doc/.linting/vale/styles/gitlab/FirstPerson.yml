@@ -1,0 +1,14 @@
+---
+extends: existence
+message: 'Use plural pronouns (we, you, us, one) instead of first-person singular pronouns like “%s.”'
+level: error
+ignorecase: true
+link: https://docs.gitlab.com/ee/development/documentation/styleguide.html#language
+tokens:
+# 'I' is not included here because normal word boundary characters
+# cause false positives for `I/O` and positive-for-the-wrong-reason
+# results for `i.e.` See I.yml.
+# - I
+  - me
+  - mine
+  - myself
