@@ -88,8 +88,17 @@ module BulkInsertSafe
     def _bulk_insert_attributes(items)
       items.map do |item|
         attributes = item.attributes
-        attributes.delete('id') unless attributes['id']
+        primary_key = item.class.primary_key
+
+        # Drop `primary_key` column entries that have a `nil` value, as that would
+        # most certainly lead to constraint violations upon insertion when the
+        # primary key is a :serial column.
+        if primary_key && attributes.key?(primary_key) && attributes[primary_key].nil?
+          attributes.delete(primary_key)
+        end
+
         yield attributes if block_given?
+
         attributes
       end
     end

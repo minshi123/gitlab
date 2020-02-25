@@ -9,6 +9,10 @@ describe BulkInsertSafe do
     validates :name, presence: true
   end
 
+  class BulkInsertSerialIdItem < ApplicationRecord
+    include BulkInsertSafe
+  end
+
   module InheritedUnsafeMethods
     extend ActiveSupport::Concern
 
@@ -27,7 +31,11 @@ describe BulkInsertSafe do
 
   before(:all) do
     ActiveRecord::Schema.define do
-      create_table :bulk_insert_items, force: true do |t|
+      create_table :bulk_insert_items, force: true, id: false do |t|
+        t.integer :item_id, null: false, primary_key: true
+        t.string :name, null: true
+      end
+      create_table :bulk_insert_serial_id_items, force: true, id: :serial do |t|
         t.string :name, null: true
       end
     end
@@ -36,18 +44,19 @@ describe BulkInsertSafe do
   after(:all) do
     ActiveRecord::Schema.define do
       drop_table :bulk_insert_items, force: true
+      drop_table :bulk_insert_serial_id_items, force: true
     end
   end
 
   def build_valid_items_for_bulk_insertion
     Array.new(10) do |n|
-      BulkInsertItem.new(name: "item-#{n}")
+      BulkInsertItem.new(item_id: n, name: "item-#{n}")
     end
   end
 
   def build_invalid_items_for_bulk_insertion
     Array.new(10) do |n|
-      BulkInsertItem.new # requires `name` to be set
+      BulkInsertItem.new(item_id: n) # requires `name` to be set
     end
   end
 
@@ -61,6 +70,26 @@ describe BulkInsertSafe do
 
     it 'does not raise an error when method is bulk-insert safe' do
       expect { BulkInsertItem.include(InheritedSafeMethods) }.not_to raise_error
+    end
+  end
+
+  context 'primary keys' do
+    it 'recognizes custom primary keys' do
+      items = build_valid_items_for_bulk_insertion
+
+      BulkInsertItem.bulk_insert!(items)
+
+      existing_item_id = items.last.item_id
+      expect { BulkInsertItem.create!(item_id: existing_item_id, name: 'item') }.to(
+        raise_error(ActiveRecord::RecordNotUnique)
+      )
+    end
+
+    it 'drops nil primary keys to prevent not-null constraint violations' do
+      items = [BulkInsertSerialIdItem.new]
+      expect(items.map(&:id)).to all(be nil)
+
+      expect { BulkInsertSerialIdItem.bulk_insert!(items) }.not_to raise_error
     end
   end
 
