@@ -74,13 +74,6 @@ RSpec.shared_examples 'a BulkInsertSafe model' do |klass, valid_items, invalid_i
         end
       end
     end
-
-    context 'when items are empty' do
-      it 'does nothing and returns true' do
-        expect(target_class.bulk_insert([])).to be(true)
-        expect(target_class.count).to eq(0)
-      end
-    end
   end
 
   describe '.bulk_insert!' do
@@ -119,13 +112,6 @@ RSpec.shared_examples 'a BulkInsertSafe model' do |klass, valid_items, invalid_i
           expect(target_class.bulk_insert!(items, validate: false)).to be(true)
           expect(target_class.count).to eq(items.size)
         end
-      end
-    end
-
-    context 'when items are empty' do
-      it 'does nothing and returns true' do
-        expect(target_class.bulk_insert!([])).to be(true)
-        expect(target_class.count).to eq(0)
       end
     end
   end

@@ -93,25 +93,57 @@ describe BulkInsertSafe do
     end
   end
 
-  context 'when overriding default batch size' do
-    describe '.bulk_insert' do
-      it 'inserts items in the given number of batches' do
-        items = build_valid_items_for_bulk_insertion
-        expect(items.size).to eq(10)
-        expect(BulkInsertItem).to receive(:insert_all).twice
+  describe '.bulk_insert' do
+    it 'inserts items in the given number of batches' do
+      items = build_valid_items_for_bulk_insertion
+      expect(items.size).to eq(10)
+      expect(BulkInsertItem).to receive(:insert_all).twice
 
-        BulkInsertItem.bulk_insert(items, batch_size: 5)
-      end
+      BulkInsertItem.bulk_insert(items, batch_size: 5)
     end
 
-    describe '.bulk_insert!' do
-      it 'inserts items in the given number of batches' do
-        items = build_valid_items_for_bulk_insertion
-        expect(items.size).to eq(10)
-        expect(BulkInsertItem).to receive(:insert_all!).twice
+    it 'rolls back the transaction when any item is invalid' do
+      valid_items = build_valid_items_for_bulk_insertion
+      invalid_items = build_invalid_items_for_bulk_insertion
+      all_items = valid_items + invalid_items # second batch is bad
+      batch_size = all_items.size / 2
 
-        BulkInsertItem.bulk_insert!(items, batch_size: 5)
-      end
+      expect { BulkInsertItem.bulk_insert(all_items, batch_size: batch_size) }.not_to(
+        change { BulkInsertItem.count }
+      )
+    end
+
+    it 'does nothing and returns true when items are empty' do
+      expect(BulkInsertItem.bulk_insert([])).to be(true)
+      expect(BulkInsertItem.count).to eq(0)
+    end
+  end
+
+  describe '.bulk_insert!' do
+    it 'inserts items in the given number of batches' do
+      items = build_valid_items_for_bulk_insertion
+      expect(items.size).to eq(10)
+      expect(BulkInsertItem).to receive(:insert_all!).twice
+
+      BulkInsertItem.bulk_insert!(items, batch_size: 5)
+    end
+
+    it 'rolls back the transaction when any item is invalid' do
+      valid_items = build_valid_items_for_bulk_insertion
+      invalid_items = build_invalid_items_for_bulk_insertion
+      all_items = valid_items + invalid_items # second batch is bad
+      batch_size = all_items.size / 2
+
+      expect do
+        BulkInsertItem.bulk_insert!(all_items, batch_size: batch_size) rescue nil
+      end.not_to(
+        change { BulkInsertItem.count }
+      )
+    end
+
+    it 'does nothing and returns true when items are empty' do
+      expect(BulkInsertItem.bulk_insert!([])).to be(true)
+      expect(BulkInsertItem.count).to eq(0)
     end
   end
 end
