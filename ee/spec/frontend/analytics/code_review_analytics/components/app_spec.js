@@ -76,7 +76,7 @@ describe('CodeReviewAnalyticsApp component', () => {
       });
 
       it('should not show the badge containing the MR count', () => {
-        expect(findBadge().isVisible()).toBe(false);
+        expect(findBadge().exists()).toBe(false);
       });
 
       it('should not render the merge requests table', () => {
@@ -106,6 +106,10 @@ describe('CodeReviewAnalyticsApp component', () => {
           expect(findEmptyState().exists()).toBe(true);
         });
 
+        it('should not show the badge containing the MR count', () => {
+          expect(findBadge().exists()).toBe(false);
+        });
+
         it('should not render the merge requests table', () => {
           expect(findMrTable().exists()).toBe(false);
         });
@@ -126,7 +130,7 @@ describe('CodeReviewAnalyticsApp component', () => {
         });
 
         it('should show the badge containing the MR count', () => {
-          expect(findBadge().isVisible()).toBe(true);
+          expect(findBadge().exists()).toBe(true);
           expect(findBadge().text()).toEqual(`${50}`);
         });
 
