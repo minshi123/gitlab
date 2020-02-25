@@ -46,7 +46,7 @@ describe Ci::RetryBuildService do
        sourced_pipelines artifacts_file_store artifacts_metadata_store
        metadata runner_session trace_chunks upstream_pipeline_id
        artifacts_file artifacts_metadata artifacts_size commands
-       resource resource_group_id processed security_scans].freeze
+       resource resource_group_id processed security_scans needs].freeze
 
   shared_examples 'build duplication' do
     let(:another_pipeline) { create(:ci_empty_pipeline, project: project) }
@@ -97,9 +97,15 @@ describe Ci::RetryBuildService do
           expect(new_build.protected).to eq build.protected
         end
       end
+
+      it 'clones only the needs attributes' do
+        expect(new_build.needs.exists?).to be_truthy
+        expect(build.needs.exists?).to be_truthy
+        expect(new_build.needs_attributes).to match(build.needs_attributes)
+      end
     end
 
-    describe 'reject acessors' do
+    describe 'reject accessors' do
       REJECT_ACCESSORS.each do |attribute|
         it "does not clone #{attribute} build attribute" do
           expect(new_build.send(attribute)).not_to eq build.send(attribute)
@@ -118,7 +124,7 @@ describe Ci::RetryBuildService do
       current_accessors =
         Ci::Build.attribute_names.map(&:to_sym) +
         Ci::Build.reflect_on_all_associations.map(&:name) +
-        [:tag_list]
+        [:tag_list, :needs_attributes]
 
       current_accessors.uniq!
 

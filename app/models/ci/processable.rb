@@ -90,6 +90,14 @@ module Ci
       end
     end
 
+    def needs_attributes
+      strong_memoize(:needs_attributes) do
+        needs.map do |need|
+          need.attributes.symbolize_keys.slice(:name, :artifacts)
+        end
+      end
+    end
+
     private
 
     def validate_scheduling_type?
