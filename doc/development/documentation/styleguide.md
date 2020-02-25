@@ -241,7 +241,7 @@ Do not include the same information in multiple places. [Link to a SSOT instead.
 
 - Use inclusive language and avoid jargon, as well as uncommon
   words. The docs should be clear and easy to understand.
-- Do not write in the first person singular. Instead of "I" or "me," use "we," "you," "us," or "one." 
+- Do not write in the first person singular. Instead of "I" or "me," use "we," "you," "us," or "one."
 - Be clear, concise, and stick to the goal of the doc.
 - Write in US English with US grammar.
 - Capitalize "G" and "L" in GitLab.
@@ -260,7 +260,7 @@ Do not include the same information in multiple places. [Link to a SSOT instead.
 
 - Use common contractions when it helps create a friendly and informal tone, especially in tutorials and [UIs](https://design.gitlab.com/content/punctuation/#contractions).
   - Do use contractions like: _it's_, _can't_, _wouldn't_, _you're_, _you've_, _haven't_, don't, _we're_, _that's_, and _won't_. Contractions in instructional documentation such as tutorials can help create a friendly and informal tone.
-  - Avoid less common contractions such as: _he'd_, _it'll_, _should've_, and _there'd_. 
+  - Avoid less common contractions such as: _he'd_, _it'll_, _should've_, and _there'd_.
   - Do not use contractions in reference documentation. Examples:
     - You cannot set a limit higher than 1000.
     - For `parameter1`, the default is 10.
