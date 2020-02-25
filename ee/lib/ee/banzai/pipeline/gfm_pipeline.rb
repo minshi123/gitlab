@@ -10,6 +10,7 @@ module EE
           def metrics_filters
             [
               ::Banzai::Filter::InlineAlertMetricsFilter,
+              ::Banzai::Filter::InlineClusterMetricsFilter,
               *super
             ]
           end
@@ -22,12 +23,6 @@ module EE
             ]
           end
 
-          def metrics_filters
-            [
-              ::Banzai::Filter::InlineClusterMetricsFilter,
-              *super
-            ]
-          end
         end
       end
     end
