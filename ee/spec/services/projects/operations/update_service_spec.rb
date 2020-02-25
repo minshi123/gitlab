@@ -220,6 +220,38 @@ describe Projects::Operations::UpdateService do
             expect(project.reload.status_page_setting.aws_s3_bucket_name)
               .to eq('test')
           end
+
+          context 'with aws key and secret blank' do
+            let(:params) do
+              {
+                status_page_setting_attributes: {
+                  aws_access_key: '',
+                  aws_secret_key: ''
+                }
+              }
+            end
+
+            it 'destroys the status_page_setting entry in DB' do
+              expect(result[:status]).to eq(:success)
+
+              expect(project.reload.status_page_setting).to be_nil
+            end
+          end
+
+          context 'with one key blank' do
+            let(:params) do
+              {
+                status_page_setting_attributes: {
+                  aws_access_key: '',
+                  aws_secret_key: project.reload.status_page_setting.masked_aws_secret_key
+                }
+              }
+            end
+
+            it 'returns a validation error' do
+              expect(result[:status]).to eq(:error)
+            end
+          end
         end
 
         context 'without an existing setting' do

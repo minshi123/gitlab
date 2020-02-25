@@ -49,7 +49,11 @@ module EE
         end
 
         def status_page_setting_params
-          params.slice(:status_page_setting_attributes)
+          return {} unless attrs = params[:status_page_setting_attributes]
+
+          destroy = attrs[:aws_access_key].blank? && attrs[:aws_secret_key].blank?
+
+          { status_page_setting_attributes: attrs.merge(_destroy: destroy) }
         end
       end
     end
