@@ -191,7 +191,7 @@ For example:
            metrics:
              - id: metric_of_ages
                query_range: 'http_requests_total'
-               label: "Metric of Ages"
+               label: "Instance: {{instance}}, method: {{method}}"
                unit: "count"
    ```
 
