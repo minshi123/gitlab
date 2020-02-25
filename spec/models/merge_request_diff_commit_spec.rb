@@ -6,15 +6,10 @@ describe MergeRequestDiffCommit do
   let(:merge_request) { create(:merge_request) }
   let(:project) { merge_request.project }
 
-  def build_valid_items_for_bulk_insertion
-    Array.new(10) { build(:merge_request_diff_commit) }
+  it_behaves_like 'a BulkInsertSafe model', MergeRequestDiffCommit do
+    let(:valid_items_for_bulk_insertion) { build_list(:merge_request_diff_commit, 10) }
+    let(:invalid_items_for_bulk_insertion) { [] } # class does not have any validations defined
   end
-
-  def build_invalid_items_for_bulk_insertion
-    [] # class does not have any validations defined
-  end
-
-  it_behaves_like 'a BulkInsertSafe model', MergeRequestDiffCommit
 
   describe '#to_hash' do
     subject { merge_request.commits.first }

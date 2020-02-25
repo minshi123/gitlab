@@ -60,7 +60,10 @@ describe BulkInsertSafe do
     end
   end
 
-  it_behaves_like 'a BulkInsertSafe model', BulkInsertItem
+  it_behaves_like 'a BulkInsertSafe model', BulkInsertItem do
+    let(:valid_items_for_bulk_insertion) { build_valid_items_for_bulk_insertion }
+    let(:invalid_items_for_bulk_insertion) { build_invalid_items_for_bulk_insertion }
+  end
 
   context 'when inheriting class methods' do
     it 'raises an error when method is not bulk-insert safe' do
