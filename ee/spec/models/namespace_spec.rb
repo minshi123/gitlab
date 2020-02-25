@@ -99,7 +99,7 @@ describe Namespace do
 
   context 'validation' do
     it do
-      is_expected.to validate_numericality_of(:max_pages_size).only_integer.is_greater_than(0)
+      is_expected.to validate_numericality_of(:max_pages_size).only_integer.is_greater_than_or_equal_to(0)
                        .is_less_than(::Gitlab::Pages::MAX_SIZE / 1.megabyte)
     end
   end
