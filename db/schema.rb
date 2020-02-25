@@ -3988,6 +3988,7 @@ ActiveRecord::Schema.define(version: 2020_02_24_020219) do
     t.string "aws_access_key", limit: 255, null: false
     t.string "encrypted_aws_secret_key", limit: 255, null: false
     t.string "encrypted_aws_secret_key_iv", limit: 255, null: false
+    t.index ["enabled"], name: "index_status_page_settings_on_enabled", where: "(enabled IS TRUE)"
     t.index ["project_id"], name: "index_status_page_settings_on_project_id"
   end
 

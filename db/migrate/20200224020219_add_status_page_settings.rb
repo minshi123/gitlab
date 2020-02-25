@@ -13,6 +13,8 @@ class AddStatusPageSettings < ActiveRecord::Migration[6.0]
       t.string :aws_access_key, limit: 255, null: false
       t.string :encrypted_aws_secret_key, limit: 255, null: false
       t.string :encrypted_aws_secret_key_iv, limit: 255, null: false
+
+      t.index :enabled, where: 'enabled IS TRUE'
     end
   end
 end
