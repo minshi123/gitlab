@@ -23,8 +23,8 @@ describe PersonalAccessTokensHelper do
     end
   end
 
-  describe '#personal_access_token_expiration_policy_enabled?' do
-    subject { helper.personal_access_token_expiration_policy_enabled? }
+  describe '#instance_level_personal_access_token_expiration_policy_enabled?' do
+    subject { helper.instance_level_personal_access_token_expiration_policy_enabled? }
 
     context 'when is licensed and used' do
       before do
