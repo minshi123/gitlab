@@ -409,7 +409,7 @@ group :test do
   gem 'shoulda-matchers', '~> 4.0.1', require: false
   gem 'email_spec', '~> 2.2.0'
   gem 'json-schema', '~> 2.8.0'
-  gem 'webmock', '~> 3.5.1'
+  gem 'webmock', '~> 3.8.2'
   gem 'rails-controller-testing'
   gem 'concurrent-ruby', '~> 1.1'
   gem 'test-prof', '~> 0.10.0'
