@@ -81,6 +81,7 @@ export default {
           v-for="tabView in shownTabViews"
           v-show="isActiveView(tabView.name)"
           :key="tabView.name"
+          :class="{ 'd-flex': isActiveView(tabView.name) }"
           class="js-tab-view h-100"
         >
           <slot :component="tabView.component">
