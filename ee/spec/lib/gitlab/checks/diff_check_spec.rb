@@ -62,7 +62,7 @@ describe Gitlab::Checks::DiffCheck do
       end
 
       context "the MR doesn't contain a matching file path" do
-        it "doesn't raise an exception" do
+        it "returns nil" do
           expect(subject.send(:validate_code_owners)
             .call(["docs/SAFE_FILE_NAME", "README"])).to be_nil
         end
