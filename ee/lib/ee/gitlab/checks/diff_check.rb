@@ -23,7 +23,11 @@ module EE
           lambda do |paths|
             loader = ::Gitlab::CodeOwners::Loader.new(project, branch_name, paths)
 
-            assemble_error_msg_for_codeowner_matches(loader) if loader.entries.any?
+            return unless loader.entries.any?
+
+            unless loader.members.include?(change_access.user_access.user)
+              assemble_error_msg_for_codeowner_matches(loader)
+            end
           end
         end
 

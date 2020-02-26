@@ -43,9 +43,22 @@ describe Gitlab::Checks::DiffCheck do
       end
 
       context "the MR contains a matching file path" do
-        it "return an error message" do
-          expect(subject.send(:validate_code_owners)
-            .call(["docs/CODEOWNERS", "README"])).not_to be_nil
+        context "and the user is not listed as a code owner" do
+          it "return an error message" do
+            expect(subject.send(:validate_code_owners)
+              .call(["docs/CODEOWNERS", "README"])).not_to be_nil
+          end
+        end
+
+        context "and the user is listed as a code owner" do
+          # `user` is set as the owner of the incoming change by the shared
+          #   context found in 'push rules checks context'
+          let(:codeowner_content) { "* @#{user.username}" }
+
+          it "returns nil" do
+            expect(subject.send(:validate_code_owners)
+              .call(["docs/CODEOWNERS", "README"])).to be_nil
+          end
         end
       end
 
