@@ -14,5 +14,9 @@ module EE
     def scoped_label_key
       title[Label::SCOPED_LABEL_PATTERN]
     end
+
+    def scoped_label_value
+      title.sub(SCOPED_LABEL_PATTERN, '')
+    end
   end
 end
