@@ -1,6 +1,13 @@
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { s__, sprintf } from '~/locale';
 
+const MARKDOWN_FORMATS = {
+  markdown: 'markdown',
+  rdoc: 'rdoc',
+  asciidoc: 'asciidoc',
+  org: 'org',
+};
+
 export default class Wikis {
   constructor() {
     this.sidebarEl = document.querySelector('.js-wiki-sidebar');
@@ -28,6 +35,15 @@ export default class Wikis {
 
     window.addEventListener('resize', () => this.renderSidebar());
     this.renderSidebar();
+
+    this.changeFormatSelect = document.querySelector('#wiki_format');
+    this.linkExample = document.querySelector('#markup-link-example');
+
+    if (this.changeFormatSelect) {
+      this.changeFormatSelect.addEventListener('change', e =>
+        this.changeLinkExample(e.target.value),
+      );
+    }
   }
 
   handleWikiTitleChange(e) {
@@ -67,5 +83,23 @@ export default class Wikis {
       classList.add('right-sidebar-collapsed');
       classList.remove('right-sidebar-expanded');
     }
+  }
+
+  changeLinkExample(format) {
+    let content;
+    switch (format) {
+      case MARKDOWN_FORMATS.rdoc:
+        content = '{Link title}[link:page-slug]';
+        break;
+      case MARKDOWN_FORMATS.asciidoc:
+        content = 'link:page-slug[Link title]';
+        break;
+      case MARKDOWN_FORMATS.org:
+        content = '[[page-slug]]';
+        break;
+      default:
+        content = '[Link Title](page-slug)';
+    }
+    this.linkExample.innerHTML = content;
   }
 }
