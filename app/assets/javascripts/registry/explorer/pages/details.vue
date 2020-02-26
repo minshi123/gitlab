@@ -1,5 +1,5 @@
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import {
   GlTable,
   GlFormCheckbox,
@@ -61,7 +61,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(['tags', 'tagsPagination', 'isLoading', 'config']),
+    ...mapGetters(['tags']),
+    ...mapState(['tagsPagination', 'isLoading', 'config']),
     imageName() {
       const { name } = decodeAndParse(this.$route.params.id);
       return name;
