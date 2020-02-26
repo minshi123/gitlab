@@ -1051,15 +1051,15 @@ $ide-commit-header-height: 48px;
   }
 }
 
-.ide-left-sidebar {
-  &.multi-file-commit-panel {
-    padding-right: 0;
-  }
-
-  .multi-file-commit-panel-inner {
-    width: 340px;
-  }
-}
+//.ide-left-sidebar {
+//  &.multi-file-commit-panel {
+//    padding-right: 0;
+//  }
+//
+//  .multi-file-commit-panel-inner {
+//    width: 340px;
+//  }
+//}
 
 .ide-right-sidebar {
   .ide-activity-bar {

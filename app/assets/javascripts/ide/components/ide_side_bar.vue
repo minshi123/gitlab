@@ -1,12 +1,9 @@
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import tooltip from '~/vue_shared/directives/tooltip';
-import { GlSkeletonLoading } from '@gitlab/ui';
 import Icon from '~/vue_shared/components/icon.vue';
 import IdeTree from './ide_tree.vue';
-import ResizablePanel from './resizable_panel.vue';
 import RepoCommitSection from './repo_commit_section.vue';
-import CommitForm from './commit_sidebar/form.vue';
 import IdeReview from './ide_review.vue';
 import SuccessMessage from './commit_sidebar/success_message.vue';
 import IdeProjectHeader from './ide_project_header.vue';
@@ -14,12 +11,9 @@ import $ from 'jquery';
 
 export default {
   components: {
-    GlSkeletonLoading,
-    ResizablePanel,
     Icon,
     RepoCommitSection,
     IdeTree,
-    CommitForm,
     IdeReview,
     SuccessMessage,
     IdeProjectHeader,
@@ -43,7 +37,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['loading', 'currentActivityView']),
+    ...mapState(['currentActivityView']),
     shownTabs() {
       return this.tabs.filter(tab => tab.show);
     },
@@ -79,39 +73,23 @@ export default {
 <template>
   <div
     data-qa-selector="ide_left_sidebar"
-    class="ide-sidebar ide-left-sidebar flex-row-reverse d-flex h-100"
+    class="multi-file-commit-panel ide-sidebar ide-left-sidebar flex-row-reverse h-100 min-height-0"
   >
-    <template v-if="loading">
-      <resizable-panel :collapsible="false" :initial-width="width" :min-size="width" :side="side">
-        <div class="multi-file-commit-panel-inner">
-          <div v-for="n in 3" :key="n" class="multi-file-loading-container">
-            <gl-skeleton-loading />
-          </div>
+    <div class="multi-file-commit-panel-inner">
+      <div class="d-flex flex-column align-items-stretch h-100 min-height-0">
+        <div
+          v-for="tabView in shownTabViews"
+          v-show="isActiveView(tabView.name)"
+          :key="tabView.name"
+          class="js-tab-view h-100"
+        >
+          <slot :component="tabView.component">
+            <component :is="tabView.component" />
+          </slot>
         </div>
-      </resizable-panel>
-    </template>
-    <template v-else>
-      <resizable-panel
-        :collapsible="false"
-        :initial-width="width"
-        :min-size="width"
-        :class="`ide-${side}-sidebar-${currentActivityView}`"
-        :side="side"
-        class="multi-file-commit-panel-inner"
-      >
-        <div class="h-100 d-flex flex-column align-items-stretch">
-          <div
-            v-for="tabView in shownTabViews"
-            v-show="isActiveView(tabView.name)"
-            :key="tabView.name"
-            class="flex-fill js-tab-view min-height-0"
-          >
-            <component :is="currentActivityView" />
-          </div>
-          <commit-form />
-        </div>
-      </resizable-panel>
-    </template>
+      </div>
+      <slot name="footer"></slot>
+    </div>
     <nav class="ide-activity-bar">
       <ul class="list-unstyled">
         <li v-for="tab of shownTabs" :key="tab.title">
