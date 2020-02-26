@@ -1,5 +1,5 @@
 <script>
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import { approximateDuration } from '~/lib/utils/datetime_utility';
 import Icon from '~/vue_shared/components/icon.vue';
 import StageCardListItem from './stage_card_list_item.vue';
@@ -10,6 +10,9 @@ export default {
     StageCardListItem,
     Icon,
     GlButton,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     isDefaultStage: {
@@ -40,7 +43,11 @@ export default {
   data() {
     return {
       isHover: false,
+      isTitleOverflowing: false,
     };
+  },
+  mounted() {
+    this.checkIfTitleOverflows();
   },
   computed: {
     hasValue() {
@@ -67,6 +74,12 @@ export default {
     handleHover(hoverState = false) {
       this.isHover = hoverState;
     },
+    checkIfTitleOverflows() {
+      const [titleEl] = this.$refs.title?.children;
+      if (titleEl) {
+        this.isTitleOverflowing = titleEl.offsetWidth > this.$refs.title.offsetWidth;
+      }
+    },
   },
 };
 </script>
@@ -74,8 +87,13 @@ export default {
 <template>
   <li @click="handleSelectStage" @mouseover="handleHover(true)" @mouseleave="handleHover()">
     <stage-card-list-item :is-active="isActive" :can-edit="editable">
-      <div class="stage-nav-item-cell stage-name p-0" :class="{ 'font-weight-bold': isActive }">
-        {{ title }}
+      <div
+        ref="title"
+        class="stage-nav-item-cell stage-name p-0 pr-2 text-truncate"
+        :class="{ 'font-weight-bold': isActive }"
+      >
+        <span v-if="isTitleOverflowing" v-gl-tooltip.hover :title="title">{{ title }}</span>
+        <span v-else>{{ title }}</span>
       </div>
       <div class="stage-nav-item-cell stage-median mr-4">
         <span v-if="hasValue">{{ median }}</span>
