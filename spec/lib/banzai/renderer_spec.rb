@@ -52,6 +52,16 @@ describe Banzai::Renderer do
       end
     end
 
+    context 'with uncacheable object' do
+      # TODO: this will need refactoring but is a decent placeholder for now:
+      let(:object) { fake_object(fresh: false) }
+
+      it 'should not cache' do
+        expect(object).to receive(:refresh_markdown_cache!).never
+        renderer.render_field(object, :field)
+      end
+    end
+
     context 'with cache' do
       subject { renderer.render_field(object, :field) }
 
