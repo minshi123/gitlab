@@ -33,5 +33,11 @@ module EE
         errors.add(:user, 'is not linked to a SAML account')
       end
     end
+
+    def is_using_seat
+      return user.using_gitlab_com_seat?(source) if ::Gitlab.com?
+
+      user.using_license_seat?
+    end
   end
 end
