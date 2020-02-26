@@ -9,7 +9,11 @@ module Gitlab
       end
 
       def load_to(entries)
+        # Generate a list of all project members who are mentioned in the
+        #   CODEOWNERS file
+        #
         members = project.members_among(users)
+
         entries.each do |entry|
           entry.add_matching_users_from(members)
         end
