@@ -36,7 +36,6 @@ describe Gitlab::Checks::DiffCheck do
       end
 
       before do
-        project.add_developer(code_owner)
         allow(project.repository).to receive(:code_owners_blob)
           .with(ref: codeowner_lookup_ref)
           .and_return(codeowner_blob)
