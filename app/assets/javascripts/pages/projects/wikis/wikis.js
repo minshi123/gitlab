@@ -40,10 +40,9 @@ export default class Wikis {
     this.linkExample = document.querySelector('#markup-link-example');
 
     if (this.changeFormatSelect) {
-      this.changeFormatSelect.addEventListener(
-        'change',
-        e => (this.linkExample.innerHTML = MARKDOWN_LINK_TEXT[e.target.value]),
-      );
+      this.changeFormatSelect.addEventListener('change', e => {
+        this.linkExample.innerHTML = MARKDOWN_LINK_TEXT[e.target.value];
+      });
     }
   }
 
