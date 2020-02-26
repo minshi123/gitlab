@@ -20,7 +20,14 @@ class ResourceWeightEvent < ApplicationRecord
 
   private
 
+  # We want the created_at precission to miliseconds because we are creating
+  # a second `weight event` for historical data, when the newly created `weight event`
+  # is the first one for given resource. Both `weight events` may be created within same second,
+  # so the generated `discussion_id` ends up being exactly the same if generated based on
+  # `created_at` down to seconds precission only.
+  #
+  # @see EE::ResourceEvents::ChangeWeightService#resource_weight_changes for duplicate `weight event`
   def discussion_id_key
-    [self.class.name, created_at, user_id]
+    [self.class.name, created_at.strftime('%Y-%m-%d %H:%M:%S.%N'), user_id]
   end
 end

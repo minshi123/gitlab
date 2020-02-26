@@ -25,13 +25,17 @@ module EE
           changes = []
           base_data = { user_id: user.id, issue_id: resource.id }
 
-          changes << base_data.merge({ weight: previous_weight(resource), created_at: resource.updated_at }) if first_weight_event?(resource)
+          changes << base_data.merge({ weight: previous_weight(resource), created_at: previous_updated_at(resource) }) if first_weight_event?(resource)
           changes << base_data.merge({ weight: resource.weight, created_at: event_created_at })
         end.flatten
       end
 
       def previous_weight(resource)
         resource.previous_changes['weight']&.first
+      end
+
+      def previous_updated_at(resource)
+        resource.previous_changes['updated_at']&.first || resource.updated_at
       end
 
       def first_weight_event?(resource)
