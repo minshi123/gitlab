@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_14_034836) do
+ActiveRecord::Schema.define(version: 2020_02_21_144534) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -351,6 +351,7 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.boolean "prevent_merge_requests_committers_approval", default: false, null: false
     t.boolean "email_restrictions_enabled", default: false, null: false
     t.text "email_restrictions"
+    t.boolean "npm_package_requests_forwarding", default: true, null: false
     t.index ["custom_project_templates_group_id"], name: "index_application_settings_on_custom_project_templates_group_id"
     t.index ["file_template_project_id"], name: "index_application_settings_on_file_template_project_id"
     t.index ["instance_administration_project_id"], name: "index_applicationsettings_on_instance_administration_project_id"
@@ -1416,10 +1417,11 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.index ["project_id"], name: "index_design_management_designs_on_project_id"
   end
 
-  create_table "design_management_designs_versions", id: false, force: :cascade do |t|
+  create_table "design_management_designs_versions", force: :cascade do |t|
     t.bigint "design_id", null: false
     t.bigint "version_id", null: false
     t.integer "event", limit: 2, default: 0, null: false
+    t.string "image_v432x230", limit: 255
     t.index ["design_id", "version_id"], name: "design_management_designs_versions_uniqueness", unique: true
     t.index ["design_id"], name: "index_design_management_designs_versions_on_design_id"
     t.index ["event"], name: "index_design_management_designs_versions_on_event"
@@ -1573,6 +1575,7 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.index ["end_date"], name: "index_epics_on_end_date"
     t.index ["group_id"], name: "index_epics_on_group_id"
     t.index ["iid"], name: "index_epics_on_iid"
+    t.index ["lock_version"], name: "index_epics_on_lock_version", where: "(lock_version IS NULL)"
     t.index ["parent_id"], name: "index_epics_on_parent_id"
     t.index ["start_date"], name: "index_epics_on_start_date"
     t.index ["start_date_sourcing_epic_id"], name: "index_epics_on_start_date_sourcing_epic_id", where: "(start_date_sourcing_epic_id IS NOT NULL)"
@@ -1650,14 +1653,6 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.integer "root_project_id"
     t.string "deleted_root_project_name"
     t.index ["root_project_id"], name: "index_fork_networks_on_root_project_id", unique: true
-  end
-
-  create_table "forked_project_links", id: :serial, force: :cascade do |t|
-    t.integer "forked_to_project_id", null: false
-    t.integer "forked_from_project_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["forked_to_project_id"], name: "index_forked_project_links_on_forked_to_project_id", unique: true
   end
 
   create_table "geo_cache_invalidation_events", force: :cascade do |t|
@@ -1911,6 +1906,7 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.bigint "gitlab_subscription_id", null: false
     t.datetime_with_timezone "created_at"
     t.date "trial_starts_on"
+    t.boolean "auto_renew"
     t.index ["gitlab_subscription_id"], name: "index_gitlab_subscription_histories_on_gitlab_subscription_id"
   end
 
@@ -1926,6 +1922,7 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.integer "seats", default: 0
     t.boolean "trial", default: false
     t.date "trial_starts_on"
+    t.boolean "auto_renew"
     t.index ["hosted_plan_id"], name: "index_gitlab_subscriptions_on_hosted_plan_id"
     t.index ["namespace_id"], name: "index_gitlab_subscriptions_on_namespace_id", unique: true
   end
@@ -2190,6 +2187,7 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.index ["confidential"], name: "index_issues_on_confidential"
     t.index ["description"], name: "index_issues_on_description_trigram", opclass: :gin_trgm_ops, using: :gin
     t.index ["duplicated_to_id"], name: "index_issues_on_duplicated_to_id", where: "(duplicated_to_id IS NOT NULL)"
+    t.index ["lock_version"], name: "index_issues_on_lock_version", where: "(lock_version IS NULL)"
     t.index ["milestone_id"], name: "index_issues_on_milestone_id"
     t.index ["moved_to_id"], name: "index_issues_on_moved_to_id", where: "(moved_to_id IS NOT NULL)"
     t.index ["project_id", "created_at", "id", "state"], name: "index_issues_on_project_id_and_created_at_and_id_and_state"
@@ -2608,6 +2606,7 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.index ["id", "merge_jid"], name: "idx_merge_requests_on_id_and_merge_jid", where: "((merge_jid IS NOT NULL) AND (state_id = 4))"
     t.index ["id", "merge_jid"], name: "index_merge_requests_on_id_and_merge_jid", where: "((merge_jid IS NOT NULL) AND ((state)::text = 'locked'::text))"
     t.index ["latest_merge_request_diff_id"], name: "index_merge_requests_on_latest_merge_request_diff_id"
+    t.index ["lock_version"], name: "index_merge_requests_on_lock_version", where: "(lock_version IS NULL)"
     t.index ["merge_user_id"], name: "index_merge_requests_on_merge_user_id", where: "(merge_user_id IS NOT NULL)"
     t.index ["milestone_id"], name: "index_merge_requests_on_milestone_id"
     t.index ["source_branch"], name: "index_merge_requests_on_source_branch"
@@ -3649,6 +3648,7 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.string "name", null: false
     t.datetime_with_timezone "created_at", null: false
     t.datetime_with_timezone "updated_at", null: false
+    t.string "filepath", limit: 128
     t.index ["release_id", "name"], name: "index_release_links_on_release_id_and_name", unique: true
     t.index ["release_id", "url"], name: "index_release_links_on_release_id_and_url", unique: true
   end
@@ -3686,6 +3686,7 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
     t.boolean "only_protected_branches", default: false, null: false
     t.string "remote_name"
     t.boolean "error_notification_sent"
+    t.boolean "keep_divergent_refs"
     t.index ["last_successful_update_at"], name: "index_remote_mirrors_on_last_successful_update_at"
     t.index ["project_id"], name: "index_remote_mirrors_on_project_id"
   end
@@ -4740,7 +4741,6 @@ ActiveRecord::Schema.define(version: 2020_02_14_034836) do
   add_foreign_key "fork_network_members", "projects", column: "forked_from_project_id", name: "fk_b01280dae4", on_delete: :nullify
   add_foreign_key "fork_network_members", "projects", on_delete: :cascade
   add_foreign_key "fork_networks", "projects", column: "root_project_id", name: "fk_e7b436b2b5", on_delete: :nullify
-  add_foreign_key "forked_project_links", "projects", column: "forked_to_project_id", name: "fk_434510edb0", on_delete: :cascade
   add_foreign_key "geo_container_repository_updated_events", "container_repositories", name: "fk_212c89c706", on_delete: :cascade
   add_foreign_key "geo_event_log", "geo_cache_invalidation_events", column: "cache_invalidation_event_id", name: "fk_42c3b54bed", on_delete: :cascade
   add_foreign_key "geo_event_log", "geo_container_repository_updated_events", column: "container_repository_updated_event_id", name: "fk_6ada82d42a", on_delete: :cascade

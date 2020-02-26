@@ -111,6 +111,11 @@ msgid_plural "%d fixed test results"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d group selected"
+msgid_plural "%d groups selected"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d inaccessible merge request"
 msgid_plural "%d inaccessible merge requests"
 msgstr[0] ""
@@ -168,6 +173,11 @@ msgstr[1] ""
 
 msgid "%d second"
 msgid_plural "%d seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d shard selected"
+msgid_plural "%d shards selected"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -1047,6 +1057,9 @@ msgstr ""
 msgid "Add README"
 msgstr ""
 
+msgid "Add Variable"
+msgstr ""
+
 msgid "Add Zoom meeting"
 msgstr ""
 
@@ -1177,6 +1190,9 @@ msgid "Add user(s) to the group:"
 msgstr ""
 
 msgid "Add users to group"
+msgstr ""
+
+msgid "Add variable"
 msgstr ""
 
 msgid "Add webhook"
@@ -1628,6 +1644,9 @@ msgstr ""
 msgid "Allow users to request access (if visibility is public or internal)"
 msgstr ""
 
+msgid "Allow variables to run on protected branches and tags."
+msgstr ""
+
 msgid "Allowed email domain restriction only permitted for top-level groups"
 msgstr ""
 
@@ -1662,6 +1681,9 @@ msgid "Amazon authentication is not %{link_start}correctly configured%{link_end}
 msgstr ""
 
 msgid "Amount of time (in hours) that users are allowed to skip forced configuration of two-factor authentication"
+msgstr ""
+
+msgid "An alert has been triggered in %{project_path}."
 msgstr ""
 
 msgid "An application called %{link_to_client} is requesting access to your GitLab account."
@@ -1704,6 +1726,9 @@ msgid "An error occurred when trying to resolve a discussion. Please try again."
 msgstr ""
 
 msgid "An error occurred when updating the issue weight"
+msgstr ""
+
+msgid "An error occurred while adding formatted title for epic"
 msgstr ""
 
 msgid "An error occurred while checking group path"
@@ -3599,6 +3624,9 @@ msgstr ""
 msgid "Choose what content you want to see on a group’s overview page"
 msgstr ""
 
+msgid "Choose which groups you wish to synchronize to this secondary node"
+msgstr ""
+
 msgid "Choose which repositories you want to connect and run CI/CD pipelines."
 msgstr ""
 
@@ -3686,6 +3714,9 @@ msgstr ""
 msgid "CiVariables|Cannot use Masked Variable with current value"
 msgstr ""
 
+msgid "CiVariables|Environment Scope"
+msgstr ""
+
 msgid "CiVariables|Input variable key"
 msgstr ""
 
@@ -3696,6 +3727,9 @@ msgid "CiVariables|Key"
 msgstr ""
 
 msgid "CiVariables|Masked"
+msgstr ""
+
+msgid "CiVariables|Protected"
 msgstr ""
 
 msgid "CiVariables|Remove variable row"
@@ -6303,6 +6337,9 @@ msgstr ""
 msgid "Dependency List"
 msgstr ""
 
+msgid "Dependency List has no entries"
+msgstr ""
+
 msgid "Dependency Proxy"
 msgstr ""
 
@@ -6958,9 +6995,6 @@ msgid "Edit Password"
 msgstr ""
 
 msgid "Edit Pipeline Schedule %{id}"
-msgstr ""
-
-msgid "Edit Project Hook"
 msgstr ""
 
 msgid "Edit Release"
@@ -7890,6 +7924,9 @@ msgstr ""
 msgid "Everything on your to-do list is marked as done."
 msgstr ""
 
+msgid "Everything you need to create a GitLab Pages site using Gatsby."
+msgstr ""
+
 msgid "Everything you need to create a GitLab Pages site using GitBook."
 msgstr ""
 
@@ -7915,6 +7952,9 @@ msgid "Example: Usage = single query. (Requested) / (Capacity) = multiple querie
 msgstr ""
 
 msgid "Except policy:"
+msgstr ""
+
+msgid "Excluding merge commits. Limited to %{limit} commits."
 msgstr ""
 
 msgid "Excluding merge commits. Limited to 6,000 commits."
@@ -9411,6 +9451,12 @@ msgstr ""
 msgid "Go to %{link_to_google_takeout}."
 msgstr ""
 
+msgid "Go to Pipelines"
+msgstr ""
+
+msgid "Go to Webhooks"
+msgstr ""
+
 msgid "Go to commits"
 msgstr ""
 
@@ -9916,6 +9962,9 @@ msgid "Groups (%{count})"
 msgstr ""
 
 msgid "Groups can also be nested by creating %{subgroup_docs_link_start}subgroups%{subgroup_docs_link_end}."
+msgstr ""
+
+msgid "Groups to synchronize"
 msgstr ""
 
 msgid "Groups with access to %{strong_start}%{group_name}%{strong_end}"
@@ -10564,10 +10613,13 @@ msgstr ""
 msgid "Instance license"
 msgstr ""
 
+msgid "Integration Settings"
+msgstr ""
+
 msgid "Integrations"
 msgstr ""
 
-msgid "Integrations Settings"
+msgid "Integrations allow you to integrate GitLab with other applications"
 msgstr ""
 
 msgid "Interested parties can even contribute by pushing commits if they want to."
@@ -10820,6 +10872,9 @@ msgid "Issue|Title"
 msgstr ""
 
 msgid "It must have a header row and at least two columns: the first column is the issue title and the second column is the issue description. The separator is automatically detected."
+msgstr ""
+
+msgid "It seems like the Dependency Scanning job ran successfully, but no dependencies have been detected in your project."
 msgstr ""
 
 msgid "It's you"
@@ -11638,6 +11693,12 @@ msgstr ""
 msgid "MERGED"
 msgstr ""
 
+msgid "MR widget|Take a look at our %{beginnerLinkStart}Beginner's Guide to Continuous Integration%{beginnerLinkEnd} and our %{exampleLinkStart}examples of GitLab CI/CD%{exampleLinkEnd} to see all the cool stuff you can do with it."
+msgstr ""
+
+msgid "MR widget|The pipeline will now run automatically every time you commit code. Pipelines are useful for deploying static web pages, detecting vulnerabilities in dependencies, static or dynamic application security testing (SAST and DAST), and so much more!"
+msgstr ""
+
 msgid "MRApprovals|Approved by"
 msgstr ""
 
@@ -11795,6 +11856,9 @@ msgid "Marks this issue as a duplicate of %{duplicate_reference}."
 msgstr ""
 
 msgid "Marks this issue as related to %{issue_ref}."
+msgstr ""
+
+msgid "Mask variable"
 msgstr ""
 
 msgid "Match not found; try refining your search query."
@@ -12140,6 +12204,9 @@ msgid "Metric was successfully added."
 msgstr ""
 
 msgid "Metric was successfully updated."
+msgstr ""
+
+msgid "Metric:"
 msgstr ""
 
 msgid "MetricChart|Please select a metric"
@@ -12905,6 +12972,9 @@ msgstr ""
 msgid "No template"
 msgstr ""
 
+msgid "No thanks, don't show this again"
+msgstr ""
+
 msgid "No value set by top-level parent group."
 msgstr ""
 
@@ -13588,6 +13658,9 @@ msgstr ""
 msgid "Part of merge request changes"
 msgstr ""
 
+msgid "Partial token for reference only"
+msgstr ""
+
 msgid "Participants"
 msgstr ""
 
@@ -14045,6 +14118,9 @@ msgid "Please create a password for your new account."
 msgstr ""
 
 msgid "Please create a username with only alphanumeric characters."
+msgstr ""
+
+msgid "Please create an index before enabling indexing"
 msgstr ""
 
 msgid "Please enable and migrate to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}"
@@ -14725,9 +14801,6 @@ msgstr ""
 msgid "Project Files"
 msgstr ""
 
-msgid "Project Hooks"
-msgstr ""
-
 msgid "Project ID"
 msgstr ""
 
@@ -14890,28 +14963,16 @@ msgstr ""
 msgid "ProjectService|Comment will be posted on each event"
 msgstr ""
 
-msgid "ProjectService|Integrations"
-msgstr ""
-
 msgid "ProjectService|Last edit"
 msgstr ""
 
 msgid "ProjectService|Perform common operations on GitLab project: %{project_name}"
 msgstr ""
 
-msgid "ProjectService|Project services"
-msgstr ""
-
-msgid "ProjectService|Project services allow you to integrate GitLab with other applications"
-msgstr ""
-
 msgid "ProjectService|Service"
 msgstr ""
 
 msgid "ProjectService|Services"
-msgstr ""
-
-msgid "ProjectService|Settings"
 msgstr ""
 
 msgid "ProjectService|To set up this service:"
@@ -15146,6 +15207,9 @@ msgid "ProjectTemplates|Netlify/Plain HTML"
 msgstr ""
 
 msgid "ProjectTemplates|NodeJS Express"
+msgstr ""
+
+msgid "ProjectTemplates|Pages/Gatsby"
 msgstr ""
 
 msgid "ProjectTemplates|Pages/GitBook"
@@ -15460,6 +15524,9 @@ msgstr ""
 msgid "Prompt users to upload SSH keys"
 msgstr ""
 
+msgid "Protect variable"
+msgstr ""
+
 msgid "Protected"
 msgstr ""
 
@@ -15596,6 +15663,12 @@ msgid "Public pipelines"
 msgstr ""
 
 msgid "Pull"
+msgstr ""
+
+msgid "Puma is running with a thread count above 1 and the rugged service is enabled. This may decrease performance in some environments. See our %{link_start}documentation%{link_end} for details of this issue."
+msgstr ""
+
+msgid "Puma is running with a thread count above 1. Information on deprecated GitLab features in this configuration is available in the %{link_start}documentation%{link_end}."
 msgstr ""
 
 msgid "Purchase more minutes"
@@ -16315,9 +16388,6 @@ msgid "Resolve all threads in new issue"
 msgstr ""
 
 msgid "Resolve conflicts on source branch"
-msgstr ""
-
-msgid "Resolve discussion"
 msgstr ""
 
 msgid "Resolve thread"
@@ -17139,6 +17209,9 @@ msgstr ""
 msgid "Select group or project"
 msgstr ""
 
+msgid "Select groups to replicate"
+msgstr ""
+
 msgid "Select labels"
 msgstr ""
 
@@ -17538,9 +17611,6 @@ msgstr ""
 msgid "Severity: %{severity}"
 msgstr ""
 
-msgid "Shards selected: %{count}"
-msgstr ""
-
 msgid "Shards to synchronize"
 msgstr ""
 
@@ -17605,6 +17675,9 @@ msgid "Show file browser"
 msgstr ""
 
 msgid "Show latest version"
+msgstr ""
+
+msgid "Show me how"
 msgstr ""
 
 msgid "Show only direct members"
@@ -18980,6 +19053,9 @@ msgstr ""
 msgid "Thanks! Don't show me this again"
 msgstr ""
 
+msgid "That's it, well done!%{celebrate}"
+msgstr ""
+
 msgid "The \"%{group_path}\" group allows you to sign in with your Single Sign-On Account"
 msgstr ""
 
@@ -19341,6 +19417,9 @@ msgstr ""
 msgid "The value lying at the midpoint of a series of observed values. E.g., between 3, 5, 9, the median is 5. Between 3, 5, 7, 8, the median is (5+7)/2 = 6."
 msgstr ""
 
+msgid "There are currently no variables, add a variable with the Add Variable button below."
+msgstr ""
+
 msgid "There are no GPG keys associated with this account."
 msgstr ""
 
@@ -19453,6 +19532,9 @@ msgid "There was an error fetching median data for stages"
 msgstr ""
 
 msgid "There was an error fetching the Designs"
+msgstr ""
+
+msgid "There was an error fetching the Node's Groups"
 msgstr ""
 
 msgid "There was an error fetching the environments information."
@@ -20719,9 +20801,6 @@ msgstr ""
 msgid "Unresolve"
 msgstr ""
 
-msgid "Unresolve discussion"
-msgstr ""
-
 msgid "Unresolve thread"
 msgstr ""
 
@@ -20795,6 +20874,9 @@ msgid "Upcoming Release"
 msgstr ""
 
 msgid "Update"
+msgstr ""
+
+msgid "Update Variable"
 msgstr ""
 
 msgid "Update all"
@@ -21409,6 +21491,9 @@ msgstr ""
 msgid "Variables"
 msgstr ""
 
+msgid "Variables will be masked in job logs. Requires values to meet regular expression requirements."
+msgstr ""
+
 msgid "Various container registry settings."
 msgstr ""
 
@@ -21483,6 +21568,9 @@ msgstr ""
 msgid "View group labels"
 msgstr ""
 
+msgid "View incident issues."
+msgstr ""
+
 msgid "View issue"
 msgstr ""
 
@@ -21507,6 +21595,9 @@ msgstr ""
 msgid "View open merge request"
 msgstr ""
 
+msgid "View performance dashboard."
+msgstr ""
+
 msgid "View project"
 msgstr ""
 
@@ -21516,10 +21607,16 @@ msgstr ""
 msgid "View replaced file @ "
 msgstr ""
 
+msgid "View supported languages and frameworks"
+msgstr ""
+
 msgid "View the documentation"
 msgstr ""
 
 msgid "View the latest successful deployment to this environment"
+msgstr ""
+
+msgid "View the performance dashboard at"
 msgstr ""
 
 msgid "Viewing commit"
@@ -21618,10 +21715,16 @@ msgstr ""
 msgid "VulnerabilityManagement|Confirm"
 msgstr ""
 
+msgid "VulnerabilityManagement|Create issue"
+msgstr ""
+
 msgid "VulnerabilityManagement|Dismiss"
 msgstr ""
 
 msgid "VulnerabilityManagement|Resolved"
+msgstr ""
+
+msgid "VulnerabilityManagement|Something went wrong, could not create an issue."
 msgstr ""
 
 msgid "VulnerabilityManagement|Something went wrong, could not update vulnerability state."
@@ -21729,6 +21832,15 @@ msgstr ""
 msgid "WebIDE|Merge request"
 msgstr ""
 
+msgid "Webhook"
+msgstr ""
+
+msgid "Webhook Logs"
+msgstr ""
+
+msgid "Webhook Settings"
+msgstr ""
+
 msgid "Webhooks"
 msgstr ""
 
@@ -21736,6 +21848,9 @@ msgid "Webhooks Help"
 msgstr ""
 
 msgid "Webhooks allow you to trigger a URL if, for example, new code is pushed or a new issue is created. You can configure webhooks to listen for specific events like pushes, issues or merge requests. Group webhooks will apply to all projects in a group, allowing you to standardize webhook functionality across your entire group."
+msgstr ""
+
+msgid "Webhooks have moved. They can now be found under the Settings menu."
 msgstr ""
 
 msgid "Wednesday"
@@ -21827,7 +21942,13 @@ msgstr ""
 msgid "Who will be able to see this group?"
 msgstr ""
 
+msgid "Who will be using GitLab?"
+msgstr ""
+
 msgid "Who will be using this GitLab subscription?"
+msgstr ""
+
+msgid "Who will be using this GitLab trial?"
 msgstr ""
 
 msgid "Wiki"
@@ -22062,6 +22183,9 @@ msgid "You are on a read-only GitLab instance."
 msgstr ""
 
 msgid "You are receiving this message because you are a GitLab administrator for %{url}."
+msgstr ""
+
+msgid "You are running Puma, which is currently experimental. More information is available in our %{link_start}documentation%{link_end}."
 msgstr ""
 
 msgid "You can %{linkStart}view the blob%{linkEnd} instead."
@@ -23258,6 +23382,9 @@ msgstr ""
 msgid "mrWidget|Approved by"
 msgstr ""
 
+msgid "mrWidget|Are you adding technical debt or code vulnerabilities?"
+msgstr ""
+
 msgid "mrWidget|Cancel automatic merge"
 msgstr ""
 
@@ -23289,6 +23416,9 @@ msgid "mrWidget|Delete source branch"
 msgstr ""
 
 msgid "mrWidget|Deployment statistics are not available currently"
+msgstr ""
+
+msgid "mrWidget|Detect issues before deployment with a CI pipeline"
 msgstr ""
 
 msgid "mrWidget|Did not close"
@@ -23468,6 +23598,9 @@ msgstr ""
 msgid "mrWidget|Your password"
 msgstr ""
 
+msgid "mrWidget|a quick guide that'll show you how to create"
+msgstr ""
+
 msgid "mrWidget|branch does not exist."
 msgstr ""
 
@@ -23475,6 +23608,15 @@ msgid "mrWidget|command line"
 msgstr ""
 
 msgid "mrWidget|into"
+msgstr ""
+
+msgid "mrWidget|one. Make your code more secure and more"
+msgstr ""
+
+msgid "mrWidget|robust in just a minute."
+msgstr ""
+
+msgid "mrWidget|that continuously tests your code. We created"
 msgstr ""
 
 msgid "mrWidget|to be added to the merge train when the pipeline succeeds"
