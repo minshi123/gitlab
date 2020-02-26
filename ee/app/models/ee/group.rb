@@ -244,6 +244,11 @@ module EE
       project
     end
 
+    override :billable_members_count
+    def billable_members_count(requested_hosted_plan = nil)
+      billed_user_ids(requested_hosted_plan).count
+    end
+
     # For now, we are not billing for members with a Guest role for subscriptions
     # with a Gold plan. The other plans will treat Guest members as a regular member
     # for billing purposes.
@@ -251,11 +256,6 @@ module EE
     # We are plucking the user_ids from the "Members" table in an array and
     # concatenating the array of user_ids with ruby "|" (pipe) method to generate
     # one single array of unique user_ids.
-    override :billable_members_count
-    def billable_members_count(requested_hosted_plan = nil)
-      billed_user_ids(requested_hosted_plan).count
-    end
-
     def billed_user_ids(requested_hosted_plan = nil)
       if [actual_plan_name, requested_hosted_plan].include?(Plan::GOLD)
         strong_memoize(:gold_billed_user_ids) do
