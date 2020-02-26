@@ -1,6 +1,5 @@
 /*
-
-https://github.com/brijeshb42/monaco-themes/blob/master/themes/GitHub.json
+Based on https://github.com/brijeshb42/monaco-themes/blob/master/themes/GitHub.json
 
 The MIT License (MIT)
 
@@ -26,10 +25,77 @@ THE SOFTWARE.
 
 */
 
+const rules = [
+  { token: '', foreground: '000000', background: 'fffffe' },
+  { token: 'invalid', foreground: 'cd3131' },
+  { token: 'emphasis', fontStyle: 'italic' },
+  { token: 'strong', fontStyle: 'bold' },
+  { token: 'keyword.css', fontStyle: 'bold', foreground: '999999' }, // added
+  { token: 'keyword.less', fontStyle: 'bold', foreground: '999999' }, // added
+  { token: 'keyword.scss', fontStyle: 'bold', foreground: '999999' }, // added
+
+  { token: 'variable', foreground: '001188' },
+  { token: 'variable.predefined', foreground: '008080' }, // changed
+  { token: 'constant', foreground: 'dd0000' },
+  { token: 'comment', foreground: '008000' },
+  { token: 'number', foreground: '009999' }, // changed
+  { token: 'number.hex', foreground: '3030c0' },
+  { token: 'regexp', foreground: '800000' },
+  { token: 'annotation', foreground: '808080' },
+  { token: 'type', foreground: '008080' },
+
+  { token: 'delimiter', foreground: '000000' },
+  { token: 'delimiter.html', foreground: '383838' },
+  { token: 'delimiter.xml', foreground: '0000FF' },
+
+  { token: 'tag', foreground: '800000' },
+  { token: 'tag.css', foreground: '445588', fontStyle: 'bold' }, // added
+  { token: 'tag.less', foreground: '445588', fontStyle: 'bold' }, // added
+  { token: 'tag.scss', foreground: '445588', fontStyle: 'bold' }, // added
+  { token: 'tag.id.jade', foreground: '4F76AC' },
+  { token: 'tag.class.jade', foreground: '4F76AC' },
+  { token: 'meta.scss', foreground: '800000' },
+  { token: 'metatag', foreground: 'e00000' },
+  { token: 'metatag.content.html', foreground: 'FF0000' },
+  { token: 'metatag.html', foreground: '808080' },
+  { token: 'metatag.xml', foreground: '808080' },
+  { token: 'metatag.php', fontStyle: 'bold' },
+
+  { token: 'key', foreground: '863B00' },
+  { token: 'string.key.json', foreground: 'DD1144' },
+  { token: 'string.value.json', foreground: '0451A5' },
+
+  { token: 'attribute.name', foreground: 'FF0000' },
+  { token: 'attribute.name.css', foreground: '2E2E2E' }, // added
+  { token: 'attribute.name.scss', foreground: '2E2E2E' }, // added
+  { token: 'attribute.name.less', foreground: '2E2E2E' }, // added
+  { token: 'attribute.value', foreground: '0086B3' }, // changed
+  { token: 'attribute.value.number', foreground: '009999' },
+  { token: 'attribute.value.unit', foreground: '009999' },
+  { token: 'attribute.value.html', foreground: '0000FF' },
+  { token: 'attribute.value.xml', foreground: '0000FF' },
+
+  { token: 'string', foreground: 'DD1144' },
+  { token: 'string.html', foreground: '0000FF' },
+  { token: 'string.sql', foreground: 'FF0000' },
+  { token: 'string.yaml', foreground: '0451A5' },
+
+  { token: 'keyword', foreground: '0000FF' },
+  { token: 'keyword.json', foreground: '0451A5' },
+  { token: 'keyword.flow', foreground: 'AF00DB' },
+  { token: 'keyword.flow.scss', foreground: '0000FF' },
+
+  { token: 'operator.scss', foreground: '666666' },
+  { token: 'operator.sql', foreground: '778899' },
+  { token: 'operator.swift', foreground: '666666' },
+  { token: 'predefined.sql', foreground: 'FF00FF' },
+];
+
 export default {
   base: 'vs',
   inherit: true,
   rules: [
+    ...rules,
     {
       foreground: '999988',
       fontStyle: 'italic',
@@ -57,6 +123,7 @@ export default {
     },
     {
       fontStyle: 'bold',
+      foreground: '2E2E2E',
       token: 'keyword',
     },
     {
@@ -262,7 +329,6 @@ export default {
   ],
   colors: {
     'editor.foreground': '#000000',
-    'editor.background': '#F8F8FF',
     'editor.selectionBackground': '#B4D5FE',
     'editor.lineHighlightBackground': '#FFFEEB',
     'editorCursor.foreground': '#666666',

@@ -301,7 +301,6 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.string "encrypted_asset_proxy_secret_key_iv"
     t.string "static_objects_external_storage_url", limit: 255
     t.string "static_objects_external_storage_auth_token", limit: 255
-    t.integer "max_personal_access_token_lifetime"
     t.boolean "throttle_protected_paths_enabled", default: false, null: false
     t.integer "throttle_protected_paths_requests_per_period", default: 10, null: false
     t.integer "throttle_protected_paths_period_in_seconds", default: 60, null: false
@@ -309,25 +308,23 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.boolean "throttle_incident_management_notification_enabled", default: false, null: false
     t.integer "throttle_incident_management_notification_period_in_seconds", default: 3600
     t.integer "throttle_incident_management_notification_per_period", default: 3600
-    t.string "snowplow_iglu_registry_url", limit: 255
     t.integer "push_event_hooks_limit", default: 3, null: false
     t.integer "push_event_activities_limit", default: 3, null: false
     t.string "custom_http_clone_url_root", limit: 511
+    t.datetime_with_timezone "productivity_analytics_start_date"
+    t.string "snowplow_iglu_registry_url", limit: 255
     t.integer "deletion_adjourned_period", default: 7, null: false
-    t.date "license_trial_ends_on"
+    t.string "snowplow_app_id"
     t.boolean "eks_integration_enabled", default: false, null: false
     t.string "eks_account_id", limit: 128
     t.string "eks_access_key_id", limit: 128
     t.string "encrypted_eks_secret_access_key_iv", limit: 255
     t.text "encrypted_eks_secret_access_key"
-    t.string "snowplow_app_id"
-    t.datetime_with_timezone "productivity_analytics_start_date"
+    t.date "license_trial_ends_on"
     t.string "default_ci_config_path", limit: 255
     t.boolean "sourcegraph_enabled", default: false, null: false
     t.string "sourcegraph_url", limit: 255
     t.boolean "sourcegraph_public_only", default: true, null: false
-    t.bigint "snippet_size_limit", default: 52428800, null: false
-    t.integer "minimum_password_length", default: 8, null: false
     t.text "encrypted_akismet_api_key"
     t.string "encrypted_akismet_api_key_iv", limit: 255
     t.text "encrypted_elasticsearch_aws_secret_access_key"
@@ -340,15 +337,18 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.string "encrypted_slack_app_secret_iv", limit: 255
     t.text "encrypted_slack_app_verification_token"
     t.string "encrypted_slack_app_verification_token_iv", limit: 255
-    t.boolean "force_pages_access_control", default: false, null: false
+    t.bigint "snippet_size_limit", default: 52428800, null: false
+    t.integer "max_personal_access_token_lifetime"
+    t.integer "minimum_password_length", default: 8, null: false
     t.boolean "updating_name_disabled_for_users", default: false, null: false
+    t.boolean "force_pages_access_control", default: false, null: false
     t.integer "instance_administrators_group_id"
-    t.integer "elasticsearch_indexed_field_length_limit", default: 0, null: false
-    t.integer "elasticsearch_max_bulk_size_mb", limit: 2, default: 10, null: false
-    t.integer "elasticsearch_max_bulk_concurrency", limit: 2, default: 10, null: false
     t.boolean "disable_overriding_approvers_per_merge_request", default: false, null: false
     t.boolean "prevent_merge_requests_author_approval", default: false, null: false
     t.boolean "prevent_merge_requests_committers_approval", default: false, null: false
+    t.integer "elasticsearch_indexed_field_length_limit", default: 0, null: false
+    t.integer "elasticsearch_max_bulk_size_mb", limit: 2, default: 10, null: false
+    t.integer "elasticsearch_max_bulk_concurrency", limit: 2, default: 10, null: false
     t.boolean "email_restrictions_enabled", default: false, null: false
     t.text "email_restrictions"
     t.boolean "npm_package_requests_forwarding", default: true, null: false
@@ -503,9 +503,9 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.integer "project_id"
     t.integer "group_id"
     t.string "type", null: false
-    t.string "name", limit: 255
     t.datetime_with_timezone "created_at", null: false
     t.datetime_with_timezone "updated_at", null: false
+    t.string "name", limit: 255
     t.index ["group_id"], name: "index_badges_on_group_id"
     t.index ["project_id"], name: "index_badges_on_project_id"
   end
@@ -1100,9 +1100,9 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.string "domain"
     t.boolean "managed", default: true, null: false
     t.boolean "namespace_per_environment", default: true, null: false
-    t.integer "management_project_id"
     t.integer "cleanup_status", limit: 2, default: 1, null: false
     t.text "cleanup_status_reason"
+    t.integer "management_project_id"
     t.index ["enabled"], name: "index_clusters_on_enabled"
     t.index ["management_project_id"], name: "index_clusters_on_management_project_id", where: "(management_project_id IS NOT NULL)"
     t.index ["user_id"], name: "index_clusters_on_user_id"
@@ -1119,7 +1119,7 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.index ["cluster_id"], name: "index_clusters_applications_cert_managers_on_cluster_id", unique: true
   end
 
-  create_table "clusters_applications_crossplane", id: :serial, force: :cascade do |t|
+  create_table "clusters_applications_crossplane", force: :cascade do |t|
     t.datetime_with_timezone "created_at", null: false
     t.datetime_with_timezone "updated_at", null: false
     t.bigint "cluster_id", null: false
@@ -1501,7 +1501,6 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.string "state", default: "available", null: false
     t.string "slug", null: false
     t.datetime_with_timezone "auto_stop_at"
-    t.index ["auto_stop_at"], name: "index_environments_on_auto_stop_at", where: "(auto_stop_at IS NOT NULL)"
     t.index ["name"], name: "index_environments_on_name_varchar_pattern_ops", opclass: :varchar_pattern_ops
     t.index ["project_id", "name"], name: "index_environments_on_project_id_and_name", unique: true
     t.index ["project_id", "slug"], name: "index_environments_on_project_id_and_slug", unique: true
@@ -2439,34 +2438,36 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
   end
 
   create_table "merge_request_context_commit_diff_files", id: false, force: :cascade do |t|
+    t.bigint "merge_request_context_commit_id"
     t.binary "sha", null: false
     t.integer "relative_order", null: false
+    t.string "a_mode", limit: 255, null: false
+    t.string "b_mode", limit: 255, null: false
     t.boolean "new_file", null: false
     t.boolean "renamed_file", null: false
     t.boolean "deleted_file", null: false
     t.boolean "too_large", null: false
-    t.string "a_mode", limit: 255, null: false
-    t.string "b_mode", limit: 255, null: false
+    t.boolean "binary"
     t.text "new_path", null: false
     t.text "old_path", null: false
     t.text "diff"
-    t.boolean "binary"
-    t.bigint "merge_request_context_commit_id"
     t.index ["merge_request_context_commit_id", "sha"], name: "idx_mr_cc_diff_files_on_mr_cc_id_and_sha"
+    t.index ["merge_request_context_commit_id"], name: "idx_mr_cc_diff_files_on_mr_cc_id"
   end
 
   create_table "merge_request_context_commits", force: :cascade do |t|
+    t.bigint "merge_request_id"
     t.datetime_with_timezone "authored_date"
     t.datetime_with_timezone "committed_date"
-    t.integer "relative_order", null: false
     t.binary "sha", null: false
+    t.integer "relative_order", null: false
     t.text "author_name"
     t.text "author_email"
     t.text "committer_name"
     t.text "committer_email"
     t.text "message"
-    t.bigint "merge_request_id"
     t.index ["merge_request_id", "sha"], name: "index_mr_context_commits_on_merge_request_id_and_sha", unique: true
+    t.index ["merge_request_id"], name: "index_merge_request_context_commits_on_merge_request_id"
   end
 
   create_table "merge_request_diff_commits", id: false, force: :cascade do |t|
@@ -3858,6 +3859,7 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.datetime "updated_at"
     t.boolean "active", default: false, null: false
     t.text "properties"
+    t.boolean "template", default: false
     t.boolean "push_events", default: true
     t.boolean "issues_events", default: true
     t.boolean "merge_requests_events", default: true
@@ -3874,7 +3876,6 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.boolean "deployment_events", default: false, null: false
     t.string "description", limit: 500
     t.boolean "comment_on_event_enabled", default: true, null: false
-    t.boolean "template", default: false
     t.index ["project_id"], name: "index_services_on_project_id"
     t.index ["template"], name: "index_services_on_template"
     t.index ["type"], name: "index_services_on_type"
@@ -4177,8 +4178,8 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.boolean "time_format_in_24h"
     t.string "projects_sort", limit: 64
     t.boolean "show_whitespace_in_diffs", default: true, null: false
-    t.boolean "sourcegraph_enabled"
     t.boolean "setup_for_company"
+    t.boolean "sourcegraph_enabled"
     t.boolean "render_whitespace_in_code"
     t.integer "tab_width", limit: 2
     t.bigint "feature_filter_type"
@@ -4344,28 +4345,28 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
     t.bigint "author_id", null: false
     t.bigint "updated_by_id"
     t.bigint "last_edited_by_id"
-    t.date "start_date"
-    t.date "due_date"
+    t.bigint "start_date_sourcing_milestone_id"
+    t.bigint "due_date_sourcing_milestone_id"
+    t.bigint "closed_by_id"
     t.datetime_with_timezone "last_edited_at"
     t.datetime_with_timezone "created_at", null: false
     t.datetime_with_timezone "updated_at", null: false
+    t.datetime_with_timezone "closed_at"
+    t.date "start_date"
+    t.date "due_date"
+    t.integer "state", limit: 2, default: 1, null: false
+    t.integer "severity", limit: 2, null: false
+    t.integer "confidence", limit: 2, null: false
+    t.boolean "severity_overridden", default: false
+    t.boolean "confidence_overridden", default: false
     t.string "title", limit: 255, null: false
     t.text "title_html"
     t.text "description"
     t.text "description_html"
-    t.bigint "start_date_sourcing_milestone_id"
-    t.bigint "due_date_sourcing_milestone_id"
-    t.bigint "closed_by_id"
-    t.datetime_with_timezone "closed_at"
-    t.integer "state", limit: 2, default: 1, null: false
-    t.integer "severity", limit: 2, null: false
-    t.boolean "severity_overridden", default: false
-    t.integer "confidence", limit: 2, null: false
-    t.boolean "confidence_overridden", default: false
-    t.bigint "resolved_by_id"
-    t.datetime_with_timezone "resolved_at"
     t.integer "report_type", limit: 2, null: false
     t.integer "cached_markdown_version"
+    t.bigint "resolved_by_id"
+    t.datetime_with_timezone "resolved_at"
     t.bigint "confirmed_by_id"
     t.datetime_with_timezone "confirmed_at"
     t.index ["author_id"], name: "index_vulnerabilities_on_author_id"
@@ -4650,7 +4651,9 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
   add_foreign_key "ci_pipelines", "projects", name: "fk_86635dbd80", on_delete: :cascade
   add_foreign_key "ci_pipelines_config", "ci_pipelines", column: "pipeline_id", on_delete: :cascade
   add_foreign_key "ci_resource_groups", "projects", name: "fk_774722d144", on_delete: :cascade
+  add_foreign_key "ci_resource_groups", "projects", on_delete: :cascade
   add_foreign_key "ci_resources", "ci_builds", column: "build_id", name: "fk_e169a8e3d5", on_delete: :nullify
+  add_foreign_key "ci_resources", "ci_builds", column: "build_id", on_delete: :nullify
   add_foreign_key "ci_resources", "ci_resource_groups", column: "resource_group_id", on_delete: :cascade
   add_foreign_key "ci_runner_namespaces", "ci_runners", column: "runner_id", on_delete: :cascade
   add_foreign_key "ci_runner_namespaces", "namespaces", on_delete: :cascade
@@ -4924,7 +4927,7 @@ ActiveRecord::Schema.define(version: 2020_02_24_163804) do
   add_foreign_key "project_statistics", "projects", on_delete: :cascade
   add_foreign_key "project_tracing_settings", "projects", on_delete: :cascade
   add_foreign_key "projects", "pool_repositories", name: "fk_6e5c14658a", on_delete: :nullify
-  add_foreign_key "projects", "users", column: "marked_for_deletion_by_user_id", name: "fk_25d8780d11", on_delete: :nullify
+  add_foreign_key "projects", "users", column: "marked_for_deletion_by_user_id", name: "fk_0a31cca0b8", on_delete: :nullify
   add_foreign_key "prometheus_alert_events", "projects", on_delete: :cascade
   add_foreign_key "prometheus_alert_events", "prometheus_alerts", on_delete: :cascade
   add_foreign_key "prometheus_alerts", "environments", on_delete: :cascade

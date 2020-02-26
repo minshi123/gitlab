@@ -1,6 +1,6 @@
 /*
 
-https://github.com/brijeshb42/monaco-themes/blob/master/themes/Tomorrow-Night.json
+Based on https://github.com/brijeshb42/monaco-themes/blob/master/themes/Tomorrow-Night.json
 
 The MIT License (MIT)
 
@@ -26,10 +26,71 @@ THE SOFTWARE.
 
 */
 
+// override VS Dark rules
+const rules = [
+  { token: '', foreground: 'C5C8C6', background: '1D1F21' }, // chaged
+  { token: 'invalid', foreground: 'f44747' },
+  { token: 'emphasis', fontStyle: 'italic' },
+  { token: 'strong', fontStyle: 'bold' },
+  { token: 'keyword.md', foreground: '8ABEB7', fontStyle: 'bold' }, // added
+
+  { token: 'variable', foreground: '81A2BE' }, // changed
+  { token: 'variable.js', foreground: '81A2BE' }, // added
+  { token: 'variable.predefined', foreground: '4864AA' },
+  { token: 'variable.parameter', foreground: '9CDCFE' },
+  { token: 'variable.md', foreground: 'B5BD68' }, // added
+  { token: 'constant', foreground: '81A2BE' }, // changed
+  { token: 'comment', foreground: '608B4E' },
+  { token: 'number', foreground: 'B5CEA8' },
+  { token: 'number.hex', foreground: '5BB498' },
+  { token: 'regexp', foreground: 'B46695' },
+  { token: 'annotation', foreground: 'cc6666' },
+  { token: 'type', foreground: '3DC9B0' },
+
+  { token: 'delimiter', foreground: 'DCDCDC' },
+  { token: 'delimiter.html', foreground: '808080' },
+  { token: 'delimiter.xml', foreground: '808080' },
+
+  { token: 'tag', foreground: '569CD6' },
+  { token: 'tag.id.jade', foreground: '4F76AC' },
+  { token: 'tag.class.jade', foreground: '4F76AC' },
+  { token: 'meta.scss', foreground: 'A79873' },
+  { token: 'meta.tag', foreground: 'CE9178' },
+  { token: 'metatag', foreground: 'DD6A6F' },
+  { token: 'metatag.content.html', foreground: '9CDCFE' },
+  { token: 'metatag.html', foreground: '569CD6' },
+  { token: 'metatag.xml', foreground: '569CD6' },
+  { token: 'metatag.php', fontStyle: 'bold' },
+
+  { token: 'key', foreground: '9CDCFE' },
+  { token: 'string.key.json', foreground: '9CDCFE' },
+  { token: 'string.value.json', foreground: 'CE9178' },
+
+  { token: 'attribute.name', foreground: '9CDCFE' },
+  { token: 'attribute.value', foreground: 'CE9178' },
+  { token: 'attribute.value.number.css', foreground: 'B5CEA8' },
+  { token: 'attribute.value.unit.css', foreground: 'B5CEA8' },
+  { token: 'attribute.value.hex.css', foreground: 'D4D4D4' },
+
+  { token: 'string', foreground: 'CE9178' },
+  { token: 'string.sql', foreground: 'FF0000' },
+
+  { token: 'keyword', foreground: '569CD6' },
+  { token: 'keyword.flow', foreground: 'C586C0' },
+  { token: 'keyword.json', foreground: 'CE9178' },
+  { token: 'keyword.flow.scss', foreground: '569CD6' },
+
+  { token: 'operator.scss', foreground: '909090' },
+  { token: 'operator.sql', foreground: '778899' },
+  { token: 'operator.swift', foreground: '909090' },
+  { token: 'predefined.sql', foreground: 'FF00FF' },
+];
+
 export default {
   base: 'vs-dark',
   inherit: true,
   rules: [
+    ...rules,
     {
       foreground: '969896',
       token: 'comment',
