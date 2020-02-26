@@ -288,22 +288,28 @@ describe Projects::Settings::OperationsController do
 
       context 'with existing status page setting' do
         let(:project) { create(:project) }
+        let(:status_page_attributes) { attributes_for(:status_page_setting) }
+        let!(:status_page_setting) { project.create_status_page_setting!(status_page_attributes) }
 
         before do
-          project.create_status_page_setting!(attributes_for(:status_page_setting))
           project.add_maintainer(user)
         end
 
-        it 'updates it' do
-          update_project(project, status_page_params: { aws_s3_bucket_name: 'test' } )
+        it 'updates the fields' do
+          update_project(project, status_page_params: status_page_attributes.merge(aws_s3_bucket_name: 'test'))
           expect(project.status_page_setting.aws_s3_bucket_name).to eq('test')
         end
 
         it 'respects the model validations' do
           old_name = project.status_page_setting.aws_s3_bucket_name
 
-          update_project(project, status_page_params: { aws_s3_bucket_name: '' } )
+          update_project(project, status_page_params: status_page_attributes.merge(aws_s3_bucket_name: ''))
           expect(project.status_page_setting.aws_s3_bucket_name).to eq(old_name)
+        end
+
+        it 'deletes the setting if keys removed' do
+          update_project(project, status_page_params: status_page_attributes.merge(aws_access_key: '', aws_secret_key: ''))
+          expect(project.status_page_setting).to be_nil
         end
       end
     end
