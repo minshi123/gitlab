@@ -44,6 +44,7 @@ export default {
     ok-variant="success"
     :cancel-title="__('Cancel')"
     @ok.prevent="submit"
+    size="sm"
   >
     <rule-form ref="form" :init-rule="rule" :is-mr-edit="isMrEdit" />
   </gl-modal-vuex>
