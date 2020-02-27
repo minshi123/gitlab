@@ -503,6 +503,21 @@ describe Gitlab::ImportExport::Project::TreeRestorer do
       end
     end
 
+    context 'multiple pipelines reference the same external pull request' do
+      before do
+        setup_import_export_config('multi_pipeline_ref_one_external_pr')
+        expect(restored_project_json).to eq(true)
+      end
+
+      it_behaves_like 'restores project successfully',
+                      issues: 0,
+                      labels: 0,
+                      milestones: 0,
+                      ci_pipelines: 2,
+                      external_pull_requests: 1,
+                      import_failures: 0
+    end
+
     context 'when post import action throw non-retriable exception' do
       let(:exception) { StandardError.new('post_import_error') }
 
