@@ -46,15 +46,17 @@ module Geo
         end
 
         def load_pending_resources
-          resources = find_never_verified_project_ids(batch_size: db_retrieve_batch_size)
-          remaining_capacity = db_retrieve_batch_size - resources.size
-          return resources if remaining_capacity.zero?
+          Gitlab::Database.geo_uncached_queries do
+            resources = find_never_verified_project_ids(batch_size: db_retrieve_batch_size)
+            remaining_capacity = db_retrieve_batch_size - resources.size
+            return resources if remaining_capacity.zero?
 
-          resources += find_recently_updated_project_ids(batch_size: remaining_capacity)
-          remaining_capacity = db_retrieve_batch_size - resources.size
-          return resources if remaining_capacity.zero?
+            resources += find_recently_updated_project_ids(batch_size: remaining_capacity)
+            remaining_capacity = db_retrieve_batch_size - resources.size
+            return resources if remaining_capacity.zero?
 
-          resources + find_project_ids_to_reverify(batch_size: remaining_capacity)
+            resources + find_project_ids_to_reverify(batch_size: remaining_capacity)
+          end
         end
 
         # rubocop: disable CodeReuse/ActiveRecord
