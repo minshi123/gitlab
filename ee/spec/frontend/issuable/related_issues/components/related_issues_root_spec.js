@@ -1,81 +1,86 @@
-import Vue from 'vue';
+import { mount, shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
-import relatedIssuesRoot from 'ee/related_issues/components/related_issues_root.vue';
+import { setHTMLFixture } from 'helpers/fixtures';
+import waitForPromises from 'helpers/wait_for_promises';
+import RelatedIssuesRoot from 'ee/related_issues/components/related_issues_root.vue';
 import relatedIssuesService from 'ee/related_issues/services/related_issues_service';
 import { linkedIssueTypesMap } from 'ee/related_issues/constants';
 import {
   defaultProps,
   issuable1,
   issuable2,
-} from 'spec/vue_shared/components/issue/related_issuable_mock_data';
+} from 'jest/vue_shared/components/issue/related_issuable_mock_data';
 import axios from '~/lib/utils/axios_utils';
+import createFlash from '~/flash';
+
+jest.mock('~/flash');
 
 describe('RelatedIssuesRoot', () => {
-  let RelatedIssuesRoot;
+  let wrapper;
   let vm;
   let mock;
 
   beforeEach(() => {
-    RelatedIssuesRoot = Vue.extend(relatedIssuesRoot);
+    setHTMLFixture(`<div class="flash-text"></div>`);
     mock = new MockAdapter(axios);
+    mock.onGet(defaultProps.endpoint).reply(200, []);
   });
 
   afterEach(() => {
-    if (vm) {
-      vm.$destroy();
-    }
     mock.restore();
+    if (wrapper) {
+      wrapper.destroy();
+      wrapper = null;
+      vm = null;
+    }
   });
+
+  const createComponent = (mountFn = mount) => {
+    wrapper = mountFn(RelatedIssuesRoot, {
+      propsData: defaultProps,
+    });
+
+    vm = wrapper.vm;
+
+    return waitForPromises();
+  };
 
   describe('methods', () => {
     describe('onRelatedIssueRemoveRequest', () => {
-      beforeEach(done => {
-        spyOn(relatedIssuesService.prototype, 'fetchRelatedIssues').and.returnValue(
-          Promise.reject(),
-        );
+      beforeEach(() => {
+        jest
+          .spyOn(relatedIssuesService.prototype, 'fetchRelatedIssues')
+          .mockReturnValue(Promise.reject());
 
-        vm = new RelatedIssuesRoot({
-          propsData: defaultProps,
-        }).$mount();
-
-        setTimeout(() => {
+        return createComponent().then(() => {
           vm.store.setRelatedIssues([issuable1]);
-          done();
         });
       });
 
-      it('remove related issue and succeeds', done => {
-        mock.onAny().reply(200, { issues: [] });
+      it('remove related issue and succeeds', () => {
+        mock.onDelete(issuable1.referencePath).reply(200, { issues: [] });
 
         vm.onRelatedIssueRemoveRequest(issuable1.id);
 
-        setTimeout(() => {
+        return axios.waitForAll().then(() => {
           expect(vm.state.relatedIssues).toEqual([]);
-
-          done();
         });
       });
 
-      it('remove related issue, fails, and restores to related issues', done => {
-        mock.onAny().reply(422, {});
+      it('remove related issue, fails, and restores to related issues', () => {
+        mock.onDelete(issuable1.referencePath).reply(422, {});
 
         vm.onRelatedIssueRemoveRequest(issuable1.id);
 
-        setTimeout(() => {
+        return axios.waitForAll().then(() => {
           expect(vm.state.relatedIssues.length).toEqual(1);
           expect(vm.state.relatedIssues[0].id).toEqual(issuable1.id);
-
-          done();
         });
       });
     });
 
     describe('onToggleAddRelatedIssuesForm', () => {
-      beforeEach(() => {
-        vm = new RelatedIssuesRoot({
-          propsData: defaultProps,
-        }).$mount();
-      });
+      beforeEach(() => createComponent(shallowMount));
 
       it('toggle related issues form to visible', () => {
         vm.onToggleAddRelatedIssuesForm();
@@ -93,12 +98,11 @@ describe('RelatedIssuesRoot', () => {
     });
 
     describe('onPendingIssueRemoveRequest', () => {
-      beforeEach(() => {
-        vm = new RelatedIssuesRoot({
-          propsData: defaultProps,
-        }).$mount();
-        vm.store.setPendingReferences([issuable1.reference]);
-      });
+      beforeEach(() =>
+        createComponent().then(() => {
+          vm.store.setPendingReferences([issuable1.reference]);
+        }),
+      );
 
       it('remove pending related issue', () => {
         expect(vm.state.pendingReferences.length).toEqual(1);
@@ -111,15 +115,15 @@ describe('RelatedIssuesRoot', () => {
 
     describe('onPendingFormSubmit', () => {
       beforeEach(() => {
-        spyOn(relatedIssuesService.prototype, 'fetchRelatedIssues').and.returnValue(
-          Promise.reject(),
-        );
-        vm = new RelatedIssuesRoot({
-          propsData: defaultProps,
-        }).$mount();
+        jest
+          .spyOn(relatedIssuesService.prototype, 'fetchRelatedIssues')
+          .mockReturnValue(Promise.reject());
 
-        spyOn(vm, 'processAllReferences').and.callThrough();
-        spyOn(vm.service, 'addRelatedIssues').and.callThrough();
+        return createComponent().then(() => {
+          jest.spyOn(vm, 'processAllReferences');
+          jest.spyOn(vm.service, 'addRelatedIssues');
+          createFlash.mockClear();
+        });
       });
 
       it('processes references before submitting', () => {
@@ -136,20 +140,18 @@ describe('RelatedIssuesRoot', () => {
         expect(vm.service.addRelatedIssues).toHaveBeenCalledWith([input], linkedIssueType);
       });
 
-      it('submit zero pending issue as related issue', done => {
+      it('submit zero pending issue as related issue', () => {
         vm.store.setPendingReferences([]);
         vm.onPendingFormSubmit({});
 
-        setTimeout(() => {
+        return waitForPromises().then(() => {
           expect(vm.state.pendingReferences.length).toEqual(0);
           expect(vm.state.relatedIssues.length).toEqual(0);
-
-          done();
         });
       });
 
-      it('submit pending issue as related issue', done => {
-        mock.onAny().reply(200, {
+      it('submit pending issue as related issue', () => {
+        mock.onPost(defaultProps.endpoint).reply(200, {
           issuables: [issuable1],
           result: {
             message: 'something was successfully related',
@@ -160,17 +162,15 @@ describe('RelatedIssuesRoot', () => {
         vm.store.setPendingReferences([issuable1.reference]);
         vm.onPendingFormSubmit({});
 
-        setTimeout(() => {
+        return waitForPromises().then(() => {
           expect(vm.state.pendingReferences.length).toEqual(0);
           expect(vm.state.relatedIssues.length).toEqual(1);
           expect(vm.state.relatedIssues[0].id).toEqual(issuable1.id);
-
-          done();
         });
       });
 
-      it('submit multiple pending issues as related issues', done => {
-        mock.onAny().reply(200, {
+      it('submit multiple pending issues as related issues', () => {
+        mock.onPost(defaultProps.endpoint).reply(200, {
           issuables: [issuable1, issuable2],
           result: {
             message: 'something was successfully related',
@@ -181,98 +181,77 @@ describe('RelatedIssuesRoot', () => {
         vm.store.setPendingReferences([issuable1.reference, issuable2.reference]);
         vm.onPendingFormSubmit({});
 
-        setTimeout(() => {
+        return waitForPromises().then(() => {
           expect(vm.state.pendingReferences.length).toEqual(0);
           expect(vm.state.relatedIssues.length).toEqual(2);
           expect(vm.state.relatedIssues[0].id).toEqual(issuable1.id);
           expect(vm.state.relatedIssues[1].id).toEqual(issuable2.id);
-
-          done();
         });
       });
 
-      // https://gitlab.com/gitlab-org/gitlab/issues/38410
-      // eslint-disable-next-line jasmine/no-disabled-tests
-      xit('displays a message from the backend upon error', done => {
+      it('displays a message from the backend upon error', () => {
         const input = '#123';
         const message = 'error';
 
-        mock.onAny().reply(409, { message });
-        document.body.innerHTML += '<div class="flash-container"></div>';
+        mock.onPost(defaultProps.endpoint).reply(409, { message });
+        vm.store.setPendingReferences([issuable1.reference, issuable2.reference]);
 
+        expect(createFlash).not.toHaveBeenCalled();
         vm.onPendingFormSubmit(input);
 
-        setTimeout(() => {
-          expect(document.querySelector('.flash-text').innerText.trim()).toContain(message);
-          document.querySelector('.flash-container').remove();
-          done();
+        return waitForPromises().then(() => {
+          expect(createFlash).toHaveBeenCalledWith(message);
         });
       });
     });
 
     describe('onPendingFormCancel', () => {
-      beforeEach(() => {
-        vm = new RelatedIssuesRoot({
-          propsData: defaultProps,
-        }).$mount();
-        vm.isFormVisible = true;
-        vm.inputValue = 'foo';
-      });
+      beforeEach(() =>
+        createComponent().then(() => {
+          vm.isFormVisible = true;
+          vm.inputValue = 'foo';
+        }),
+      );
 
       it('when canceling and hiding add issuable form', () => {
         vm.onPendingFormCancel();
 
-        expect(vm.isFormVisible).toEqual(false);
-        expect(vm.inputValue).toEqual('');
-        expect(vm.state.pendingReferences.length).toEqual(0);
+        return vm.$nextTick().then(() => {
+          expect(vm.isFormVisible).toEqual(false);
+          expect(vm.inputValue).toEqual('');
+          expect(vm.state.pendingReferences.length).toEqual(0);
+        });
       });
     });
 
     describe('fetchRelatedIssues', () => {
-      beforeEach(done => {
-        vm = new RelatedIssuesRoot({
-          propsData: defaultProps,
-        }).$mount();
+      beforeEach(() => createComponent());
 
-        mock.onAny().reply(200, [issuable1, issuable2]);
-
-        // wait for internal call to fetchRelatedIssues to resolve
-        setTimeout(done);
-      });
-
-      // https://gitlab.com/gitlab-org/gitlab/issues/207376
-      // eslint-disable-next-line jasmine/no-disabled-tests
-      xit('sets isFetching while fetching', done => {
+      it('sets isFetching while fetching', () => {
         vm.fetchRelatedIssues();
 
         expect(vm.isFetching).toEqual(true);
 
-        setTimeout(() => {
+        return waitForPromises().then(() => {
           expect(vm.isFetching).toEqual(false);
-
-          done();
         });
       });
 
-      // https://gitlab.com/gitlab-org/gitlab/issues/207376
-      // eslint-disable-next-line jasmine/no-disabled-tests
-      xit('should fetch related issues', done => {
-        Vue.nextTick(() => {
+      it('should fetch related issues', () => {
+        mock.onGet(defaultProps.endpoint).reply(200, [issuable1, issuable2]);
+
+        vm.fetchRelatedIssues();
+
+        return waitForPromises().then(() => {
           expect(vm.state.relatedIssues.length).toEqual(2);
           expect(vm.state.relatedIssues[0].id).toEqual(issuable1.id);
           expect(vm.state.relatedIssues[1].id).toEqual(issuable2.id);
-
-          done();
         });
       });
     });
 
     describe('onInput', () => {
-      beforeEach(() => {
-        vm = new RelatedIssuesRoot({
-          propsData: defaultProps,
-        }).$mount();
-      });
+      beforeEach(() => createComponent());
 
       it('fill in issue number reference and adds to pending related issues', () => {
         const input = '#123 ';
@@ -322,13 +301,11 @@ describe('RelatedIssuesRoot', () => {
     });
 
     describe('onBlur', () => {
-      beforeEach(() => {
-        vm = new RelatedIssuesRoot({
-          propsData: defaultProps,
-        }).$mount();
-
-        spyOn(vm, 'processAllReferences');
-      });
+      beforeEach(() =>
+        createComponent().then(() => {
+          jest.spyOn(vm, 'processAllReferences').mockImplementation(() => {});
+        }),
+      );
 
       it('add any references to pending when blurring', () => {
         const input = '#123';
@@ -340,11 +317,7 @@ describe('RelatedIssuesRoot', () => {
     });
 
     describe('processAllReferences', () => {
-      beforeEach(() => {
-        vm = new RelatedIssuesRoot({
-          propsData: defaultProps,
-        }).$mount();
-      });
+      beforeEach(() => createComponent());
 
       it('add valid reference to pending', () => {
         const input = '#123';

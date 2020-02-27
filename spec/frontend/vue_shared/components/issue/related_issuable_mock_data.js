@@ -12,6 +12,7 @@ export const issuable1 = {
   displayReference: '#123',
   title: 'some title',
   path: '/foo/bar/issues/123',
+  relationPath: '/foo/bar/issues/123/relation',
   state: 'opened',
   linkType: 'relates_to',
   dueDate: '2010-11-22',
@@ -26,6 +27,7 @@ export const issuable2 = {
   displayReference: '#124',
   title: 'some other thing',
   path: '/foo/bar/issues/124',
+  relationPath: '/foo/bar/issues/124/relation',
   state: 'opened',
   linkType: 'blocks',
 };
@@ -38,6 +40,7 @@ export const issuable3 = {
   displayReference: '#125',
   title: 'some other other thing',
   path: '/foo/bar/issues/125',
+  relationPath: '/foo/bar/issues/125/relation',
   state: 'opened',
   linkType: 'is_blocked_by',
 };
@@ -50,6 +53,7 @@ export const issuable4 = {
   displayReference: '#126',
   title: 'some other other other thing',
   path: '/foo/bar/issues/126',
+  relationPath: '/foo/bar/issues/126/relation',
   state: 'opened',
 };
 
@@ -61,6 +65,7 @@ export const issuable5 = {
   displayReference: '#127',
   title: 'some other other other thing',
   path: '/foo/bar/issues/127',
+  relationPath: '/foo/bar/issues/127/relation',
   state: 'opened',
 };
 
