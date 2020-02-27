@@ -2,18 +2,22 @@
 
 require 'rake_helper'
 
-describe 'gitlab:import_export:export rake task' do
+describe Gitlab::ImportExport::Project::ExportTask do
   let(:username) { 'root' }
   let(:namespace_path) { username }
   let!(:user) { create(:user, username: username) }
   let(:measurement_enabled) { false }
-  let(:task_params) { [username, namespace_path, project_name, archive_path, measurement_enabled] }
-
-  before do
-    Rake.application.rake_require('tasks/gitlab/import_export/export')
+  let(:task_params) do
+    {
+      username: username,
+      namespace_path: namespace_path,
+      project_path: project_name,
+      file_path: archive_path,
+      measurement_enabled: measurement_enabled
+    }
   end
 
-  subject { run_rake_task('gitlab:import_export:export', task_params) }
+  subject { described_class.new(task_params).export }
 
   context 'when project is found' do
     let(:project) { create(:project, creator: user, namespace: user.namespace) }
