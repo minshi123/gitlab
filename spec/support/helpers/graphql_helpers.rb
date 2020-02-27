@@ -71,10 +71,10 @@ module GraphqlHelpers
     mutation_name = GraphqlHelpers.fieldnamerize(name)
     input_variable_name = "$#{input_variable_name_for_mutation(name)}"
     mutation_field = GitlabSchema.mutation.fields[mutation_name]
-    fields ||= all_graphql_fields_for(mutation_field.type)
+    fields ||= all_graphql_fields_for(mutation_field.type.to_graphql)
 
     query = <<~MUTATION
-      mutation(#{input_variable_name}: #{mutation_field.arguments['input'].type}) {
+      mutation(#{input_variable_name}: #{mutation_field.arguments['input'].type.to_graphql}) {
         #{mutation_name}(input: #{input_variable_name}) {
           #{fields}
         }
@@ -118,15 +118,23 @@ module GraphqlHelpers
     GraphqlHelpers.fieldnamerize(input_type)
   end
 
-  def query_graphql_field(name, attributes = {}, fields = nil)
+  def field_with_params(name, attributes = {})
     field_params = if attributes.present?
-                     "(#{attributes_to_graphql(attributes)})"
+                     if attributes.is_a?(Hash)
+                       "(#{attributes_to_graphql(attributes)})"
+                     else
+                       "(#{attributes})"
+                     end
                    else
                      ''
                    end
 
+    "#{GraphqlHelpers.fieldnamerize(name.to_s)}#{field_params}"
+  end
+
+  def query_graphql_field(name, attributes = {}, fields = nil)
     <<~QUERY
-      #{GraphqlHelpers.fieldnamerize(name.to_s)}#{field_params}
+      #{field_with_params(name, attributes)}
       #{wrap_fields(fields || all_graphql_fields_for(name.to_s.classify))}
     QUERY
   end
@@ -300,7 +308,7 @@ module GraphqlHelpers
   end
 
   def field_type(field)
-    field_type = field.type
+    field_type = field.type.respond_to?(:to_graphql) ? field.type.to_graphql : field.type
 
     # The type could be nested. For example `[GraphQL::STRING_TYPE]`:
     # - List
