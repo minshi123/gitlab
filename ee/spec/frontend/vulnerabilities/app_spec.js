@@ -32,6 +32,7 @@ describe('Vulnerability management app', () => {
   const createIssueUrl = 'create_issue_path';
 
   const findCreateIssueButton = () => wrapper.find({ ref: 'create-issue-btn' });
+  const dropdown = () => wrapper.find({ ref: 'dropdown' });
 
   const createWrapper = (state = 'detected') => {
     wrapper = shallowMount(App, {
@@ -55,28 +56,23 @@ describe('Vulnerability management app', () => {
 
   describe('state dropdown', () => {
     it('the vulnerability state dropdown is rendered', () => {
-      expect(wrapper.find(VulnerabilityStateDropdown).exists()).toBe(true);
+      expect(dropdown().exists()).toBe(true);
     });
 
-    it.only('when the vulnerability state dropdown emits a change event, a POST API call is made', (done) => {
-      const dropdown = wrapper.find(VulnerabilityStateDropdown);
+    it.only('when the vulnerability state dropdown emits a change event, a POST API call is made', () => {
       mockAxios.onPost().reply(201);
 
-      dropdown.vm.$emit('change');
+      dropdown().vm.$emit('change');
 
-      setTimeout(() => {
-
-        //return waitForPromises().then(() => {
+      return waitForPromises().then(() => {
         expect(mockAxios.history.post).toHaveLength(1); // Check that a POST request was made.
-        done();
-      }, 500);
+      });
     });
 
     it('when the vulnerability state changes but the API call fails, an error message is displayed', () => {
-      const dropdown = wrapper.find(VulnerabilityStateDropdown);
       mockAxios.onPost().reply(400);
 
-      dropdown.vm.$emit('change');
+      dropdown().vm.$emit('change');
 
       return waitForPromises().then(() => {
         expect(mockAxios.history.post).toHaveLength(1);

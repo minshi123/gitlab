@@ -54,13 +54,8 @@ export default {
 
   computed: {
     variant() {
-      //console.log('====== STATE =====', this.vulnerability);
       // Get the badge variant based on the vulnerability state, defaulting to 'warning'.
-      const variant =
-        (VULNERABILITY_STATES &&
-          VULNERABILITY_STATES[this.state] &&
-          VULNERABILITY_STATES[this.state].variant) ||
-        'warning';
+      const variant = VULNERABILITY_STATES[this.state]?.variant || 'warning';
       return variant;
     },
   },
@@ -130,7 +125,8 @@ export default {
     <gl-loading-icon v-if="isLoadingVulnerability" />
     <vulnerability-state-dropdown
       v-else
-      :initial-state="vulnerability.state"
+      ref="dropdown"
+      :initial-state="state"
       @change="changeVulnerabilityState"
     />
 
