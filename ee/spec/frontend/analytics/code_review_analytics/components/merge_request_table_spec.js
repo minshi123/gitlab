@@ -38,7 +38,7 @@ describe('MergeRequestTable component', () => {
       wrapper = createComponent(vuexStore);
     });
 
-    xit('renders the GlTable component', () => {
+    it('renders the GlTable component', () => {
       expect(findTable().exists()).toBe(true);
     });
 
@@ -46,7 +46,7 @@ describe('MergeRequestTable component', () => {
       expect(wrapper.element).toMatchSnapshot();
     });
 
-    xit('renders the correct table headers', () => {
+    it('renders the correct table headers', () => {
       const tableHeaders = [
         'Merge Request',
         'Review time',
