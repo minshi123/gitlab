@@ -43,7 +43,7 @@ describe Gitlab::Checks::DiffCheck do
 
       context "the MR contains a matching file path" do
         context "and the user is not listed as a code owner" do
-          it "return an error message" do
+          it "returns an error message" do
             expect(subject.send(:validate_code_owners)
               .call(["docs/CODEOWNERS", "README"])).not_to be_nil
           end
