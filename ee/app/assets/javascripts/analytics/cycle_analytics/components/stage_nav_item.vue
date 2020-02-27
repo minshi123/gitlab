@@ -36,6 +36,11 @@ export default {
       default: false,
       required: false,
     },
+    stageId: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -72,11 +77,17 @@ export default {
 </script>
 
 <template>
-  <li @click="handleSelectStage" @mouseover="handleHover(true)" @mouseleave="handleHover()">
+  <li
+    :data-stage-id="stageId"
+    @click="handleSelectStage"
+    @mouseover="handleHover(true)"
+    @mouseleave="handleHover()"
+  >
     <stage-card-list-item :is-active="isActive" :can-edit="editable">
-      <div class="stage-nav-item-cell stage-name p-0" :class="{ 'font-weight-bold': isActive }">
-        {{ title }}
-      </div>
+      <div
+        class="stage-nav-item-cell stage-name p-0"
+        :class="{ 'font-weight-bold': isActive }"
+      >{{ title }}</div>
       <div class="stage-nav-item-cell stage-median mr-4">
         <span v-if="hasValue">{{ median }}</span>
         <span v-else class="stage-empty">{{ __('Not enough data') }}</span>
@@ -96,9 +107,7 @@ export default {
                 type="button"
                 class="btn-default btn-transparent"
                 @click="handleDropdownAction('hide', $event)"
-              >
-                {{ __('Hide stage') }}
-              </button>
+              >{{ __('Hide stage') }}</button>
             </li>
           </template>
           <template v-else>
@@ -107,18 +116,14 @@ export default {
                 type="button"
                 class="btn-default btn-transparent"
                 @click="handleDropdownAction('edit', $event)"
-              >
-                {{ __('Edit stage') }}
-              </button>
+              >{{ __('Edit stage') }}</button>
             </li>
             <li>
               <button
                 type="button"
                 class="btn-danger danger"
                 @click="handleDropdownAction('remove', $event)"
-              >
-                {{ __('Remove stage') }}
-              </button>
+              >{{ __('Remove stage') }}</button>
             </li>
           </template>
         </ul>
