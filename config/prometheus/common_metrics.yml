@@ -149,13 +149,14 @@ panel_groups:
   panels:
   - title: "Memory Usage (Total)"
     type: "area-chart"
-    y_label: "Total Memory Used (GB)"
     weight: 4
+    y_axis:
+      name: "Total Memory Used"
+      format: "bytes"
     metrics:
     - id: system_metrics_kubernetes_container_memory_total
-      query_range: 'avg(sum(container_memory_usage_bytes{container_name!="POD",pod_name=~"^%{ci_environment_slug}-(.*)",namespace="%{kube_namespace}"}) by (job)) without (job)  /1024/1024/1024'
-      label: Total (GB)
-      unit: GB
+      query_range: 'avg(sum(container_memory_usage_bytes{container_name!="POD",pod_name=~"^%{ci_environment_slug}-(.*)",namespace="%{kube_namespace}"}) by (job)) without (job)'
+      label: Total
   - title: "Core Usage (Total)"
     type: "area-chart"
     y_label: "Total Cores"
