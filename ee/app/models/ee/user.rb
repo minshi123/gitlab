@@ -253,7 +253,7 @@ module EE
       active? &&
       !internal? &&
       has_current_license? &&
-      is_paid_in_current_license?
+      paid_in_current_license?
     end
 
     def using_gitlab_com_seat?(namespace)
@@ -349,8 +349,9 @@ module EE
       ]).to_sql
     end
 
-    def is_paid_in_current_license?
+    def paid_in_current_license?
       return true unless License.current.exclude_guests_from_active_count?
+
       highest_role > ::Gitlab::Access::GUEST
     end
   end
