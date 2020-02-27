@@ -48,13 +48,20 @@ export default {
       isLoadingVulnerability: false,
       isCreatingIssue: false,
       vulnerability: this.initialVulnerability,
+      state: this.initialVulnerability.state,
     };
   },
 
   computed: {
     variant() {
+      //console.log('====== STATE =====', this.vulnerability);
       // Get the badge variant based on the vulnerability state, defaulting to 'warning'.
-      return VULNERABILITY_STATES[this.vulnerability.state]?.variant || 'warning';
+      const variant =
+        (VULNERABILITY_STATES &&
+          VULNERABILITY_STATES[this.state] &&
+          VULNERABILITY_STATES[this.state].variant) ||
+        'warning';
+      return variant;
     },
   },
 

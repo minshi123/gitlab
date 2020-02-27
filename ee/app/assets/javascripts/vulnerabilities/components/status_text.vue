@@ -118,10 +118,7 @@ export default {
 <template>
   <span>
     <gl-skeleton-loading v-if="isLoading" :lines="2" class="h-auto" />
-    <gl-sprintf v-else :message="statusText">
-      <template #span="{ content }">
-        <span class="align-middle">{{ content }}</span>
-      </template>
+    <gl-sprintf v-else :message="statusText" ref="message">
       <template #timeago>
         <time-ago-tooltip :time="time" />
       </template>

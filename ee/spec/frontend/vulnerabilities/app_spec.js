@@ -36,10 +36,9 @@ describe('Vulnerability management app', () => {
   const createWrapper = (state = 'detected') => {
     wrapper = shallowMount(App, {
       propsData: {
-        vulnerability: Object.assign({ state }, vulnerability),
+        initialVulnerability: Object.assign({ state }, vulnerability),
         pipeline,
         finding,
-        vulnerabilityUrl: '',
         pipelineUrl: '',
         createIssueUrl,
       },
@@ -59,15 +58,18 @@ describe('Vulnerability management app', () => {
       expect(wrapper.find(VulnerabilityStateDropdown).exists()).toBe(true);
     });
 
-    it('when the vulnerability state dropdown emits a change event, a POST API call is made', () => {
+    it.only('when the vulnerability state dropdown emits a change event, a POST API call is made', (done) => {
       const dropdown = wrapper.find(VulnerabilityStateDropdown);
       mockAxios.onPost().reply(201);
 
       dropdown.vm.$emit('change');
 
-      return waitForPromises().then(() => {
+      setTimeout(() => {
+
+        //return waitForPromises().then(() => {
         expect(mockAxios.history.post).toHaveLength(1); // Check that a POST request was made.
-      });
+        done();
+      }, 500);
     });
 
     it('when the vulnerability state changes but the API call fails, an error message is displayed', () => {
