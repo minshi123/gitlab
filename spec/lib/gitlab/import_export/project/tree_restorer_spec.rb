@@ -426,6 +426,10 @@ describe Gitlab::ImportExport::Project::TreeRestorer do
 
           expect(pipeline_with_external_pr.external_pull_request).to be_persisted
         end
+
+        it 'has no import failures' do
+          expect(@project.import_failures.size).to eq 0
+        end
       end
     end
   end
