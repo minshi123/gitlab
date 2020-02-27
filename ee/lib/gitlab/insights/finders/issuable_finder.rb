@@ -59,7 +59,7 @@ module Gitlab
         attr_reader :entity, :current_user, :query, :projects
 
         def finder
-          issuable_type = query[:issuable_type]&.to_sym
+          issuable_type = query[:issuable_type]&.to_s&.singularize&.to_sym
 
           FINDERS[issuable_type] ||
             raise(InvalidIssuableTypeError, "Invalid `:issuable_type` option: `#{query[:issuable_type]}`. Allowed values are #{FINDERS.keys}!")

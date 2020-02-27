@@ -54,11 +54,11 @@ RSpec.describe Gitlab::Insights::Finders::IssuableFinder do
       let(:label_create) { create(label_type, label_entity_association_key => entity, name: 'Create') }
       let(:label_quality) { create(label_type, label_entity_association_key => entity, name: 'Quality') }
       let(:extra_issuable_attrs) { [{}, {}, {}, {}, {}, {}] }
-      let!(:issuable0) { create(:"labeled_#{issuable_type}", :opened, created_at: Time.utc(2018, 1, 1), project_association_key => project, **extra_issuable_attrs[0]) }
-      let!(:issuable1) { create(:"labeled_#{issuable_type}", :opened, created_at: Time.utc(2018, 2, 1), labels: [label_bug, label_manage], project_association_key => project, **extra_issuable_attrs[1]) }
-      let!(:issuable2) { create(:"labeled_#{issuable_type}", :opened, created_at: Time.utc(2019, 2, 6), labels: [label_bug, label_plan], project_association_key => project, **extra_issuable_attrs[2]) }
-      let!(:issuable3) { create(:"labeled_#{issuable_type}", :opened, created_at: Time.utc(2019, 2, 20), labels: [label_bug, label_create], project_association_key => project, **extra_issuable_attrs[3]) }
-      let!(:issuable4) { create(:"labeled_#{issuable_type}", :opened, created_at: Time.utc(2019, 3, 5), labels: [label_bug, label_quality], project_association_key => project, **extra_issuable_attrs[4]) }
+      let!(:issuable0) { create(:"labeled_#{issuable_type.singularize}", :opened, created_at: Time.utc(2018, 1, 1), project_association_key => project, **extra_issuable_attrs[0]) }
+      let!(:issuable1) { create(:"labeled_#{issuable_type.singularize}", :opened, created_at: Time.utc(2018, 2, 1), labels: [label_bug, label_manage], project_association_key => project, **extra_issuable_attrs[1]) }
+      let!(:issuable2) { create(:"labeled_#{issuable_type.singularize}", :opened, created_at: Time.utc(2019, 2, 6), labels: [label_bug, label_plan], project_association_key => project, **extra_issuable_attrs[2]) }
+      let!(:issuable3) { create(:"labeled_#{issuable_type.singularize}", :opened, created_at: Time.utc(2019, 2, 20), labels: [label_bug, label_create], project_association_key => project, **extra_issuable_attrs[3]) }
+      let!(:issuable4) { create(:"labeled_#{issuable_type.singularize}", :opened, created_at: Time.utc(2019, 3, 5), labels: [label_bug, label_quality], project_association_key => project, **extra_issuable_attrs[4]) }
       let(:query) do
         base_query.merge(
           issuable_type: issuable_type,
@@ -71,7 +71,7 @@ RSpec.describe Gitlab::Insights::Finders::IssuableFinder do
 
       it 'avoids N + 1 queries' do
         control_queries = ActiveRecord::QueryRecorder.new { subject.map { |issuable| issuable.labels.map(&:title) } }
-        create(:"labeled_#{issuable_type}", :opened, created_at: Time.utc(2019, 3, 5), labels: [label_bug], project_association_key => project, **extra_issuable_attrs[5])
+        create(:"labeled_#{issuable_type.singularize}", :opened, created_at: Time.utc(2019, 3, 5), labels: [label_bug], project_association_key => project, **extra_issuable_attrs[5])
 
         expect do
           find(entity, query: query).map { |issuable| issuable.labels.map(&:title) }
@@ -301,11 +301,31 @@ RSpec.describe Gitlab::Insights::Finders::IssuableFinder do
           let(:issuable_type) { 'issue' }
           let(:project_association_key) { :project }
         end
+
+        include_examples "insights issuable finder" do
+          let(:issuable_type) { 'issues' }
+          let(:project_association_key) { :project }
+        end
       end
 
       context 'merge requests' do
         include_examples "insights issuable finder" do
           let(:issuable_type) { 'merge_request' }
+          let(:project_association_key) { :source_project }
+          let(:extra_issuable_attrs) do
+            [
+              { source_branch: "add_images_and_changes" },
+              { source_branch: "improve/awesome" },
+              { source_branch: "feature_conflict" },
+              { source_branch: "markdown" },
+              { source_branch: "feature_one" },
+              { source_branch: "merged-target" }
+            ]
+          end
+        end
+
+        include_examples "insights issuable finder" do
+          let(:issuable_type) { 'merge_requests' }
           let(:project_association_key) { :source_project }
           let(:extra_issuable_attrs) do
             [
