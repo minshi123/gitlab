@@ -300,7 +300,7 @@ export default {
           "
         >
           <template #targetBranchName>
-            <gl-link class="text-1" :href="targetBranchTreePath" target="_blank">{{ targetBranch }}</gl-link>
+            <gl-link class="text-1" :href="targetBranchTreePath">{{ targetBranch }}</gl-link>
           </template>
         </gl-sprintf>
 
@@ -313,14 +313,10 @@ export default {
           "
         >
           <template #newPipelineLink="{ content }">
-            <gl-link
-              class="text-1"
-              :href="`${newPipelinePath}?ref=${targetBranch}`"
-              target="_blank"
-            >{{ content }}</gl-link>
+            <gl-link class="text-1" :href="`${newPipelinePath}?ref=${targetBranch}`">{{ content }}</gl-link>
           </template>
           <template #targetBranchName>
-            <gl-link class="text-1" :href="targetBranchTreePath" target="_blank">{{ targetBranch }}</gl-link>
+            <gl-link class="text-1" :href="targetBranchTreePath">{{ targetBranch }}</gl-link>
           </template>
         </gl-sprintf>
       </div>
