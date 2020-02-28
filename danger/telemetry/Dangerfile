@@ -3,7 +3,7 @@
 gitlab_danger = GitlabDanger.new(helper.gitlab_helper)
 
 TELEMETRY_CHANGED_FILES_MESSAGE = <<~MSG
-This merge request required a telemetry review. To make sure these
+This merge request requires a telemetry review. To make sure these
 changes are reviewed, take the following steps: 
 MSG
 
@@ -18,8 +18,7 @@ return unless gitlab_danger.ci?
 if usage_data_changed_files.any?
   MESSAGE = <<~MSG
   This merge request adds or changes files that require a
-  review from the [Data team](https://gitlab.com/groups/gl-database/-/group_members) and
-  [Telemetry team](https://gitlab.com/groups/gl-database/-/group_members)
+  review from the Data team and Telemetry team
   MSG
 
   USAGE_DATA_FILES_MESSAGE = <<~MSG
