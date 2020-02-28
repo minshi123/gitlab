@@ -2,7 +2,7 @@
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import { GlIcon } from '@gitlab/ui';
 
-const CLASS_NAME_MAP = {
+export const CLASS_NAME_MAP = {
   critical: 'text-danger-800',
   high: 'text-danger-600',
   medium: 'text-warning-400',
@@ -15,7 +15,6 @@ export default {
   name: 'SeverityBadge',
   components: {
     GlIcon,
-    CLASS_NAME_MAP,
   },
   props: {
     severity: {

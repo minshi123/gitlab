@@ -1,42 +1,44 @@
 import { shallowMount } from '@vue/test-utils';
-import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
+import SeverityBadge, {
+  CLASS_NAME_MAP,
+} from 'ee/vue_shared/security_reports/components/severity_badge.vue';
+import { GlIcon } from '@gitlab/ui';
 
 describe('Severity Badge', () => {
   let wrapper;
-
-  const severities = ['Critical', 'High'];
-  const { CLASS_NAME_MAP } = SeverityBadge.components;
 
   const factory = (propsData = {}) =>
     shallowMount(SeverityBadge, {
       propsData: { ...propsData },
     });
 
-  describe('Render', () => {
-    describe('class names', () => {
-      Object.keys(CLASS_NAME_MAP).forEach(severity => {
-        const className = CLASS_NAME_MAP[severity];
+  describe.each(Object.keys(CLASS_NAME_MAP))('given a valid severity %s', severity => {
+    const className = CLASS_NAME_MAP[severity];
 
-        it(`renders the component with ${severity} badge`, () => {
-          wrapper = factory({ severity });
+    it(`renders the component with ${severity} badge`, () => {
+      wrapper = factory({ severity });
 
-          expect(wrapper.find(`span.${className}`).exists()).toBe(true);
-        });
-      });
+      expect(wrapper.find(`.${className}`).exists()).toBe(true);
+    });
 
-      describe('labels', () => {
-        it(`renders the component label for Critical`, () => {
-          wrapper = factory({ severity: 'Critical' });
+    it('renders gl-icon with correct name', () => {
+      wrapper = factory({ severity });
+      const icon = wrapper.find(GlIcon);
+      expect(icon.props('name')).toBe(`severity-${severity}`);
+    });
 
-          expect(wrapper.text()).toContain('Critical');
-        });
+    it(`renders the component label`, () => {
+      wrapper = factory({ severity });
 
-        it(`renders the component label for Medium`, () => {
-          wrapper = factory({ severity: 'Medium' });
+      expect(wrapper.text()).toMatch(new RegExp(severity, 'i'));
+    });
+  });
 
-          expect(wrapper.text()).toContain('Medium');
-        });
-      });
+  describe.each(['foo', '', ' '])('given an invalid severity "%s"', invalidSeverity => {
+    it(`renders an empty component`, () => {
+      wrapper = factory({ severity: invalidSeverity });
+
+      expect(wrapper.isEmpty()).toBe(true);
     });
   });
 });
