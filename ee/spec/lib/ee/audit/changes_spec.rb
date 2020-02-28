@@ -3,12 +3,14 @@
 require 'spec_helper'
 
 describe EE::Audit::Changes do
+  subject(:foo_instance) { Class.new { include EE::Audit::Changes }.new }
+
   describe '.audit_changes' do
     let(:current_user) { create(:user, name: 'Mickey Mouse') }
     let(:user) { create(:user, name: 'Donald Duck') }
     let(:options) { { model: user } }
 
-    subject(:foo_instance) { Class.new { include EE::Audit::Changes }.new }
+    subject(:audit!) { foo_instance.audit_changes(:name, options) }
 
     before do
       stub_licensed_features(extended_audit_events: true)
@@ -19,9 +21,9 @@ describe EE::Audit::Changes do
     describe 'non audit changes' do
       context 'when audited column is not changed' do
         it 'does not call the audit event service' do
-          user.update!(name: 'Scrooge McDuck')
+          user.update!(email: 'scrooge.mcduck@gitlab.com')
 
-          expect { foo_instance.audit_changes(:email, options) }.not_to change { SecurityEvent.count }
+          expect { audit! }.not_to change { SecurityEvent.count }
         end
       end
 
@@ -31,7 +33,7 @@ describe EE::Audit::Changes do
         it 'does not call the audit event service' do
           user.update!(name: 'Scrooge McDuck')
 
-          expect { foo_instance.audit_changes(:name, options) }.not_to change { SecurityEvent.count }
+          expect { audit! }.not_to change { SecurityEvent.count }
         end
       end
     end
@@ -46,7 +48,7 @@ describe EE::Audit::Changes do
       it 'calls the audit event service' do
         user.update!(name: 'Scrooge McDuck')
 
-        foo_instance.audit_changes(:name, options)
+        audit!
 
         aggregate_failures 'audit event service interactions' do
           expect(AuditEventService).to have_received(:new)
@@ -68,7 +70,7 @@ describe EE::Audit::Changes do
         it 'instantiates audit event service with the given target_model' do
           user.update!(name: 'Scrooge McDuck')
 
-          foo_instance.audit_changes(:name, options)
+          audit!
 
           expect(AuditEventService).to have_received(:new)
             .with(anything, project, anything)
