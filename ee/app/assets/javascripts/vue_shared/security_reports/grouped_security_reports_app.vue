@@ -312,7 +312,9 @@ export default {
           "
         >
           <template #newPipelineLink="{ content }">
-            <gl-link class="text-1" :href="`${newPipelinePath}?ref=${targetBranch}`">{{ content }}</gl-link>
+            <gl-link class="text-1" :href="`${newPipelinePath}?ref=${targetBranch}`">{{
+              content
+            }}</gl-link>
           </template>
           <template #targetBranchName>
             <gl-link class="text-1" :href="targetBranchTreePath">{{ targetBranch }}</gl-link>
