@@ -26,7 +26,7 @@ module EE
 
     def gma_enforcement
       unless ::Gitlab::Auth::GroupSaml::GmaMembershipEnforcer.new(project).can_add_user?(user)
-        errors.add(:user, 'is not in the group enforcing Group Managed Account')
+        errors.add(:user, _('is not in the group enforcing Group Managed Account'))
       end
     end
   end
