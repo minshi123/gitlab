@@ -127,6 +127,11 @@ export default {
       required: false,
       default: null,
     },
+    targetBranchTreePath: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   componentNames,
   computed: {
@@ -290,7 +295,7 @@ export default {
           "
         >
           <template #targetBranchName>
-            <gl-link class="text-1" href="#" target="_blank">{{ targetBranch }}</gl-link>
+            <gl-link class="text-1" :href="targetBranchTreePath" target="_blank">{{ targetBranch }}</gl-link>
           </template>
         </gl-sprintf>
 
@@ -306,7 +311,7 @@ export default {
             <gl-link class="text-1" href="#" target="_blank">{{ content }}</gl-link>
           </template>
           <template #targetBranchName>
-            <gl-link class="text-1" href="#" target="_blank">{{ targetBranch }}</gl-link>
+            <gl-link class="text-1" :href="targetBranchTreePath" target="_blank">{{ targetBranch }}</gl-link>
           </template>
         </gl-sprintf>
       </div>
