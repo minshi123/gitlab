@@ -1,7 +1,9 @@
 <script>
+// import GlTribute from 'vue-tribute';
 import Icon from '~/vue_shared/components/icon.vue';
 import AddIssuableForm from './add_issuable_form.vue';
 import RelatedIssuesList from './related_issues_list.vue';
+import GlTribute from './gl_tribute.vue';
 import {
   issuableIconMap,
   issuableQaClassMap,
@@ -15,6 +17,7 @@ export default {
     Icon,
     AddIssuableForm,
     RelatedIssuesList,
+    GlTribute,
   },
   props: {
     isFetching: {
@@ -76,6 +79,22 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      isshowing: true,
+      options: {
+        trigger: "@",
+        values: [
+          { key: "Collin Henderson", value: "syropian" },
+          { key: "Sarah Drasner", value: "sarah_edo" },
+          { key: "Evan You", value: "youyuxi" },
+          { key: "Adam Wathan", value: "adamwathan" }
+        ],
+        // positionMenu: false,
+        // menuContainer: document.querySelector(".related-issues-block")
+      }
+    };
+  },
   computed: {
     hasRelatedIssues() {
       return this.relatedIssues.length > 0;
@@ -115,6 +134,14 @@ export default {
 
 <template>
   <div class="related-issues-block">
+    hellow
+    <button @click="isshowing = !isshowing">asdf</button>
+    <gl-tribute :options="options" v-if="isshowing">
+      <input type="text">
+    </gl-tribute>
+    <gl-tribute :options="options" v-if="isshowing">
+      <input type="text">
+    </gl-tribute>
     <div class="card card-slim">
       <div :class="{ 'panel-empty-heading border-bottom-0': !hasBody }" class="card-header">
         <h3 class="card-title mt-0 mb-0 h5">
