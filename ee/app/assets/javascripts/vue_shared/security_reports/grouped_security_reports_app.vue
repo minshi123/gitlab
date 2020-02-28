@@ -9,7 +9,6 @@ import Icon from '~/vue_shared/components/icon.vue';
 import IssueModal from './components/modal.vue';
 import securityReportsMixin from './mixins/security_report_mixin';
 import createStore from './store';
-import { s__ } from '~/locale';
 import { GlSprintf, GlLink } from '@gitlab/ui';
 import { mrStates } from '~/mr_popover/constants';
 
@@ -313,7 +312,11 @@ export default {
           "
         >
           <template #newPipelineLink="{ content }">
-            <gl-link class="text-1" :href="`${newPipelinePath}?ref=${targetBranch}`">{{ content }}</gl-link>
+            <gl-link class="text-1" :href="`${newPipelinePath}?ref=${targetBranch}`">
+              {{
+              content
+              }}
+            </gl-link>
           </template>
           <template #targetBranchName>
             <gl-link class="text-1" :href="targetBranchTreePath">{{ targetBranch }}</gl-link>
