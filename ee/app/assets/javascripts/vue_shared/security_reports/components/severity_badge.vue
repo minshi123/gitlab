@@ -15,6 +15,7 @@ export default {
   name: 'SeverityBadge',
   components: {
     GlIcon,
+    CLASS_NAME_MAP,
   },
   props: {
     severity: {
@@ -24,7 +25,7 @@ export default {
   },
   computed: {
     hasSeverityBadge() {
-      return Boolean(this.severity && this.severity !== ' ');
+      return Object.keys(CLASS_NAME_MAP).includes(this.severityKey);
     },
     severityKey() {
       return this.severity.toLowerCase();
@@ -43,17 +44,8 @@ export default {
 </script>
 
 <template>
-  <div v-if="hasSeverityBadge" class="severity-badge gl-text-gray-900">
-    <span :class="className"><gl-icon :name="iconName" :size="12"/></span>{{ severityTitle }}
+  <div v-if="hasSeverityBadge" class="severity-badge text-left text-nowrap gl-text-gray-900">
+    <span :class="className"><gl-icon :name="iconName" :size="12" class="append-right-8"/></span
+    >{{ severityTitle }}
   </div>
 </template>
-
-<style>
-.severity-badge {
-  text-align: left;
-  white-space: nowrap;
-}
-.severity-badge svg {
-  margin-right: 8px;
-}
-</style>
