@@ -34,8 +34,8 @@ Release versions are manually assigned by the user in the release title. GitLab 
 
 For example, for GitLab version `10.5.7`:
 
-- `10` represents the major version. The major release was 10.0.0, but often referred to as 10.0.
-- `5` represents the minor version. The minor release was 10.5.0, but often referred to as 10.5.
+- `10` represents the major version. The major release was `10.0.0`, but often referred to as `10.0`.
+- `5` represents the minor version. The minor release was `10.5.0`, but often referred to as `10.5`.
 - `7` represents the patch number.
 
 Any part of the version number can be multiple digits, for example, `13.10.11`.
