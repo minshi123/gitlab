@@ -147,7 +147,7 @@ export default {
 </script>
 
 <template>
-  <div class="preview h-100 w-100 d-flex flex-column">
+  <div class="preview h-100 w-100 d-flex flex-column p-0">
     <template v-if="showPreview">
       <navigator :manager="manager" />
       <div id="ide-preview"></div>
