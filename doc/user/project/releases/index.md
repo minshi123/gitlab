@@ -32,7 +32,7 @@ including its [assets](#release-assets), as follows.
 
 Release versions are manually assigned by the user in the release title. GitLab uses and recommends following [Semantic Versioning](https://semver.org/) for its releases: `(Major).(Minor).(Patch), as detailed in the [GitLab Policy for Versioning](https://docs.gitlab.com/ee/policy/maintenance.html#versioning). 
 
-For example, for GitLab version 10.5.7:
+For example, for GitLab version `10.5.7`:
 
 - `10` represents the major version. The major release was 10.0.0, but often referred to as 10.0.
 - `5` represents the minor version. The minor release was 10.5.0, but often referred to as 10.5.
