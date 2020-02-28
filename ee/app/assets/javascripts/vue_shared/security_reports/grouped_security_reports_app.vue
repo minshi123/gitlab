@@ -132,6 +132,11 @@ export default {
       required: false,
       default: null,
     },
+    newPipelinePath: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   componentNames,
   computed: {
@@ -308,7 +313,11 @@ export default {
           "
         >
           <template #newPipelineLink="{ content }">
-            <gl-link class="text-1" href="#" target="_blank">{{ content }}</gl-link>
+            <gl-link
+              class="text-1"
+              :href="`${newPipelinePath}?ref=${targetBranch}`"
+              target="_blank"
+            >{{ content }}</gl-link>
           </template>
           <template #targetBranchName>
             <gl-link class="text-1" :href="targetBranchTreePath" target="_blank">{{ targetBranch }}</gl-link>
