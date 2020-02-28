@@ -13,8 +13,7 @@ describe EE::Audit::Changes do
     before do
       stub_licensed_features(extended_audit_events: true)
 
-      foo_instance.instance_variable_set(:@current_user, user)
-      foo_instance.instance_variable_set(:@user, user)
+      foo_instance.instance_variable_set(:@current_user, current_user)
     end
 
     describe 'non audit changes' do
@@ -38,6 +37,12 @@ describe EE::Audit::Changes do
     end
 
     describe 'audit changes' do
+      let(:audit_event_service) { instance_spy(AuditEventService) }
+
+      before do
+        allow(AuditEventService).to receive(:new).and_return(audit_event_service)
+      end
+
       it 'calls the audit event service' do
         user.update!(name: 'Scrooge McDuck')
 
@@ -51,16 +56,16 @@ describe EE::Audit::Changes do
               action: :update, column: :name,
               from: 'Donald Duck', to: 'Scrooge McDuck'
             )
-          expect(audit_event_service).to have_received(:for_changes).with(user)
+          expect(audit_event_service).to have_received(:for_changes)
           expect(audit_event_service).to have_received(:security_event)
         end
       end
 
-      context 'when entity is provided' do
+      context 'when target_model is provided' do
         let(:project) { Project.new }
-        let(:options) { { model: user, entity: project } }
+        let(:options) { { model: user, target_model: project } }
 
-        it 'instantiates audit event service with the given entity' do
+        it 'instantiates audit event service with the given target_model' do
           user.update!(name: 'Scrooge McDuck')
 
           foo_instance.audit_changes(:name, options)
