@@ -199,7 +199,7 @@ module EE
     end
 
     def feature_available_in_plan?(feature)
-      return true if ::License::ANY_PLAN_FEATURES.include?(feature)
+      return true if ::License.trial_features_available_on_com?(feature)
 
       available_features = strong_memoize(:features_available_in_plan) do
         Hash.new do |h, f|
