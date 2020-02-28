@@ -786,7 +786,9 @@ module EE
       globally_available = License.feature_available?(feature)
 
       if ::Gitlab::CurrentSettings.should_check_namespace_plan? && namespace
-        globally_available &&
+        trial_feature = License.trial_features_available_on_com?(feature)
+
+        (globally_available || trial_feature) &&
           (public? && namespace.public? || namespace.feature_available_in_plan?(feature))
       else
         globally_available
