@@ -4,6 +4,7 @@ import { GlLoadingIcon, GlTooltipDirective } from '@gitlab/ui';
 import resolvedStatusMixin from 'ee_else_ce/batch_comments/mixins/resolved_status';
 import Icon from '~/vue_shared/components/icon.vue';
 import ReplyButton from './note_actions/reply_button.vue';
+import eventHub from '~/sidebar/event_hub';
 
 export default {
   name: 'NoteActions',
@@ -17,6 +18,10 @@ export default {
   },
   mixins: [resolvedStatusMixin],
   props: {
+    author: {
+      type: Object,
+      required: true,
+    },
     authorId: {
       type: Number,
       required: true,
@@ -116,6 +121,10 @@ export default {
         this.$root.$emit('bv::hide::tooltip');
       });
     },
+    assignUser() {
+      eventHub.$emit('sidebar.addAssignee', this.author);
+      emitSidebarEvent('sidebar.saveAssignees');
+    },
   },
 };
 </script>
@@ -194,6 +203,15 @@ export default {
         <icon class="icon" name="ellipsis_v" />
       </button>
       <ul class="dropdown-menu more-actions-dropdown dropdown-open-left">
+        <li>
+          <button
+            class="btn-default btn-transparent js-btn-assign-user"
+            type="button"
+            @click="assignUser"
+          >
+            {{ __('Assign') }}
+          </button>
+        </li>
         <li v-if="canReportAsAbuse">
           <a :href="reportAbusePath">{{ __('Report abuse to admin') }}</a>
         </li>

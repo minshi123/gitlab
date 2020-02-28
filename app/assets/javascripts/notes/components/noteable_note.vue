@@ -261,6 +261,7 @@ export default {
           <span v-else class="d-none d-sm-inline">&middot;</span>
         </note-header>
         <note-actions
+          :author="author"
           :author-id="author.id"
           :note-id="note.id"
           :note-url="note.noteable_note_url"
