@@ -62,11 +62,9 @@ export default {
     :class="{ 'w-auto': !isOpen }"
     class="d-flex flex-column"
   >
-    <collapsible-sidebar :extension-tabs="tabs" side="right">
+    <collapsible-sidebar :extension-tabs="tabs" side="right" class="h-100 w-100">
       <template v-slot="{ component }">
-        <!--        <div class="multi-file-commit-panel-inner-content">-->
         <component :is="component" />
-        <!--        </div>-->
       </template>
     </collapsible-sidebar>
   </resizable-panel>

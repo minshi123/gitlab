@@ -4,6 +4,7 @@ import _ from 'underscore';
 import tooltip from '~/vue_shared/directives/tooltip';
 import Icon from '~/vue_shared/components/icon.vue';
 import { GlSkeletonLoading } from '@gitlab/ui';
+import $ from 'jquery';
 
 export default {
   name: 'CollapsibleSidebar',
@@ -68,7 +69,11 @@ export default {
       },
     }),
     clickTab(e, tab) {
-      e.target.blur();
+      // TODO: These do not work, you must use JQuery and currentTarget
+      // e.target.blur();
+      // e.target.tooltip('hide');
+      $(e.currentTarget).tooltip('hide');
+      $(e.currentTarget).blur();
 
       if (this.isActiveTab(tab)) {
         this.toggleOpen();
@@ -94,16 +99,16 @@ export default {
   <div
     :class="`ide-${side}-sidebar`"
     :data-qa-selector="`ide_${side}_sidebar`"
-    class="multi-file-commit-panel ide-sidebar h-100 min-height-0"
+    class="multi-file-commit-panel ide-sidebar h-100 w-100 min-height-0"
   >
-    <div v-show="isOpen" class="multi-file-commit-panel-inner">
-      <div class="d-flex flex-column align-items-stretch h-100 min-height-0">
+    <div v-show="isOpen" class="multi-file-commit-panel-inner h-100 w-100 min-height-0">
+      <div class="d-flex flex-column align-items-stretch h-100 w-100 min-height-0">
         <div
           v-for="tabView in aliveTabViews"
           v-show="isActiveView(tabView.name)"
           :key="tabView.name"
           :class="{ 'd-flex': isActiveView(tabView.name) }"
-          class="js-tab-view h-100 min-height-0"
+          class="js-tab-view h-100 w-100 min-height-0"
         >
           <slot :component="tabView.component">
             <component :is="tabView.component" />
