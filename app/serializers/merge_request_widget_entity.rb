@@ -64,7 +64,7 @@ class MergeRequestWidgetEntity < Grape::Entity
     merge_request.project.team.human_max_access(current_user&.id)
   end
 
-  expose :new_project_pipeline_path  do |merge_request|
+  expose :new_project_pipeline_path do |merge_request|
     new_project_pipeline_path(merge_request.project)
   end
 
