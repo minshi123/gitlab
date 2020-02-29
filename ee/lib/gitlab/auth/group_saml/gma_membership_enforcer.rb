@@ -21,13 +21,14 @@ module Gitlab
 
         def check_group_membership(user, given_project)
           group = project_root_group(given_project)
+
           return true unless ::Feature.enabled?(:group_managed_accounts, group)
           return true unless group&.enforced_group_managed_accounts?
 
           group == user.managing_group
         end
 
-        def project_root_group(project)
+        def project_root_group(given_project)
           project&.root_ancestor
         end
       end
