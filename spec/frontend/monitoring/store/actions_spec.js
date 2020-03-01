@@ -30,6 +30,7 @@ import {
   metricsDashboardResponse,
   metricsDashboardViewModel,
   dashboardGitResponse,
+  mockDashboardsErrorResponse,
 } from '../mock_data';
 
 jest.mock('~/flash');
@@ -257,9 +258,11 @@ describe('Monitoring store actions', () => {
   describe('fetchDashboard', () => {
     let dispatch;
     let state;
+    let commit;
     const response = metricsDashboardResponse;
     beforeEach(() => {
       dispatch = jest.fn();
+      commit = jest.fn();
       state = storeState();
       state.dashboardEndpoint = '/dashboard';
     });
@@ -270,6 +273,7 @@ describe('Monitoring store actions', () => {
       fetchDashboard(
         {
           state,
+          commit,
           dispatch,
         },
         params,
@@ -287,19 +291,21 @@ describe('Monitoring store actions', () => {
 
     describe('on failure', () => {
       let result;
-      let errorResponse;
       beforeEach(() => {
         const params = {};
         result = () => {
-          mock.onGet(state.dashboardEndpoint).replyOnce(500, errorResponse);
-          return fetchDashboard({ state, dispatch }, params);
+          mock.onGet(state.dashboardEndpoint).replyOnce(500, mockDashboardsErrorResponse);
+          return fetchDashboard({ state, commit, dispatch }, params);
         };
       });
 
       it('dispatches a failure action', done => {
-        errorResponse = {};
         result()
           .then(() => {
+            expect(commit).toHaveBeenCalledWith(
+              types.SET_ALL_DASHBOARDS,
+              mockDashboardsErrorResponse.all_dashboards,
+            );
             expect(dispatch).toHaveBeenCalledWith(
               'receiveMetricsDashboardFailure',
               new Error('Request failed with status code 500'),
@@ -311,8 +317,7 @@ describe('Monitoring store actions', () => {
       });
 
       it('dispatches a failure action when a message is returned', done => {
-        const message = 'Something went wrong with Prometheus!';
-        errorResponse = { message };
+        const message = "Each 'panel_group' must define an array :panels";
         result()
           .then(() => {
             expect(dispatch).toHaveBeenCalledWith(
