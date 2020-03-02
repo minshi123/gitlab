@@ -39,6 +39,7 @@ To enable 2FA:
 
 1. **In GitLab:**
    1. Log in to your GitLab account.
+   1. Go to your [**Profile settings**](../index.md#profile-settings).
    1. Go to your **Profile Settings**.
    1. Go to **Account**.
    1. Click **Enable Two-factor Authentication**.
@@ -85,6 +86,7 @@ To set up 2FA with a U2F device:
 
 1. Log in to your GitLab account.
 1. Go to your **Profile Settings**.
+1. Go to your [**Profile settings**](../index.md#profile-settings).
 1. Go to **Account**.
 1. Click **Enable Two-Factor Authentication**.
 1. Plug in your U2F device.
@@ -139,7 +141,7 @@ request and you will be automatically logged in.
 If you ever need to disable 2FA:
 
 1. Log in to your GitLab account.
-1. Go to your **Profile Settings**.
+1. Go to your [**Profile settings**](../index.md#profile-settings).
 1. Go to **Account**.
 1. Click **Disable**, under **Two-Factor Authentication**.
 
@@ -226,7 +228,7 @@ To regenerate 2FA recovery codes, you need access to a desktop browser:
 
 1. Navigate to GitLab.
 1. Sign in to your GitLab account.
-1. Go to your [Profile settings](../index.md#profile-settings).
+1. Go to your [**Profile settings**](../index.md#profile-settings).
 1. Select **{account}** **Account > Two-Factor Authentication (2FA)**.
 1. If you've already configured 2FA, click **Manage two-factor authentication**.
 1. In the **Register Two-Factor Authenticator** pane, click **Regenerate recovery codes**.
