@@ -25,7 +25,7 @@ module EE
         end
 
         def error_message
-          _('This group cannot be invited to project inside group with enforced SSO')
+          _('This group cannot be invited to a project inside a group with enforced SSO')
         end
 
         def log_audit_event(group_link)
