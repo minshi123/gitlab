@@ -36,12 +36,12 @@ export default class Wikis {
     window.addEventListener('resize', () => this.renderSidebar());
     this.renderSidebar();
 
-    this.changeFormatSelect = document.querySelector('#wiki_format');
-    this.linkExample = document.querySelector('#markup-link-example');
+    const changeFormatSelect = document.querySelector('#wiki_format');
+    const linkExample = document.querySelector('.js-markup-link-example');
 
-    if (this.changeFormatSelect) {
-      this.changeFormatSelect.addEventListener('change', e => {
-        this.linkExample.innerHTML = MARKDOWN_LINK_TEXT[e.target.value];
+    if (changeFormatSelect) {
+      changeFormatSelect.addEventListener('change', e => {
+        linkExample.innerHTML = MARKDOWN_LINK_TEXT[e.target.value];
       });
     }
   }
