@@ -4,7 +4,7 @@ module Gitlab
   class UsageData
     APPROXIMATE_COUNT_MODELS = [Label, MergeRequest, Note, Todo].freeze
     BATCH_SIZE = 100
-    
+
     class << self
       def data(force_refresh: false)
         Rails.cache.fetch('usage_data', force: force_refresh, expires_in: 2.weeks) do
