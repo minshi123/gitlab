@@ -84,6 +84,7 @@ review-deploy:
   needs:
     - job: review-build-cng
       artifacts: false
+  resource_group: $CI_ENVIRONMENT_NAME
   allow_failure: true
   before_script:
     - '[[ ! -d "ee/" ]] || export GITLAB_EDITION="ee"'
