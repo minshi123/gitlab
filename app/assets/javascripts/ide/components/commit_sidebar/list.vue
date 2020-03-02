@@ -63,9 +63,9 @@ export default {
   },
   computed: {
     titleText() {
-      return sprintf(__('%{title} changes'), {
+      return this.title ? sprintf(__('%{title} changes'), {
         title: this.title,
-      });
+      }) : __('Changes');
     },
     filesLength() {
       return this.fileList.length;
@@ -81,6 +81,10 @@ export default {
     openDiscardModal() {
       $('#discard-all-changes').modal('show');
     },
+    unstageAndDiscardAllChanges() {
+      this.unstageAllChanges();
+      this.discardAllChanges();
+    }
   },
   discardModalText: __(
     "You will lose all the unstaged changes you've made in this project. This action cannot be undone.",
@@ -153,7 +157,7 @@ export default {
       :footer-primary-button-text="__('Discard all changes')"
       :header-title-text="__('Discard all unstaged changes?')"
       footer-primary-button-variant="danger"
-      @submit="discardAllChanges"
+      @submit="unstageAndDiscardAllChanges"
     >
       {{ $options.discardModalText }}
     </gl-modal>
