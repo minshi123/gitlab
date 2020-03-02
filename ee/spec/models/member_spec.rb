@@ -15,13 +15,13 @@ describe Member, type: :model do
   end
 
   describe '#is_using_seat' do
-    let(:user) { FactoryBot.build :user }
-    let(:group) { FactoryBot.create :group }
-    let(:member) { FactoryBot.build_stubbed :group_member, group: group }
+    let(:user) { build :user }
+    let(:group) { create :group }
+    let(:member) { build_stubbed :group_member, group: group }
 
     before do
-      allow(user).to receive(:using_gitlab_com_seat?).with(group).and_return true
-      allow(user).to receive(:using_license_seat?).with(no_args).and_return true
+      allow(user).to receive(:using_gitlab_com_seat?).with(group).and_call_original
+      allow(user).to receive(:using_license_seat?).with(no_args).and_call_original
       member.user = user
     end
 
@@ -31,7 +31,7 @@ describe Member, type: :model do
       end
 
       it 'calls users check for using the gitlab_com seat method' do
-        expect(member.is_using_seat).to be_truthy
+        expect(member.is_using_seat).to be_falsy
         expect(user).to have_received(:using_gitlab_com_seat?).with(group).once
         expect(user).not_to have_received(:using_license_seat?)
       end
