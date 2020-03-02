@@ -1,8 +1,7 @@
 ---
 # See the FirstPerson.yml test for the other first-person words
 # that can be tested for without a regex. Testing for 'I' using 
-# normal word boundaries will generate many false positives for
-# 'I/O', and 'i.e.' if case insensitivity is set. 
+# normal word boundaries will generate many false positives. 
 extends: existence
 message: 'Use plural pronouns (we, you, us, one) instead of first-person singular pronouns like “%s.”'
 level: error
