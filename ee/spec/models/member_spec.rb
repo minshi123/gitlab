@@ -27,7 +27,7 @@ describe Member, type: :model do
 
     context 'when hosted on GL.com' do
       before do
-        allow(Gitlab).to receive(:com?).and_return true
+        allow(Gitlab).to receive(:dev_env_or_com?).and_return true
       end
 
       it 'calls users check for using the gitlab_com seat method' do
@@ -39,7 +39,7 @@ describe Member, type: :model do
 
     context 'when not hosted on GL.com' do
       before do
-        allow(Gitlab).to receive(:com?).and_return false
+        allow(Gitlab).to receive(:dev_env_or_com?).and_return false
       end
 
       it 'calls users check for using the License seat method' do

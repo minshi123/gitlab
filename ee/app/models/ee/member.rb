@@ -39,7 +39,7 @@ module EE
 
     # rubocop: disable Naming/PredicateName
     def is_using_seat
-      return user.using_gitlab_com_seat?(source) if ::Gitlab.com?
+      return user.using_gitlab_com_seat?(source) if ::Gitlab.dev_env_or_com?
 
       user.using_license_seat?
     end

@@ -257,7 +257,7 @@ module EE
     end
 
     def using_gitlab_com_seat?(namespace)
-      ::Gitlab.com? &&
+      ::Gitlab.dev_env_or_com? &&
       namespace.present? &&
       active? &&
       !namespace.root_ancestor.free_plan? &&
