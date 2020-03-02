@@ -9,6 +9,9 @@ tokens:
 # cause false positives for `I/O` and others. This is handled separately
 # in I.yml.
 # - I
+  - I'd
+  - I'll
+  - I'm
   - me
   - mine
   - myself
