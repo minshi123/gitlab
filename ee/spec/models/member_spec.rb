@@ -14,7 +14,7 @@ describe Member, type: :model do
     end
   end
 
-  describe '#is_using_seat' do
+  describe '#is_using_seat', :aggregate_failures do
     let(:user) { build :user }
     let(:group) { create :group }
     let(:member) { build_stubbed :group_member, group: group }
