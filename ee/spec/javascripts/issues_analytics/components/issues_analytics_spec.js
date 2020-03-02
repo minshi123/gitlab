@@ -1,9 +1,7 @@
 import IssuesAnalytics from 'ee/issues_analytics/components/issues_analytics.vue';
-import EmptyState from 'ee/issues_analytics/components/empty_state.vue';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { GlEmptyState } from '@gitlab/ui';
 import { createStore } from 'ee/issues_analytics/stores';
-
-const localVue = createLocalVue();
 
 describe('Issues Analytics component', () => {
   let vm;
@@ -20,16 +18,17 @@ describe('Issues Analytics component', () => {
       const props = data || {
         endpoint: gl.TEST_HOST,
         filterBlockEl: document.querySelector('#mock-filter'),
+        noDataEmptyStateSvgPath: 'svg',
+        filtersEmptyStateSvgPath: 'svg',
       };
 
-      return shallowMount(localVue.extend(IssuesAnalytics), {
+      return shallowMount(IssuesAnalytics, {
         propsData: props,
         stubs: {
           GlColumnChart: true,
-          EmptyState,
+          GlEmptyState: true,
         },
         store,
-        localVue,
       }).vm;
     };
 
