@@ -6,8 +6,8 @@ ignorecase: true
 link: https://docs.gitlab.com/ee/development/documentation/styleguide.html#language
 tokens:
 # 'I' is not included here because normal word boundary characters
-# cause false positives for `I/O` and positive-for-the-wrong-reason
-# results for `i.e.` See I.yml.
+# cause false positives for `I/O` and others. This is handled separately
+in I.yml.
 # - I
   - me
   - mine
