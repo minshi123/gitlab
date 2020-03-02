@@ -28,10 +28,9 @@ There are several ways to create a Release:
 Start by giving a [description](#release-description) to the Release and
 including its [assets](#release-assets), as follows.
 
-## Release versioning 
+## Release versioning
 
-Release versions are manually assigned by the user in the Release title. GitLab uses [Semantic Versioning](https://semver.org/) for our releases, and we recommend you do too. Use `(Major).(Minor).(Patch)`, as detailed in the
-[GitLab Policy for Versioning](../../../policy/maintenance.md#versioning).
+Release versions are manually assigned by the user in the Release title. GitLab uses [Semantic Versioning](https://semver.org/) for our releases, and we recommend you do too. Use `(Major).(Minor).(Patch)`, as detailed in the [GitLab Policy for Versioning](../../../policy/maintenance.md#versioning).
 
 For example, for GitLab version `10.5.7`:
 
