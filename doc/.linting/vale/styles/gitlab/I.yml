@@ -4,7 +4,7 @@
 # normal word boundaries will generate many false positives. 
 extends: existence
 message: 'Use plural pronouns (we, you, us, one) instead of first-person singular pronouns like “%s.”'
-level: error
+level: warning
 ignorecase: false
 link: https://docs.gitlab.com/ee/development/documentation/styleguide.html#language
 raw:
