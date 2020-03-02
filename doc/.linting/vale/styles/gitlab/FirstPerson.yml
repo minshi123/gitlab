@@ -7,7 +7,7 @@ link: https://docs.gitlab.com/ee/development/documentation/styleguide.html#langu
 tokens:
 # 'I' is not included here because normal word boundary characters
 # cause false positives for `I/O` and others. This is handled separately
-in I.yml.
+# in I.yml.
 # - I
   - me
   - mine
