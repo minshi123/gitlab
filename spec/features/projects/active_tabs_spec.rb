@@ -139,18 +139,13 @@ describe 'Project active tab' do
         it_behaves_like 'page has active sub tab', _('Repository Analytics')
       end
 
-      context 'on project Analytics/Repository Analytics' do
-        it_behaves_like 'page has active tab', _('Analytics')
-        it_behaves_like 'page has active sub tab', _('Repository Analytics')
-      end
-
       context 'on project Analytics/Cycle Analytics' do
         before do
-          click_tab(_('CI / CD Analytics'))
+          click_tab(_('Insights'))
         end
 
         it_behaves_like 'page has active tab', _('Analytics')
-        it_behaves_like 'page has active sub tab', _('CI / CD Analytics')
+        it_behaves_like 'page has active sub tab', _('Insights')
       end
     end
   end
