@@ -90,7 +90,6 @@ module EE
         end
         # rubocop: enable CodeReuse/ActiveRecord
 
-        # rubocop: disable CodeReuse/ActiveRecord
         def security_products_usage
           types = {
             container_scanning: :container_scanning_jobs,
@@ -101,16 +100,18 @@ module EE
             sast: :sast_jobs
           }
 
-          results = count(::Ci::Build.where(name: types.keys).group(:name), fallback: Hash.new(-1), batch: false)
-
-          license_scan_count = results.delete("license_scanning")
-          if license_scan_count && results["license_management"]
-            results["license_management"] += license_scan_count
+          results = types.each_with_object({}) do |(secure_type, type_with_name), response|
+            response[type_with_name] = count(::Ci::Build.where(name: secure_type)) # rubocop:disable CodeReuse/ActiveRecord
           end
 
-          results.each_with_object({}) { |(key, value), response| response[types[key.to_sym]] = value }
+          # handle license rename https://gitlab.com/gitlab-org/gitlab/issues/8911
+          license_scan_count = results.delete(:license_scanning_jobs)
+          if license_scan_count && results[:license_management_jobs]
+            results[:license_management_jobs] += license_scan_count
+          end
+
+          results
         end
-        # rubocop: enable CodeReuse/ActiveRecord
 
         # Note: when adding a preference, check if it's mapped to an attribute of a User model. If so, name
         # the base key part after a corresponding User model attribute, use its possible values as suffix values.
