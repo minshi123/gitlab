@@ -1,8 +1,14 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
-import { GlDropdown, GlDropdownItem, GlFormGroup, GlSearchBoxByClick, GlAlert } from '@gitlab/ui';
+import {
+  GlDropdown,
+  GlDropdownItem,
+  GlFormGroup,
+  GlSearchBoxByClick,
+  GlAlert,
+  GlInfiniteScroll,
+} from '@gitlab/ui';
 import DateTimePicker from '~/vue_shared/components/date_time_picker/date_time_picker.vue';
-import { scrollDown } from '~/lib/utils/scroll_utils';
 import LogControlButtons from './log_control_buttons.vue';
 
 import { timeRanges, defaultTimeRange } from '~/monitoring/constants';
@@ -15,6 +21,7 @@ export default {
     GlDropdownItem,
     GlFormGroup,
     GlSearchBoxByClick,
+    GlInfiniteScroll,
     DateTimePicker,
     LogControlButtons,
   },
@@ -75,16 +82,6 @@ export default {
       return !this.isElasticStackCalloutDismissed && this.disableAdvancedControls;
     },
   },
-  watch: {
-    trace(val) {
-      this.$nextTick(() => {
-        if (val) {
-          scrollDown();
-        }
-        this.$refs.scrollButtons.update();
-      });
-    },
-  },
   mounted() {
     this.setInitData({
       timeRange: timeRangeFromUrl() || defaultTimeRange,
@@ -102,7 +99,23 @@ export default {
       'showPodLogs',
       'showEnvironment',
       'fetchEnvironments',
+      'fetchLogsTop',
     ]),
+
+    topReached() {
+      if (!this.isLoading) {
+        this.fetchLogsTop();
+      }
+    },
+    scrollUp() {
+      // TODO Check if there is a better way
+      this.$refs.infiniteScroll.$refs.infiniteContainer.scrollTop = 0;
+    },
+    scrollDown() {
+      // TODO Check if there is a better way
+      const infiniteContainer = this.$refs.infiniteScroll.$refs.infiniteContainer;
+      infiniteContainer.scrollTop = infiniteContainer.scrollHeight;
+    },
   },
 };
 </script>
@@ -210,13 +223,29 @@ export default {
         ref="scrollButtons"
         class="controllers align-self-end mb-1"
         @refresh="showPodLogs(pods.current)"
+        @scrollUp="scrollUp"
+        @scrollDown="scrollDown"
       />
     </div>
-    <pre class="build-trace js-log-trace"><code class="bash js-build-output">{{trace}}
-      <div v-if="showLoader" class="build-loader-animation js-build-loader-animation">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-      </div></code></pre>
+
+    <gl-infinite-scroll
+      ref="infiniteScroll"
+      class="scroll-area"
+      @topReached="topReached"
+      :max-list-height="600"
+      :fetched-items="logs.lines.length"
+      :total-items="logs.pageInfo.totalResults"
+    >
+      <template #items>
+        <pre
+          class="build-trace js-log-trace"
+        ><code class="bash js-build-output"><div v-if="showLoader" class="build-loader-animation js-build-loader-animation">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>{{trace}}
+          </code></pre>
+      </template>
+    </gl-infinite-scroll>
   </div>
 </template>

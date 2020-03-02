@@ -16,6 +16,25 @@ const flashLogsError = () => {
   flash(s__('Metrics|There was an error fetching the logs, please try again'));
 };
 
+const logsParams = ({ state }) => {
+  const params = {
+    environment: state.environments.options.find(({ name }) => name === state.environments.current),
+    podName: state.pods.current,
+    search: state.search,
+  };
+
+  if (state.timeRange.current) {
+    try {
+      const { start, end } = convertToFixedRange(state.timeRange.current);
+      params.start = start;
+      params.end = end;
+    } catch {
+      flashTimeRangeWarning();
+    }
+  }
+  return params;
+};
+
 const requestLogsUntilData = params =>
   backOff((next, stop) => {
     Api.getPodLogs(params)
@@ -76,26 +95,12 @@ export const fetchEnvironments = ({ commit, dispatch }, environmentsPath) => {
 };
 
 export const fetchLogs = ({ commit, state }) => {
-  const params = {
-    environment: state.environments.options.find(({ name }) => name === state.environments.current),
-    podName: state.pods.current,
-    search: state.search,
-  };
-
-  if (state.timeRange.current) {
-    try {
-      const { start, end } = convertToFixedRange(state.timeRange.current);
-      params.start = start;
-      params.end = end;
-    } catch {
-      flashTimeRangeWarning();
-    }
-  }
+  const fetchParams = logsParams({ state });
 
   commit(types.REQUEST_PODS_DATA);
   commit(types.REQUEST_LOGS_DATA);
 
-  return requestLogsUntilData(params)
+  return requestLogsUntilData(fetchParams)
     .then(({ data }) => {
       const { pod_name, pods, logs } = data;
       commit(types.SET_CURRENT_POD_NAME, pod_name);
@@ -105,6 +110,22 @@ export const fetchLogs = ({ commit, state }) => {
     })
     .catch(() => {
       commit(types.RECEIVE_PODS_DATA_ERROR);
+      commit(types.RECEIVE_LOGS_DATA_ERROR);
+      flashLogsError();
+    });
+};
+
+export const fetchLogsTop = ({ commit, state }) => {
+  const fetchParams = logsParams({ state });
+
+  commit(types.REQUEST_LOGS_DATA_PREPEND);
+
+  return requestLogsUntilData(fetchParams)
+    .then(({ data }) => {
+      const { logs } = data;
+      commit(types.RECEIVE_LOGS_DATA_PREPEND_SUCCESS, logs);
+    })
+    .catch(() => {
       commit(types.RECEIVE_LOGS_DATA_ERROR);
       flashLogsError();
     });

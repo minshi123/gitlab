@@ -30,6 +30,12 @@ export default () => ({
     lines: [],
     isLoading: false,
     isComplete: true,
+    pageInfo: {
+      currentPage: 0,
+      nextPage: 0,
+      totalPages: 0,
+      totalResults: 0,
+    },
   },
 
   /**

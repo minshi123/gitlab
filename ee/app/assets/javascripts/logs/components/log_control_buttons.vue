@@ -1,12 +1,6 @@
 <script>
 import { GlButton, GlTooltipDirective } from '@gitlab/ui';
-import {
-  canScroll,
-  isScrolledToTop,
-  isScrolledToBottom,
-  scrollDown,
-  scrollUp,
-} from '~/lib/utils/scroll_utils';
+import { canScroll, isScrolledToTop, isScrolledToBottom } from '~/lib/utils/scroll_utils';
 import Icon from '~/vue_shared/components/icon.vue';
 
 export default {
@@ -19,8 +13,9 @@ export default {
   },
   data() {
     return {
-      scrollToTopEnabled: false,
-      scrollToBottomEnabled: false,
+      // TODO how can this be updated?
+      scrollToTopEnabled: true,
+      scrollToBottomEnabled: true,
     };
   },
   created() {
@@ -30,19 +25,15 @@ export default {
     window.removeEventListener('scroll', this.update);
   },
   methods: {
-    /**
-     * Checks if page can be scrolled and updates
-     * enabled/disabled state of buttons accordingly
-     */
-    update() {
-      this.scrollToTopEnabled = canScroll() && !isScrolledToTop();
-      this.scrollToBottomEnabled = canScroll() && !isScrolledToBottom();
-    },
     handleRefreshClick() {
       this.$emit('refresh');
     },
-    scrollUp,
-    scrollDown,
+    handleScrollUp() {
+      this.$emit('scrollUp');
+    },
+    handleScrollDown() {
+      this.$emit('scrollDown');
+    },
   },
 };
 </script>
@@ -60,7 +51,7 @@ export default {
         class="btn-blank js-scroll-to-top"
         :aria-label="__('Scroll to top')"
         :disabled="!scrollToTopEnabled"
-        @click="scrollUp()"
+        @click="handleScrollUp()"
         ><icon name="scroll_up"
       /></gl-button>
     </div>
@@ -75,7 +66,7 @@ export default {
         class="btn-blank js-scroll-to-bottom"
         :aria-label="__('Scroll to bottom')"
         :disabled="!scrollToBottomEnabled"
-        @click="scrollDown()"
+        @click="handleScrollDown()"
         ><icon name="scroll_down"
       /></gl-button>
     </div>

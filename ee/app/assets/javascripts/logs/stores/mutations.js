@@ -1,5 +1,10 @@
 import * as types from './mutation_types';
 
+const mapLine = ({ timestamp, message }) => ({
+  timestamp,
+  message,
+});
+
 export default {
   /** Search data */
   [types.SET_SEARCH](state, searchQuery) {
@@ -28,19 +33,39 @@ export default {
     state.environments.isLoading = false;
   },
 
-  /** Logs data */
+  // Logs data
   [types.REQUEST_LOGS_DATA](state) {
-    state.logs.lines = [];
     state.logs.isLoading = true;
     state.logs.isComplete = false;
   },
   [types.RECEIVE_LOGS_DATA_SUCCESS](state, lines) {
-    state.logs.lines = lines;
+    state.logs.lines = lines.map(mapLine);
     state.logs.isLoading = false;
     state.logs.isComplete = true;
   },
   [types.RECEIVE_LOGS_DATA_ERROR](state) {
     state.logs.lines = [];
+    state.logs.isLoading = false;
+    state.logs.isComplete = true;
+  },
+  [types.REQUEST_LOGS_DATA_PREPEND](state) {
+    state.logs.isLoading = true;
+    state.logs.isComplete = false;
+  },
+  [types.RECEIVE_LOGS_DATA_PREPEND_SUCCESS](state, newLines) {
+    // TODO Remove this after debugging
+    // const lines = [
+    //   {
+    //     message: '---------------------',
+    //   },
+    //   ...newLines.map(mapLine).slice(0, 20),
+    //   {
+    //     message: '---------------------',
+    //   },
+    // ];
+    const lines = newLines.map(mapLine);
+
+    state.logs.lines.unshift(lines);
     state.logs.isLoading = false;
     state.logs.isComplete = true;
   },

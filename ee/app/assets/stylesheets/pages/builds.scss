@@ -9,6 +9,8 @@
 
   .top-bar {
     @include build-trace-top-bar($gl-line-height * 5);
+    position: relative;
+    top: 0;
 
     .dropdown-menu-toggle {
       width: 200px;
