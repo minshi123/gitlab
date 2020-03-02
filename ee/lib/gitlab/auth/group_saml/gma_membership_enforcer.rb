@@ -20,16 +20,17 @@ module Gitlab
         attr_reader :project
 
         def check_group_membership(user, given_project)
-          group = project_root_group(given_project)
+          root_ancestor = project_root_ancestor(given_project)
 
-          return true unless ::Feature.enabled?(:group_managed_accounts, group)
-          return true unless group&.enforced_group_managed_accounts?
+          return true unless root_ancestor&.kind == 'group'
+          return true unless ::Feature.enabled?(:group_managed_accounts, root_ancestor)
+          return true unless root_ancestor.enforced_group_managed_accounts?
 
-          group == user.managing_group
+          root_ancestor == user.managing_group
         end
 
-        def project_root_group(given_project)
-          project&.root_ancestor
+        def project_root_ancestor(given_project)
+          given_project&.root_ancestor
         end
       end
     end

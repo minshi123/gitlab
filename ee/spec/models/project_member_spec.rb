@@ -22,13 +22,13 @@ describe ProjectMember do
         allow_any_instance_of(SamlProvider).to receive(:enforced_group_managed_accounts?).and_return(true)
       end
 
-      it 'allows adding the project member' do
+      it 'allows adding the project member from group' do
         member = described_class.add_user(entity, user, Member::DEVELOPER)
 
         expect(member).to be_valid
       end
 
-      it 'does not add the the project member' do
+      it 'does not add the the project member outside of group' do
         member = described_class.add_user(entity, create(:user), Member::DEVELOPER)
 
         expect(member).not_to be_valid
