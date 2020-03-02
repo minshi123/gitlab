@@ -238,6 +238,62 @@ describe NotePolicy do
           end
         end
       end
+
+      context 'with confidential notes' do
+        def permissions(user, note)
+          described_class.new(user, note)
+        end
+
+        let(:author) { create(:user) }
+        let(:assignee) { create(:user) }
+        let(:reporter) { create(:user) }
+        let(:developer) { create(:user) }
+        let(:maintainer) { create(:user) }
+        let(:guest) { create(:user) }
+        let(:non_member) { create(:user) }
+
+        let(:issue) { create(:issue, project: project, author: author, assignees: [assignee]) }
+        let(:confidential_note) { create(:note, :confidential, project: project, noteable: issue) }
+
+        before do
+          project.add_reporter(reporter)
+          project.add_developer(developer)
+          project.add_maintainer(maintainer)
+          project.add_guest(guest)
+        end
+
+        it 'does not allow non members to read confidential notes and replies' do
+          expect(permissions(non_member, confidential_note)).to be_disallowed(:read_note, :admin_note, :resolve_note, :award_emoji)
+        end
+
+        it 'does not allow guests to read confidential notes and replies' do
+          expect(permissions(guest, confidential_note)).to be_disallowed(:read_note, :admin_note, :resolve_note, :award_emoji)
+        end
+
+        it 'allows reporter to read all notes but not reasolve and admin them' do
+          expect(permissions(reporter, confidential_note)).to be_allowed(:read_note, :award_emoji)
+          expect(permissions(reporter, confidential_note)).to be_disallowed(:admin_note, :resolve_note)
+        end
+
+        it 'allows developer to read and resolve all notes' do
+          expect(permissions(developer, confidential_note)).to be_allowed(:read_note, :award_emoji, :resolve_note)
+          expect(permissions(developer, confidential_note)).to be_disallowed(:admin_note)
+        end
+
+        it 'allows maintainers to read all notes and admin them' do
+          expect(permissions(maintainer, confidential_note)).to be_allowed(:read_note, :admin_note, :resolve_note, :award_emoji)
+        end
+
+        it 'allows noteable author to read and resolve all notes' do
+          expect(permissions(author, confidential_note)).to be_allowed(:read_note, :resolve_note, :award_emoji)
+          expect(permissions(author, confidential_note)).to be_disallowed(:admin_note)
+        end
+
+        it 'allows noteable assignees to read all notes' do
+          expect(permissions(assignee, confidential_note)).to be_allowed(:read_note, :award_emoji)
+          expect(permissions(assignee, confidential_note)).to be_disallowed(:admin_note, :resolve_note)
+        end
+      end
     end
   end
 end

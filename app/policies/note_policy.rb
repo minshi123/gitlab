@@ -13,6 +13,13 @@ class NotePolicy < BasePolicy
 
   condition(:is_visible) { @subject.system_note_with_references_visible_for?(@user) }
 
+  condition(:confidential, scope: :subject) { @subject.confidential? }
+
+  condition(:can_read_confidential) do
+    access_level >= Gitlab::Access::REPORTER ||
+    @user && @subject.noteable.assignee_or_author?(@user)
+  end
+
   rule { ~editable }.prevent :admin_note
 
   # If user can't read the issue/MR/etc then they should not be allowed to do anything to their own notes
@@ -38,5 +45,25 @@ class NotePolicy < BasePolicy
 
   rule { is_noteable_author }.policy do
     enable :resolve_note
+  end
+
+  rule { confidential & ~can_read_confidential }.policy do
+    prevent :read_note
+    prevent :admin_note
+    prevent :resolve_note
+    prevent :award_emoji
+  end
+
+  def access_level
+    return -1 if @user.nil?
+
+    lookup_access_level!
+  end
+
+  def lookup_access_level!
+    return ::Gitlab::Access::REPORTER if alert_bot?
+
+    # NOTE: max_member_access has its own cache
+    @subject.project.team.max_member_access(@user.id)
   end
 end

@@ -324,7 +324,7 @@ class Note < ApplicationRecord
   end
 
   def confidential?
-    noteable.try(:confidential?)
+    confidential || noteable.try(:confidential?)
   end
 
   def editable?
