@@ -53,13 +53,13 @@ class AutomatedCleanup
     @kubernetes ||= Quality::KubernetesClient.new(namespace: review_apps_namespace)
   end
 
-  def perform_gitlab_environment_cleanup!(days_for_stop:, days_for_delete:)
-    puts "Checking for review apps not updated in the last #{days_for_stop} days..."
+  def perform_gitlab_environment_cleanup!(hours_for_stop:, hours_for_delete:)
+    puts "Checking for review apps not updated in the last #{hours_for_stop} hours..."
 
     checked_environments = []
-    delete_threshold = threshold_time(days: days_for_delete)
-    stop_threshold = threshold_time(days: days_for_stop)
-    deployments_look_back_threshold = threshold_time(days: days_for_delete * 5)
+    delete_threshold = threshold_time(hours: hours_for_delete)
+    stop_threshold = threshold_time(hours: hours_for_stop)
+    deployments_look_back_threshold = threshold_time(hours: hours_for_delete * 5 * 24)
 
     releases_to_delete = []
 
@@ -93,10 +93,10 @@ class AutomatedCleanup
     delete_helm_releases(releases_to_delete)
   end
 
-  def perform_helm_releases_cleanup!(days:)
-    puts "Checking for Helm releases not updated in the last #{days} days..."
+  def perform_helm_releases_cleanup!(hours:)
+    puts "Checking for Helm releases not updated in the last #{hours} hours..."
 
-    threshold_day = threshold_time(days: days)
+    threshold = threshold_time(hours: hours)
 
     releases_to_delete = []
 
@@ -104,7 +104,7 @@ class AutomatedCleanup
       # Prevents deleting `dns-gitlab-review-app` releases or other unrelated releases
       next unless release.name.start_with?('review-')
 
-      if release.status == 'FAILED' || release.last_update < threshold_day
+      if release.status == 'FAILED' || release.last_update < threshold
         releases_to_delete << release
       else
         print_release_state(subject: 'Release', release_name: release.name, release_date: release.last_update, action: 'leaving')
@@ -159,8 +159,8 @@ class AutomatedCleanup
     puts "Ignoring the following Kubernetes error:\n#{ex}\n"
   end
 
-  def threshold_time(days:)
-    Time.now - days * 24 * 3600
+  def threshold_time(hours:)
+    Time.now - hours * 3600
   end
 
   def ignore_exception?(exception_message, exceptions_ignored)
@@ -181,13 +181,13 @@ end
 automated_cleanup = AutomatedCleanup.new
 
 timed('Review apps cleanup') do
-  automated_cleanup.perform_gitlab_environment_cleanup!(days_for_stop: 2, days_for_delete: 3)
+  automated_cleanup.perform_gitlab_environment_cleanup!(hours_for_stop: 50, hours_for_delete: 52)
 end
 
 puts
 
 timed('Helm releases cleanup') do
-  automated_cleanup.perform_helm_releases_cleanup!(days: 3)
+  automated_cleanup.perform_helm_releases_cleanup!(hours: 52)
 end
 
 exit(0)
