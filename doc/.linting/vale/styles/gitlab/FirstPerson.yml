@@ -1,7 +1,7 @@
 ---
 extends: existence
 message: 'Use plural pronouns (we, you, us, one) instead of first-person singular pronouns like “%s.”'
-level: error
+level: warning
 ignorecase: true
 link: https://docs.gitlab.com/ee/development/documentation/styleguide.html#language
 tokens:
