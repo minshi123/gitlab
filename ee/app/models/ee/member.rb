@@ -36,7 +36,7 @@ module EE
 
     # The method is exposed in the API as is_using_seat
     # in ee/lib/ee/api/entities.rb
-
+    #
     # rubocop: disable Naming/PredicateName
     def is_using_seat
       return user.using_gitlab_com_seat?(source) if ::Gitlab.dev_env_or_com?

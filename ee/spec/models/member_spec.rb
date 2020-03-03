@@ -17,13 +17,7 @@ describe Member, type: :model do
   describe '#is_using_seat', :aggregate_failures do
     let(:user) { build :user }
     let(:group) { create :group }
-    let(:member) { build_stubbed :group_member, group: group }
-
-    before do
-      allow(user).to receive(:using_gitlab_com_seat?).with(group).and_call_original
-      allow(user).to receive(:using_license_seat?).with(no_args).and_call_original
-      member.user = user
-    end
+    let(:member) { build :group_member, group: group, user: user }
 
     context 'when hosted on GL.com' do
       before do
@@ -31,9 +25,10 @@ describe Member, type: :model do
       end
 
       it 'calls users check for using the gitlab_com seat method' do
-        expect(member.is_using_seat).to be_falsy
-        expect(user).to have_received(:using_gitlab_com_seat?).with(group).once
-        expect(user).not_to have_received(:using_license_seat?)
+        expect(user).to receive(:using_gitlab_com_seat?).with(group).once.and_return true
+        expect(user).not_to receive(:using_license_seat?)
+        expect(member.is_using_seat).to be_truthy
+
       end
     end
 
@@ -43,9 +38,9 @@ describe Member, type: :model do
       end
 
       it 'calls users check for using the License seat method' do
+        expect(user).to receive(:using_license_seat?).with(no_args).and_return true
+        expect(user).not_to receive(:using_gitlab_com_seat?)
         expect(member.is_using_seat).to be_truthy
-        expect(user).to have_received(:using_license_seat?).with(no_args)
-        expect(user).not_to have_received(:using_gitlab_com_seat?)
       end
     end
   end
