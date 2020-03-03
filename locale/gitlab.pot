@@ -10692,6 +10692,9 @@ msgstr ""
 msgid "Instance license"
 msgstr ""
 
+msgid "Integration"
+msgstr ""
+
 msgid "Integration Settings"
 msgstr ""
 
@@ -15052,12 +15055,6 @@ msgid "ProjectService|Last edit"
 msgstr ""
 
 msgid "ProjectService|Perform common operations on GitLab project: %{project_name}"
-msgstr ""
-
-msgid "ProjectService|Service"
-msgstr ""
-
-msgid "ProjectService|Services"
 msgstr ""
 
 msgid "ProjectService|To set up this service:"
