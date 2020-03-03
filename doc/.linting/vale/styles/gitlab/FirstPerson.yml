@@ -1,17 +1,13 @@
----
+# Checks for use of first person pronouns.
+#
+# For a list of all options, see https://errata-ai.github.io/vale/styles/
 extends: existence
-message: 'Use plural pronouns (we, you, us, one) instead of first-person singular pronouns like “%s.”'
+message: 'Use plural pronouns (we, you, us, one) instead of first-person singular pronouns like `%s`.'
 level: warning
 ignorecase: true
 link: https://docs.gitlab.com/ee/development/documentation/styleguide.html#language
 tokens:
-# 'I' is not included here because normal word boundary characters
-# cause false positives for `I/O` and others. This is handled separately
-# in I.yml.
-# - I
-  - I'd
-  - I'll
-  - I'm
+  - '\bI[ ,;:?!"]|\bI\x27.{1,2}'
   - me
-  - mine
   - myself
+  - mine
