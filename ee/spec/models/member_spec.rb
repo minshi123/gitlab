@@ -28,7 +28,6 @@ describe Member, type: :model do
         expect(user).to receive(:using_gitlab_com_seat?).with(group).once.and_return true
         expect(user).not_to receive(:using_license_seat?)
         expect(member.is_using_seat).to be_truthy
-
       end
     end
 
