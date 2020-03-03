@@ -101,6 +101,60 @@ describe Gitlab::Middleware::Multipart do
     end
   end
 
+  context 'with packages storage path' do
+    let(:upload_dir) { 'shared/packages/tmp/uploads' }
+
+    RSpec.shared_examples 'allowing the upload' do
+      it 'allows files to be uploaded' do
+        Dir.mktmpdir do |dir|
+          packages_upload_dir = File.join(dir, upload_dir)
+          FileUtils.mkdir_p(packages_upload_dir)
+
+          Tempfile.open('top-level', packages_upload_dir) do |tempfile|
+            env = post_env({ 'file' => tempfile.path }, { 'file.name' => original_filename, 'file.path' => tempfile.path }, Gitlab::Workhorse.secret, 'gitlab-workhorse')
+
+            expect(app).to receive(:call) do |env|
+              expect(get_params(env)['file']).to be_a(::UploadedFile)
+            end
+
+            middleware.call(env)
+          end
+        end
+      end
+    end
+
+    context 'with packages object storage disabled' do
+      before do
+        allow(Gitlab.config.packages.object_store).to receive(:enabled).and_return(false)
+        expect(Packages::PackageFileUploader).to receive(:workhorse_upload_path).and_return(upload_dir)
+      end
+
+      it_behaves_like 'allowing the upload'
+    end
+
+    context 'with packages object storage enabled' do
+      context 'with direct upload enabled' do
+        before do
+          allow(Gitlab.config.packages.object_store).to receive(:enabled).and_return(true)
+          allow(Gitlab.config.packages.object_store).to receive(:direct_upload).and_return(true)
+          expect(Packages::PackageFileUploader).not_to receive(:workhorse_upload_path)
+        end
+
+        it_behaves_like 'allowing the upload'
+      end
+
+      context 'with direct upload disabled' do
+        before do
+          allow(Gitlab.config.packages.object_store).to receive(:enabled).and_return(true)
+          allow(Gitlab.config.packages.object_store).to receive(:direct_upload).and_return(false)
+          expect(Packages::PackageFileUploader).to receive(:workhorse_upload_path).and_return(upload_dir)
+        end
+
+        it_behaves_like 'allowing the upload'
+      end
+    end
+  end
+
   it 'allows symlinks for uploads dir' do
     Tempfile.open('two-levels') do |tempfile|
       symlinked_dir = '/some/dir/uploads'

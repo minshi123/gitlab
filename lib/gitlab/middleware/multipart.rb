@@ -90,6 +90,10 @@ module Gitlab
             File.join(Rails.root, 'public/uploads/tmp')
           ]
 
+          unless Gitlab.config.packages.object_store.enabled && Gitlab.config.packages.object_store.direct_upload
+            allowed_paths << Packages::PackageFileUploader.workhorse_upload_path
+          end
+
           ::UploadedFile.from_params(params, key, allowed_paths)
         end
 
