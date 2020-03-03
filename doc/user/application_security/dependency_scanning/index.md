@@ -134,7 +134,7 @@ The following variables allow configuration of global dependency scanning settin
 
 | Environment variable                    | Default     | Description |
 | --------------------------------------- | ----------- | ----------- |
-| `DS_ANALYZER_IMAGES`                    |             | Comma separated list of custom images. The official default images are still enabled. Read more about [customizing analyzers](analyzers.md). |
+| `DS_ANALYZER_IMAGES`                    |             | Comma-separated list of custom images. The official default images are still enabled. Read more about [customizing analyzers](analyzers.md). |
 | `DS_ANALYZER_IMAGE_PREFIX`              |             | Override the name of the Docker registry providing the official default images (proxy). Read more about [customizing analyzers](analyzers.md). |
 | `DS_ANALYZER_IMAGE_TAG`                 |             | Override the Docker tag of the official default images. Read more about [customizing analyzers](analyzers.md). |
 | `DS_DEFAULT_ANALYZERS`                  |             | Override the names of the official default images. Read more about [customizing analyzers](analyzers.md). |
