@@ -11,7 +11,7 @@
 
   = render_if_exists 'groups/self_or_ancestor_marked_for_deletion_notice', group: @group
 
-  #js-group-statistics{ data: { group_full_path: @group.full_path } }
+  #js-group-activity{ data: { group_full_path: @group.full_path } }
 
   .groups-listing{ data: { endpoints: { default: group_children_path(@group, format: :json), shared: group_shared_projects_path(@group, format: :json) } } }
     .top-area.group-nav-container.justify-content-between
