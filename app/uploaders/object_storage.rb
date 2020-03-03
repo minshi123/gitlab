@@ -267,10 +267,20 @@ module ObjectStorage
     def schedule_background_upload(*args)
       return unless schedule_background_upload?
 
-      ObjectStorage::BackgroundMoveWorker.perform_async(self.class.name,
-                                                          model.class.name,
-                                                          mounted_as,
-                                                          model.id)
+      enqueue_background_move_worker = proc do
+        ObjectStorage::BackgroundMoveWorker.perform_async(self.class.name,
+                                                            model.class.name,
+                                                            mounted_as,
+                                                            model.id)
+      end
+
+      if model.respond_to?(:run_after_commit_or_now)
+        model.run_after_commit_or_now do
+          enqueue_background_move_worker.call
+        end
+      else
+        enqueue_background_move_worker.call
+      end
     end
 
     def fog_directory
