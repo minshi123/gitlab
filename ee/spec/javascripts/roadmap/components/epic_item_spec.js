@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-import _ from 'underscore';
+import _ from 'lodash';
 
 import epicItemComponent from 'ee/roadmap/components/epic_item.vue';
 

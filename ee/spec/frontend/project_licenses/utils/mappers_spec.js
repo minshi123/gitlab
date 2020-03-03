@@ -1,7 +1,7 @@
 import { toLicenseObject } from 'ee/project_licenses/utils/mappers';
 
 const UNIQUE_ID = 'fakeUniqueId';
-jest.mock('underscore', () => ({
+jest.mock('lodash', () => ({
   uniqueId: () => 'fakeUniqueId',
 }));
 

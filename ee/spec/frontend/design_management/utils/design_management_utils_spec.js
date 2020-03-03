@@ -1,4 +1,4 @@
-import underscore from 'underscore';
+import _ from 'lodash';
 import {
   extractCurrentDiscussion,
   extractDiscussions,
@@ -74,7 +74,7 @@ describe('version parser', () => {
 
 describe('optimistic responses', () => {
   it('correctly generated for designManagementUpload', () => {
-    jest.spyOn(underscore, 'uniqueId').mockImplementation(() => 1);
+    jest.spyOn(_, 'uniqueId').mockImplementation(() => 1);
     const expectedResponse = {
       __typename: 'Mutation',
       designManagementUpload: {

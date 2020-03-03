@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import { head, uniqueId } from 'lodash';
 import { shallowMount } from '@vue/test-utils';
 import { GlFormTextarea, GlFormCheckbox } from '@gitlab/ui';
 import Form from 'ee/feature_flags/components/form.vue';
@@ -151,7 +151,7 @@ describe('feature flag form', () => {
           it('should update the scope', () => {
             wrapper.find(ToggleButton).vm.$emit('change', false);
 
-            expect(_.first(wrapper.vm.formScopes).active).toBe(false);
+            expect(head(wrapper.vm.formScopes).active).toBe(false);
           });
 
           it('should be disabled if the feature flag is not active', done => {
@@ -180,7 +180,7 @@ describe('feature flag form', () => {
         });
 
         it('should add `shouldBeDestroyed` key the clicked scope', () => {
-          expect(_.first(wrapper.vm.formScopes).shouldBeDestroyed).toBe(true);
+          expect(head(wrapper.vm.formScopes).shouldBeDestroyed).toBe(true);
         });
 
         it('should not render deleted scopes', () => {
@@ -198,7 +198,7 @@ describe('feature flag form', () => {
               {
                 environmentScope: 'new_scope',
                 active: false,
-                id: _.uniqueId(INTERNAL_ID_PREFIX),
+                id: uniqueId(INTERNAL_ID_PREFIX),
                 canUpdate: true,
                 protected: false,
                 strategies: [

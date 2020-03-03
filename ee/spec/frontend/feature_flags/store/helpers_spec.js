@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import { uniqueId } from 'lodash';
 import {
   mapToScopesViewModel,
   mapFromScopesViewModel,
@@ -209,7 +209,7 @@ describe('feature flags helpers spec', () => {
 
     it('should strip out internal IDs', () => {
       const input = {
-        scopes: [{ id: 3 }, { id: _.uniqueId(INTERNAL_ID_PREFIX) }],
+        scopes: [{ id: 3 }, { id: uniqueId(INTERNAL_ID_PREFIX) }],
       };
 
       const result = mapFromScopesViewModel(input);

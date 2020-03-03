@@ -1,9 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 import { Accordion } from 'ee/vue_shared/components/accordion';
 
-import { uniqueId } from 'underscore';
+import { uniqueId } from 'lodash';
 
-jest.mock('underscore');
+jest.mock('lodash');
 
 describe('Accordion component', () => {
   let wrapper;

@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import { range } from 'lodash';
 import { shallowMount } from '@vue/test-utils';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import ApprovalsList from 'ee/vue_merge_request_widget/components/approvals/approvals_list.vue';
@@ -6,7 +6,7 @@ import ApprovalsFooter from 'ee/vue_merge_request_widget/components/approvals/ap
 import Icon from '~/vue_shared/components/icon.vue';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
 
-const testSuggestedApprovers = () => _.range(1, 11).map(id => ({ id }));
+const testSuggestedApprovers = () => range(1, 11).map(id => ({ id }));
 const testApprovalRules = () => [{ name: 'Lorem' }, { name: 'Ipsum' }];
 
 describe('EE MRWidget approvals footer', () => {

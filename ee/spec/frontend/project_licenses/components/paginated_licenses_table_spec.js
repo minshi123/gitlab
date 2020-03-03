@@ -7,7 +7,7 @@ import PaginatedLicensesTable from 'ee/project_licenses/components/paginated_lic
 import Pagination from '~/vue_shared/components/pagination_links.vue';
 import mockLicensesResponse from '../store/modules/list/data/mock_licenses.json';
 
-jest.mock('underscore', () => ({
+jest.mock('lodash', () => ({
   uniqueId: () => 'fakeUniqueId',
 }));
 
