@@ -12,7 +12,7 @@ describe Mutations::ResolvesIssuable do
   let(:project)  { create(:project) }
   let(:user)     { create(:user) }
   let(:context)  { { current_user: user } }
-  let(:mutation) { mutation_class.new(object: nil, context: context) }
+  let(:mutation) { mutation_class.new(object: nil, context: context, field: nil) }
 
   shared_examples 'resolving an issuable' do |type|
     context 'when user has access' do

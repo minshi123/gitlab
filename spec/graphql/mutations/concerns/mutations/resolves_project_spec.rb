@@ -11,7 +11,7 @@ describe Mutations::ResolvesProject do
 
   let(:context) { double }
 
-  subject(:mutation) { mutation_class.new(object: nil, context: context) }
+  subject(:mutation) { mutation_class.new(object: nil, context: context, field: nil) }
 
   it 'uses the ProjectsResolver to resolve projects by path' do
     project = create(:project)
