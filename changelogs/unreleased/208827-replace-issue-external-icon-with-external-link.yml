@@ -1,5 +1,5 @@
 ---
-title: Merge branch '7531-audit-mr-approval-permission' into 'master'
-merge_request:
-author:
+title: Replace issue-external icon with external-link
+merge_request: 208827
+author: jelder
 type: other
