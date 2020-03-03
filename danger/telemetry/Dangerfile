@@ -3,11 +3,11 @@
 gitlab_danger = GitlabDanger.new(helper.gitlab_helper)
 
 TELEMETRY_CHANGED_FILES_MESSAGE = <<~MSG
-This merge request requires a telemetry and a data review. To make sure these
+For this merge request it is recommended a telemetry and a data review. To make sure these
 changes are reviewed, take the following steps:
 
-1. Assign and mention the telemetry reviewer suggested by Reviewer Roulette.
-1. Assign and mention the data reviewer suggested by Reviewer Roulette.
+1. Assign and mention a [telemetry reviewer](https://gitlab.com/groups/gitlab-org/growth/telemetry/-/group_members?with_inherited_permissions=exclude).
+1. Assign and mention a data reviewer.
 MSG
 
 usage_data_changed_files = git.modified_files.grep(%r{usage_data})
@@ -21,7 +21,9 @@ return unless gitlab_danger.ci?
 if usage_data_changed_files.any?
   MESSAGE = <<~MSG
   This merge request adds or changes files that require a
-  review from the Data team and Telemetry team
+  review from the Data team and
+  Telemetry team @/gitlab-org/growth/telemetry
+  The specific groups are mentioned in order to send a notification to team members.
   MSG
 
   USAGE_DATA_FILES_MESSAGE = <<~MSG
