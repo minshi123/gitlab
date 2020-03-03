@@ -88,7 +88,7 @@ module Gitlab
       end
 
       def release(job)
-        job[:release] if Feature.enabled?(:ci_release_generation, default_enabled: false)
+        job[:release] #if Feature.enabled?(:ci_release_generation, default_enabled: false)
       end
 
       def stage_builds_attributes(stage)
