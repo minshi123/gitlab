@@ -1,22 +1,22 @@
-# Project services
+# Integrations
 
-Project services allow you to integrate GitLab with other applications. They
+Integrations allow you to integrate GitLab with other applications. They
 are a bit like plugins in that they allow a lot of freedom in adding
 functionality to GitLab.
 
-## Accessing the project services
+## Accessing integrations
 
-You can find the available services under your project's
+You can find the available integrations under your project's
 **Settings ➔ Integrations** page.
 
-There are more than 20 services to integrate with. Click on the one that you
+There are more than 20 integrations to integrate with. Click on the one that you
 want to configure.
 
- ![Project services list](img/project_services.png)
+![Integrations list](img/project_services.png)
 
 Below, you will find a list of the currently supported ones accompanied with comprehensive documentation.
 
-## Services
+## Integrations listing
 
 Click on the service links to see further configuration instructions and details.
 
@@ -74,9 +74,9 @@ your liking which will then be pre-filled on each project's Service.
 
 Read more about [Services templates in this document](services_templates.md).
 
-## Troubleshooting project services
+## Troubleshooting integrations
 
-Some project services use service hooks for integration with external applications. To confirm which ones use service hooks, see the [services table](#services). GitLab stores details of service hook requests made within the last 2 days. To view details of the requests, go to the service's configuration page.
+Some integrations use service hooks for integration with external applications. To confirm which ones use service hooks, see the [integrations listing](#integrations-listing). GitLab stores details of service hook requests made within the last 2 days. To view details of the requests, go to the service's configuration page.
 
 The **Recent Deliveries** section lists the details of each request made within the last 2 days:
 
@@ -93,13 +93,13 @@ From this page, you can repeat delivery with the same data by clicking **Resend 
 
 ![Recent deliveries](img/webhook_logs.png)
 
-## Contributing to project services
+## Contributing to integrations
 
 Because GitLab is open source we can ship with the code and tests for all
 plugins. This allows the community to keep the plugins up to date so that they
 always work in newer GitLab versions.
 
-For an overview of what projects services are available, please see the
+For an overview of what integrations are available, please see the
 [project_services source directory][projects-code].
 
 Contributions are welcome!

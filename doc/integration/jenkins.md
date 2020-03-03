@@ -6,8 +6,8 @@ In GitLab 8.3, Jenkins integration using the
 was deprecated in favor of the
 [GitLab Plugin](https://wiki.jenkins.io/display/JENKINS/GitLab+Plugin).
 The deprecated integration has been renamed to [Jenkins CI (Deprecated)](jenkins_deprecated.md) in the
-project service settings. We may remove this in a future release and recommend
-using the new 'Jenkins CI' project service instead which is described in this
+integration settings. We may remove this in a future release and recommend
+using the new 'Jenkins CI' integration instead which is described in this
 document.
 
 ## Overview
