@@ -1,0 +1,5 @@
+---
+title: Ensure RepositoryLinkFilter handles Gitaly failures gracefully
+merge_request:
+author:
+type: performance
