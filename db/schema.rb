@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_03_074328) do
+ActiveRecord::Schema.define(version: 2020_03_04_211738) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3018,7 +3018,6 @@ ActiveRecord::Schema.define(version: 2020_03_03_074328) do
     t.datetime_with_timezone "created_at", null: false
     t.datetime_with_timezone "updated_at", null: false
     t.bigint "size"
-    t.integer "file_type"
     t.integer "file_store"
     t.binary "file_md5"
     t.binary "file_sha1"
