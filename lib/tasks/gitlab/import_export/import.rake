@@ -22,6 +22,7 @@ namespace :gitlab do
 
       if ENV['IMPORT_DEBUG'].present?
         ActiveRecord::Base.logger = Logger.new(STDOUT)
+        Gitlab::Metrics::Exporter::SidekiqExporter.instance.start
       end
 
       GitlabProjectImport.new(
