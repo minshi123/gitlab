@@ -234,20 +234,28 @@ Recommended `NameID` value: `OneLogin ID`.
 
 Set parameters according to the [assertions table](#assertions).
 
-### Additional setup notes
+### Additional setup options
 
-Something here about each of
+GitLab [isn't limted to the SAML providers listed above](#my-identity-provider-isnt-listed) but your identity provider may require additional configuration, such as the followign:
 
-* Type of SAML flow to configure (POST, whatever the flow is called, redirect binding?)
-* Assertion signing
-* Assertion encryptoin
-* Response signiing
-* Response encryption
-* Fingerpritn algoithm
-* Requirement to have X509 cert included in the response
-* Setup needed to verify the issuer, usually the same as the other URL but sometimes without a trailing slash maybe?
+| Field | Value | Notes |
+|-------|-------|-------|
+| SAML Request Binding | HTTP Redirect | |
+| SAML Response Binding | HTTP POST | |
+| Sign SAML Response | Yes | We use require this to prevent tampering |
+| X509 Certificate in response | Yes | This is used to sign the response and checked against the provided fingerprint |
+| Fingerprint Algorithm | SHA-1  | |
+| Signature Algorithm | | This can be specified in the SAML response |
+| Encrypt SAML Assertion | No | TLS is used between your identity provider, the user's browser, and GitLab |
+| Sign SAML Assertion | Optional | We require the whole response to be signed instead. |
+| Sign SAML Assertion | Optional? | I think we have example XML both with and without, but need to check |
+| Check SAML Request Signature | No | GitLab does not sign SAML requests, but does check the signature on the SAML response. |
+| Additional URLs | | You may need to use the `Identifier` or `Assertion consumer service URL` in other fields on some providers. |
+| Single Sign Out URL | | Not supported |
+| Default RelayState | Optional | URL users should end up on after signing in via a button on your Identity Provider |
+| NameID Format | `Persistent` | See [details above](#nameid-format) |
 
-Link to new troubleshooting sections below
+If the information information you need isn't listed above you may wish to check our [troubleshooting docs below](#i-need-additional-information-to-configure-my-identity-provider).
 
 ## Linking SAML to your existing GitLab.com account
 
