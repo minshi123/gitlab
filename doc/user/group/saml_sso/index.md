@@ -240,21 +240,20 @@ GitLab [isn't limted to the SAML providers listed above](#my-identity-provider-i
 
 | Field | Value | Notes |
 |-------|-------|-------|
-| SAML Profile | Web browser SSO profile | |
-| SAML Request Binding | HTTP Redirect | GitLab (the service provider) redirects users to your identity provider with a base64 encoded `SAMLRequest` HTTP parameter |
-| SAML Response Binding | HTTP POST | Your identity provider responds to users with an HTTP form including the `SAMLResponse`, which a user's browser submits back to GitLab |
+| SAML Profile | Web browser SSO profile. | |
+| SAML Request Binding | HTTP Redirect | GitLab (the service provider) redirects users to your Identity Provider with a base64 encoded `SAMLRequest` HTTP parameter. |
+| SAML Response Binding | HTTP POST | Your Identity Provider responds to users with an HTTP form including the `SAMLResponse`, which a user's browser submits back to GitLab. |
 | Sign SAML Response | Yes | We require this to prevent tampering. |
-| X509 Certificate in response | Yes | This is used to sign the response and checked against the provided fingerprint |
+| X509 Certificate in response | Yes | This is used to sign the response and checked against the provided fingerprint. |
 | Fingerprint Algorithm | SHA-1  | |
-| Signature Algorithm | | This can be specified in the SAML response |
-| Encrypt SAML Assertion | No | TLS is used between your identity provider, the user's browser, and GitLab |
+| Signature Algorithm | | This can be specified in the SAML response. |
+| Encrypt SAML Assertion | No | TLS is used between your Identity Provider, the user's browser, and GitLab. |
 | Sign SAML Assertion | Optional | We require the whole response to be signed instead. |
-| Sign SAML Assertion | Optional? | I think we have example XML both with and without, but need to check |
 | Check SAML Request Signature | No | GitLab does not sign SAML requests, but does check the signature on the SAML response. |
 | Additional URLs | | You may need to use the `Identifier` or `Assertion consumer service URL` in other fields on some providers. |
-| Single Sign Out URL | | Not supported |
-| Default RelayState | Optional | URL users should end up on after signing in via a button on your Identity Provider |
-| NameID Format | `Persistent` | See [details above](#nameid-format) |
+| Single Sign Out URL | | Not supported. |
+| Default RelayState | Optional | The URL users should end up on after signing in via a button on your Identity Provider. |
+| NameID Format | `Persistent` | See [details above](#nameid-format). |
 
 If the information information you need isn't listed above you may wish to check our [troubleshooting docs below](#i-need-additional-information-to-configure-my-identity-provider).
 
@@ -353,7 +352,7 @@ Not a problem, the SAML standard means that a wide range of identity providers w
 
 Many of the terms can be confusingly named and vary between services, so it is possible that the information you are looking for is listed under another name.
 
-It can help to look at your identity provider's documentation and examples to see what the most common options are for configuring services are, as this can provide hints on what you'll need to configure GitLab.
+It can help to look at your Identity Provider's documentation and examples to see what the most common options are for configuring services are, as this can provide hints on what you'll need to configure GitLab.
 
 It can also help to look at our [more detailed docs for self-managed GitLab](../../../integration/saml.md). The most common options are shared between the two, except self-manged instances use a configuration file and support more options from [omniauth-saml](https://github.com/omniauth/omniauth-saml/).
 
