@@ -234,6 +234,21 @@ Recommended `NameID` value: `OneLogin ID`.
 
 Set parameters according to the [assertions table](#assertions).
 
+### Additional setup notes
+
+Something here about each of
+
+* Type of SAML flow to configure (POST, whatever the flow is called, redirect binding?)
+* Assertion signing
+* Assertion encryptoin
+* Response signiing
+* Response encryption
+* Fingerpritn algoithm
+* Requirement to have X509 cert included in the response
+* Setup needed to verify the issuer, usually the same as the other URL but sometimes without a trailing slash maybe?
+
+Link to new troubleshooting sections below
+
 ## Linking SAML to your existing GitLab.com account
 
 To link SAML to your existing GitLab.com account:
@@ -320,3 +335,17 @@ To change which identity you sign in with, you can [unlink the previous SAML ide
 Getting both of these errors at the same time suggests the NameID capitalization provided by the Identity Provider didn't exactly match the previous value for that user.
 
 This can be prevented by configuring the [NameID](#nameid) to return a consistent value. Fixing this for an individual user involves [unlinking SAML in the GitLab account](#unlinking-accounts), although this will cause group membership and Todos to be lost.
+
+### My identity provider isn't listed
+
+Not a problem, the SAML standard means that a wide range of identity providers will work with GitLab. Unfortunately we aren't familiar with all of them so can only offer support configuring the most popular providers.
+
+### I need additional information to configure my identity provider
+
+Many of the terms can be confusingly named and vary between services, so it is possible that the information you are looking for is listed under another name.
+
+It can help to look at your identity provider's documentation and examples to see what the most common options are for configuring services are, as this can provide hints on what you'll need to configure GitLab.
+
+It can also help to look at our [more detailed docs for self-managed GitLab](../../../integration/saml.md). The most common options are shared between the two, except self-manged instances use a configuration file and support more options from [omniauth-saml](https://github.com/omniauth/omniauth-saml/).
+
+It can help to compare the XML response from your provider with our [example XML used for internal testing](https://gitlab.com/gitlab-org/gitlab/blob/master/ee/spec/fixtures/saml/response.xml).
