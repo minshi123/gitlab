@@ -482,7 +482,7 @@ describe Gitlab::ImportExport::Project::TreeRestorer do
         allow(shared).to receive(:export_path).and_call_original
 
         expect(project_tree_restorer.restore).to eq(false)
-        expect(shared.errors).to include('Incorrect JSON format')
+        expect(shared.errors).to include('missing relation reader for [FILTERED]')
       end
     end
   end
@@ -777,7 +777,8 @@ describe Gitlab::ImportExport::Project::TreeRestorer do
     end
 
     before do
-      expect(restorer).to receive(:read_tree_hash) { tree_hash }
+      allow_any_instance_of(Gitlab::ImportExport::JSON::LegacyReader).to receive(:valid?).and_return(true)
+      allow_any_instance_of(Gitlab::ImportExport::JSON::LegacyReader).to receive(:tree_hash) { tree_hash }
     end
 
     context 'no group visibility' do
