@@ -677,7 +677,7 @@ describe User do
 
     context 'when Gitlab.com? is false' do
       before do
-        allow(Gitlab).to receive(:dev_env_or_com?).and_return(false)
+        allow(Gitlab).to receive(:com?).and_return(false)
       end
 
       it { is_expected.to be_falsey }
@@ -691,7 +691,7 @@ describe User do
 
     context 'when Gitlab.com? is true' do
       before do
-        allow(Gitlab).to receive(:dev_env_or_com?).and_return(true)
+        allow(Gitlab).to receive(:com?).and_return(true)
       end
 
       context 'when namespace is nil' do
