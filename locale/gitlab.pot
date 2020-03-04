@@ -5592,6 +5592,9 @@ msgstr ""
 msgid "Could not save prometheus manual configuration"
 msgstr ""
 
+msgid "Could not update the LDAP settings"
+msgstr ""
+
 msgid "Country"
 msgstr ""
 
@@ -11229,6 +11232,9 @@ msgstr ""
 msgid "LDAP settings"
 msgstr ""
 
+msgid "LDAP settings updated"
+msgstr ""
+
 msgid "LDAP sync in progress. This could take a few minutes. Refresh the page to see the changes."
 msgstr ""
 
@@ -11755,6 +11761,9 @@ msgid "Lock"
 msgstr ""
 
 msgid "Lock %{issuableDisplayName}"
+msgstr ""
+
+msgid "Lock membership of this group to LDAP"
 msgstr ""
 
 msgid "Lock memberships to LDAP synchronization"
