@@ -22,7 +22,7 @@ class Repository
 
   include Gitlab::RepositoryCacheAdapter
 
-  attr_accessor :full_path, :shard, :disk_path, :container, :repo_type
+  attr_accessor :full_path, :shard, :disk_path, :container
 
   delegate :ref_name_for_sha, to: :raw_repository
   delegate :bundle_to_disk, to: :raw_repository
@@ -1124,6 +1124,10 @@ class Repository
   end
 
   private
+
+  # As far as possible, Repository should be indifferent to the purposes a git
+  # repository is being put to, so this is private, and should be removed.
+  attr_reader :repo_type
 
   # TODO Genericize finder, later split this on finders by Ref or Oid
   # https://gitlab.com/gitlab-org/gitlab/issues/19877
