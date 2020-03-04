@@ -18,7 +18,7 @@ module Gitlab
         private
 
         def root_group
-          @root_group ||= @project&.root_ancestor
+          @root_group ||= @project.root_ancestor
         end
       end
     end
