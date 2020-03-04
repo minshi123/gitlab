@@ -240,8 +240,9 @@ GitLab [isn't limted to the SAML providers listed above](#my-identity-provider-i
 
 | Field | Value | Notes |
 |-------|-------|-------|
-| SAML Request Binding | HTTP Redirect | |
-| SAML Response Binding | HTTP POST | |
+| SAML Profile | Web browser SSO profile | |
+| SAML Request Binding | HTTP Redirect | GitLab (the service provider) redirects users to your identity provider with a base64 encoded `SAMLRequest` HTTP parameter |
+| SAML Response Binding | HTTP POST | Your identity provider responds to users with an HTTP form including the `SAMLResponse`, which a user's browser submits back to GitLab |
 | Sign SAML Response | Yes | We use require this to prevent tampering |
 | X509 Certificate in response | Yes | This is used to sign the response and checked against the provided fingerprint |
 | Fingerprint Algorithm | SHA-1  | |
