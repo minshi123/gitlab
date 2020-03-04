@@ -18,35 +18,34 @@ class ProcessCommitWorker # rubocop:disable Scalability/IdempotentWorker
   # user_id - The ID of the user that pushed the commit.
   # commit_hash - Hash containing commit details to use for constructing a
   #               Commit object without having to use the Git repository.
-  # default - The data was pushed to the default branch.
-  # rubocop: disable CodeReuse/ActiveRecord
-  def perform(project_id, user_id, commit_hash, default = false)
-    project = Project.find_by(id: project_id)
+  # default_branch - The data was pushed to the default branch.
+  def perform(project_id, user_id, commit_hash, default_branch = false)
+    project = Project.ids_in(project_id).first
 
     return unless project
 
-    user = User.find_by(id: user_id)
+    user = User.ids_in(user_id).first
 
     return unless user
 
     commit = build_commit(project, commit_hash)
     author = commit.author || user
 
-    process_commit_message(project, commit, user, author, default)
+    close_issues!(project, commit, user, author) if default_branch
+    commit.create_cross_references!(author, closed_issues)
     update_issue_metrics(commit, author)
   end
-  # rubocop: enable CodeReuse/ActiveRecord
 
-  def process_commit_message(project, commit, user, author, default = false)
+  private
+
+  def close_issues!(project, user, author, commit, issues)
     # Ignore closing references from GitLab-generated commit messages.
-    find_closing_issues = default && !commit.merged_merge_request?(user)
-    closed_issues = find_closing_issues ? commit.closes_issues(user) : []
+    return if commit.merged_merge_request?(user)
 
-    close_issues(project, user, author, commit, closed_issues) if closed_issues.any?
-    commit.create_cross_references!(author, closed_issues)
-  end
+    issues = Gitlab::ClosingIssueExtractor
+      .new(project, user)
+      .closed_by_message(commit.safe_message)
 
-  def close_issues(project, user, author, commit, issues)
     # We don't want to run permission related queries for every single issue,
     # therefore we use IssueCollection here and skip the authorization check in
     # Issues::CloseService#execute.
