@@ -35,6 +35,10 @@ module Approvable
     @approval_state ||= ApprovalState.new(self)
   end
 
+  def approval_state_for(target_branch)
+    ApprovalState.new(self, target_branch: target_branch)
+  end
+
   def approvals_given
     approvals.size
   end
