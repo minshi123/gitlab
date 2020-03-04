@@ -2,19 +2,26 @@
 
 module Gitlab
   module ImportExport
-    module Project
-      class TreeLoader
-        def load(path, dedup_entries: false)
-          tree_hash = ActiveSupport::JSON.decode(IO.read(path))
+    module JSON
+      class DedupLegacyReader < LegacyReader
+        LARGE_PROJECT_FILE_SIZE_BYTES = 500.megabyte
 
-          if dedup_entries
-            dedup_tree(tree_hash)
-          else
-            tree_hash
-          end
+        def initialize(path, scope)
+          @path = path
+          @scope = scope
         end
 
-        private
+        def valid?
+          File.exist?(@path) &&
+            File.size(@path) > LARGE_PROJECT_FILE_SIZE_BYTES &&
+            Feature.enabled?(:dedup_project_import_metadata, @scope)
+        end
+
+        protected
+
+        def read_hash
+          dedup_tree(super)
+        end
 
         # This function removes duplicate entries from the given tree recursively
         # by caching nodes it encounters repeatedly. We only consider nodes for
