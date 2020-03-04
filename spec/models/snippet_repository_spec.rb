@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 describe SnippetRepository do
+  include SnippetRepositoryHelpers
+
   let_it_be(:user) { create(:user) }
   let(:snippet) { create(:personal_snippet, :repository, author: user) }
   let(:snippet_repository) { snippet.snippet_repository }
@@ -130,33 +132,36 @@ describe SnippetRepository do
       end
     end
 
-    context 'when files are not named' do
-      let(:data) do
-        [
-          {
-            file_path: '',
-            content: 'foo',
-            action: :create
-          },
-          {
-            file_path: '',
-            content: 'bar',
-            action: :create
-          },
-          {
-            file_path: 'foo.txt',
-            content: 'bar',
-            action: :create
-          }
-        ]
-      end
-
-      it 'sets a name for non named files' do
+    shared_examples 'snippets with generated file names' do
+      it 'sets a name for unnamed files' do
         expect do
           snippet_repository.multi_files_action(user, data, commit_opts)
         end.not_to raise_error
 
-        expect(snippet.repository.ls_files(nil)).to include('snippetfile1.txt', 'snippetfile2.txt', 'foo.txt')
+        file_paths = data.map { |d| d[:file_path] }
+        named_files, unnamed_files = file_paths.partition { |d| d.present? }
+
+        generated_filenames = generate_unnamed_snippet_filenames(unnamed_files.count)
+
+        filenames = named_files + generated_filenames
+        expect(snippet.repository.ls_files(nil)).to include(*filenames)
+      end
+    end
+
+    context 'when some files are not named' do
+      let(:named_files) { [{ file_path: 'fee.txt', content: 'bar', action: :create }] }
+      let(:unnamed_files) { generate_unnamed_snippet_file_actions(2) }
+      let(:data) { named_files + unnamed_files }
+
+      it_behaves_like 'snippets with generated file names'
+
+      context 'repository already has 10 unnamed snippets' do
+        before do
+          gen_files = generate_unnamed_snippet_file_actions(10)
+          snippet_repository.multi_files_action(user, gen_files, commit_opts)
+        end
+
+        it_behaves_like 'snippets with generated file names'
       end
     end
   end
