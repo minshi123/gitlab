@@ -17,9 +17,25 @@ module Gitlab
         end
 
         def restore
-          @tree_hash = @group_hash || read_tree_hash
-          @group_members = @tree_hash.delete('members')
-          @children = @tree_hash.delete('children')
+          @relation_readers = []
+          @relation_readers << ImportExport::JSON::LegacyReader.new(@path, tree_hash: @group_hash)
+
+          @relation_reader = @relation_readers.find(&:valid?)
+          raise "missing relation reader for #{@path}" unless @relation_reader
+
+          @group_members = []
+
+          @relation_reader.each_relation('members') do |member|
+            @group_members << member
+          end
+
+          @children = []
+
+          @relation_reader.each_relation('children') do |child|
+            @children << child
+          end
+
+          @relation_reader.mark_relations_as_deleted(%w[members children name path])
 
           if members_mapper.map && restorer.restore
             @children&.each do |group_hash|
@@ -45,21 +61,12 @@ module Gitlab
 
         private
 
-        def read_tree_hash
-          json = IO.read(@path)
-          ActiveSupport::JSON.decode(json)
-        rescue => e
-          @shared.error(e)
-
-          raise Gitlab::ImportExport::Error.new('Incorrect JSON format')
-        end
-
         def restorer
           @relation_tree_restorer ||= RelationTreeRestorer.new(
             user:             @user,
             shared:           @shared,
             importable:       @group,
-            tree_hash:        @tree_hash.except('name', 'path'),
+            relation_reader:  @relation_reader,
             members_mapper:   members_mapper,
             object_builder:   object_builder,
             relation_factory: relation_factory,

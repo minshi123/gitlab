@@ -4,8 +4,6 @@ module Gitlab
   module ImportExport
     module Project
       class TreeRestorer
-        LARGE_PROJECT_FILE_SIZE_BYTES = 500.megabyte
-
         attr_reader :user
         attr_reader :shared
         attr_reader :project
@@ -14,12 +12,21 @@ module Gitlab
           @user = user
           @shared = shared
           @project = project
-          @tree_loader = TreeLoader.new
         end
 
         def restore
-          @tree_hash = read_tree_hash
-          @project_members = @tree_hash.delete('project_members')
+          @relation_readers = []
+          @relation_readers << ImportExport::JSON::LegacyReader.new(File.join(shared.export_path, 'project.json'))
+
+          @relation_reader = @relation_readers.find(&:valid?)
+          raise "missing relation reader for #{shared.export_path}" unless @relation_reader
+
+          @project_members = []
+
+          @relation_reader.each_relation('project_members') do |project_member|
+            @project_members << project_member
+          end
+          @relation_reader.mark_relations_as_deleted(['project_members'])
 
           if relation_tree_restorer.restore
             import_failure_service.with_retry(action: 'set_latest_merge_request_diff_ids!') do
@@ -37,24 +44,12 @@ module Gitlab
 
         private
 
-        def large_project?(path)
-          File.size(path) >= LARGE_PROJECT_FILE_SIZE_BYTES
-        end
-
-        def read_tree_hash
-          path = File.join(@shared.export_path, 'project.json')
-          @tree_loader.load(path, dedup_entries: large_project?(path))
-        rescue => e
-          Rails.logger.error("Import/Export error: #{e.message}") # rubocop:disable Gitlab/RailsLogger
-          raise Gitlab::ImportExport::Error.new('Incorrect JSON format')
-        end
-
         def relation_tree_restorer
           @relation_tree_restorer ||= RelationTreeRestorer.new(
             user: @user,
             shared: @shared,
             importable: @project,
-            tree_hash: @tree_hash,
+            relation_reader: @relation_reader,
             object_builder: object_builder,
             members_mapper: members_mapper,
             relation_factory: relation_factory,
