@@ -236,7 +236,7 @@ Set parameters according to the [assertions table](#assertions).
 
 ### Additional setup options
 
-GitLab [isn't limted to the SAML providers listed above](#my-identity-provider-isnt-listed) but your identity provider may require additional configuration, such as the followign:
+GitLab [isn't limted to the SAML providers listed above](#my-identity-provider-isnt-listed) but your identity provider may require additional configuration, such as the following:
 
 | Field | Value | Notes |
 |-------|-------|-------|
