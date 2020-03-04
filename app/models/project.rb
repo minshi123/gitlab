@@ -1782,8 +1782,10 @@ class Project < ApplicationRecord
   # rubocop:enable Gitlab/RailsLogger
 
   def after_import
-    repository.after_import
-    wiki.repository.after_import
+    repository.expire_content_cache
+    wiki.repository.expire_content_cache
+
+    DetectRepositoryLanguagesWorker.perform_async(project.id)
 
     # The import assigns iid values on its own, e.g. by re-using GitHub ids.
     # Flush existing InternalId records for this project for consistency reasons.
