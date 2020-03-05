@@ -557,7 +557,7 @@ You can disable some, or all, Vale linting rules in a portion of a document:
 In some cases, such as list items, you may need to disable linting on the entire
 list until ["Ignore comments are not honored in a Markdown file"](https://github.com/errata-ai/vale/issues/175) is resolved.
 
-For more information, see [Vale's documentation](https://errata-ai.github.io/vale/config/#ignoring-parts-of-your-documents).
+For more information, see [Vale's documentation](https://errata-ai.gitbook.io/vale/getting-started/markup#markup-based-configuration).
 
 ## Danger Bot
 
