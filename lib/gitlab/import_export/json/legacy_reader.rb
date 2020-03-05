@@ -8,6 +8,7 @@ module Gitlab
 
         def initialize(path)
           @path = path
+          @deleted_relations = []
         end
 
         def valid?
@@ -20,7 +21,15 @@ module Gitlab
           end
         end
 
+        def mark_relation_as_deleted(key)
+          return unless key
+
+          @deleted_relations << key
+        end
+
         def each_relation(key)
+          return if @deleted_relations.include?(key)
+
           value = tree_hash[key]
           return if value.nil?
 
