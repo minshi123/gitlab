@@ -123,6 +123,20 @@ module API
           render_api_error!(result[:message], result[:http_status])
         end
       end
+
+      desc 'Create Evidence for a Release' do
+        detail 'This feature was introduced in GitLab 12.9.'
+        success Entities::Release
+      end
+      params do
+        requires :tag_name,    type: String, desc: 'The name of the tag', as: :tag
+      end
+      post ':id/evidence' do
+        #authorize_create_evidence!
+
+        CreateEvidenceWorker.perform_async(release.id)
+        status 201
+      end
     end
 
     helpers do
