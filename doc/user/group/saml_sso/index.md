@@ -62,6 +62,8 @@ However, users will not be prompted to log via SSO on each visit. GitLab will ch
 
 We intend to add a similar SSO requirement for [Git and API activity](https://gitlab.com/gitlab-org/gitlab/issues/9152) in the future.
 
+When SSO enforcement is enabled for a group, users cannot share a project in the group outside the top-level group, this also applies to forked projects.
+
 #### Group-managed accounts
 
 > [Introduced in GitLab 12.1](https://gitlab.com/groups/gitlab-org/-/epics/709).
@@ -106,6 +108,12 @@ This feature is similar to the [Credentials inventory for self-managed instances
 Groups with enabled group-managed accounts can allow or disallow forking of projects outside of root group
 by using separate toggle. If forking is disallowed any project of given root group or its subgroups can be forked to
 a subgroup of the same root group only.
+
+##### Other restrictions for Group-managed accounts
+
+> [Introduced in GitLab 12.9](https://gitlab.com/gitlab-org/gitlab/issues/12420)
+
+Projects within groups with enabled group-managed accounts are not to be shared with groups outside of parent group or with members who are not users managed by this group. The same restriction concers projects forked from or to those groups.
 
 #### Assertions
 
