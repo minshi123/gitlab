@@ -4,8 +4,6 @@ module Gitlab
   module ImportExport
     module Project
       class TreeRestorer
-        LARGE_PROJECT_FILE_SIZE_BYTES = 500.megabyte
-
         attr_reader :user
         attr_reader :shared
         attr_reader :project
@@ -18,7 +16,6 @@ module Gitlab
 
         def restore
           @relation_readers = []
-          @relation_readers << ImportExport::JSON::DedupLegacyReader.new(File.join(shared.export_path, 'project.json'), project.group)
           @relation_readers << ImportExport::JSON::LegacyReader.new(File.join(shared.export_path, 'project.json'))
 
           @relation_reader = @relation_readers.find(&:valid?)

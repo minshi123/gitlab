@@ -72,11 +72,5 @@ describe Gitlab::ImportExport::RelationTreeRestorer do
 
       it_behaves_like 'import project successfully'
     end
-
-    context 'using dedup legacy reader' do
-      let(:relation_reader) { Gitlab::ImportExport::JSON::DedupLegacyReader.new(path, importable.group) }
-
-      it_behaves_like 'import project successfully'
-    end
   end
 end
