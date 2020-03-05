@@ -95,7 +95,9 @@ class GeoNodeStatus < ApplicationRecord
     design_repositories_count: 'Total number of syncable design repositories available on primary',
     design_repositories_synced_count: 'Number of syncable design repositories synced on secondary',
     design_repositories_failed_count: 'Number of syncable design repositories failed to sync on secondary',
-    design_repositories_registry_count: 'Number of design repositories in the registry'
+    design_repositories_registry_count: 'Number of design repositories in the registry',
+    package_files_checksummed_count: 'Number of package files checksumed on primary',
+    package_files_checksum_failed_count: 'Number of package files failed to checksumed on primary'
   }.freeze
 
   EXPIRATION_IN_MINUTES = 5

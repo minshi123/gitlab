@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_27_165129) do
+ActiveRecord::Schema.define(version: 2020_03_03_192156) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -340,9 +340,9 @@ ActiveRecord::Schema.define(version: 2020_02_27_165129) do
     t.string "encrypted_slack_app_secret_iv", limit: 255
     t.text "encrypted_slack_app_verification_token"
     t.string "encrypted_slack_app_verification_token_iv", limit: 255
-    t.boolean "force_pages_access_control", default: false, null: false
     t.boolean "updating_name_disabled_for_users", default: false, null: false
     t.integer "instance_administrators_group_id"
+    t.boolean "force_pages_access_control", default: false, null: false
     t.integer "elasticsearch_indexed_field_length_limit", default: 0, null: false
     t.integer "elasticsearch_max_bulk_size_mb", limit: 2, default: 10, null: false
     t.integer "elasticsearch_max_bulk_concurrency", limit: 2, default: 10, null: false
@@ -1515,7 +1515,6 @@ ActiveRecord::Schema.define(version: 2020_02_27_165129) do
     t.string "state", default: "available", null: false
     t.string "slug", null: false
     t.datetime_with_timezone "auto_stop_at"
-    t.index ["auto_stop_at"], name: "index_environments_on_auto_stop_at", where: "(auto_stop_at IS NOT NULL)"
     t.index ["name"], name: "index_environments_on_name_varchar_pattern_ops", opclass: :varchar_pattern_ops
     t.index ["project_id", "name"], name: "index_environments_on_project_id_and_name", unique: true
     t.index ["project_id", "slug"], name: "index_environments_on_project_id_and_slug", unique: true
@@ -1815,6 +1814,8 @@ ActiveRecord::Schema.define(version: 2020_02_27_165129) do
     t.integer "design_repositories_synced_count"
     t.integer "design_repositories_failed_count"
     t.integer "design_repositories_registry_count"
+    t.integer "package_files_checksummed_count"
+    t.integer "package_files_checksum_failed_count"
     t.index ["geo_node_id"], name: "index_geo_node_statuses_on_geo_node_id", unique: true
   end
 
@@ -2453,34 +2454,36 @@ ActiveRecord::Schema.define(version: 2020_02_27_165129) do
   end
 
   create_table "merge_request_context_commit_diff_files", id: false, force: :cascade do |t|
+    t.bigint "merge_request_context_commit_id"
     t.binary "sha", null: false
     t.integer "relative_order", null: false
+    t.string "a_mode", limit: 255, null: false
+    t.string "b_mode", limit: 255, null: false
     t.boolean "new_file", null: false
     t.boolean "renamed_file", null: false
     t.boolean "deleted_file", null: false
     t.boolean "too_large", null: false
-    t.string "a_mode", limit: 255, null: false
-    t.string "b_mode", limit: 255, null: false
+    t.boolean "binary"
     t.text "new_path", null: false
     t.text "old_path", null: false
     t.text "diff"
-    t.boolean "binary"
-    t.bigint "merge_request_context_commit_id"
     t.index ["merge_request_context_commit_id", "sha"], name: "idx_mr_cc_diff_files_on_mr_cc_id_and_sha"
+    t.index ["merge_request_context_commit_id"], name: "idx_mr_cc_diff_files_on_mr_cc_id"
   end
 
   create_table "merge_request_context_commits", force: :cascade do |t|
+    t.bigint "merge_request_id"
     t.datetime_with_timezone "authored_date"
     t.datetime_with_timezone "committed_date"
-    t.integer "relative_order", null: false
     t.binary "sha", null: false
+    t.integer "relative_order", null: false
     t.text "author_name"
     t.text "author_email"
     t.text "committer_name"
     t.text "committer_email"
     t.text "message"
-    t.bigint "merge_request_id"
     t.index ["merge_request_id", "sha"], name: "index_mr_context_commits_on_merge_request_id_and_sha", unique: true
+    t.index ["merge_request_id"], name: "index_merge_request_context_commits_on_merge_request_id"
   end
 
   create_table "merge_request_diff_commits", id: false, force: :cascade do |t|
@@ -2861,8 +2864,8 @@ ActiveRecord::Schema.define(version: 2020_02_27_165129) do
     t.boolean "issue_due"
     t.boolean "new_epic"
     t.string "notification_email"
-    t.boolean "fixed_pipeline"
     t.boolean "new_release"
+    t.boolean "fixed_pipeline"
     t.index ["source_id", "source_type"], name: "index_notification_settings_on_source_id_and_source_type"
     t.index ["user_id", "source_id", "source_type"], name: "index_notifications_on_user_id_and_source_id_and_source_type", unique: true
     t.index ["user_id"], name: "index_notification_settings_on_user_id"
@@ -3900,7 +3903,6 @@ ActiveRecord::Schema.define(version: 2020_02_27_165129) do
     t.boolean "comment_on_event_enabled", default: true, null: false
     t.boolean "template", default: false
     t.index ["project_id"], name: "index_services_on_project_id"
-    t.index ["template"], name: "index_services_on_template"
     t.index ["type"], name: "index_services_on_type"
   end
 
