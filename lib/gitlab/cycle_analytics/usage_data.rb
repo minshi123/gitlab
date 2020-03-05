@@ -8,8 +8,19 @@ module Gitlab
       attr_reader :projects, :options
 
       def initialize
-        @projects = Project.sorted_by_activity.limit(PROJECTS_LIMIT)
+        @projects = get_projects
+
         @options = { from: 7.days.ago }
+      end
+
+      # See MR & issue https://gitlab.com/gitlab-org/gitlab/-/merge_requests/26381
+      def get_projects
+        projects = Project.order(Gitlab::Database.nulls_last_order('last_activity_at', 'DESC')).limit(10) +
+                   Project.order(Gitlab::Database.nulls_last_order('last_repository_updated_at', 'DESC')).limit(10)
+
+        projects.uniq!.sort_by! do |project|
+          [project.last_activity_at, project.last_repository_updated_at].max
+        end.reverse!.first(10)
       end
 
       def to_json(*)
