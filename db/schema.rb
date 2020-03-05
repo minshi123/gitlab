@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_04_160823) do
+ActiveRecord::Schema.define(version: 2020_03_05_200641) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -4102,6 +4102,14 @@ ActiveRecord::Schema.define(version: 2020_03_04_160823) do
     t.index ["term_id"], name: "index_term_agreements_on_term_id"
     t.index ["user_id", "term_id"], name: "term_agreements_unique_index", unique: true
     t.index ["user_id"], name: "index_term_agreements_on_user_id"
+  end
+
+  create_table "terraform_states", force: :cascade do |t|
+    t.string "file"
+    t.bigint "project_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["project_id"], name: "index_terraform_states_on_project_id"
   end
 
   create_table "timelogs", id: :serial, force: :cascade do |t|
