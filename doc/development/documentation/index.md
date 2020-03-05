@@ -546,7 +546,7 @@ Vale's test results are not currently displayed in CI, but may be displayed in t
 
 ##### Disable a Vale test
 
-You can disable some, or all, Vale linting rules in a portion of a document:
+You can disable Vale linting rules in a document:
 
 - To disable all Vale linting rules, add a `<!-- vale off -->` tag before the text,
   and a `<!-- vale on -->` tag after the text.
