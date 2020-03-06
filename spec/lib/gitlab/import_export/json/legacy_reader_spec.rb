@@ -41,7 +41,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
     end
 
     it 'returns hash exclude excluded_attributes and deleted_relations' do
-      legacy_reader.mark_relations_as_deleted(['import_type', 'archived'])
+      legacy_reader.mark_relations_as_deleted(%w[import_type archived])
 
       expect(subject).to eq({
         "description" => "Nisi et repellendus ut enim quo accusamus vel magnam.",
