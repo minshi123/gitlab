@@ -11,6 +11,7 @@ import {
   MOCK_BASIC_FETCH_DATA_MAP,
   MOCK_BASIC_FETCH_RESPONSE,
   MOCK_BASIC_POST_RESPONSE,
+  MOCK_REPLICABLE_TYPE,
 } from '../mock_data';
 
 jest.mock('~/flash');
@@ -21,7 +22,7 @@ describe('GeoDesigns Store Actions', () => {
   let mock;
 
   beforeEach(() => {
-    state = createState();
+    state = createState(MOCK_REPLICABLE_TYPE);
     mock = new MockAdapter(axios);
   });
 
@@ -72,7 +73,13 @@ describe('GeoDesigns Store Actions', () => {
           .replyOnce(200, MOCK_BASIC_FETCH_RESPONSE.data, MOCK_BASIC_FETCH_RESPONSE.headers);
       });
 
-      it('should dispatch the request and success actions', done => {
+      it('should dispatch the request with correct replicable param and success actions', () => {
+        function fetchReplicableItemsCall() {
+          const callHistory = mock.history.get[0];
+
+          expect(callHistory.url).toContain(`/geo_replication/${MOCK_REPLICABLE_TYPE}`);
+        }
+
         testAction(
           actions.fetchDesigns,
           {},
@@ -82,7 +89,7 @@ describe('GeoDesigns Store Actions', () => {
             { type: 'requestDesigns' },
             { type: 'receiveDesignsSuccess', payload: MOCK_BASIC_FETCH_DATA_MAP },
           ],
-          done,
+          fetchReplicableItemsCall,
         );
       });
     });
@@ -113,12 +120,13 @@ describe('GeoDesigns Store Actions', () => {
     });
 
     describe('no params set', () => {
-      it('should call fetchDesigns with default queryParams', () => {
+      it('should call fetchReplicableItems with default queryParams and correct replicable params', () => {
         state.isLoading = true;
 
-        function fetchDesignsCall() {
+        function fetchReplicableItemsCall() {
           const callHistory = mock.history.get[0];
 
+          expect(callHistory.url).toContain(`/geo_replication/${MOCK_REPLICABLE_TYPE}`);
           expect(callHistory.params.page).toEqual(1);
           expect(callHistory.params.search).toBeNull();
           expect(callHistory.params.sync_status).toBeNull();
@@ -133,7 +141,7 @@ describe('GeoDesigns Store Actions', () => {
             { type: 'requestDesigns' },
             { type: 'receiveDesignsSuccess', payload: MOCK_BASIC_FETCH_DATA_MAP },
           ],
-          fetchDesignsCall,
+          fetchReplicableItemsCall,
         );
       });
     });
@@ -145,9 +153,10 @@ describe('GeoDesigns Store Actions', () => {
         state.searchFilter = 'test search';
         state.currentFilterIndex = 2;
 
-        function fetchDesignsCall() {
+        function fetchReplicableItemsCall() {
           const callHistory = mock.history.get[0];
 
+          expect(callHistory.url).toContain(`/geo_replication/${MOCK_REPLICABLE_TYPE}`);
           expect(callHistory.params.page).toEqual(state.currentPage);
           expect(callHistory.params.search).toEqual(state.searchFilter);
           expect(callHistory.params.sync_status).toEqual(
@@ -164,7 +173,7 @@ describe('GeoDesigns Store Actions', () => {
             { type: 'requestDesigns' },
             { type: 'receiveDesignsSuccess', payload: MOCK_BASIC_FETCH_DATA_MAP },
           ],
-          fetchDesignsCall,
+          fetchReplicableItemsCall,
         );
       });
     });
@@ -225,7 +234,13 @@ describe('GeoDesigns Store Actions', () => {
         mock.onPost().replyOnce(201, MOCK_BASIC_POST_RESPONSE);
       });
 
-      it('should dispatch the request and success actions', done => {
+      it('should dispatch the request with correct replicable param and success actions', () => {
+        function fetchReplicableItemsCall() {
+          const callHistory = mock.history.post[0];
+
+          expect(callHistory.url).toContain(`/geo_replication/${MOCK_REPLICABLE_TYPE}`);
+        }
+
         testAction(
           actions.initiateAllDesignSyncs,
           action,
@@ -235,7 +250,7 @@ describe('GeoDesigns Store Actions', () => {
             { type: 'requestInitiateAllDesignSyncs' },
             { type: 'receiveInitiateAllDesignSyncsSuccess', payload: { action } },
           ],
-          done,
+          fetchReplicableItemsCall,
         );
       });
     });
@@ -322,7 +337,13 @@ describe('GeoDesigns Store Actions', () => {
         mock.onPut().replyOnce(201, MOCK_BASIC_POST_RESPONSE);
       });
 
-      it('should dispatch the request and success actions', done => {
+      it('should dispatch the request with correct replicable param and success actions', () => {
+        function fetchReplicableItemsCall() {
+          const callHistory = mock.history.put[0];
+
+          expect(callHistory.url).toContain(`/geo_replication/${MOCK_REPLICABLE_TYPE}`);
+        }
+
         testAction(
           actions.initiateDesignSync,
           { projectId, name, action },
@@ -332,7 +353,7 @@ describe('GeoDesigns Store Actions', () => {
             { type: 'requestInitiateDesignSync' },
             { type: 'receiveInitiateDesignSyncSuccess', payload: { name, action } },
           ],
-          done,
+          fetchReplicableItemsCall,
         );
       });
     });

@@ -16,7 +16,7 @@ export default {
     Icon,
   },
   computed: {
-    ...mapState(['currentFilterIndex', 'filterOptions', 'searchFilter']),
+    ...mapState(['currentFilterIndex', 'filterOptions', 'searchFilter', 'replicableType']),
     search: {
       get() {
         return this.searchFilter;
@@ -58,7 +58,7 @@ export default {
             </span>
           </template>
           <gl-dropdown-item @click="initiateAllDesignSyncs($options.actionTypes.RESYNC)">{{
-            __('Resync all designs')
+            __(`Resync all ${replicableType}`)
           }}</gl-dropdown-item>
         </gl-dropdown>
       </div>

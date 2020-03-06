@@ -14,8 +14,8 @@ import { FILTER_STATES } from './constants';
 export const requestDesigns = ({ commit }) => commit(types.REQUEST_DESIGNS);
 export const receiveDesignsSuccess = ({ commit }, data) =>
   commit(types.RECEIVE_DESIGNS_SUCCESS, data);
-export const receiveDesignsError = ({ commit }) => {
-  createFlash(__('There was an error fetching the Designs'));
+export const receiveDesignsError = ({ state, commit }) => {
+  createFlash(__(`There was an error fetching the ${state.replicableType}`));
   commit(types.RECEIVE_DESIGNS_ERROR);
 };
 
@@ -31,7 +31,7 @@ export const fetchDesigns = ({ state, dispatch }) => {
     sync_status: statusFilterName === FILTER_STATES.ALL ? null : statusFilterName,
   };
 
-  Api.getGeoDesigns(query)
+  Api.getGeoReplicableItems(state.replicableType, query)
     .then(res => {
       const normalizedHeaders = normalizeHeaders(res.headers);
       const paginationInformation = parseIntPagination(normalizedHeaders);
@@ -51,20 +51,20 @@ export const fetchDesigns = ({ state, dispatch }) => {
 // Initiate All Design Syncs
 export const requestInitiateAllDesignSyncs = ({ commit }) =>
   commit(types.REQUEST_INITIATE_ALL_DESIGN_SYNCS);
-export const receiveInitiateAllDesignSyncsSuccess = ({ commit, dispatch }, { action }) => {
-  toast(__(`All designs are being scheduled for ${action}`));
+export const receiveInitiateAllDesignSyncsSuccess = ({ state, commit, dispatch }, { action }) => {
+  toast(__(`All ${state.replicableType} are being scheduled for ${action}`));
   commit(types.RECEIVE_INITIATE_ALL_DESIGN_SYNCS_SUCCESS);
   dispatch('fetchDesigns');
 };
-export const receiveInitiateAllDesignSyncsError = ({ commit }) => {
-  createFlash(__(`There was an error syncing the Design Repositories.`));
+export const receiveInitiateAllDesignSyncsError = ({ state, commit }) => {
+  createFlash(__(`There was an error syncing the ${state.replicableType}.`));
   commit(types.RECEIVE_INITIATE_ALL_DESIGN_SYNCS_ERROR);
 };
 
-export const initiateAllDesignSyncs = ({ dispatch }, action) => {
+export const initiateAllDesignSyncs = ({ state, dispatch }, action) => {
   dispatch('requestInitiateAllDesignSyncs');
 
-  Api.initiateAllGeoDesignSyncs(action)
+  Api.initiateAllGeoReplicableSyncs(state.replicableType, action)
     .then(() => dispatch('receiveInitiateAllDesignSyncsSuccess', { action }))
     .catch(() => {
       dispatch('receiveInitiateAllDesignSyncsError');
@@ -83,10 +83,10 @@ export const receiveInitiateDesignSyncError = ({ commit }, { name }) => {
   commit(types.RECEIVE_INITIATE_DESIGN_SYNC_ERROR);
 };
 
-export const initiateDesignSync = ({ dispatch }, { projectId, name, action }) => {
+export const initiateDesignSync = ({ state, dispatch }, { projectId, name, action }) => {
   dispatch('requestInitiateDesignSync');
 
-  Api.initiateGeoDesignSync({ projectId, action })
+  Api.initiateGeoReplicableSync(state.replicableType, { projectId, action })
     .then(() => dispatch('receiveInitiateDesignSyncSuccess', { name, action }))
     .catch(() => {
       dispatch('receiveInitiateDesignSyncError', { name });
