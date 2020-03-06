@@ -6,8 +6,9 @@ module Gitlab
       class LegacyReader
         attr_reader :path
 
-        def initialize(path)
+        def initialize(path, tree_hash: nil)
           @path = path
+          @tree_hash = tree_hash
           @deleted_relations = []
         end
 
@@ -17,7 +18,7 @@ module Gitlab
 
         def root_attributes(excluded_attributes = [])
           tree_hash.reject do |key, _|
-            excluded_attributes.include?(key)
+            excluded_attributes.include?(key) || @deleted_relations.include?(key)
           end
         end
 
