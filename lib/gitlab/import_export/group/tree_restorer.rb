@@ -28,17 +28,14 @@ module Gitlab
           @relation_reader.each_relation('members') do |member|
             @group_members << member
           end
-          @relation_reader.mark_relation_as_deleted('members')
 
           @children = []
 
           @relation_reader.each_relation('children') do |child|
             @children << child
           end
-          @relation_reader.mark_relation_as_deleted('children')
 
-          @relation_reader.mark_relation_as_deleted('name')
-          @relation_reader.mark_relation_as_deleted('path')
+          @relation_reader.mark_relations_as_deleted(%w[members children name path])
 
           if members_mapper.map && restorer.restore
             @children&.each do |group_hash|

@@ -41,8 +41,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
     end
 
     it 'returns hash exclude excluded_attributes and deleted_relations' do
-      legacy_reader.mark_relation_as_deleted('import_type')
-      legacy_reader.mark_relation_as_deleted('archived')
+      legacy_reader.mark_relations_as_deleted(['import_type', 'archived'])
 
       expect(subject).to eq({
         "description" => "Nisi et repellendus ut enim quo accusamus vel magnam.",
@@ -59,7 +58,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
 
     context 'key is marked as deleted' do
       before do
-        legacy_reader.mark_relation_as_deleted(key)
+        legacy_reader.mark_relations_as_deleted([key])
       end
 
       it 'does not yield' do

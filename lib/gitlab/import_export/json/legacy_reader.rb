@@ -22,10 +22,10 @@ module Gitlab
           end
         end
 
-        def mark_relation_as_deleted(key)
-          return unless key
+        def mark_relations_as_deleted(keys)
+          return unless keys
 
-          @deleted_relations << key
+          @deleted_relations.concat(keys).uniq
         end
 
         def each_relation(key)
