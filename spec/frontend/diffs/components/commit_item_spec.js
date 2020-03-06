@@ -60,7 +60,7 @@ describe('diffs/components/commit_item', () => {
     const expected = commit.description_html.replace(/&#x000A;/g, '');
 
     expect(trimText(descElement.text())).toEqual(trimText(expected));
-    expect(descExpandElement).not.toBeNull();
+    expect(descExpandElement.exists()).toBe(true);
   });
 
   it('renders commit sha', () => {
