@@ -15,7 +15,7 @@ module Gitlab
         end
 
         def save
-          json_writer = ImportExport::JSON::LegacyWriter.new(File.join(@shared.export_path, "project.json"))
+          json_writer = ImportExport::JSON::LegacyWriter.new(File.join(@shared.export_path, ImportExport.project_filename))
 
           serializer = ImportExport::JSON::StreamingSerializer.new(exportable, reader.project_tree, json_writer)
           serializer.execute
