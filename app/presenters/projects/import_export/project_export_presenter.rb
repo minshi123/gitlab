@@ -6,7 +6,7 @@ module Projects
       presents :project
 
       def project_members
-        group_members.as_json(group_members_tree).each do |group_member|
+        super + group_members.as_json(group_members_tree).each do |group_member|
           group_member['source_type'] = 'Project' # Make group members project members of the future import
         end
       end
@@ -20,6 +20,7 @@ module Projects
       # rubocop: disable CodeReuse/ActiveRecord
       def group_members
         return [] unless current_user.can?(:admin_group, project.group)
+
         # We need `.where.not(user_id: nil)` here otherwise when a group has an
         # invitee, it would make the following query return 0 rows since a NULL
         # user_id would be present in the subquery
