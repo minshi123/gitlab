@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_04_160823) do
+ActiveRecord::Schema.define(version: 2020_03_06_193236) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3458,6 +3458,7 @@ ActiveRecord::Schema.define(version: 2020_03_04_160823) do
     t.integer "marked_for_deletion_by_user_id"
     t.boolean "autoclose_referenced_issues"
     t.string "suggestion_commit_message", limit: 255
+    t.index ["id", "creator_id"], name: "index_projects_on_id_and_creator_id"
     t.index "lower((name)::text)", name: "index_projects_on_lower_name"
     t.index ["created_at", "id"], name: "index_projects_api_created_at_id_desc", order: { id: :desc }
     t.index ["created_at", "id"], name: "index_projects_api_vis20_created_at", where: "(visibility_level = 20)"
@@ -3934,6 +3935,7 @@ ActiveRecord::Schema.define(version: 2020_03_04_160823) do
     t.string "description", limit: 500
     t.boolean "comment_on_event_enabled", default: true, null: false
     t.boolean "template", default: false
+    t.index ["project_id", "type"], name: "index_services_on_project_id_and_type"
     t.index ["project_id"], name: "index_services_on_project_id"
     t.index ["template"], name: "index_services_on_template"
     t.index ["type", "template"], name: "index_services_on_type_and_template", unique: true, where: "(template IS TRUE)"
