@@ -5,11 +5,13 @@
  */
 
 import ModalOpenName from '~/reports/components/modal_open_name.vue';
+import SeverityBadge from './severity_badge.vue';
 
 export default {
   name: 'DastIssueBody',
   components: {
     ModalOpenName,
+    SeverityBadge,
   },
   props: {
     issue: {
@@ -27,8 +29,7 @@ export default {
 <template>
   <div class="report-block-list-issue-description prepend-top-5 append-bottom-5">
     <div class="report-block-list-issue-description-text">
-      {{ issue.severity }}:
-
+      <severity-badge :severity="issue.severity" />
       <modal-open-name :issue="issue" :status="status" class="js-modal-dast" />
     </div>
   </div>

@@ -6,6 +6,7 @@
 import ReportLink from '~/reports/components/report_link.vue';
 import ModalOpenName from '~/reports/components/modal_open_name.vue';
 import { humanize } from '~/lib/utils/text_utility';
+import SeverityBadge from './severity_badge.vue';
 
 export default {
   name: 'SastIssueBody',
@@ -13,6 +14,7 @@ export default {
   components: {
     ReportLink,
     ModalOpenName,
+    SeverityBadge,
   },
 
   props: {
@@ -41,7 +43,7 @@ export default {
 <template>
   <div class="report-block-list-issue-description prepend-top-5 append-bottom-5">
     <div class="report-block-list-issue-description-text">
-      {{ title }}:
+      <severity-badge :severity="title" />
       <modal-open-name :issue="issue" :status="status" />
     </div>
 
