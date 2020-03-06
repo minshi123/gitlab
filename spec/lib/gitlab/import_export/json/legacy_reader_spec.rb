@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Gitlab::ImportExport::JSON::LegacyReader do
-  let(:fixture) { 'spec/fixtures/lib/gitlab/import_export/with_duplicates.json' }
+  let(:fixture) { 'spec/fixtures/lib/gitlab/import_export/light/project.json' }
   let(:project_tree) { JSON.parse(File.read(fixture)) }
   let(:legacy_reader) { described_class.new(path) }
 
@@ -23,44 +23,84 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
     end
   end
 
-#   context 'without de-duplicating entries' do
-#     let(:parsed_tree) do
-#       subject.load(fixture)
-#     end
-# 
-#     it 'parses the JSON into the expected tree' do
-#       expect(parsed_tree).to eq(project_tree)
-#     end
-# 
-#     it 'does not de-duplicate entries' do
-#       expect(parsed_tree['duped_hash_with_id']).not_to be(parsed_tree['array'][0]['duped_hash_with_id'])
-#     end
-#   end
-# 
-#   context 'with de-duplicating entries' do
-#     let(:parsed_tree) do
-#       subject.load(fixture, dedup_entries: true)
-#     end
-# 
-#     it 'parses the JSON into the expected tree' do
-#       expect(parsed_tree).to eq(project_tree)
-#     end
-# 
-#     it 'de-duplicates equal values' do
-#       expect(parsed_tree['duped_hash_with_id']).to be(parsed_tree['array'][0]['duped_hash_with_id'])
-#       expect(parsed_tree['duped_hash_with_id']).to be(parsed_tree['nested']['duped_hash_with_id'])
-#       expect(parsed_tree['duped_array']).to be(parsed_tree['array'][1]['duped_array'])
-#       expect(parsed_tree['duped_array']).to be(parsed_tree['nested']['duped_array'])
-#     end
-# 
-#     it 'does not de-duplicate hashes without IDs' do
-#       expect(parsed_tree['duped_hash_no_id']).to eq(parsed_tree['array'][2]['duped_hash_no_id'])
-#       expect(parsed_tree['duped_hash_no_id']).not_to be(parsed_tree['array'][2]['duped_hash_no_id'])
-#     end
-# 
-#     it 'keeps single entries intact' do
-#       expect(parsed_tree['simple']).to eq(42)
-#       expect(parsed_tree['nested']['array']).to eq(["don't touch"])
-#     end
-#   end
+  describe '#root_attributes' do
+    let(:excluded_attributes) { %w[milestones labels issues services snippets] }
+    let(:path) { fixture }
+
+    subject { legacy_reader.root_attributes(excluded_attributes) }
+
+    it 'returns hash exclude excluded_attributes' do
+      expect(subject).to eq({
+        "description" => "Nisi et repellendus ut enim quo accusamus vel magnam.",
+        "import_type" => "gitlab_project",
+        "creator_id" => 123,
+        "visibility_level" => 10,
+        "archived" => false,
+        "hooks" => []
+      })
+    end
+
+    it 'returns hash exclude excluded_attributes and deleted_relations' do
+      legacy_reader.mark_relation_as_deleted('import_type')
+      legacy_reader.mark_relation_as_deleted('archived')
+
+      expect(subject).to eq({
+        "description" => "Nisi et repellendus ut enim quo accusamus vel magnam.",
+        "creator_id" => 123,
+        "visibility_level" => 10,
+        "hooks" => []
+      })
+    end
+  end
+
+  describe '#each_relation' do
+    let(:path) { fixture }
+    let(:key) { 'description' }
+
+    context 'key is marked as deleted' do
+      before do
+        legacy_reader.mark_relation_as_deleted(key)
+      end
+
+      it 'does not yield' do
+        expect do |blk|
+          legacy_reader.each_relation(key, &blk)
+        end.not_to yield_control
+      end
+    end
+
+    context 'value is not array' do
+      before do
+        expect(legacy_reader).to receive(:tree_hash).and_return({ key => 'value' })
+      end
+
+      it 'yield the value with 0 index' do
+        expect do |blk|
+          legacy_reader.each_relation(key, &blk)
+        end.to yield_with_args('value', 0)
+      end
+    end
+
+    context 'value is an array' do
+      before do
+        expect(legacy_reader).to receive(:tree_hash).and_return({ key => %w[item1 item2 item3] })
+      end
+
+      it 'yield each array element with index' do
+        expect do |blk|
+          legacy_reader.each_relation(key, &blk)
+        end.to yield_successive_args(['item1', 0], ['item2', 1], ['item3', 2])
+      end
+    end
+  end
+
+  describe '#tree_hash' do
+    let(:path) { fixture }
+
+    subject { legacy_reader.send(:tree_hash) }
+
+    it 'parses the JSON into the expected tree' do
+      expect(subject).to eq(project_tree)
+    end
+  end
 end
