@@ -258,6 +258,60 @@ export default {
 };
 ```
 
+### Working with pagination
+
+At GitLab, we use a [Relay-style cursor pagination](https://www.apollographql.com/docs/react/data/pagination/#cursor-based) for our connection types. This means a "cursor" is used to keep track of where in the data set the next items should be fetched from.
+
+Every connection type (i.e. `DesignConnection`, `DiscussionConnection` etc) has a field `pageInfo` that contains an information required for pagination:
+
+```javascript
+pageInfo {
+  endCursor
+  hasNextPage
+  hasPreviousPage
+  startCursor
+}
+```
+
+Here `startCursor` and `endCursor` display the the cursor of the first and last items respectively. `hasPreviousPage` and `hasNextPage` allow us to check if there are more pages available before or after the current page.
+
+When we fetch data with a connection type, we can pass cursor as `after` or `before` parameter, indicating a starting or ending point of our pagination. They should be followed with `first` or `last` parameter respectively to indicate _how many_ items do we want to fetch after or before a given endpoint. For example, here we're fetching 10 designs after a cursor:
+
+```javascript
+query {
+  project(fullPath: "root/my-project") {
+    id
+    issue(iid: "42") {
+      designCollection {
+        designs(atVersion: null, after: "Ihwffmde0i", first: 10) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### Using `fetchMore` method in components
+
+Usually, when making an initial fetch, we want to start a pagination from the beginning, In this case, we can skip passing a cursor or we can pass `null` explicitly to `after`. When we want to move to the next page, we should use an Apollo `fetchMore` method, passing a new cursor (and optionally new variables) there.
+
+```javascript
+fetchNextPage() {
+  this.$apollo.fetchMore({
+    
+  })
+}
+```
+
+
+If `null` is passed for the cursor relay will ignore it and provide results starting from the beginning of the data set 
+
+
 ### Testing
 
 #### Mocking response as component data
