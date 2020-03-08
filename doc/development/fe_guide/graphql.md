@@ -341,9 +341,9 @@ fetchNextPage() {
         // or replacing old result with the new one if we use numbered pages
 
         const newDesigns = fetchMoreResult.project.issue.designCollection.designs;
-        const newResult = [...previousResult.project.issue.designCollection.designs, ...newDesigns]
+        previousResult.project.issue.designCollection.designs.push(...newDesigns)
 
-        return newResult;
+        return previousResult;
       },
     });
   }
