@@ -19,10 +19,12 @@ export default {
   },
   watch: {
     query() {
-      historyPushState(setUrlParams(this.query, window.location.href, true));
+      console.log('watch::update', this.query, window.location.href);
+      return historyPushState(setUrlParams(this.query, window.location.href, true));
     },
   },
   render() {
+    console.log('render::update', this, this.query, window.location.href);
     return this.$slots.default;
   },
 };

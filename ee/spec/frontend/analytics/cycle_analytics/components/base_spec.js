@@ -10,6 +10,7 @@ import GroupsDropdownFilter from 'ee/analytics/shared/components/groups_dropdown
 import ProjectsDropdownFilter from 'ee/analytics/shared/components/projects_dropdown_filter.vue';
 import SummaryTable from 'ee/analytics/cycle_analytics/components/summary_table.vue';
 import StageTable from 'ee/analytics/cycle_analytics/components/stage_table.vue';
+import UrlSync from 'ee/analytics/cycle_analytics/components/url_sync.vue';
 import 'bootstrap';
 import '~/gl_dropdown';
 import Scatterplot from 'ee/analytics/shared/components/scatterplot.vue';
@@ -17,6 +18,9 @@ import Daterange from 'ee/analytics/shared/components/daterange.vue';
 import TasksByTypeChart from 'ee/analytics/cycle_analytics/components/tasks_by_type_chart.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import httpStatusCodes from '~/lib/utils/http_status';
+import * as commonUtils from '~/lib/utils/common_utils';
+import * as urlUtils from '~/lib/utils/url_utility';
+import { toYmd } from 'ee/analytics/shared/utils';
 import * as mockData from '../mock_data';
 
 const noDataSvgPath = 'path/to/no/data';
@@ -35,7 +39,9 @@ const defaultStubs = {
 };
 
 function createComponent({
-  opts = {},
+  opts = {
+    stubs: defaultStubs,
+  },
   shallow = true,
   withStageSelected = false,
   scatterplotEnabled = true,
@@ -95,6 +101,13 @@ describe('Cycle Analytics component', () => {
       .findAll('.stage-nav-item')
       .at(index);
 
+  const shouldSetUrlParams = result => {
+    return wrapper.vm.$nextTick().then(() => {
+      expect(urlUtils.setUrlParams).toHaveBeenCalledWith(result, window.location.href, true);
+      expect(commonUtils.historyPushState).toHaveBeenCalled();
+    });
+  };
+
   const displaysProjectsDropdownFilter = flag => {
     expect(wrapper.find(ProjectsDropdownFilter).exists()).toBe(flag);
   };
@@ -134,8 +147,50 @@ describe('Cycle Analytics component', () => {
     mock.restore();
   });
 
-  describe('displays the components as required', () => {
+  describe.only('displays the components as required', () => {
     describe('before a filter has been selected', () => {
+      describe.only('Url Sync', () => {
+        beforeEach(() => {
+          commonUtils.historyPushState = jest.fn();
+          urlUtils.setUrlParams = jest.fn();
+
+          mock = new MockAdapter(axios);
+          wrapper = createComponent({
+            shallow: false,
+            stubs: {
+              ...defaultStubs,
+              // 'url-sync': UrlSync,
+            },
+          });
+
+          // wrapper.vm.$store.dispatch('initializeCycleAnalytics', {
+          //   createdAfter: mockData.startDate,
+          //   createdBefore: mockData.endDate,
+          // });
+
+          // return wrapper.vm.$nextTick();
+        });
+
+        afterEach(() => {
+          commonUtils.historyPushState = null;
+          urlUtils.setUrlParams = null;
+          wrapper.destroy();
+          mock.restore();
+        });
+        it.only('sets the url parameters', () => {
+          // group_id: getters.currentGroupPath,
+          // 'project_ids[]': getters.selectedProjectIds,
+          // created_after: toYmd(payload.startDate),
+          // created_before: toYmd(payload.endDate),
+          console.log('wrapper', wrapper.html());
+
+          console.log('commonUtils.historyPushState', commonUtils.historyPushState.mock.calls);
+          console.log('urlUtils.setUrlParams', urlUtils.setUrlParams.mock.calls);
+          // return shouldSetUrlParams('lol wtf');
+          expect(1).toBe(2);
+        });
+      });
+
       it('displays an empty state', () => {
         const emptyState = wrapper.find(GlEmptyState);
 
