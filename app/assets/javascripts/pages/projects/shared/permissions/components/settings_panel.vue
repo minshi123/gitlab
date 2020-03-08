@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import projectFeatureSetting from './project_feature_setting.vue';
 import projectFeatureToggle from '~/vue_shared/components/toggle_button.vue';
 import projectSettingRow from './project_setting_row.vue';
+import projectLfsSettingRow from './project_lfs_setting_row.vue';
 import {
   visibilityOptions,
   visibilityLevelDescriptions,
@@ -19,6 +20,7 @@ export default {
     projectFeatureSetting,
     projectFeatureToggle,
     projectSettingRow,
+    projectLfsSettingRow,
   },
   mixins: [settingsMixin],
 
@@ -66,6 +68,11 @@ export default {
       type: String,
       required: false,
       default: '',
+    },
+    lfsObjectsCount: {
+      type: Number,
+      required: true,
+      default: 0,
     },
     registryHelpPath: {
       type: String,
@@ -346,20 +353,18 @@ export default {
             name="project[container_registry_enabled]"
           />
         </project-setting-row>
-        <project-setting-row
+        <project-lfs-setting-row
           v-if="lfsAvailable"
           :help-path="lfsHelpPath"
-          :label="s__('ProjectSettings|Git Large File Storage')"
-          :help-text="
-            s__('ProjectSettings|Manages large files such as audio, video, and graphics files')
-          "
+          :has-lfs-objects="lfsObjectsCount > 0"
+          :lfs-enabled="lfsEnabled"
         >
           <project-feature-toggle
             v-model="lfsEnabled"
             :disabled-input="!repositoryEnabled"
             name="project[lfs_enabled]"
           />
-        </project-setting-row>
+        </project-lfs-setting-row>
         <project-setting-row
           v-if="packagesAvailable"
           :help-path="packagesHelpPath"
