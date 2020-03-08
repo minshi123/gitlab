@@ -298,18 +298,61 @@ query {
 
 #### Using `fetchMore` method in components
 
-Usually, when making an initial fetch, we want to start a pagination from the beginning, In this case, we can skip passing a cursor or we can pass `null` explicitly to `after`. When we want to move to the next page, we should use an Apollo `fetchMore` method, passing a new cursor (and optionally new variables) there.
+Usually, when making an initial fetch, we want to start a pagination from the beginning, In this case, we can skip passing a cursor or we can pass `null` explicitly to `after`. After data is fetched, we should save a `pageInfo` object. Let's assume we're storing it to Vue component `data`:
+
+```javascript
+data() {
+  return {
+    pageInfo: null,
+  }
+},
+apollo: {
+  designs: {
+    query: projectQuery,
+    variables() {
+      return {
+        // rest of design variables
+        ...
+        first: 10,
+      };
+    },
+    result(res) {
+      this.pageInfo = res.data?.project?.issue?.designCollection?.designs?.pageInfo;
+    },
+  },
+},
+```
+
+When we want to move to the next page, we will use an Apollo `fetchMore` method, passing a new cursor (and optionally new variables) there. In `updateQuery` hook we have to return a result we want to see in Apollo cache after fetching the next page.
 
 ```javascript
 fetchNextPage() {
-  this.$apollo.fetchMore({
-    
-  })
+  // as a first step, we're checking if we have more pages to move forward
+  if (this.pageInfo?.hasNextPage) {
+    this.$apollo.queries.designs.fetchMore({
+      variables: {
+        // rest of design variables
+        ...
+        first: 10,
+        after: this.pageInfo?.endCursor,
+      },
+      updateQuery(previousResult, { fetchMoreResult }) {
+        // here we can implement the logic of adding new designs to fetched one (for example, if we use infinite scroll)
+        // or replacing old result with the new one if we use numbered pages
+
+        const newDesigns = fetchMoreResult.project.issue.designCollection.designs;
+        const newResult = [...previousResult.project.issue.designCollection.designs, ...newDesigns]
+
+        return newResult;
+      },
+    });
+  }
 }
 ```
 
+Please note we don't have to save `pageInfo` one more time: `fetchMore` triggers a query `result` hook as well.
 
-If `null` is passed for the cursor relay will ignore it and provide results starting from the beginning of the data set 
+> Currently, bidirectional pagination doesn't work: `hasNextPage` returns a correct value only when we paginate forward (using `endCursor` and `first` parameters) and `hasPreviousPage` returns a correct value only when we paginate backward (using `startCursor` and `last` parameters). This should be resolved in the scope of https://gitlab.com/gitlab-org/gitlab/-/issues/208301 
 
 
 ### Testing
