@@ -1,30 +1,33 @@
 # frozen_string_literal: true
 
-class SyncSeatLinkWorker
+class SyncSeatLinkWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
 
-  # feature_category :source_code_management
-
-  URI_PATH = '/'
+  feature_category :analysis
 
   def perform
-    binding.pry
-    return unless License.current
-    make_request
+    return unless should_sync_seats?
+
+    SyncSeatLinkRequestWorker.perform_async(
+      Date.current.to_s,
+      License.current.data,
+      max_historical_user_count
+    )
   end
 
   private
 
-  def make_request
-    Gitlab::HTTP.post('/api/v1/seat_links', base_uri: EE::SUBSCRIPTIONS_URL, body: request_body)
+  # Only sync paid licenses from start date until 14 days after expiration
+  def should_sync_seats?
+    License.current &&
+    !License.current.trial? &&
+    Date.current.between?(License.current.starts_at, License.current.expires_at + 14.days)
   end
 
-  def request_body
-    {
-      date: Time.at(self['created_at']).utc.to_date.to_s,
-      license_key: License.current.data,
-      max_historical_user_count: HistoricalData.max_historical_user_count
-    }
+  def max_historical_user_count
+    HistoricalData.max_historical_user_count(
+      from: License.current.starts_at,
+      to: Date.current
+    )
   end
-
 end

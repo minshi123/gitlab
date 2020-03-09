@@ -556,3 +556,17 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: 
+- :name: sync_seat_link
+  :feature_category: :analysis
+  :has_external_dependencies: 
+  :urgency: :default
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
+- :name: sync_seat_link_request
+  :feature_category: :analysis
+  :has_external_dependencies: true
+  :urgency: :default
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
