@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_06_170531) do
+ActiveRecord::Schema.define(version: 2020_03_09_140540) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3260,6 +3260,7 @@ ActiveRecord::Schema.define(version: 2020_03_06_170531) do
     t.integer "repository_access_level", default: 20, null: false
     t.integer "pages_access_level", null: false
     t.integer "forking_access_level"
+    t.index ["project_id", "repository_access_level"], name: "index_project_features_on_project_id_ral_20", where: "(repository_access_level = 20)"
     t.index ["project_id"], name: "index_project_features_on_project_id", unique: true
   end
 
