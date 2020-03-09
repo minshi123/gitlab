@@ -563,3 +563,10 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: 
+- :name: vulnerability_exports_export_csv
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: 
+  :urgency: :default
+  :resource_boundary: :cpu
+  :weight: 1
+  :idempotent: 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_09_195710) do
+ActiveRecord::Schema.define(version: 2020_03_11_154110) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -4479,6 +4479,17 @@ ActiveRecord::Schema.define(version: 2020_03_09_195710) do
     t.index ["resolved_by_id"], name: "index_vulnerabilities_on_resolved_by_id"
     t.index ["start_date_sourcing_milestone_id"], name: "index_vulnerabilities_on_start_date_sourcing_milestone_id"
     t.index ["updated_by_id"], name: "index_vulnerabilities_on_updated_by_id"
+  end
+
+  create_table "vulnerability_exports", force: :cascade do |t|
+    t.datetime_with_timezone "created_at", null: false
+    t.datetime_with_timezone "updated_at", null: false
+    t.integer "project_id", null: false
+    t.integer "format", null: false
+    t.text "file"
+    t.string "status", limit: 255, null: false
+    t.datetime "started_at"
+    t.datetime "finished_at"
   end
 
   create_table "vulnerability_feedback", id: :serial, force: :cascade do |t|

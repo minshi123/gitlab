@@ -244,5 +244,7 @@
   - 1
 - - upload_checksum
   - 1
+- - vulnerability_exports_export
+  - 1
 - - web_hook
   - 1
