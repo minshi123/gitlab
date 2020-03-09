@@ -23,10 +23,9 @@ module Gitlab
 
           @project_members = []
 
-          @relation_reader.each_relation('project_members') do |project_member|
+          @relation_reader.consume_relation('project_members') do |project_member|
             @project_members << project_member
           end
-          @relation_reader.mark_relations_as_deleted(['project_members'])
 
           if relation_tree_restorer.restore
             import_failure_service.with_retry(action: 'set_latest_merge_request_diff_ids!') do

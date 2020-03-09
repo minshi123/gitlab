@@ -9,7 +9,7 @@ module Gitlab
         def initialize(path, tree_hash: nil)
           @path = path
           @tree_hash = tree_hash
-          @deleted_relations = []
+          @consumed_relations = []
         end
 
         def valid?
@@ -18,21 +18,19 @@ module Gitlab
 
         def root_attributes(excluded_attributes = [])
           tree_hash.reject do |key, _|
-            excluded_attributes.include?(key) || @deleted_relations.include?(key)
+            excluded_attributes.include?(key) || @consumed_relations.include?(key)
           end
         end
 
-        def mark_relations_as_deleted(keys)
-          return unless keys
+        def consume_relation(key)
+          return if @consumed_relations.include?(key)
 
-          @deleted_relations.concat(keys).uniq
-        end
-
-        def each_relation(key)
-          return if @deleted_relations.include?(key)
+          @consumed_relations << key
 
           value = tree_hash[key]
           return if value.nil?
+
+          return unless block_given?
 
           if value.is_a?(Array)
             value.each.with_index do |item, idx|
