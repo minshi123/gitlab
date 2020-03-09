@@ -49,6 +49,8 @@ class IssuableFinder
 
   NEGATABLE_PARAMS_HELPER_KEYS = %i[include_subgroups in].freeze
 
+  MEMOIZED_PARAMS = %i[project projects group author milestones labels].freeze
+
   attr_accessor :current_user, :params
 
   class << self
@@ -91,9 +93,22 @@ class IssuableFinder
     end
   end
 
-  def initialize(current_user, params = {})
+  def initialize(current_user, params = {}, memoized_params = {})
     @current_user = current_user
     @params = params
+    ## If these params are set, we're a class instantiated inside itself, so let's share pre-loaded memoized values
+    return unless memoized_params.present?
+
+    MEMOIZED_PARAMS.each do |param|
+      instance_variable_set(:"@#{param}", memoized_params[param])
+    end
+  end
+
+  def memoized_params
+    @memo = MEMOIZED_PARAMS.map do |param|
+      val = instance_variable_get(:"@#{param}")
+      [param, val] unless val.nil?
+    end.compact.to_h
   end
 
   def execute
@@ -420,7 +435,7 @@ class IssuableFinder
       not_helpers = params.slice(*NEGATABLE_PARAMS_HELPER_KEYS).merge(params[:not].slice(*NEGATABLE_PARAMS_HELPER_KEYS))
       not_param = { key => value }.with_indifferent_access.merge(not_helpers).merge(not_query: true)
 
-      items_to_negate = self.class.new(current_user, not_param).execute
+      items_to_negate = self.class.new(current_user, not_param, memoized_params).execute
 
       items = items.where.not(id: items_to_negate)
     end
