@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_06_170531) do
+ActiveRecord::Schema.define(version: 2020_03_09_195710) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3261,6 +3261,7 @@ ActiveRecord::Schema.define(version: 2020_03_06_170531) do
     t.integer "pages_access_level", null: false
     t.integer "forking_access_level"
     t.index ["project_id"], name: "index_project_features_on_project_id", unique: true
+    t.index ["project_id", "builds_access_level"], name: "index_project_features_on_project_id_bal_20", where: "(builds_access_level = 20)"
   end
 
   create_table "project_group_links", id: :serial, force: :cascade do |t|
@@ -3474,6 +3475,7 @@ ActiveRecord::Schema.define(version: 2020_03_06_170531) do
     t.index ["last_repository_check_at"], name: "index_projects_on_last_repository_check_at", where: "(last_repository_check_at IS NOT NULL)"
     t.index ["last_repository_check_failed"], name: "index_projects_on_last_repository_check_failed"
     t.index ["last_repository_updated_at"], name: "index_projects_on_last_repository_updated_at"
+    t.index ["mirror", "mirror_trigger_builds", "creator_id", "created_at"], name: "index_projects_on_mirror_creator_id_created_at", where: "((mirror = true) AND (mirror_trigger_builds = true))"
     t.index ["marked_for_deletion_at"], name: "index_projects_on_marked_for_deletion_at", where: "(marked_for_deletion_at IS NOT NULL)"
     t.index ["marked_for_deletion_by_user_id"], name: "index_projects_on_marked_for_deletion_by_user_id", where: "(marked_for_deletion_by_user_id IS NOT NULL)"
     t.index ["mirror_last_successful_update_at"], name: "index_projects_on_mirror_last_successful_update_at"
