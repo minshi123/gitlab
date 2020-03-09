@@ -390,7 +390,14 @@ export default {
             :popover-options="dastPopover"
             class="js-dast-widget"
             data-qa-selector="dast_scan_report"
-          />
+          >
+            <template v-if="dast.scannedUrlsCount && dast.jobUrl" #default>
+              <div class="text-nowrap">
+                {{ n__('%d URL scanned', '%d URLs scanned', dast.scannedUrlsCount) }}
+              </div>
+              <gl-link class="ml-2" :href="dast.jobUrl">{{ __('View details') }}</gl-link>
+            </template>
+          </summary-row>
 
           <issues-list
             v-if="dast.newIssues.length || dast.resolvedIssues.length"

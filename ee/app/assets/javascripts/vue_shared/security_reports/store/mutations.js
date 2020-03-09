@@ -96,6 +96,10 @@ export default {
     Vue.set(state.dast, 'allIssues', existing);
     Vue.set(state.dast, 'baseReportOutofDate', baseReportOutofDate);
     Vue.set(state.dast, 'hasBaseReport', hasBaseReport);
+
+    // TODO: replace with data from API
+    Vue.set(state.dast, 'scannedUrlsCount', 211);
+    Vue.set(state.dast, 'jobUrl', '#');
   },
 
   [types.RECEIVE_DAST_DIFF_ERROR](state) {

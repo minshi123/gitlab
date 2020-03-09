@@ -53,11 +53,16 @@ export default {
       />
       <ci-icon v-else :status="iconStatus" :size="24" />
     </div>
-
     <div class="report-block-list-issue-description">
       <div class="report-block-list-issue-description-text">{{ summary }}</div>
 
       <popover v-if="popoverOptions" :options="popoverOptions" />
+    </div>
+    <div
+      v-if="$slots.default"
+      class="text-right flex-fill d-flex justify-content-end flex-column flex-sm-row"
+    >
+      <slot></slot>
     </div>
   </div>
 </template>
