@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snippet Description Edit component rendering matches the snapshot 1`] = `
+<div
+  class="form-group js-description-input"
+>
+  <label>
+    Description (optional)
+  </label>
+   
+  <div
+    class="js-collapsible-input"
+  >
+    <div
+      class="js-collapsed d-none"
+    >
+      <gl-form-input-stub
+        class="form-control"
+        data-qa_selector="description_placeholder"
+        placeholder="Optionally add a description about what your snippet does or how to use it..."
+      />
+    </div>
+     
+    <div
+      class="js-expanded"
+    >
+      <markdown-field-stub
+        addspacingclasses="true"
+        canattachfile="true"
+        enableautocomplete="true"
+        helppagepath=""
+        markdowndocspath="help/"
+        markdownpreviewpath="foo/"
+        note="[object Object]"
+        quickactionsdocspath=""
+        textareavalue=""
+      >
+        <textarea
+          aria-label="Description"
+          class="note-textarea js-gfm-input js-autosize markdown-area
+          qa-description-textarea"
+          data-supports-quick-actions="false"
+          dir="auto"
+          id="issue-description"
+          placeholder="Write a comment or drag your files here…"
+        />
+      </markdown-field-stub>
+    </div>
+  </div>
+</div>
+`;
