@@ -51,7 +51,7 @@ module Gitlab
       end
 
       def process_relation!(relation_key, relation_definition)
-        @relation_reader.each_relation(relation_key) do |data_hash, relation_index|
+        @relation_reader.consume_relation(relation_key) do |data_hash, relation_index|
           process_relation_item!(relation_key, relation_definition, relation_index, data_hash)
         end
       end

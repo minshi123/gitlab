@@ -40,8 +40,9 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
       })
     end
 
-    it 'returns hash exclude excluded_attributes and deleted_relations' do
-      legacy_reader.mark_relations_as_deleted(%w[import_type archived])
+    it 'returns hash exclude excluded_attributes and consumed_relations' do
+      legacy_reader.consume_relation('import_type')
+      legacy_reader.consume_relation('archived')
 
       expect(subject).to eq({
         "description" => "Nisi et repellendus ut enim quo accusamus vel magnam.",
@@ -52,18 +53,30 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
     end
   end
 
-  describe '#each_relation' do
+  describe '#consume_relation' do
     let(:path) { fixture }
     let(:key) { 'description' }
 
-    context 'key is marked as deleted' do
+    context 'key has been consumed' do
       before do
-        legacy_reader.mark_relations_as_deleted([key])
+        legacy_reader.consume_relation(key)
       end
 
       it 'does not yield' do
         expect do |blk|
-          legacy_reader.each_relation(key, &blk)
+          legacy_reader.consume_relation(key, &blk)
+        end.not_to yield_control
+      end
+    end
+
+    context 'value is nil' do
+      before do
+        expect(legacy_reader).to receive(:tree_hash).and_return({ key => nil })
+      end
+
+      it 'does not yield' do
+        expect do |blk|
+          legacy_reader.consume_relation(key, &blk)
         end.not_to yield_control
       end
     end
@@ -75,7 +88,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
 
       it 'yield the value with 0 index' do
         expect do |blk|
-          legacy_reader.each_relation(key, &blk)
+          legacy_reader.consume_relation(key, &blk)
         end.to yield_with_args('value', 0)
       end
     end
@@ -87,7 +100,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
 
       it 'yield each array element with index' do
         expect do |blk|
-          legacy_reader.each_relation(key, &blk)
+          legacy_reader.consume_relation(key, &blk)
         end.to yield_successive_args(['item1', 0], ['item2', 1], ['item3', 2])
       end
     end
