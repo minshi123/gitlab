@@ -1,7 +1,7 @@
 <script>
 import $ from 'jquery';
 import _ from 'underscore';
-import { GlLoadingIcon, GlButton, GlAvatar } from '@gitlab/ui';
+import { GlLoadingIcon, GlButton, GlAvatar, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import Icon from '~/vue_shared/components/icon.vue';
 import { n__, s__, __ } from '~/locale';
 import Api from '~/api';
@@ -14,6 +14,8 @@ export default {
     GlLoadingIcon,
     GlButton,
     GlAvatar,
+    GlDropdown,
+    GlDropdownItem,
   },
   props: {
     groupId: {
@@ -139,8 +141,8 @@ export default {
 
 <template>
   <div>
-    <div ref="projectsDropdown" class="dropdown dropdown-projects">
-      <gl-button
+    <gl-dropdown ref="projectsDropdown" class="dropdown dropdown-projects">
+      <!-- <gl-button
         class="dropdown-menu-toggle wide shadow-none bg-white"
         type="button"
         data-toggle="dropdown"
@@ -159,8 +161,34 @@ export default {
         />
         {{ selectedProjectsLabel }}
         <icon name="chevron-down" />
-      </gl-button>
-      <div class="dropdown-menu dropdown-menu-selectable dropdown-menu-full-width">
+      </gl-button> -->
+      <gl-dropdown-header>{{ __('Projects') }}</gl-dropdown-header>
+      <gl-dropdown-item v-for="project in defaultProjects" :key="project.id">
+        <!-- TODO: should this be using camelCase? -->
+        <gl-avatar v-if="project.avatar_url" :size="24" :src="project.avatar_url" />
+        {{ project.name }}
+      </gl-dropdown-item>
+      <!-- <gl-button
+        class="dropdown-menu-toggle wide shadow-none bg-white"
+        type="button"
+        data-toggle="dropdown"
+        aria-expanded="false"
+        :aria-label="label"
+      >
+        <gl-avatar
+          v-if="isOnlyOneProjectSelected"
+          :src="selectedProjects[0].avatar_url"
+          :entity-id="selectedProjects[0].id"
+          :entity-name="selectedProjects[0].name"
+          :size="16"
+          shape="rect"
+          :alt="selectedProjects[0].name"
+          class="d-inline-flex align-text-bottom"
+        />
+        {{ selectedProjectsLabel }}
+        <icon name="chevron-down" />
+      </gl-button> -->
+      <!-- <div class="dropdown-menu dropdown-menu-selectable dropdown-menu-full-width">
         <div class="dropdown-title">{{ __('Projects') }}</div>
         <div class="dropdown-input">
           <input class="dropdown-input-field" type="search" :placeholder="__('Search projects')" />
@@ -168,7 +196,7 @@ export default {
         </div>
         <div class="dropdown-content"></div>
         <gl-loading-icon class="dropdown-loading" />
-      </div>
-    </div>
+      </div> -->
+    </gl-dropdown>
   </div>
 </template>
