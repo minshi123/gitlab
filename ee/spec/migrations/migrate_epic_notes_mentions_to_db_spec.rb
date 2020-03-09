@@ -27,11 +27,11 @@ describe 'epic notes mentions migration' do
   # this note points to an innexistent noteable record
   let!(:resource5) { notes.create!(note: 'note3 for @root to check', noteable_id: epics.maximum(:id) + 10, noteable_type: 'Epic') }
 
-  describe MigrateEpicNotesMentionsToDb, :migration do
+  describe MigrateEpicNotesMentionsToDb do
     it_behaves_like 'schedules resource mentions migration', Epic, true
   end
 
-  describe RemigrateEpicNotesMentionsToDb, :migration do
+  describe RemigrateEpicNotesMentionsToDb do
     it_behaves_like 'schedules resource mentions migration', Epic, true
   end
 end

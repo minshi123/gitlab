@@ -112,7 +112,7 @@ migration. You can find the complete spec in
 require 'spec_helper'
 require Rails.root.join('db', 'post_migrate', '20170526185842_migrate_pipeline_stages.rb')
 
-describe MigratePipelineStages, :migration do
+describe MigratePipelineStages do
   # Create test data - pipeline and CI/CD jobs.
   let(:jobs) { table(:ci_builds) }
   let(:stages) { table(:ci_stages) }
@@ -163,7 +163,7 @@ schema tag to a context that you want to switch the database schema within.
 Example:
 
 ```ruby
-describe SomeClass, :migration, schema: 20170608152748 do
+describe SomeClass, schema: 20170608152748 do
   # ...
 end
 ```
@@ -178,7 +178,7 @@ background migration. You can find the complete spec on
 ```ruby
 require 'spec_helper'
 
-describe Gitlab::BackgroundMigration::ArchiveLegacyTraces, :migration, schema: 20180529152628 do
+describe Gitlab::BackgroundMigration::ArchiveLegacyTraces, schema: 20180529152628 do
   include TraceHelpers
 
   let(:namespaces) { table(:namespaces) }

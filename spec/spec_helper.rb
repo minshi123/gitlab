@@ -75,6 +75,7 @@ RSpec.configure do |config|
 
     metadata[:level] = quality_level.level_for(location)
     metadata[:api] = true if location =~ %r{/spec/requests/api/}
+    metadata[:migration] = true if metadata[:level] == :migration
 
     # do not overwrite type if it's already set
     next if metadata.key?(:type)

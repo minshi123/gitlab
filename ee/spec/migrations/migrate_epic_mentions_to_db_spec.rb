@@ -25,11 +25,11 @@ describe 'epic mentions migration' do
   # this epic has no mentions so should be filtered out
   let!(:resource5) { epics.create!(iid: 5, title: "title5", title_html: 'title5', description: 'epic description with no mention', group_id: group.id, author_id: user.id) }
 
-  describe MigrateEpicMentionsToDb, :migration do
+  describe MigrateEpicMentionsToDb do
     it_behaves_like 'schedules resource mentions migration', Epic, false
   end
 
-  describe RemigrateEpicMentionsToDb, :migration do
+  describe RemigrateEpicMentionsToDb do
     it_behaves_like 'schedules resource mentions migration', Epic, false
   end
 end
