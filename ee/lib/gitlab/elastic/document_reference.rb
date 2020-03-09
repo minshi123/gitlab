@@ -26,6 +26,20 @@ module Gitlab
         def each(&blk)
           @refs.each(&blk)
         end
+
+        def preload_database_records
+          @refs.group_by(&:klass).each do |klass, group|
+            ids = group.map(&:db_id)
+
+            records = klass.id_in(ids)
+            records_by_id = records.each_with_object({}) { |record, hash| hash[record.id] = record }
+
+            group.each do |ref|
+              ref.database_record = records_by_id[ref.db_id.to_i]
+            end
+          end
+          self
+        end
       end
 
       class << self
@@ -101,6 +115,10 @@ module Gitlab
       # TODO: return a promise for batch loading: https://gitlab.com/gitlab-org/gitlab/issues/207280
       def database_record
         strong_memoize(:database_record) { klass.find_by_id(db_id) }
+      end
+
+      def database_record=(record)
+        strong_memoize(:database_record) { record }
       end
 
       def serialize

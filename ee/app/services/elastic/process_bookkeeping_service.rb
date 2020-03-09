@@ -68,7 +68,7 @@ module Elastic
       )
 
       refs = deserialize_all(specs)
-      refs.each { |ref| submit_document(ref) }
+      refs.preload_database_records.each { |ref| submit_document(ref) }
       failures = bulk_indexer.flush
 
       # Re-enqueue any failures so they are retried
