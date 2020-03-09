@@ -1,6 +1,6 @@
 <script>
 import { isUndefined } from 'underscore';
-import { GlEmptyState, GlSprintf } from '@gitlab/ui';
+import { GlEmptyState, GlSprintf, GlIcon } from '@gitlab/ui';
 import SecurityDashboardApp from 'ee/security_dashboard/components/app.vue';
 import { s__ } from '~/locale';
 import Icon from '~/vue_shared/components/icon.vue';
@@ -11,6 +11,7 @@ export default {
   components: {
     GlEmptyState,
     GlSprintf,
+    GlIcon,
     UserAvatarLink,
     Icon,
     TimeagoTooltip,
@@ -77,6 +78,11 @@ export default {
       required: false,
       default: null,
     },
+    vulnerabilitiesExportEndpoint: {
+      type: String,
+      required: false,
+      default: null,
+    },
     vulnerabilitiesSummaryEndpoint: {
       type: String,
       required: false,
@@ -132,7 +138,19 @@ export default {
           </span>
         </div>
       </div>
-      <h4 class="mt-4 mb-3">{{ __('Vulnerabilities') }}</h4>
+      <div class="mt-4 mb-3 d-flex justify-content-center">
+        <h4 class="flex-grow">{{ __('Vulnerabilities') }}</h4>
+        <div class="d-flex align-items-center">
+          <a
+            :href="vulnerabilitiesExportEndpoint"
+            target="_blank"
+            rel="noreferrer noopener"
+            class="btn"
+          >
+            <gl-icon name="export" :size="18" />
+          </a>
+        </div>
+      </div>
       <security-dashboard-app
         :lock-to-project="project"
         :vulnerabilities-endpoint="vulnerabilitiesEndpoint"
