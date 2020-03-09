@@ -200,9 +200,10 @@ module Gitlab
       end
 
       def subject_starts_with_lowercase?
-        first_char = subject[0]
+        match = subject.match(/(?<first_letter>[a-z]).*/i)
+        return unless match
 
-        first_char.downcase == first_char
+        match[:first_letter].downcase == match[:first_letter]
       end
 
       def subject_ends_with_a_period?
