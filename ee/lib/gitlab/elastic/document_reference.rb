@@ -12,6 +12,22 @@ module Gitlab
 
       InvalidError = Class.new(StandardError)
 
+      class Collection
+        include Enumerable
+
+        def initialize
+          @refs = []
+        end
+
+        def deserialize_and_add(string)
+          @refs << ::Gitlab::Elastic::DocumentReference.deserialize(string)
+        end
+
+        def each(&blk)
+          @refs.each(&blk)
+        end
+      end
+
       class << self
         def build(instance)
           new(instance.class, instance.id, instance.es_id, instance.es_parent)

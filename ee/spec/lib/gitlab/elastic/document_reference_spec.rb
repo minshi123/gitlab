@@ -167,4 +167,20 @@ describe Gitlab::Elastic::DocumentReference do
       expect(project_as_ref.serialize).to eq(project_as_str)
     end
   end
+
+  describe '::Collection' do
+    it 'contains a collection of DocumentReference' do
+      ref1 = described_class.new(Integer, 1, 'integer_1')
+      ref2 = described_class.new(Integer, 1, 'integer_1')
+      ref3 = described_class.new(Integer, 1, 'integer_1')
+
+      collection = described_class::Collection.new
+      collection.deserialize_and_add(ref1.serialize)
+      collection.deserialize_and_add(ref2.serialize)
+      collection.deserialize_and_add(ref3.serialize)
+
+      expect(collection.count).to eq(3)
+      expect(collection.first).to eq(ref1)
+    end
+  end
 end
