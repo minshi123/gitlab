@@ -6,6 +6,7 @@
       - tmp/cache/assets/sprockets
       - tmp/cache/babel-loader
       - tmp/cache/vue-loader
+      - tmp/cache/webpack-dlls
 
 .gitlab:assets:compile-metadata:
   extends:
@@ -78,6 +79,7 @@ gitlab:assets:compile pull-cache:
     SETUP_DB: "false"
     # we override the max_old_space_size to prevent OOM errors
     NODE_OPTIONS: --max_old_space_size=3584
+    WEBPACK_VENDOR_DLL: "true"
   cache:
     key: "assets-compile:v9"
   artifacts:
@@ -118,15 +120,54 @@ compile-assets pull-cache as-if-foss:
     policy: pull
     key: "assets-compile:v9:foss"
 
-.frontend-job-base:
+.frontend-fixtures-base:
   extends:
     - .default-tags
     - .default-retry
     - .default-cache
     - .default-before_script
     - .use-pg9
+  stage: fixtures
+  needs:
+    - job: "setup-test-env"
+      artifacts: true
+    - job: "compile-assets pull-cache"
+      artifacts: true
+  script:
+    - date
+    - scripts/gitaly-test-spawn
+    - date
+    - bundle exec rake frontend:fixtures
+  artifacts:
+    name: frontend-fixtures
+    expire_in: 31d
+    when: always
+    paths:
+      - node_modules
+      - public/assets
+      - tmp/tests/frontend/
+
+frontend-fixtures:
+  extends:
+    - .frontend-fixtures-base
+    - .frontend:rules:default-frontend-jobs
+
+frontend-fixtures-as-if-foss:
+  extends:
+    - .frontend-fixtures-base
+    - .frontend:rules:default-frontend-jobs-as-if-foss
+    - .as-if-foss
+
+.frontend-job-base:
+  extends:
+    - .default-tags
+    - .default-retry
+    - .default-cache
+    - .default-before_script
+  variables:
+    USE_BUNDLE_INSTALL: "false"
+    SETUP_DB: "false"
   stage: test
-  needs: ["setup-test-env", "compile-assets pull-cache"]
 
 .karma-base:
   extends: .frontend-job-base
@@ -136,14 +177,13 @@ compile-assets pull-cache as-if-foss:
   script:
     - export BABEL_ENV=coverage CHROME_LOG_FILE=chrome_debug.log
     - date
-    - scripts/gitaly-test-spawn
-    - date
-    - bundle exec rake karma
+    - yarn karma
 
 karma:
   extends:
     - .karma-base
     - .frontend:rules:default-frontend-jobs
+  needs: ["frontend-fixtures"]
   coverage: '/^Statements *: (\d+\.\d+%)/'
   artifacts:
     name: coverage-javascript
@@ -161,25 +201,24 @@ karma-as-if-foss:
     - .karma-base
     - .frontend:rules:default-frontend-jobs-as-if-foss
     - .as-if-foss
+  needs: ["frontend-fixtures-as-if-foss"]
 
 .jest-base:
   extends: .frontend-job-base
   script:
-    - scripts/gitaly-test-spawn
     - date
-    - bundle exec rake frontend:fixtures
-    - date
-    - yarn jest --ci --coverage
+    - yarn jest --ci --coverage --testSequencer ./scripts/frontend/parallel_ci_sequencer.js
   cache:
     key: jest
     paths:
-      - tmp/jest/jest/
+      - tmp/cache/jest/
     policy: pull-push
 
 jest:
   extends:
     - .jest-base
     - .frontend:rules:default-frontend-jobs
+  needs: ["frontend-fixtures"]
   artifacts:
     name: coverage-frontend
     expire_in: 31d
@@ -190,14 +229,36 @@ jest:
       - tmp/tests/frontend/
     reports:
       junit: junit_jest.xml
+  parallel: 2
 
 jest-as-if-foss:
   extends:
     - .jest-base
     - .frontend:rules:default-frontend-jobs-as-if-foss
     - .as-if-foss
+  needs: ["frontend-fixtures-as-if-foss"]
   cache:
     policy: pull
+
+coverage-frontend:
+  extends:
+    - .default-tags
+    - .default-retry
+    - .frontend:rules:default-frontend-jobs
+  needs: ["jest"]
+  stage: post-test
+  before_script:
+    - yarn install --frozen-lockfile --cache-folder .yarn-cache --prefer-offline
+  script:
+    - yarn node scripts/frontend/merge_coverage_frontend.js
+  artifacts:
+    name: coverage-frontend
+    expire_in: 31d
+    paths:
+      - coverage-frontend/
+  cache:
+    paths:
+      - .yarn-cache/
 
 .qa-frontend-node:
   extends:

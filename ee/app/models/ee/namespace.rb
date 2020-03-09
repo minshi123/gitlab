@@ -67,7 +67,7 @@ module EE
       validate :validate_shared_runner_minutes_support
 
       validates :max_pages_size,
-                numericality: { only_integer: true, greater_than: 0, allow_nil: true,
+                numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true,
                                 less_than: ::Gitlab::Pages::MAX_SIZE / 1.megabyte }
 
       delegate :trial?, :trial_ends_on, :trial_starts_on, :upgradable?, to: :gitlab_subscription, allow_nil: true
@@ -199,7 +199,7 @@ module EE
     end
 
     def feature_available_in_plan?(feature)
-      return true if ::License::ANY_PLAN_FEATURES.include?(feature)
+      return true if ::License.promo_feature_available?(feature)
 
       available_features = strong_memoize(:features_available_in_plan) do
         Hash.new do |h, f|
@@ -324,6 +324,14 @@ module EE
     # for Group namespaces.
     def billable_members_count(_requested_hosted_plan = nil)
       1
+    end
+
+    # When a purchasing a GL.com plan for a User namespace
+    # we only charge for a single user.
+    # This method is overwritten in Group where we made the calculation
+    # for Group namespaces.
+    def billed_user_ids(_requested_hosted_plan = nil)
+      [owner_id]
     end
 
     def eligible_for_trial?

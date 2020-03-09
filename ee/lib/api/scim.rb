@@ -45,18 +45,22 @@ module API
           render_scim_error(EE::Gitlab::Scim::Conflict, message)
         end
 
-        def find_and_authenticate_group!(group_path)
-          group = find_group(group_path)
-
-          scim_not_found!(message: "Group #{group_path} not found") unless group
-
+        def check_access_to_group!(group)
           token = Doorkeeper::OAuth::Token.from_request(current_request, *Doorkeeper.configuration.access_token_methods)
-          unauthorized! unless token
 
-          scim_token = ScimOauthAccessToken.token_matches_for_group?(token, group)
-          unauthorized! unless scim_token
+          unauthorized! unless token && ScimOauthAccessToken.token_matches_for_group?(token, group)
+        end
 
-          group
+        # Instance variable `@group` is necessary for the
+        # Gitlab::ApplicationContext in API::API
+        def find_and_authenticate_group!(group_path)
+          @group = find_group(group_path)
+
+          scim_not_found!(message: "Group #{group_path} not found") unless @group
+
+          check_access_to_group!(@group)
+
+          @group
         end
 
         # rubocop: disable CodeReuse/ActiveRecord

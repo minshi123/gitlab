@@ -13,7 +13,7 @@ import {
 import { s__ } from '~/locale';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import LabelsSelector from './labels_selector.vue';
-import { STAGE_ACTIONS } from '../constants';
+import { STAGE_ACTIONS, DEFAULT_STAGE_NAMES } from '../constants';
 import {
   isStartEvent,
   isLabelEvent,
@@ -30,6 +30,28 @@ const defaultFields = {
   startEventLabelId: null,
   endEventIdentifier: null,
   endEventLabelId: null,
+};
+
+export const initializeFormData = ({ emptyFieldState, initialFields, errors }) => {
+  const defaultErrors = initialFields?.endEventIdentifier
+    ? { ...emptyFieldState, endEventIdentifier: null }
+    : {
+        ...emptyFieldState,
+        endEventIdentifier:
+          initialFields && !initialFields.startEventIdentifier
+            ? [s__('CustomCycleAnalytics|Please select a start event first')]
+            : null,
+      };
+  return {
+    fields: {
+      ...emptyFieldState,
+      ...initialFields,
+    },
+    fieldErrors: {
+      ...defaultErrors,
+      ...errors,
+    },
+  };
 };
 
 export default {
@@ -70,24 +92,20 @@ export default {
     errors: {
       type: Object,
       required: false,
-      default: () => ({}),
+      default: null,
     },
   },
   data() {
-    const defaultErrors = this?.initialFields?.endEventIdentifier
-      ? {}
-      : { endEventIdentifier: [s__('CustomCycleAnalytics|Please select a start event first')] };
+    const { initialFields = {}, errors = null } = this;
+    const { fields, fieldErrors } = initializeFormData({
+      emptyFieldState: defaultFields,
+      initialFields,
+      errors,
+    });
     return {
       labelEvents: getLabelEventsIdentifiers(this.events),
-      fields: {
-        ...defaultFields,
-        ...this.initialFields,
-      },
-      fieldErrors: {
-        ...defaultFields,
-        ...this.errors,
-        ...defaultErrors,
-      },
+      fields,
+      fieldErrors,
     };
   },
   computed: {
@@ -114,8 +132,14 @@ export default {
     endEventRequiresLabel() {
       return isLabelEvent(this.labelEvents, this.fields.endEventIdentifier);
     },
+    hasErrors() {
+      return (
+        this.eventMismatchError ||
+        Object.values(this.fieldErrors).some(errArray => errArray?.length)
+      );
+    },
     isComplete() {
-      if (this.eventMismatchError) {
+      if (this.hasErrors) {
         return false;
       }
       const {
@@ -171,18 +195,24 @@ export default {
         ...defaultFields,
         ...newFields,
       };
+    },
+    errors(newErrors) {
       this.fieldErrors = {
         ...defaultFields,
-        ...this.errors,
+        ...newErrors,
       };
     },
   },
   methods: {
     handleCancel() {
-      this.fields = {
-        ...defaultFields,
-        ...this.initialFields,
-      };
+      const { initialFields = {}, errors = null } = this;
+      const formData = initializeFormData({
+        emptyFieldState: defaultFields,
+        initialFields,
+        errors,
+      });
+      this.$set(this, 'fields', formData.fields);
+      this.$set(this, 'fieldErrors', formData.fieldErrors);
       this.$emit('cancel');
     },
     handleSave() {
@@ -205,6 +235,15 @@ export default {
     },
     fieldErrorMessage(key) {
       return this.fieldErrors[key]?.join('\n');
+    },
+    onUpdateNameField() {
+      if (DEFAULT_STAGE_NAMES.includes(this.fields.name.toLowerCase())) {
+        this.$set(this.fieldErrors, 'name', [
+          s__('CustomCycleAnalytics|Stage name already exists'),
+        ]);
+      } else {
+        this.$set(this.fieldErrors, 'name', []);
+      }
     },
     onUpdateStartEventField() {
       const initVal = this.initialFields?.endEventIdentifier
@@ -241,10 +280,10 @@ export default {
         <p v-else class="mx-3 my-2">{{ __('All default stages are currently visible') }}</p>
       </gl-dropdown>
     </div>
-
     <gl-form-group
       ref="name"
       :label="s__('CustomCycleAnalytics|Name')"
+      label-for="custom-stage-name"
       :state="!hasFieldErrors('name')"
       :invalid-feedback="fieldErrorMessage('name')"
     >
@@ -255,6 +294,7 @@ export default {
         name="custom-stage-name"
         :placeholder="s__('CustomCycleAnalytics|Enter a name for the stage')"
         required
+        @change.native="onUpdateNameField"
       />
     </gl-form-group>
     <div class="d-flex" :class="{ 'justify-content-between': startEventRequiresLabel }">
@@ -262,6 +302,7 @@ export default {
         <gl-form-group
           ref="startEventIdentifier"
           :label="s__('CustomCycleAnalytics|Start event')"
+          label-for="custom-stage-start-event"
           :state="!hasFieldErrors('startEventIdentifier')"
           :invalid-feedback="fieldErrorMessage('startEventIdentifier')"
         >
@@ -278,6 +319,7 @@ export default {
         <gl-form-group
           ref="startEventLabelId"
           :label="s__('CustomCycleAnalytics|Start event label')"
+          label-for="custom-stage-start-event-label"
           :state="!hasFieldErrors('startEventLabelId')"
           :invalid-feedback="fieldErrorMessage('startEventLabelId')"
         >
@@ -296,9 +338,9 @@ export default {
         <gl-form-group
           ref="endEventIdentifier"
           :label="s__('CustomCycleAnalytics|Stop event')"
+          label-for="custom-stage-stop-event"
           :state="!hasFieldErrors('endEventIdentifier')"
           :invalid-feedback="fieldErrorMessage('endEventIdentifier')"
-          @change.native="onUpdateEndEventField"
         >
           <gl-form-select
             v-model="fields.endEventIdentifier"
@@ -306,6 +348,7 @@ export default {
             :options="endEventOptions"
             :required="true"
             :disabled="!hasStartEvent"
+            @change.native="onUpdateEndEventField"
           />
         </gl-form-group>
       </div>
@@ -313,6 +356,7 @@ export default {
         <gl-form-group
           ref="endEventLabelId"
           :label="s__('CustomCycleAnalytics|Stop event label')"
+          label-for="custom-stage-stop-event-label"
           :state="!hasFieldErrors('endEventLabelId')"
           :invalid-feedback="fieldErrorMessage('endEventLabelId')"
         >

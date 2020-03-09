@@ -74,7 +74,7 @@ module Ci
 
     scope :with_files_stored_locally, -> { where(file_store: [nil, ::JobArtifactUploader::Store::LOCAL]) }
     scope :with_files_stored_remotely, -> { where(file_store: ::JobArtifactUploader::Store::REMOTE) }
-    scope :for_sha, ->(sha) { joins(job: :pipeline).where(ci_pipelines: { sha: sha }) }
+    scope :for_sha, ->(sha, project_id) { joins(job: :pipeline).where(ci_pipelines: { sha: sha, project_id: project_id }) }
 
     scope :with_file_types, -> (file_types) do
       types = self.file_types.select { |file_type| file_types.include?(file_type) }.values
@@ -148,7 +148,7 @@ module Ci
 
     def valid_file_format?
       unless TYPE_AND_FORMAT_PAIRS[self.file_type&.to_sym] == self.file_format&.to_sym
-        errors.add(:file_format, 'Invalid file format with specified file type')
+        errors.add(:base, _('Invalid file format with specified file type'))
       end
     end
 

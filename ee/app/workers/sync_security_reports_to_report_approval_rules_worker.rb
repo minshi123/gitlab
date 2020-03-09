@@ -2,11 +2,11 @@
 
 # Worker for syncing report_type approval_rules approvals_required
 #
-class SyncSecurityReportsToReportApprovalRulesWorker
+class SyncSecurityReportsToReportApprovalRulesWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
   include SecurityScansQueue
 
-  latency_sensitive_worker!
+  urgency :high
   worker_resource_boundary :cpu
 
   def perform(pipeline_id)

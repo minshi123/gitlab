@@ -158,6 +158,42 @@ rspec 2.6:
   script: bundle exec rspec
 ```
 
+### `inherit`
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/207484) in GitLab 12.9.
+
+You can disable inheritance of globally defined defaults
+and variables with the `inherit:` parameter.
+
+In the example below:
+
+- `rubocop` **will** inherit both the `before_script` and the variable `DOMAIN`.
+- `rspec` **will not** inherit the `before_script` or the variable `DOMAIN`.
+- `capybara` **will** inherit the `before_script`, but **will not** inherit the variable `DOMAIN`.
+
+```yaml
+default:
+  before_script:
+    - echo Hello World
+
+variables:
+  DOMAIN: example.com
+
+rubocop:
+  script: bundle exec rubocop
+
+rspec:
+  inherit:
+    default: false
+    variables: false
+  script: bundle exec rspec
+
+capybara:
+  inherit:
+    variables: false
+  script: bundle exec capybara
+```
+
 ## Parameter details
 
 The following are detailed explanations for parameters used to configure CI/CD pipelines.
@@ -605,6 +641,24 @@ With `only`, individual keys are logically joined by an AND:
 
 > (any of refs) AND (any of variables) AND (any of changes) AND (if Kubernetes is active)
 
+In the example below, the `test` job will `only` be created when **all** of the following are true:
+
+- The pipeline has been [scheduled](../../user/project/pipelines/schedules.md) **or** runs for `master`.
+- The `variables` keyword matches.
+- The `kubernetes` service is active on the project.
+
+```yaml
+test:
+  script: npm run test
+  only:
+    refs:
+      - master
+      - schedules
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /run-end-to-end-tests/
+    kubernetes: active
+```
+
 `except` is implemented as a negation of this complete expression:
 
 > NOT((any of refs) AND (any of variables) AND (any of changes) AND (if Kubernetes is active))
@@ -612,6 +666,21 @@ With `only`, individual keys are logically joined by an AND:
 This means the keys are treated as if joined by an OR. This relationship could be described as:
 
 > (any of refs) OR (any of variables) OR (any of changes) OR (if Kubernetes is active)
+
+In the example below, the `test` job will **not** be created when **any** of the following are true:
+
+- The pipeline runs for the `master`.
+- There are changes to the `README.md` file in the root directory of the repo.
+
+```yaml
+test:
+  script: npm run test
+  except:
+    refs:
+      - master
+    changes:
+      - "README.md"
+```
 
 #### `only:refs`/`except:refs`
 
@@ -825,10 +894,8 @@ This could result in some unexpected behavior, including:
 
 Available rule clauses include:
 
-- [`if`](#rulesif)
-  (similar to [`only:variables`](#onlyvariablesexceptvariables)).
-- [`changes`](#ruleschanges)
-  (same as [`only:changes`](#onlychangesexceptchanges)).
+- [`if`](#rulesif) (similar to [`only:variables`](#onlyvariablesexceptvariables))
+- [`changes`](#ruleschanges) (same as [`only:changes`](#onlychangesexceptchanges))
 - [`exists`](#rulesexists)
 
 For example, using `if`. This configuration specifies that `job` should be built
@@ -859,7 +926,10 @@ In this example, if the first rule:
 
 `rules:if` differs slightly from `only:variables` by accepting only a single
 expression string, rather than an array of them. Any set of expressions to be
-evaluated should be conjoined into a single expression using `&&` or `||`. For example:
+evaluated should be conjoined into a single expression using `&&` or `||`, and use
+the [variable matching syntax](../variables/README.md#supported-syntax).
+
+For example:
 
 ```yaml
 job:
@@ -895,7 +965,6 @@ docker build:
     - if: '$VAR == "string value"'
       when: manual # Will include the job and set to when:manual if the expression evaluates to true, after the `changes:` rule fails to match.
     - when: on_success # If neither of the first rules match, set to on_success
-
 ```
 
 In this example, a job either set to:
@@ -955,6 +1024,47 @@ job:
 ```
 
 In this example, if the first rule matches, then the job will have `when: manual` and `allow_failure: true`.
+
+#### Exclude jobs with `rules:` from certain pipelines
+
+Jobs with `rules:` can cause two pipelines to be created unexpectedly:
+
+- One pipeline from pushing a commit to a branch.
+- A second ["detached" pipeline for a merge request](../merge_request_pipelines/index.md).
+
+`only` and `except` jobs do not trigger merge request pipelines by default, but this
+is not the case for jobs with `rules:`, which may be surprising if migrating from `only`
+and `except` to `rules:`.
+
+If you are using `rules:` and you see two pipelines for commits to branches that have
+a merge request, you have two options:
+
+- Individually exclude each job that uses `rules:` from merge request pipelines. The
+  example below will cause the job to **not** run in *pipelines for merge requests*,
+  but it **will** run in pipelines for *new tags and pipelines running on branch refs*:
+
+  ```yaml
+  job:
+    rules:
+      - if: $CI_MERGE_REQUEST_ID
+        when: never
+      - when: manual
+    script:
+      - echo hello
+  ```
+
+- Add a global [`workflow: rules`](#workflowrules) to allow pipelines in only certain
+  situations. The example below will only run pipelines for merge requests, new tags and
+  changes to master. It will **not** run any pipelines *on any branch except master*, but
+  it will run **detached merge request pipelines** for any merge request, targeting any branch:
+
+  ```yaml
+  workflow:
+    rules:
+      - if: $CI_MERGE_REQUEST_ID
+      - if: $CI_COMMIT_TAG
+      - if: $CI_COMMIT_BRANCH == "master"
+  ```
 
 #### Complex rule clauses
 
@@ -2049,9 +2159,8 @@ job:
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/20390) in
 GitLab 11.2. Requires GitLab Runner 11.2 and above.
 
-The `reports` keyword is used for collecting test reports from jobs and
-exposing them in GitLab's UI (merge requests, pipeline views). Read how to use
-this with [JUnit reports](#artifactsreportsjunit).
+The `reports` keyword is used for collecting test reports, code quality reports, and security reports from jobs.
+It also exposes these reports in GitLab's UI (merge requests, pipeline views, and security dashboards).
 
 NOTE: **Note:**
 The test reports are collected regardless of the job results (success or failure).
@@ -2159,7 +2268,7 @@ introduced in GitLab 12.8.
 
 > Introduced in GitLab 11.5. Requires GitLab Runner 11.5 and above.
 
-The `license_management` report collects [Licenses](../../user/application_security/license_compliance/index.md)
+The `license_management` report collects [Licenses](../../user/compliance/license_compliance/index.md)
 as artifacts.
 
 The collected License Compliance report will be uploaded to GitLab as an artifact and will
@@ -2170,7 +2279,7 @@ dashboards. It is not available for download through the web interface.
 
 > Introduced in GitLab 12.8. Requires GitLab Runner 11.5 and above.
 
-The `license_scanning` report collects [Licenses](../../user/application_security/license_compliance/index.md)
+The `license_scanning` report collects [Licenses](../../user/compliance/license_compliance/index.md)
 as artifacts.
 
 The License Compliance report will be uploaded to GitLab as an artifact and will
@@ -2867,7 +2976,7 @@ your configuration file is on. In other words, when using a `include:local`, mak
 sure that both `.gitlab-ci.yml` and the local file are on the same branch.
 
 All [nested includes](#nested-includes) will be executed in the scope of the same project,
-so it is possible to use local, project, remote or template includes.
+so it is possible to use local, project, remote, or template includes.
 
 NOTE: **Note:**
 Including local files through Git submodules paths is not supported.
@@ -3982,6 +4091,6 @@ but commented out to help encourage others to add to it in the future. -->
 [ce-12909]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/12909
 [ce-19232]: https://gitlab.com/gitlab-org/gitlab-foss/issues/19232
 [environment]: ../environments.md "CI/CD environments"
-[schedules]: ../../user/project/pipelines/schedules.md "Pipelines schedules"
+[schedules]: ../pipelines/schedules.md "Pipelines schedules"
 [variables]: ../variables/README.md "CI/CD variables"
 [push-option]: https://git-scm.com/docs/git-push#Documentation/git-push.txt--oltoptiongt

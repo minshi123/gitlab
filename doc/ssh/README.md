@@ -124,7 +124,7 @@ To create a new SSH key pair:
    If, in any case, you want to add or change the password of your SSH key pair,
    you can use the `-p` flag:
 
-   ```
+   ```shell
    ssh-keygen -p -f <keyname>
    ```
 
@@ -206,7 +206,7 @@ authenticity of the GitLab host you are connecting to.
 For example, when connecting to GitLab.com, answer `yes` to add GitLab.com to
 the list of trusted hosts:
 
-```
+```plaintext
 The authenticity of host 'gitlab.com (35.231.145.151)' can't be established.
 ECDSA key fingerprint is SHA256:HbW3g8zUjNSksFbqTiUWPWg2Bq1x8xdGUrliXFzSnUw.
 Are you sure you want to continue connecting (yes/no)? yes
@@ -343,12 +343,16 @@ This is really useful for cloning repositories to your Continuous
 Integration (CI) server. By using deploy keys, you don't have to set up a
 dummy user account.
 
-If you are a project maintainer or owner, you can add a deploy key in the
-project's **Settings > Repository** page by expanding the
-**Deploy Keys** section. Specify a title for the new
-deploy key and paste a public SSH key. After this, the machine that uses
-the corresponding private SSH key has read-only or read-write (if enabled)
-access to the project.
+Project maintainers and owners can add a deploy key. To add one:
+
+1. Go to the settings page:
+   - On GitLab 12.8 and earlier, navigate to the project's **Settings > Repository**.
+   - On GitLab 12.9 and later, navigate to the project's **Settings > CI / CD**.
+1. Expand the **Deploy Keys** section.
+1. Specify a title for the new deploy key and paste a public SSH key.
+
+After this, the machine that uses the corresponding private SSH key has read-only or
+read-write (if enabled) access to the project.
 
 You can't add the same deploy key twice using the form.
 If you want to add the same key to another project, please enable it in the
@@ -387,9 +391,14 @@ of broader usage for something like "Anywhere you need to give read access to
 your repository".
 
 Once a GitLab administrator adds the Global Deployment key, project maintainers
-and owners can add it in project's **Settings > Repository** page by expanding the
-**Deploy Keys** section and clicking **Enable** next to the appropriate key listed
-under **Public deploy keys available to any project**.
+and owners can add it by:
+
+1. Navigating the settings page:
+   - On GitLab 12.8 and earlier, the project's **Settings > Repository** page.
+   - On GitLab 12.9 and later, the project's **Settings > CI / CD** page.
+1. Expanding the **Deploy Keys** section.
+1. Clicking **Enable** next to the appropriate key listed under
+   **Public deploy keys available to any project**.
 
 NOTE: **Note:**
 The heading **Public deploy keys available to any project** only appears
@@ -423,8 +432,9 @@ security risks.
 The GitLab check process includes a check for this condition, and will direct you
 to this section if your server is configured like this, e.g.:
 
-```
+```shell
 $ gitlab-rake gitlab:check
+
 # ...
 Git user has default SSH configuration? ... no
   Try fixing it:

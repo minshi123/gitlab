@@ -10,8 +10,23 @@ describe Service do
     it { is_expected.to have_one :issue_tracker_data }
   end
 
-  describe 'Validations' do
+  describe 'validations' do
     it { is_expected.to validate_presence_of(:type) }
+
+    it 'validates presence of project_id if not template', :aggregate_failures do
+      expect(build(:service, project_id: nil, template: true)).to be_valid
+      expect(build(:service, project_id: nil, template: false)).to be_invalid
+    end
+
+    context 'with an existing service template' do
+      before do
+        create(:service, type: 'Service', template: true)
+      end
+
+      it 'validates only one service template per type' do
+        expect(build(:service, type: 'Service', template: true)).to be_invalid
+      end
+    end
   end
 
   describe 'Scopes' do
@@ -388,14 +403,6 @@ describe Service do
     it 'is empty by default' do
       service = create(:service, project: project)
       expect(service.deprecation_message).to be_nil
-    end
-  end
-
-  describe '.find_by_template' do
-    let!(:service) { create(:service, template: true) }
-
-    it 'returns service template' do
-      expect(described_class.find_by_template).to eq(service)
     end
   end
 

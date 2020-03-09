@@ -9,6 +9,7 @@ describe API::Scim do
 
   before do
     stub_licensed_features(group_allowed_email_domains: true, group_saml: true)
+    stub_feature_flags(scim_identities: false)
 
     group.add_owner(user)
   end
@@ -19,14 +20,14 @@ describe API::Scim do
         it 'responds with 401' do
           get scim_api("scim/v2/groups/#{group.full_path}/Users?filter=id eq \"#{identity.extern_uid}\"", token: false)
 
-          expect(response).to have_gitlab_http_status(401)
+          expect(response).to have_gitlab_http_status(:unauthorized)
         end
       end
 
       it 'responds with paginated users when there is no filter' do
         get scim_api("scim/v2/groups/#{group.full_path}/Users")
 
-        expect(response).to have_gitlab_http_status(200)
+        expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['Resources']).not_to be_empty
         expect(json_response['totalResults']).to eq(Identity.count)
       end
@@ -34,14 +35,14 @@ describe API::Scim do
       it 'responds with an error for unsupported filters' do
         get scim_api("scim/v2/groups/#{group.full_path}/Users?filter=id ne \"#{identity.extern_uid}\"")
 
-        expect(response).to have_gitlab_http_status(412)
+        expect(response).to have_gitlab_http_status(:precondition_failed)
       end
 
       context 'existing user matches filter' do
         it 'responds with 200' do
           get scim_api("scim/v2/groups/#{group.full_path}/Users?filter=id eq \"#{identity.extern_uid}\"")
 
-          expect(response).to have_gitlab_http_status(200)
+          expect(response).to have_gitlab_http_status(:ok)
           expect(json_response['Resources']).not_to be_empty
           expect(json_response['totalResults']).to eq(1)
         end
@@ -59,7 +60,7 @@ describe API::Scim do
         it 'responds with 200' do
           get scim_api("scim/v2/groups/#{group.full_path}/Users?filter=id eq \"nonexistent\"")
 
-          expect(response).to have_gitlab_http_status(200)
+          expect(response).to have_gitlab_http_status(:ok)
           expect(json_response['Resources']).to be_empty
           expect(json_response['totalResults']).to eq(0)
         end
@@ -70,14 +71,14 @@ describe API::Scim do
       it 'responds with 404 if there is no user' do
         get scim_api("scim/v2/groups/#{group.full_path}/Users/123")
 
-        expect(response).to have_gitlab_http_status(404)
+        expect(response).to have_gitlab_http_status(:not_found)
       end
 
       context 'existing user' do
         it 'responds with 200' do
           get scim_api("scim/v2/groups/#{group.full_path}/Users/#{identity.extern_uid}")
 
-          expect(response).to have_gitlab_http_status(200)
+          expect(response).to have_gitlab_http_status(:ok)
           expect(json_response['id']).to eq(identity.extern_uid)
         end
       end
@@ -105,7 +106,7 @@ describe API::Scim do
         end
 
         it 'responds with 201' do
-          expect(response).to have_gitlab_http_status(201)
+          expect(response).to have_gitlab_http_status(:created)
         end
 
         it 'has the user external ID' do
@@ -133,6 +134,12 @@ describe API::Scim do
         it 'created the right member' do
           expect(member.access_level).to eq(::Gitlab::Access::GUEST)
         end
+      end
+
+      it_behaves_like 'storing arguments in the application context' do
+        let(:expected_params) { { root_namespace: group.full_path_components.first } }
+
+        subject { post scim_api("scim/v2/groups/#{group.full_path}/Users?params=#{post_params}") }
       end
 
       context 'with allowed domain setting switched on' do
@@ -167,7 +174,7 @@ describe API::Scim do
             end
 
             it 'returns user error' do
-              expect(response).to have_gitlab_http_status(412)
+              expect(response).to have_gitlab_http_status(:precondition_failed)
               expect(json_response.fetch('detail')).to include("Email can't be blank")
             end
           end
@@ -200,7 +207,7 @@ describe API::Scim do
         end
 
         it 'responds with 201' do
-          expect(response).to have_gitlab_http_status(201)
+          expect(response).to have_gitlab_http_status(:created)
         end
 
         it 'has the user external ID' do
@@ -213,7 +220,7 @@ describe API::Scim do
       it 'responds with 404 if there is no user' do
         patch scim_api("scim/v2/groups/#{group.full_path}/Users/123")
 
-        expect(response).to have_gitlab_http_status(404)
+        expect(response).to have_gitlab_http_status(:not_found)
       end
 
       context 'existing user' do
@@ -225,7 +232,7 @@ describe API::Scim do
           end
 
           it 'responds with 204' do
-            expect(response).to have_gitlab_http_status(204)
+            expect(response).to have_gitlab_http_status(:no_content)
           end
 
           it 'updates the extern_uid' do
@@ -241,7 +248,7 @@ describe API::Scim do
           end
 
           it 'responds with 204' do
-            expect(response).to have_gitlab_http_status(204)
+            expect(response).to have_gitlab_http_status(:no_content)
           end
 
           it 'updates the name' do
@@ -266,7 +273,7 @@ describe API::Scim do
             end
 
             it 'responds with 204' do
-              expect(response).to have_gitlab_http_status(204)
+              expect(response).to have_gitlab_http_status(:no_content)
             end
           end
 
@@ -284,7 +291,7 @@ describe API::Scim do
             end
 
             it 'responds with 209' do
-              expect(response).to have_gitlab_http_status(409)
+              expect(response).to have_gitlab_http_status(:conflict)
             end
           end
         end
@@ -297,7 +304,7 @@ describe API::Scim do
           end
 
           it 'responds with 204' do
-            expect(response).to have_gitlab_http_status(204)
+            expect(response).to have_gitlab_http_status(:no_content)
           end
 
           it 'removes the identity link' do
@@ -314,7 +321,7 @@ describe API::Scim do
         end
 
         it 'responds with 204' do
-          expect(response).to have_gitlab_http_status(204)
+          expect(response).to have_gitlab_http_status(:no_content)
         end
 
         it 'removes the identity link' do
@@ -329,7 +336,7 @@ describe API::Scim do
       it 'responds with 404 if there is no user' do
         delete scim_api("scim/v2/groups/#{group.full_path}/Users/123")
 
-        expect(response).to have_gitlab_http_status(404)
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
 

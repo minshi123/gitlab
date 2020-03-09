@@ -20,7 +20,7 @@ describe Admin::ApplicationSettingsController do
       settings = {
           help_text: 'help_text',
           elasticsearch_url: 'http://my-elastic.search:9200',
-          elasticsearch_indexing: true,
+          elasticsearch_indexing: false,
           elasticsearch_aws: true,
           elasticsearch_aws_access_key: 'elasticsearch_aws_access_key',
           elasticsearch_aws_secret_access_key: 'elasticsearch_aws_secret_access_key',
@@ -107,6 +107,13 @@ describe Admin::ApplicationSettingsController do
     context 'updating name disabled for users setting' do
       let(:settings) { { updating_name_disabled_for_users: true } }
       let(:feature) { :disable_name_update_for_users }
+
+      it_behaves_like 'settings for licensed features'
+    end
+
+    context 'updating npm packages request forwarding setting' do
+      let(:settings) { { npm_package_requests_forwarding: true } }
+      let(:feature) { :packages }
 
       it_behaves_like 'settings for licensed features'
     end

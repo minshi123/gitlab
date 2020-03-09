@@ -15,7 +15,6 @@ module EE
       include UsageStatistics
       include FromUnion
       include EpicTreeSorting
-      include HealthStatus
 
       enum state_id: {
         opened: ::Epic.available_states[:opened],
@@ -67,6 +66,7 @@ module EE
       scope :in_milestone, -> (milestone_id) { joins(:issues).where(issues: { milestone_id: milestone_id }) }
       scope :in_issues, -> (issues) { joins(:epic_issues).where(epic_issues: { issue_id: issues }).distinct }
       scope :has_parent, -> { where.not(parent_id: nil) }
+      scope :iid_starts_with, -> (query) { where("CAST(iid AS VARCHAR) LIKE ?", "#{sanitize_sql_like(query)}%") }
 
       scope :within_timeframe, -> (start_date, end_date) do
         where('start_date is not NULL or end_date is not NULL')
@@ -188,6 +188,11 @@ module EE
         ::Group
       end
 
+      def nullify_lost_group_parents(groups, lost_groups)
+        epics_to_update = in_selected_groups(groups).where(parent: in_selected_groups(lost_groups))
+        epics_to_update.update_all(parent_id: nil)
+      end
+
       # Return the deepest relation level for an epic.
       # Example 1:
       # epic1 - parent: nil
@@ -275,12 +280,12 @@ module EE
     def to_reference(from = nil, full: false)
       reference = "#{self.class.reference_prefix}#{iid}"
 
-      return reference unless (cross_reference?(from) && !group.projects.include?(from)) || full
+      return reference unless (cross_referenced?(from) && !group.projects.include?(from)) || full
 
       "#{group.full_path}#{reference}"
     end
 
-    def cross_reference?(from)
+    def cross_referenced?(from)
       from && from != group
     end
 

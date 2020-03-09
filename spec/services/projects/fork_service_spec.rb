@@ -275,6 +275,7 @@ describe Projects::ForkService do
       context 'fork project for group when user not owner' do
         it 'group developer fails to fork project into the group' do
           to_project = fork_project(@project, @developer, @opts)
+
           expect(to_project.errors[:namespace]).to eq(['is not valid'])
         end
       end
@@ -303,6 +304,28 @@ describe Projects::ForkService do
           expect(forked_project.visibility_level).to eq(Gitlab::VisibilityLevel::PRIVATE)
         end
       end
+    end
+  end
+
+  context 'when a project is already forked' do
+    it 'creates a new poolresository after the project is moved to a new shard' do
+      project = create(:project, :public, :repository)
+      fork_before_move = fork_project(project)
+
+      # Stub everything required to move a project to a Gitaly shard that does not exist
+      stub_storage_settings('test_second_storage' => { 'path' => 'tmp/tests/second_storage' })
+      allow_any_instance_of(Gitlab::Git::Repository).to receive(:fetch_repository_as_mirror).and_return(true)
+      allow_any_instance_of(Gitlab::Git::Repository).to receive(:checksum).and_return(::Gitlab::Git::BLANK_SHA)
+
+      Projects::UpdateRepositoryStorageService.new(project).execute('test_second_storage')
+      fork_after_move = fork_project(project)
+      pool_repository_before_move = PoolRepository.joins(:shard)
+                                      .where(source_project: project, shards: { name: 'default' }).first
+      pool_repository_after_move = PoolRepository.joins(:shard)
+                                     .where(source_project: project, shards: { name: 'test_second_storage' }).first
+
+      expect(fork_before_move.pool_repository).to eq(pool_repository_before_move)
+      expect(fork_after_move.pool_repository).to eq(pool_repository_after_move)
     end
   end
 
@@ -336,7 +359,9 @@ describe Projects::ForkService do
   context 'when linking fork to an existing project' do
     let(:fork_from_project) { create(:project, :public) }
     let(:fork_to_project) { create(:project, :public) }
-    let(:user) { create(:user) }
+    let(:user) do
+      create(:user).tap { |u| fork_to_project.add_maintainer(u) }
+    end
 
     subject { described_class.new(fork_from_project, user) }
 
@@ -384,6 +409,56 @@ describe Projects::ForkService do
           expect { subject.execute(fork_to_project) }
             .not_to change { fork_to_project.lfs_objects_projects.size }
         end
+      end
+    end
+  end
+
+  describe '#valid_fork_targets' do
+    let(:finder_mock) { instance_double('ForkTargetsFinder', execute: ['finder_return_value']) }
+    let(:current_user) { instance_double('User') }
+    let(:project) { instance_double('Project') }
+
+    before do
+      allow(ForkTargetsFinder).to receive(:new).with(project, current_user).and_return(finder_mock)
+    end
+
+    it 'returns whatever finder returns' do
+      expect(described_class.new(project, current_user).valid_fork_targets).to eq ['finder_return_value']
+    end
+  end
+
+  describe '#valid_fork_target?' do
+    subject { described_class.new(project, user, params).valid_fork_target? }
+
+    let(:project) { Project.new }
+    let(:params) { {} }
+
+    context 'when current user is an admin' do
+      let(:user) { build(:user, :admin) }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when current_user is not an admin' do
+      let(:user) { create(:user) }
+
+      let(:finder_mock) { instance_double('ForkTargetsFinder', execute: [user.namespace]) }
+      let(:project) { create(:project) }
+
+      before do
+        allow(ForkTargetsFinder).to receive(:new).with(project, user).and_return(finder_mock)
+      end
+
+      context 'when target namespace is in valid fork targets' do
+        let(:params) { { namespace: user.namespace } }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when target namespace is not in valid fork targets' do
+        let(:params) { { namespace: create(:group) } }
+
+        it { is_expected.to be_falsey }
       end
     end
   end

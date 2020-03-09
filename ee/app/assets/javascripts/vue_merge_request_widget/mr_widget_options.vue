@@ -257,6 +257,8 @@ export default {
       v-if="shouldSuggestPipelines"
       class="mr-widget-workflow"
       :pipeline-path="mr.mergeRequestAddCiConfigPath"
+      :pipeline-svg-path="mr.pipelinesEmptySvgPath"
+      :human-access="mr.humanAccess.toLowerCase()"
     />
     <mr-widget-pipeline-container
       v-if="shouldRenderPipelines"
@@ -326,6 +328,8 @@ export default {
         :can-dismiss-vulnerability="mr.canDismissVulnerability"
         :diverged-commits-count="mr.divergedCommitsCount"
         :mr-state="mr.state"
+        :target-branch-tree-path="mr.targetBranchTreePath"
+        :new-pipeline-path="mr.newPipelinePath"
         class="js-security-widget"
       />
       <mr-widget-licenses

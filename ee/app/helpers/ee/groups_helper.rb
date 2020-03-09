@@ -83,7 +83,7 @@ module EE
     end
 
     def show_discover_group_security?(group)
-      security_feature_available_at = DateTime.new(2020, 1, 20)
+      security_feature_available_at = DateTime.new(2019, 11, 1)
 
       !!current_user &&
         ::Gitlab.com? &&
@@ -93,10 +93,22 @@ module EE
         current_user.ab_feature_enabled?(:discover_security)
     end
 
+    def show_group_activity_analytics?
+      return false unless @group.feature_available?(:group_activity_analytics)
+
+      return false unless can?(current_user, :read_group_activity_analytics, @group)
+
+      true
+    end
+
     private
 
     def get_group_sidebar_links
       links = super
+
+      if can?(current_user, :read_group_cycle_analytics, @group)
+        links << :cycle_analytics
+      end
 
       if can?(current_user, :read_group_contribution_analytics, @group) || show_promotions?
         links << :contribution_analytics

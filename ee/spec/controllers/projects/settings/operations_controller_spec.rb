@@ -117,6 +117,15 @@ describe Projects::Settings::OperationsController do
 
         expect(project.tracing_setting).to be_nil
       end
+
+      it 'does not create status_page_setting' do
+        update_project(
+          project,
+          status_page_params: attributes_for(:status_page_setting)
+        )
+
+        expect(project.status_page_setting).to be_nil
+      end
     end
 
     context 'format html' do
@@ -158,7 +167,7 @@ describe Projects::Settings::OperationsController do
 
     context 'with a license' do
       before do
-        stub_licensed_features(tracing: true, incident_management: true)
+        stub_licensed_features(tracing: true, incident_management: true, status_page: true)
       end
 
       shared_examples 'user with write access' do |project_visibility|
@@ -271,11 +280,60 @@ describe Projects::Settings::OperationsController do
           update_project(project, tracing_params: { external_url: "http://example.com" } )
         end
       end
+
+      context 'without existing status page setting' do
+        let(:project) { create(:project) }
+
+        before do
+          project.add_maintainer(user)
+        end
+
+        it 'creates a status page setting' do
+          valid_attributes = attributes_for(:status_page_setting).except(:enabled)
+          update_project(project, status_page_params: valid_attributes )
+          expect(project.status_page_setting).not_to eq(nil)
+          expect(project.status_page_setting).to be_a(StatusPageSetting)
+        end
+      end
+
+      context 'with existing status page setting' do
+        let(:project) { create(:project) }
+        let(:status_page_attributes) { attributes_for(:status_page_setting) }
+
+        before do
+          project.add_maintainer(user)
+          project.create_status_page_setting!(status_page_attributes)
+        end
+
+        it 'updates the fields' do
+          update_project(project, status_page_params: status_page_attributes.merge(aws_s3_bucket_name: 'test'))
+
+          expect(project.status_page_setting.aws_s3_bucket_name).to eq('test')
+        end
+
+        it 'respects the model validations' do
+          old_name = project.status_page_setting.aws_s3_bucket_name
+
+          update_project(project, status_page_params: status_page_attributes.merge(aws_s3_bucket_name: ''))
+          expect(project.status_page_setting.aws_s3_bucket_name).to eq(old_name)
+        end
+
+        it 'deletes the setting if keys removed' do
+          update_project(
+            project,
+            status_page_params: status_page_attributes.merge(aws_access_key: '',
+                                                              aws_secret_key: '',
+                                                              aws_s3_bucket_name: '',
+                                                              aws_region: '')
+          )
+          expect(project.status_page_setting).to be_nil
+        end
+      end
     end
 
     context 'without a license' do
       before do
-        stub_licensed_features(tracing: false, incident_management: false)
+        stub_licensed_features(tracing: false, incident_management: false, status_page: false)
       end
 
       it_behaves_like 'user without write access', :public, :maintainer
@@ -285,11 +343,12 @@ describe Projects::Settings::OperationsController do
 
     private
 
-    def update_project(project, tracing_params: nil, incident_management_params: nil)
+    def update_project(project, tracing_params: nil, incident_management_params: nil, status_page_params: nil)
       patch :update, params: project_params(
         project,
         tracing_params: tracing_params,
-        incident_management_params: incident_management_params
+        incident_management_params: incident_management_params,
+        status_page_params: status_page_params
       )
 
       project.reload
@@ -399,13 +458,14 @@ describe Projects::Settings::OperationsController do
 
   private
 
-  def project_params(project, tracing_params: nil, incident_management_params: nil)
+  def project_params(project, tracing_params: nil, incident_management_params: nil, status_page_params: nil)
     {
       namespace_id: project.namespace,
       project_id: project,
       project: {
         tracing_setting_attributes: tracing_params,
-        incident_management_setting_attributes: incident_management_params
+        incident_management_setting_attributes: incident_management_params,
+        status_page_setting_attributes: status_page_params
       }
     }
   end

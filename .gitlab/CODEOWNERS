@@ -21,6 +21,8 @@ lib/gitlab/database/ @gitlab-org/maintainers/database
 lib/gitlab/sql/ @gitlab-org/maintainers/database
 lib/gitlab/github_import/ @gitlab-org/maintainers/database
 /ee/db/ @gitlab-org/maintainers/database
+/app/finders/ @gitlab-org/maintainers/database
+/ee/app/finders/ @gitlab-org/maintainers/database
 
 # Feature specific owners
 /ee/lib/gitlab/code_owners/ @reprazent
@@ -43,3 +45,14 @@ Dangerfile @gl-quality/eng-prod
 /danger/ @gl-quality/eng-prod
 /lib/gitlab/danger/ @gl-quality/eng-prod
 /scripts/ @gl-quality/eng-prod
+
+# Delivery owner files
+/.gitlab/ci/releases.gitlab-ci.yml @gitlab-org/delivery
+
+# Telemetry owner files
+/ee/lib/gitlab/usage_data_counters/ @gitlab-org/growth/telemetry
+/ee/lib/ee/gitlab/usage_data.rb @gitlab-org/growth/telemetry
+/lib/gitlab/grafana_embed_usage_data.rb @gitlab-org/growth/telemetry
+/lib/gitlab/usage_data.rb @gitlab-org/growth/telemetry
+/lib/gitlab/cycle_analytics/usage_data.rb @gitlab-org/growth/telemetry
+/lib/gitlab/usage_data_counters/ @gitlab-org/growth/telemetry

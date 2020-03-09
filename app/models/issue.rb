@@ -15,6 +15,7 @@ class Issue < ApplicationRecord
   include ThrottledTouch
   include LabelEventable
   include IgnorableColumns
+  include MilestoneEventable
 
   DueDateStruct                   = Struct.new(:title, :name).freeze
   NoDueDate                       = DueDateStruct.new('No Due Date', '0').freeze
@@ -43,6 +44,8 @@ class Issue < ApplicationRecord
   has_many :assignees, class_name: "User", through: :issue_assignees
   has_many :zoom_meetings
   has_many :user_mentions, class_name: "IssueUserMention", dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent
+  has_many :sent_notifications, as: :noteable
+
   has_one :sentry_issue
 
   accepts_nested_attributes_for :sentry_issue
@@ -300,6 +303,10 @@ class Issue < ApplicationRecord
 
   def labels_hook_attrs
     labels.map(&:hook_attrs)
+  end
+
+  def previous_updated_at
+    previous_changes['updated_at']&.first || updated_at
   end
 
   private

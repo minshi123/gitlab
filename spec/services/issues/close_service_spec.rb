@@ -98,6 +98,53 @@ describe Issues::CloseService do
           expect(body_text).not_to include(closing_merge_request.to_reference)
         end
       end
+
+      context 'updating `metrics.first_mentioned_in_commit_at`' do
+        subject { described_class.new(project, user).close_issue(issue, closed_via: closing_merge_request) }
+
+        context 'when `metrics.first_mentioned_in_commit_at` is not set' do
+          it 'uses the first commit timestamp' do
+            expected = closing_merge_request.commits.first.date
+
+            subject
+
+            expect(issue.metrics.first_mentioned_in_commit_at).to eq(expected)
+          end
+        end
+
+        context 'when `metrics.first_mentioned_in_commit_at` is already set' do
+          before do
+            issue.metrics.update!(first_mentioned_in_commit_at: Time.now)
+          end
+
+          it 'does not update the metrics' do
+            expect { subject }.not_to change { issue.metrics.first_mentioned_in_commit_at }
+          end
+        end
+
+        context 'when merge request has no commits' do
+          let(:closing_merge_request) { create(:merge_request, :without_diffs, source_project: project) }
+
+          it 'does not update the metrics' do
+            subject
+
+            expect(issue.metrics.first_mentioned_in_commit_at).to be_nil
+          end
+        end
+
+        context 'when `store_first_mentioned_in_commit_on_issue_close` feature flag is off' do
+          before do
+            stub_feature_flags(store_first_mentioned_in_commit_on_issue_close: { enabled: false, thing: issue.project })
+          end
+
+          it 'does not update the metrics' do
+            subject
+
+            expect(described_class).not_to receive(:store_first_mentioned_in_commit_at)
+            expect(issue.metrics.first_mentioned_in_commit_at).to be_nil
+          end
+        end
+      end
     end
 
     context "closed by a commit", :sidekiq_might_not_need_inline do
@@ -131,34 +178,54 @@ describe Issues::CloseService do
     end
 
     context "valid params" do
-      before do
+      def close_issue
         perform_enqueued_jobs do
           described_class.new(project, user).close_issue(issue)
         end
       end
 
       it 'closes the issue' do
+        close_issue
+
         expect(issue).to be_valid
         expect(issue).to be_closed
       end
 
       it 'records closed user' do
+        close_issue
+
         expect(issue.closed_by_id).to be(user.id)
       end
 
       it 'sends email to user2 about assign of new issue', :sidekiq_might_not_need_inline do
+        close_issue
+
         email = ActionMailer::Base.deliveries.last
         expect(email.to.first).to eq(user2.email)
         expect(email.subject).to include(issue.title)
       end
 
       it 'creates system note about issue reassign' do
+        close_issue
+
         note = issue.notes.last
         expect(note.note).to include "closed"
       end
 
       it 'marks todos as done' do
+        close_issue
+
         expect(todo.reload).to be_done
+      end
+
+      it 'deletes milestone issue counters cache' do
+        issue.update(milestone: create(:milestone, project: project))
+
+        expect_next_instance_of(Milestones::ClosedIssuesCountService, issue.milestone) do |service|
+          expect(service).to receive(:delete_cache).and_call_original
+        end
+
+        close_issue
       end
     end
 

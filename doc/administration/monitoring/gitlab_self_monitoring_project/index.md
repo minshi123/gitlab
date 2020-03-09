@@ -1,9 +1,7 @@
 # GitLab self monitoring project
 
-NOTE: **Note:**
-This feature is available behind a feature flag called `self_monitoring_project`
-since [12.7](https://gitlab.com/gitlab-org/gitlab/issues/32351). The feature flag
-will be removed once we [add dashboards to display metrics](https://gitlab.com/groups/gitlab-org/-/epics/2367).
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/32351) in GitLab 12.7, behind a disabled feature flag (`self_monitoring_project`).
+> - The feature flag was removed and the Self Monitoring Project was [made generally available](https://gitlab.com/gitlab-org/gitlab/issues/198511) in GitLab 12.8.
 
 GitLab has been adding the ability for administrators to see insights into the health of
 their GitLab instance. In order to surface this experience in a native way, similar to how
@@ -19,7 +17,7 @@ members to the group in order to give them maintainer access to the project.
 
 This project will be used for self monitoring your GitLab instance.
 
-## Activating the self monitoring project
+## Creating the self monitoring project
 
 1. Navigate to **Admin Area > Settings > Metrics and profiling**, and expand the **Self monitoring** section.
 1. Toggle the **Create Project** button on.
@@ -28,10 +26,11 @@ created, GitLab displays a message with a link to the project. The project
 will also be linked in the help text above the **Create Project** button. You can also
 find the project under **Projects > Your projects**.
 
-## Deactivating the self monitoring project
+## Deleting the self monitoring project
 
 CAUTION: **Warning:**
-If you deactivate the self monitoring project, it will be permanently deleted.
+If you delete the self monitoring project, you will lose any changes made to the
+project. If you create the project again, it will be created in its default state.
 
 1. Navigate to **Admin Area > Settings > Metrics and profiling**, and expand the **Self monitoring** section.
 1. Toggle the **Create Project** button off.

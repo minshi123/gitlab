@@ -9,10 +9,6 @@ describe Project do
 
   let(:project) { create(:project) }
 
-  it_behaves_like Vulnerable do
-    let(:vulnerable) { project }
-  end
-
   describe 'associations' do
     it { is_expected.to delegate_method(:shared_runners_minutes).to(:statistics) }
     it { is_expected.to delegate_method(:shared_runners_seconds).to(:statistics) }
@@ -27,6 +23,7 @@ describe Project do
     it { is_expected.to have_one(:import_state).class_name('ProjectImportState') }
     it { is_expected.to have_one(:repository_state).class_name('ProjectRepositoryState').inverse_of(:project) }
     it { is_expected.to have_one(:alerting_setting).class_name('Alerting::ProjectAlertingSetting') }
+    it { is_expected.to have_one(:status_page_setting).class_name('StatusPageSetting') }
 
     it { is_expected.to have_many(:reviews).inverse_of(:project) }
     it { is_expected.to have_many(:path_locks) }
@@ -210,8 +207,8 @@ describe Project do
         it { expect(project).to be_valid }
       end
 
-      it do
-        is_expected.to validate_numericality_of(:max_pages_size).only_integer.is_greater_than(0)
+      it "ensures max_pages_size is an integer greater than 0 (or equal to 0 to indicate unlimited/maximum)" do
+        is_expected.to validate_numericality_of(:max_pages_size).only_integer.is_greater_than_or_equal_to(0)
                          .is_less_than(::Gitlab::Pages::MAX_SIZE / 1.megabyte)
       end
     end
@@ -2247,49 +2244,6 @@ describe Project do
     end
   end
 
-  describe '#change_repository_storage' do
-    let(:project) { create(:project, :repository) }
-    let(:read_only_project) { create(:project, :repository, repository_read_only: true) }
-
-    before do
-      FileUtils.mkdir('tmp/tests/extra_storage')
-      stub_storage_settings('extra' => { 'path' => 'tmp/tests/extra_storage' })
-    end
-
-    after do
-      FileUtils.rm_rf('tmp/tests/extra_storage')
-    end
-
-    it 'schedule the transfer of the repository to the new storage and locks the project' do
-      expect(ProjectUpdateRepositoryStorageWorker).to receive(:perform_async).with(project.id, 'extra')
-
-      project.change_repository_storage('extra')
-      project.save
-
-      expect(project).to be_repository_read_only
-    end
-
-    it "doesn't schedule the transfer if the repository is already read-only" do
-      expect(ProjectUpdateRepositoryStorageWorker).not_to receive(:perform_async)
-
-      read_only_project.change_repository_storage('extra')
-      read_only_project.save
-    end
-
-    it "doesn't lock or schedule the transfer if the storage hasn't changed" do
-      expect(ProjectUpdateRepositoryStorageWorker).not_to receive(:perform_async)
-
-      project.change_repository_storage(project.repository_storage)
-      project.save
-
-      expect(project).not_to be_repository_read_only
-    end
-
-    it 'throws an error if an invalid repository storage is provided' do
-      expect { project.change_repository_storage('unknown') }.to raise_error(ArgumentError)
-    end
-  end
-
   describe '#repository_and_lfs_size' do
     let(:project) { create(:project, :repository) }
     let(:size) { 50 }
@@ -2596,15 +2550,15 @@ describe Project do
 
     it 'expires the caches of the design repository' do
       allow(Repository).to receive(:new)
-        .with('foo', project)
+        .with('foo', project, shard: project.repository_storage)
         .and_return(repo)
 
       allow(Repository).to receive(:new)
-        .with('foo.wiki', project)
+        .with('foo.wiki', project, shard: project.repository_storage, repo_type: Gitlab::GlRepository::WIKI)
         .and_return(wiki)
 
       allow(Repository).to receive(:new)
-        .with('foo.design', project)
+        .with('foo.design', project, shard: project.repository_storage, repo_type: ::EE::Gitlab::GlRepository::DESIGN)
         .and_return(design)
 
       expect(design).to receive(:before_delete)
@@ -2641,6 +2595,24 @@ describe Project do
 
       it 'returns true' do
         expect(project_template.template_source?).to be_truthy
+      end
+    end
+  end
+
+  describe '#jira_subscription_exists?' do
+    subject { project.jira_subscription_exists? }
+
+    context 'jira connect subscription exists' do
+      let!(:jira_connect_subscription) { create(:jira_connect_subscription, namespace: project.namespace) }
+
+      it { is_expected.to eq(false) }
+
+      context 'dev panel integration is available' do
+        before do
+          stub_licensed_features(jira_dev_panel_integration: true)
+        end
+
+        it { is_expected.to eq(true) }
       end
     end
   end

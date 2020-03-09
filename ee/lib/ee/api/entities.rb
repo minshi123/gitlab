@@ -38,7 +38,6 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          expose :repository_storage, if: ->(_project, options) { options[:current_user].try(:admin?) }
           expose :approvals_before_merge, if: ->(project, _) { project.feature_available?(:merge_request_approvers) }
           expose :mirror, if: ->(project, _) { project.feature_available?(:repository_mirrors) }
           expose :mirror_user_id, if: ->(project, _) { project.mirror? }
@@ -94,9 +93,7 @@ module EE
           expose :group_saml_identity,
                  using: ::API::Entities::Identity,
                  if: -> (member, options) { Ability.allowed?(options[:current_user], :read_group_saml_identity, member.source) }
-          expose :is_using_seat, if: -> (member, options) { options[:show_seat_info] } do |member, _options|
-            !!member.user&.using_license_seat?
-          end
+          expose :is_using_seat, if: -> (_, options) { options[:show_seat_info] }
         end
       end
 
@@ -116,11 +113,6 @@ module EE
           expose :unprotect_access_levels, using: ::API::Entities::ProtectedRefAccess
           expose :code_owner_approval_required
         end
-      end
-
-      class ProtectedEnvironment < Grape::Entity
-        expose :name
-        expose :deploy_access_levels, using: ::API::Entities::ProtectedRefAccess
       end
 
       module IssueBasic
@@ -225,6 +217,7 @@ module EE
           expose :default_project_deletion_protection, if: ->(_instance, _opts) { ::License.feature_available?(:default_project_deletion_protection) }
           expose :deletion_adjourned_period, if: ->(_instance, _opts) { ::License.feature_available?(:adjourned_deletion_for_projects_and_groups) }
           expose :updating_name_disabled_for_users, if: ->(_instance, _opts) { ::License.feature_available?(:disable_name_update_for_users) }
+          expose :npm_package_requests_forwarding, if: ->(_instance, _opts) { ::License.feature_available?(:packages) }
         end
       end
 
@@ -267,173 +260,6 @@ module EE
             ::Gitlab::UrlBuilder.build(design)
           end
         end
-      end
-
-      class ProjectPushRule < Grape::Entity
-        extend EntityHelpers
-        expose :id, :project_id, :created_at
-        expose :commit_message_regex, :commit_message_negative_regex, :branch_name_regex, :deny_delete_tag
-        expose :member_check, :prevent_secrets, :author_email_regex
-        expose :file_name_regex, :max_file_size
-        expose_restricted :commit_committer_check, &:project
-        expose_restricted :reject_unsigned_commits, &:project
-      end
-
-      class LdapGroupLink < Grape::Entity
-        expose :cn, :group_access, :provider
-      end
-
-      class RelatedIssue < ::API::Entities::Issue
-        expose :issue_link_id
-        expose :issue_link_type, as: :link_type
-      end
-
-      class LinkedEpic < Grape::Entity
-        expose :id
-        expose :iid
-        expose :title
-        expose :group_id
-        expose :parent_id
-        expose :has_children?, as: :has_children
-        expose :has_issues?, as: :has_issues
-        expose :reference do |epic|
-          epic.to_reference(epic.parent.group)
-        end
-
-        expose :url do |epic|
-          ::Gitlab::Routing.url_helpers.group_epic_url(epic.group, epic)
-        end
-
-        expose :relation_url do |epic|
-          ::Gitlab::Routing.url_helpers.group_epic_link_url(epic.parent.group, epic.parent.iid, epic.id)
-        end
-      end
-
-      class AuditEvent < Grape::Entity
-        expose :id
-        expose :author_id
-        expose :entity_id
-        expose :entity_type
-        expose :details do |audit_event|
-          audit_event.formatted_details
-        end
-        expose :created_at
-      end
-
-      class Epic < Grape::Entity
-        can_admin_epic = ->(epic, opts) { Ability.allowed?(opts[:user], :admin_epic, epic) }
-
-        expose :id
-        expose :iid
-        expose :group_id
-        expose :parent_id
-        expose :title
-        expose :description
-        expose :author, using: ::API::Entities::UserBasic
-        expose :start_date
-        expose :start_date_is_fixed?, as: :start_date_is_fixed, if: can_admin_epic
-        expose :start_date_fixed, :start_date_from_inherited_source, if: can_admin_epic
-        expose :start_date_from_milestones, if: can_admin_epic # @deprecated in favor of start_date_from_inherited_source
-        expose :end_date # @deprecated in favor of due_date
-        expose :end_date, as: :due_date
-        expose :due_date_is_fixed?, as: :due_date_is_fixed, if: can_admin_epic
-        expose :due_date_fixed, :due_date_from_inherited_source, if: can_admin_epic
-        expose :due_date_from_milestones, if: can_admin_epic # @deprecated in favor of due_date_from_inherited_source
-        expose :state
-        expose :web_edit_url, if: can_admin_epic # @deprecated
-        expose :web_url
-        expose :references, with: ::API::Entities::IssuableReferences do |epic|
-          epic
-        end
-        # reference is deprecated in favour of references
-        # Introduced [Gitlab 12.6](https://gitlab.com/gitlab-org/gitlab/merge_requests/20354)
-        expose :reference, if: { with_reference: true } do |epic|
-          epic.to_reference(full: true)
-        end
-        expose :created_at
-        expose :updated_at
-        expose :closed_at
-        expose :labels do |epic, options|
-          if options[:with_labels_details]
-            ::API::Entities::LabelBasic.represent(epic.labels.sort_by(&:title))
-          else
-            epic.labels.map(&:title).sort
-          end
-        end
-        expose :upvotes do |epic, options|
-          if options[:issuable_metadata]
-            # Avoids an N+1 query when metadata is included
-            options[:issuable_metadata][epic.id].upvotes
-          else
-            epic.upvotes
-          end
-        end
-        expose :downvotes do |epic, options|
-          if options[:issuable_metadata]
-            # Avoids an N+1 query when metadata is included
-            options[:issuable_metadata][epic.id].downvotes
-          else
-            epic.downvotes
-          end
-        end
-
-        # Calculating the value of subscribed field triggers Markdown
-        # processing. We can't do that for multiple epics
-        # requests in a single API request.
-        expose :subscribed, if: -> (_, options) { options.fetch(:include_subscribed, false) } do |epic, options|
-          user = options[:user]
-
-          user.present? ? epic.subscribed?(user) : false
-        end
-
-        def web_url
-          ::Gitlab::Routing.url_helpers.group_epic_url(object.group, object)
-        end
-
-        def web_edit_url
-          ::Gitlab::Routing.url_helpers.group_epic_path(object.group, object)
-        end
-      end
-
-      class EpicIssue < ::API::Entities::Issue
-        expose :epic_issue_id
-        expose :relative_position
-      end
-
-      class EpicIssueLink < Grape::Entity
-        expose :id
-        expose :relative_position
-        expose :epic do |epic_issue_link, _options|
-          ::EE::API::Entities::Epic.represent(epic_issue_link.epic, with_reference: true)
-        end
-        expose :issue, using: ::API::Entities::IssueBasic
-      end
-
-      class IssueLink < Grape::Entity
-        expose :source, as: :source_issue, using: ::API::Entities::IssueBasic
-        expose :target, as: :target_issue, using: ::API::Entities::IssueBasic
-        expose :link_type
-      end
-
-      class SpecialBoardFilter < Grape::Entity
-        expose :title
-      end
-
-      class ApprovalRuleShort < Grape::Entity
-        expose :id, :name, :rule_type
-      end
-
-      class ApprovalRule < ApprovalRuleShort
-        def initialize(object, options = {})
-          presenter = ::ApprovalRulePresenter.new(object, current_user: options[:current_user])
-          super(presenter, options)
-        end
-
-        expose :approvers, as: :eligible_approvers, using: ::API::Entities::UserBasic
-        expose :approvals_required
-        expose :users, using: ::API::Entities::UserBasic
-        expose :groups, using: ::API::Entities::Group
-        expose :contains_hidden_groups?, as: :contains_hidden_groups
       end
 
       class ProjectApprovalRule < ApprovalRule
@@ -666,197 +492,6 @@ module EE
         end
       end
 
-      class GeoNodeStatus < Grape::Entity
-        include ::API::Helpers::RelatedResourcesHelpers
-        include ActionView::Helpers::NumberHelper
-
-        expose :geo_node_id
-
-        expose :healthy?, as: :healthy
-        expose :health do |node|
-          node.healthy? ? 'Healthy' : node.health
-        end
-        expose :health_status
-        expose :missing_oauth_application
-
-        expose :attachments_count
-        expose :attachments_synced_count
-        expose :attachments_failed_count
-        expose :attachments_synced_missing_on_primary_count
-        expose :attachments_synced_in_percentage do |node|
-          number_to_percentage(node.attachments_synced_in_percentage, precision: 2)
-        end
-
-        expose :db_replication_lag_seconds
-
-        expose :lfs_objects_count
-        expose :lfs_objects_synced_count
-        expose :lfs_objects_failed_count
-        expose :lfs_objects_synced_missing_on_primary_count
-        expose :lfs_objects_synced_in_percentage do |node|
-          number_to_percentage(node.lfs_objects_synced_in_percentage, precision: 2)
-        end
-
-        expose :job_artifacts_count
-        expose :job_artifacts_synced_count
-        expose :job_artifacts_failed_count
-        expose :job_artifacts_synced_missing_on_primary_count
-        expose :job_artifacts_synced_in_percentage do |node|
-          number_to_percentage(node.job_artifacts_synced_in_percentage, precision: 2)
-        end
-
-        expose :container_repositories_count
-        expose :container_repositories_synced_count
-        expose :container_repositories_failed_count
-        expose :container_repositories_synced_in_percentage do |node|
-          number_to_percentage(node.container_repositories_synced_in_percentage, precision: 2)
-        end
-
-        expose :design_repositories_count
-        expose :design_repositories_synced_count
-        expose :design_repositories_failed_count
-        expose :design_repositories_synced_in_percentage do |node|
-          number_to_percentage(node.design_repositories_synced_in_percentage, precision: 2)
-        end
-
-        expose :projects_count
-
-        expose :repositories_failed_count
-        expose :repositories_synced_count
-        expose :repositories_synced_in_percentage do |node|
-          number_to_percentage(node.repositories_synced_in_percentage, precision: 2)
-        end
-
-        expose :wikis_failed_count
-        expose :wikis_synced_count
-        expose :wikis_synced_in_percentage do |node|
-          number_to_percentage(node.wikis_synced_in_percentage, precision: 2)
-        end
-
-        expose :repository_verification_enabled
-
-        expose :repositories_checksummed_count
-        expose :repositories_checksum_failed_count
-        expose :repositories_checksummed_in_percentage do |node|
-          number_to_percentage(node.repositories_checksummed_in_percentage, precision: 2)
-        end
-
-        expose :wikis_checksummed_count
-        expose :wikis_checksum_failed_count
-        expose :wikis_checksummed_in_percentage do |node|
-          number_to_percentage(node.wikis_checksummed_in_percentage, precision: 2)
-        end
-
-        expose :repositories_verification_failed_count
-        expose :repositories_verified_count
-        expose :repositories_verified_in_percentage do |node|
-          number_to_percentage(node.repositories_verified_in_percentage, precision: 2)
-        end
-        expose :repositories_checksum_mismatch_count
-
-        expose :wikis_verification_failed_count
-        expose :wikis_verified_count
-        expose :wikis_verified_in_percentage do |node|
-          number_to_percentage(node.wikis_verified_in_percentage, precision: 2)
-        end
-        expose :wikis_checksum_mismatch_count
-
-        expose :repositories_retrying_verification_count
-        expose :wikis_retrying_verification_count
-
-        expose :replication_slots_count
-        expose :replication_slots_used_count
-        expose :replication_slots_used_in_percentage do |node|
-          number_to_percentage(node.replication_slots_used_in_percentage, precision: 2)
-        end
-        expose :replication_slots_max_retained_wal_bytes
-
-        expose :repositories_checked_count
-        expose :repositories_checked_failed_count
-        expose :repositories_checked_in_percentage do |node|
-          number_to_percentage(node.repositories_checked_in_percentage, precision: 2)
-        end
-
-        expose :last_event_id
-        expose :last_event_timestamp
-        expose :cursor_last_event_id
-        expose :cursor_last_event_timestamp
-
-        expose :last_successful_status_check_timestamp
-
-        expose :version
-        expose :revision
-
-        expose :selective_sync_type
-
-        # Deprecated: remove in API v5. We use selective_sync_type instead now.
-        expose :namespaces, using: ::API::Entities::NamespaceBasic
-
-        expose :updated_at
-
-        # We load GeoNodeStatus data in two ways:
-        #
-        # 1. Directly by asking a Geo node via an API call
-        # 2. Via cached state in the database
-        #
-        # We don't yet cached the state of the shard information in the database, so if
-        # we don't have this information omit from the serialization entirely.
-        expose :storage_shards, using: StorageShardEntity, if: ->(status, options) do
-          status.storage_shards.present?
-        end
-
-        expose :storage_shards_match?, as: :storage_shards_match
-
-        expose :_links do
-          expose :self do |geo_node_status|
-            expose_url api_v4_geo_nodes_status_path(id: geo_node_status.geo_node_id)
-          end
-
-          expose :node do |geo_node_status|
-            expose_url api_v4_geo_nodes_path(id: geo_node_status.geo_node_id)
-          end
-        end
-
-        private
-
-        def namespaces
-          object.geo_node.namespaces
-        end
-
-        def missing_oauth_application
-          object.geo_node.missing_oauth_application?
-        end
-      end
-
-      class UnleashFeature < Grape::Entity
-        expose :name
-        expose :description, unless: ->(feature) { feature.description.nil? }
-        expose :active, as: :enabled
-        expose :strategies
-      end
-
-      class GitlabSubscription < Grape::Entity
-        expose :plan do
-          expose :plan_name, as: :code
-          expose :plan_title, as: :name
-          expose :trial
-          expose :upgradable?, as: :upgradable
-        end
-
-        expose :usage do
-          expose :seats, as: :seats_in_subscription
-          expose :seats_in_use
-          expose :max_seats_used
-          expose :seats_owed
-        end
-
-        expose :billing do
-          expose :start_date, as: :subscription_start_date
-          expose :end_date, as: :subscription_end_date
-          expose :trial_ends_on
-        end
-      end
-
       module ConanPackage
         class ConanPackageManifest < Grape::Entity
           expose :package_urls, merge: true
@@ -942,150 +577,6 @@ module EE
         end
       end
 
-      class NpmPackage < Grape::Entity
-        expose :name
-        expose :versions
-        expose :dist_tags, as: 'dist-tags'
-      end
-
-      class NpmPackageTag < Grape::Entity
-        expose :dist_tags, merge: true
-      end
-
-      class Package < Grape::Entity
-        include ::API::Helpers::RelatedResourcesHelpers
-        extend EntityHelpers
-
-        class BuildInfo < Grape::Entity
-          expose :pipeline, using: ::API::Entities::PipelineBasic
-        end
-
-        expose :id
-        expose :name
-        expose :version
-        expose :package_type
-
-        expose :_links do
-          expose :web_path do |package|
-            ::Gitlab::Routing.url_helpers.project_package_path(package.project, package)
-          end
-
-          expose :delete_api_path, if: can_destroy(:package, &:project) do |package|
-            expose_url api_v4_projects_packages_path(package_id: package.id, id: package.project_id)
-          end
-        end
-
-        expose :created_at
-        expose :project_id, if: ->(_, opts) { opts[:group] }
-        expose :project_path, if: ->(obj, opts) { opts[:group] && Ability.allowed?(opts[:user], :read_project, obj.project) }
-        expose :build_info, using: BuildInfo
-        expose :tags
-
-        private
-
-        def project_path
-          object.project.full_path
-        end
-      end
-
-      class PackageFile < Grape::Entity
-        expose :id, :package_id, :created_at
-        expose :file_name, :size
-        expose :file_md5, :file_sha1
-      end
-
-      class ManagedLicense < Grape::Entity
-        expose :id, :name
-        expose :approval_status
-      end
-
-      class ProjectAlias < Grape::Entity
-        expose :id, :project_id, :name
-      end
-
-      class Dependency < Grape::Entity
-        class Vulnerability < Grape::Entity
-          expose :name, :severity
-        end
-
-        expose :name, :version, :package_manager, :dependency_file_path
-        expose :dependency_file_path do |dependency|
-          dependency[:location][:path]
-        end
-        expose :vulnerabilities, using: Vulnerability, if: ->(_, opts) { can_read_vulnerabilities?(opts[:user], opts[:project]) }
-
-        private
-
-        def can_read_vulnerabilities?(user, project)
-          Ability.allowed?(user, :read_vulnerability, project)
-        end
-      end
-
-      class FeatureFlag < Grape::Entity
-        class Scope < Grape::Entity
-          expose :id
-          expose :active
-          expose :environment_scope
-          expose :strategies
-          expose :created_at
-          expose :updated_at
-        end
-
-        class DetailedScope < Scope
-          expose :name
-        end
-
-        expose :name
-        expose :description
-        expose :created_at
-        expose :updated_at
-        expose :scopes, using: Scope
-      end
-
-      class Vulnerability < Grape::Entity
-        expose :id
-        expose :title
-        expose :description
-
-        expose :state
-        expose :severity
-        expose :confidence
-        expose :report_type
-
-        expose :project, using: ::API::Entities::ProjectIdentity
-
-        expose :finding
-
-        expose :author_id
-        expose :updated_by_id
-        expose :last_edited_by_id
-        expose :resolved_by_id
-        expose :closed_by_id
-
-        expose :start_date
-        expose :due_date
-
-        expose :created_at
-        expose :updated_at
-        expose :last_edited_at
-        expose :resolved_at
-        expose :closed_at
-      end
-
-      class VulnerabilityRelatedIssue < ::API::Entities::IssueBasic
-        # vulnerability_link_* attributes come from joined Vulnerabilities::IssueLink record
-        expose :vulnerability_link_id
-        expose :vulnerability_link_type do |related_issue|
-          ::Vulnerabilities::IssueLink.link_types.key(related_issue.vulnerability_link_type)
-        end
-      end
-
-      class VulnerabilityIssueLink < Grape::Entity
-        expose :vulnerability, using: ::EE::API::Entities::Vulnerability
-        expose :issue, using: ::API::Entities::IssueBasic
-        expose :link_type
-      end
-
       module Analytics
         module CodeReview
           class MergeRequest < ::API::Entities::MergeRequestSimple
@@ -1101,11 +592,11 @@ module EE
               end
             end
             expose :review_time do |mr|
-              next unless mr.metrics.first_comment_at
+              time = mr.metrics.review_time
 
-              review_time = (mr.metrics.merged_at || Time.now) - mr.metrics.first_comment_at
+              next unless time
 
-              (review_time / ActiveSupport::Duration::SECONDS_PER_HOUR).floor
+              (time / ActiveSupport::Duration::SECONDS_PER_HOUR).floor
             end
             expose :diff_stats
 

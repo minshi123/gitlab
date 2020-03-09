@@ -125,8 +125,6 @@ module EE
         @subject.feature_available?(:group_timelogs)
       end
 
-      rule { admin }.enable :change_repository_storage
-
       rule { support_bot }.enable :guest_access
       rule { support_bot & ~service_desk_enabled }.policy do
         prevent :create_note
@@ -186,6 +184,8 @@ module EE
       rule { can?(:read_build) & can?(:download_code) }.enable :read_security_findings
 
       rule { security_dashboard_enabled & can?(:developer_access) }.enable :read_vulnerability
+
+      rule { can?(:read_merge_request) & can?(:read_pipeline) }.enable :read_merge_train
 
       rule { can?(:read_vulnerability) }.policy do
         enable :read_project_security_dashboard

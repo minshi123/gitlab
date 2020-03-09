@@ -267,6 +267,7 @@ class Project < ApplicationRecord
           class_name: 'Ci::Pipeline',
           inverse_of: :project
   has_many :stages, class_name: 'Ci::Stage', inverse_of: :project
+  has_many :ci_refs, class_name: 'Ci::Ref'
 
   # Ci::Build objects store data on the file system such as artifact files and
   # build traces. Currently there's no efficient way of removing this data in
@@ -780,7 +781,7 @@ class Project < ApplicationRecord
   end
 
   def repository
-    @repository ||= Repository.new(full_path, self, disk_path: disk_path)
+    @repository ||= Repository.new(full_path, self, shard: repository_storage, disk_path: disk_path)
   end
 
   def cleanup
@@ -1374,7 +1375,7 @@ class Project < ApplicationRecord
     @lfs_storage_project ||= begin
       result = self
 
-      # TODO: Make this go to the fork_network root immeadiatly
+      # TODO: Make this go to the fork_network root immediately
       # dependant on the discussion in: https://gitlab.com/gitlab-org/gitlab-foss/issues/39769
       result = result.fork_source while result&.forked?
 
@@ -1397,12 +1398,17 @@ class Project < ApplicationRecord
       .where(lfs_objects_projects: { project_id: [self, lfs_storage_project] })
   end
 
-  # TODO: Call `#lfs_objects` instead once all LfsObjectsProject records are
-  # backfilled. At that point, projects can look at their own `lfs_objects`.
+  # TODO: Remove this method once all LfsObjectsProject records are backfilled
+  # for forks. At that point, projects can look at their own `lfs_objects` so
+  # `lfs_objects_oids` can be used instead.
   #
   # See https://gitlab.com/gitlab-org/gitlab/issues/122002 for more info.
-  def lfs_objects_oids
-    all_lfs_objects.pluck(:oid)
+  def all_lfs_objects_oids(oids: [])
+    oids(all_lfs_objects, oids: oids)
+  end
+
+  def lfs_objects_oids(oids: [])
+    oids(lfs_objects, oids: oids)
   end
 
   def personal?
@@ -1411,8 +1417,8 @@ class Project < ApplicationRecord
 
   # Expires various caches before a project is renamed.
   def expire_caches_before_rename(old_path)
-    repo = Repository.new(old_path, self)
-    wiki = Repository.new("#{old_path}.wiki", self)
+    repo = Repository.new(old_path, self, shard: repository_storage)
+    wiki = Repository.new("#{old_path}.wiki", self, shard: repository_storage, repo_type: Gitlab::GlRepository::WIKI)
 
     if repo.exists?
       repo.before_delete
@@ -1962,6 +1968,14 @@ class Project < ApplicationRecord
   end
 
   def ci_variables_for(ref:, environment: nil)
+    cache_key = "ci_variables_for:project:#{self&.id}:ref:#{ref}:environment:#{environment}"
+
+    ::Gitlab::SafeRequestStore.fetch(cache_key) do
+      uncached_ci_variables_for(ref: ref, environment: environment)
+    end
+  end
+
+  def uncached_ci_variables_for(ref:, environment: nil)
     result = if protected_for?(ref)
                variables
              else
@@ -2028,6 +2042,16 @@ class Project < ApplicationRecord
     with_lock do
       update_column(:repository_read_only, false)
     end
+  end
+
+  def change_repository_storage(new_repository_storage_key)
+    return if repository_read_only?
+    return if repository_storage == new_repository_storage_key
+
+    raise ArgumentError unless ::Gitlab.config.repositories.storages.key?(new_repository_storage_key)
+
+    run_after_commit { ProjectUpdateRepositoryStorageWorker.perform_async(id, new_repository_storage_key) }
+    self.repository_read_only = true
   end
 
   def pushes_since_gc
@@ -2342,6 +2366,20 @@ class Project < ApplicationRecord
     Gitlab::CurrentSettings.self_monitoring_project_id == id
   end
 
+  def deploy_token_create_url(opts = {})
+    Gitlab::Routing.url_helpers.create_deploy_token_project_settings_ci_cd_path(self, opts)
+  end
+
+  def deploy_token_revoke_url_for(token)
+    Gitlab::Routing.url_helpers.revoke_project_deploy_token_path(self, token)
+  end
+
+  def default_branch_protected?
+    branch_protection = Gitlab::Access::BranchProtection.new(self.namespace.default_branch_protection)
+
+    branch_protection.fully_protected? || branch_protection.developer_can_merge?
+  end
+
   private
 
   def closest_namespace_setting(name)
@@ -2392,7 +2430,7 @@ class Project < ApplicationRecord
 
     if repository_storage.blank? || repository_with_same_path_already_exists?
       errors.add(:base, _('There is already a repository with that name on disk'))
-      throw :abort
+      throw :abort # rubocop:disable Cop/BanCatchThrow
     end
   end
 
@@ -2481,6 +2519,12 @@ class Project < ApplicationRecord
   rescue ActiveRecord::RecordNotUnique
     reset
     retry
+  end
+
+  def oids(objects, oids: [])
+    collection = oids.any? ? objects.where(oid: oids) : objects
+
+    collection.pluck(:oid)
   end
 end
 

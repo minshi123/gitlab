@@ -377,7 +377,7 @@ variables, depending on where they are defined.
 
 The order of precedence for variables is (from highest to lowest):
 
-1. [Trigger variables](../triggers/README.md#making-use-of-trigger-variables) or [scheduled pipeline variables](../../user/project/pipelines/schedules.md#using-variables).
+1. [Trigger variables](../triggers/README.md#making-use-of-trigger-variables) or [scheduled pipeline variables](../pipelines/schedules.md#using-variables).
 1. Project-level [variables](#creating-a-custom-environment-variable) or [protected variables](#protected-environment-variables).
 1. Group-level [variables](#group-level-environment-variables) or [protected variables](#protected-environment-variables).
 1. YAML-defined [job-level variables](../yaml/README.md#variables).
@@ -571,9 +571,12 @@ Below you can find supported syntax reference:
    - `$VARIABLE =~ /^content.*/`
    - `$VARIABLE_1 !~ /^content.*/` (introduced in GitLab 11.11)
 
-   It is possible perform pattern matching against a variable and regular
-   expression. Expression like this evaluates to truth if matches are found
-   when using `=~`. It evaluates to truth if matches are not found when `!~` is used.
+   Variable pattern matching with regular expressions uses the
+   [RE2 regular expression syntax](https://github.com/google/re2/wiki/Syntax).
+   Expressions evaluate as `true` if:
+
+   - Matches are found when using `=~`.
+   - Matches are *not* found when using `!~`.
 
    Pattern matching is case-sensitive by default. Use `i` flag modifier, like
    `/pattern/i` to make a pattern case-insensitive.

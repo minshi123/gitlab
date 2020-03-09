@@ -69,12 +69,13 @@ review-build-cng:
   variables:
     HOST_SUFFIX: "${CI_ENVIRONMENT_SLUG}"
     DOMAIN: "-${CI_ENVIRONMENT_SLUG}.${REVIEW_APPS_DOMAIN}"
-    GITLAB_HELM_CHART_REF: "v2.5.1"
+    GITLAB_HELM_CHART_REF: "v2.6.8"
     GITLAB_EDITION: "ce"
   environment:
     name: review/${CI_COMMIT_REF_NAME}
     url: https://gitlab-${CI_ENVIRONMENT_SLUG}.${REVIEW_APPS_DOMAIN}
     on_stop: review-stop
+    auto_stop_in: 48 hours
 
 review-deploy:
   extends:
@@ -84,6 +85,7 @@ review-deploy:
   needs:
     - job: review-build-cng
       artifacts: false
+  resource_group: "review/${CI_COMMIT_REF_NAME}"
   allow_failure: true
   before_script:
     - '[[ ! -d "ee/" ]] || export GITLAB_EDITION="ee"'
@@ -248,9 +250,9 @@ danger-review:
     - .review:rules:danger
   image: registry.gitlab.com/gitlab-org/gitlab-build-images:danger
   stage: test
-  dependencies: []
+  needs: []
   script:
     - git version
     - node --version
     - yarn install --frozen-lockfile --cache-folder .yarn-cache --prefer-offline
-    - danger --fail-on-errors=true
+    - danger --fail-on-errors=true --verbose

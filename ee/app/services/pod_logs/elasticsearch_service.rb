@@ -2,8 +2,8 @@
 
 module PodLogs
   class ElasticsearchService < BaseService
-    steps :check_param_lengths,
-          :check_deployment_platform,
+    steps :check_arguments,
+          :check_param_lengths,
           :get_raw_pods,
           :get_pod_names,
           :check_pod_name,
@@ -13,7 +13,7 @@ module PodLogs
           :pod_logs,
           :filter_return_keys
 
-    self.reactive_cache_worker_finder = ->(id, _cache_key, params) { new(Environment.find(id), params: params) }
+    self.reactive_cache_worker_finder = ->(id, _cache_key, namespace, params) { new(::Clusters::Cluster.find(id), namespace, params: params) }
 
     private
 
@@ -37,8 +37,7 @@ module PodLogs
     end
 
     def pod_logs(result)
-      namespace = environment.deployment_namespace
-      client = environment.deployment_platform.cluster&.application_elastic_stack&.elasticsearch_client
+      client = cluster&.application_elastic_stack&.elasticsearch_client
       return error(_('Unable to connect to Elasticsearch')) unless client
 
       result[:logs] = ::Gitlab::Elasticsearch::Logs.new(client).pod_logs(
@@ -51,6 +50,14 @@ module PodLogs
       )
 
       success(result)
+    rescue Elasticsearch::Transport::Transport::ServerError => e
+      ::Gitlab::ErrorTracking.track_exception(e)
+
+      error(_('Elasticsearch returned status code: %{status_code}') % {
+        # ServerError is the parent class of exceptions named after HTTP status codes, eg: "Elasticsearch::Transport::Transport::Errors::NotFound"
+        # there is no method on the exception other than the class name to determine the type of error encountered.
+        status_code: e.class.name.split('::').last
+      })
     end
   end
 end

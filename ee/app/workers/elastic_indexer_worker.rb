@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-class ElasticIndexerWorker
+class ElasticIndexerWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
   include Elasticsearch::Model::Client::ClassMethods
 
   sidekiq_options retry: 2
-  feature_category :search
+  feature_category :global_search
 
   def perform(operation, class_name, record_id, es_id, options = {})
     return true unless Gitlab::CurrentSettings.elasticsearch_indexing?

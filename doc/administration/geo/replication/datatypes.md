@@ -13,7 +13,7 @@ We currently distinguish between three different data types:
 - [Blobs](#blobs)
 - [Database](#database)
 
-See the list below of each feature or component we replicate, its corresponding data type, replication and
+See the list below of each feature or component we replicate, its corresponding data type, replication, and
 verification methods:
 
 | Type     | Feature / component                           | Replication method                          | Verification method  |
@@ -75,7 +75,7 @@ GitLab stores files and blobs such as Issue attachments or LFS objects into eith
 - The filesystem in a specific location.
 - An Object Storage solution. Object Storage solutions can be:
   - Cloud based like Amazon S3 Google Cloud Storage.
-  - Self hosted (like MinIO).
+  - Hosted by you (like MinIO).
   - A Storage Appliance that exposes an Object Storage-compatible API.
 
 When using the filesystem store instead of Object Storage, you need to use network mounted filesystems
@@ -97,7 +97,7 @@ as well as permissions and credentials.
 PostgreSQL can also hold some level of cached data like HTML rendered Markdown, cached merge-requests diff (this can
 also be configured to be offloaded to object storage).
 
-We use PostgreSQL's own replication functionality to replicate data from the primary to secondary nodes.
+We use PostgreSQL's own replication functionality to replicate data from the **primary** to **secondary** nodes.
 
 We use Redis both as a cache store and to hold persistent data for our background jobs system. Because both
 use-cases has data that are exclusive to the same Geo node, we don't replicate it between nodes.
@@ -131,7 +131,7 @@ successfully, you must replicate their data using some other means.
 | Project wiki repository                             | **Yes**                  | **Yes**                     |                                             |
 | Project designs repository                          | **Yes**                  | [No][design-verification]   |                                             |
 | Uploads                                             | **Yes**                  | [No][upload-verification]   | Verified only on transfer, or manually (*1*)|
-| LFS objects                                         | **Yes**                  | [No][lfs-verification]      | Verified only on transfer, or manually (*1*)|
+| LFS objects                                         | **Yes**                  | [No][lfs-verification]      | Verified only on transfer, or manually (*1*). Unavailable for new LFS objects in 11.11.x and 12.0.x (*2*). |
 | CI job artifacts (other than traces)                | **Yes**                  | [No][artifact-verification] | Verified only manually (*1*)                |
 | Archived traces                                     | **Yes**                  | [No][artifact-verification] | Verified only on transfer, or manually (*1*)|
 | Personal snippets                                   | **Yes**                  | **Yes**                     |                                             |
@@ -148,7 +148,10 @@ successfully, you must replicate their data using some other means.
 | Content in object storage                           | **Yes**                  | No                          |                                             |
 
 - (*1*): The integrity can be verified manually using
-  [Integrity Check Rake Task](../../raketasks/check.md) on both nodes and comparing the output between them.
+  [Integrity Check Rake Task](../../raketasks/check.md) on both nodes and comparing
+  the output between them.
+- (*2*): GitLab versions 11.11.x and 12.0.x are affected by [a bug that prevents any new
+  LFS objects from replicating](https://gitlab.com/gitlab-org/gitlab/issues/32696).
 
 [design-replication]: https://gitlab.com/groups/gitlab-org/-/epics/1633
 [design-verification]: https://gitlab.com/gitlab-org/gitlab/issues/32467

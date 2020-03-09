@@ -40,7 +40,7 @@ If you are using GitLab.com, see the [quick start guide](quick_start_guide.md)
 for how to use Auto DevOps with GitLab.com and a Kubernetes cluster on Google Kubernetes
 Engine (GKE).
 
-If you are using a self-hosted instance of GitLab, you will need to configure the
+If you are using a self-managed instance of GitLab, you will need to configure the
 [Google OAuth2 OmniAuth Provider](../../integration/google.md) before
 you can configure a cluster on GKE. Once this is set up, you can follow the steps on the
 [quick start guide](quick_start_guide.md) to get started.
@@ -55,7 +55,7 @@ in multiple ways:
 - Auto DevOps works with any Kubernetes cluster; you're not limited to running
   on GitLab's infrastructure. (Note that many features also work without Kubernetes).
 - There is no additional cost (no markup on the infrastructure costs), and you
-  can use a self-hosted Kubernetes cluster or Containers as a Service on any
+  can use a Kubernetes cluster you host or Containers as a Service on any
   public cloud (for example, [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/)).
 - Auto DevOps has more features including security testing, performance testing,
   and code quality testing.
@@ -93,7 +93,8 @@ knowledge of the following:
 Auto DevOps provides great defaults for all the stages; you can, however,
 [customize](#customizing) almost everything to your needs.
 
-For an overview on the creation of Auto DevOps, read the blog post [From 2/3 of the Self-Hosted Git Market, to the Next-Generation CI System, to Auto DevOps](https://about.gitlab.com/blog/2017/06/29/whats-next-for-gitlab-ci/).
+For an overview on the creation of Auto DevOps, read more
+[in this blog post](https://about.gitlab.com/blog/2017/06/29/whats-next-for-gitlab-ci/).
 
 NOTE: **Note**
 Kubernetes clusters can [be used without](../../user/project/clusters/index.md)
@@ -181,7 +182,7 @@ To make full use of Auto DevOps, you will need:
   If you have configured GitLab's Kubernetes integration, you can deploy it to
   your cluster by installing the
   [GitLab-managed app for cert-manager](../../user/clusters/applications.md#cert-manager).
-  
+
 If you do not have Kubernetes or Prometheus installed, then Auto Review Apps,
 Auto Deploy, and Auto Monitoring will be silently skipped.
 
@@ -473,7 +474,7 @@ report is created, it's uploaded as an artifact which you can later download and
 check out.
 
 Any licenses are also shown in the merge request widget. Read more how
-[License Compliance works](../../user/application_security/license_compliance/index.md).
+[License Compliance works](../../user/compliance/license_compliance/index.md).
 
 ### Auto Container Scanning **(ULTIMATE)**
 
@@ -742,15 +743,15 @@ workers:
 > [Introduced](https://gitlab.com/gitlab-org/charts/auto-deploy-app/-/merge_requests/30) in GitLab 12.7.
 
 By default, all Kubernetes pods are
-[non-isolated](https://kubernetes.io/docs/concepts/services-networking/network-policies/#isolated-and-non-isolated-pods)
+[non-isolated](https://kubernetes.io/docs/concepts/services-networking/network-policies/#isolated-and-non-isolated-pods),
 and accept traffic from any source. You can use
 [NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 to restrict connections to selected pods or namespaces.
 
 NOTE: **Note:**
 You must use a Kubernetes network plugin that implements support for
-`NetworkPolicy`, the default network plugin for Kubernetes (`kubenet`)
-[doesn't implement](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#kubenet)
+`NetworkPolicy`. The default network plugin for Kubernetes (`kubenet`)
+[does not implement](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#kubenet)
 support for it. The [Cilium](https://cilium.io/) network plugin can be
 installed as a [cluster application](../../user/clusters/applications.md#install-cilium-using-gitlab-ci)
 to enable support for network policies.
@@ -758,20 +759,20 @@ to enable support for network policies.
 You can enable deployment of a network policy by setting the following
 in the `.gitlab/auto-deploy-values.yaml` file:
 
-```yml
+```yaml
 networkPolicy:
   enabled: true
 ```
 
 The default policy deployed by the auto deploy pipeline will allow
 traffic within a local namespace and from the `gitlab-managed-apps`
-namespace, all other inbound connection will be blocked. Outbound
+namespace. All other inbound connection will be blocked. Outbound
 traffic is not affected by the default policy.
 
 You can also provide a custom [policy specification](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.16/#networkpolicyspec-v1-networking-k8s-io)
 via the `.gitlab/auto-deploy-values.yaml` file, for example:
 
-```yml
+```yaml
 networkPolicy:
   enabled: true
   spec:
@@ -1029,6 +1030,32 @@ Then add any extra changes you want. Your additions will be merged with the
 It is also possible to copy and paste the contents of the [Auto DevOps
 template] into your project and edit this as needed. You may prefer to do it
 that way if you want to specifically remove any part of it.
+
+### Customizing the Kubernetes namespace
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/27630) in GitLab 12.6.
+
+For **non**-GitLab-managed clusters, the namespace can be customized using
+`.gitlab-ci.yml` by specifying
+[`environment:kubernetes:namespace`](../../ci/environments.md#configuring-kubernetes-deployments).
+For example, the following configuration overrides the namespace used for
+`production` deployments:
+
+```yaml
+include:
+  - template: Auto-DevOps.gitlab-ci.yml
+
+production:
+  environment:
+    kubernetes:
+      namespace: production
+```
+
+When deploying to a custom namespace with Auto DevOps, the service account
+provided with the cluster needs at least the `edit` role within the namespace.
+
+- If the service account can create namespaces, then the namespace can be created on-demand.
+- Otherwise, the namespace must exist prior to deployment.
 
 ### Using components of Auto DevOps
 

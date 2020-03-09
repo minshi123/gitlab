@@ -62,6 +62,8 @@ module ApplicationSettingImplementation
         eks_account_id: nil,
         eks_access_key_id: nil,
         eks_secret_access_key: nil,
+        email_restrictions_enabled: false,
+        email_restrictions: nil,
         first_day_of_week: 0,
         gitaly_timeout_default: 55,
         gitaly_timeout_fast: 10,
@@ -387,7 +389,7 @@ module ApplicationSettingImplementation
   def terms_exist
     return unless enforce_terms?
 
-    errors.add(:terms, "You need to set terms to be enforced") unless terms.present?
+    errors.add(:base, _('You need to set terms to be enforced')) unless terms.present?
   end
 
   def expire_performance_bar_allowed_user_ids_cache

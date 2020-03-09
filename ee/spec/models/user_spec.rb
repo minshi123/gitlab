@@ -671,69 +671,102 @@ describe User do
 
   describe '#using_gitlab_com_seat?' do
     let(:user) { create(:user) }
+    let(:namespace) { create(:group) }
+
+    subject { user.using_gitlab_com_seat?(namespace) }
 
     context 'when Gitlab.com? is false' do
       before do
         allow(Gitlab).to receive(:com?).and_return(false)
       end
 
-      it 'returns false' do
-        expect(user.using_gitlab_com_seat?(nil)).to eq(false)
-      end
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when user is not active' do
+      let(:user) { create(:user, :blocked) }
+
+      it { is_expected.to be_falsey }
     end
 
     context 'when Gitlab.com? is true' do
-      let(:namespace) { create(:namespace) }
-
       before do
         allow(Gitlab).to receive(:com?).and_return(true)
-        allow(namespace).to receive(:gold_plan?).and_return(false)
-        allow(namespace).to receive(:free_plan?).and_return(false)
       end
 
       context 'when namespace is nil' do
         let(:namespace) { nil }
 
-        it 'returns false' do
-          expect(user.using_gitlab_com_seat?(namespace)).to eq(false)
-        end
+        it { is_expected.to be_falsey }
       end
 
       context 'when namespace is on a free plan' do
-        before do
-          allow(namespace).to receive(:free_plan?).and_return(true)
-        end
-
-        it 'returns false' do
-          expect(user.using_gitlab_com_seat?(namespace)).to eq(false)
-        end
+        it { is_expected.to be_falsey }
       end
 
       context 'when namespace is on a gold plan' do
         before do
-          allow(namespace).to receive(:gold_plan?).and_return(true)
+          create(:gitlab_subscription, namespace: namespace.root_ancestor, hosted_plan: create(:gold_plan))
+        end
+
+        context 'user is a guest' do
+          before do
+            namespace.add_guest(user)
+          end
+
+          it { is_expected.to be_falsey }
         end
 
         context 'user is not a guest' do
-          let(:user) { create(:project_member, :developer).user }
-
-          it 'returns true' do
-            expect(user.using_gitlab_com_seat?(namespace)).to eq(true)
+          before do
+            namespace.add_developer(user)
           end
+
+          it { is_expected.to be_truthy }
         end
 
-        context 'user is guest' do
-          let(:user) { create(:project_member, :guest).user }
+        context 'when user is within project' do
+          let(:group) { create(:group) }
+          let(:namespace) { create(:project, namespace: group) }
 
-          it 'returns false' do
-            expect(user.using_gitlab_com_seat?(namespace)).to eq(false)
+          before do
+            namespace.add_developer(user)
           end
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'when user is within subgroup' do
+          let(:group) { create(:group) }
+          let(:namespace) { create(:group, parent: group) }
+
+          before do
+            namespace.add_developer(user)
+          end
+
+          it { is_expected.to be_truthy }
         end
       end
 
       context 'when namespace is on a plan that is not free or gold' do
-        it 'returns true' do
-          expect(user.using_gitlab_com_seat?(namespace)).to eq(true)
+        before do
+          create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:silver_plan))
+        end
+
+        context 'user is a guest' do
+          before do
+            namespace.add_guest(user)
+          end
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'user is not a guest' do
+          before do
+            namespace.add_developer(user)
+          end
+
+          it { is_expected.to be_truthy }
         end
       end
     end
@@ -906,30 +939,54 @@ describe User do
     end
   end
 
-  describe '#free_namespaces' do
-    let_it_be(:user) { create(:user, :external) }
+  describe '#managed_free_namespaces' do
+    let_it_be(:user) { create(:user) }
     let_it_be(:licensed_group) { create(:group, plan: :bronze_plan) }
     let_it_be(:free_group_z) { create(:group, plan: :default_plan, name: 'Z') }
     let_it_be(:free_group_a) { create(:group, plan: :default_plan, name: 'A') }
 
-    subject { user.free_namespaces }
+    subject { user.managed_free_namespaces }
 
     context 'user with no groups' do
       it { is_expected.to eq [] }
     end
 
-    context 'member of a licensed group' do
+    context 'owner of a licensed group' do
       before do
-        licensed_group.add_guest(user)
+        licensed_group.add_owner(user)
       end
 
       it { is_expected.not_to include licensed_group }
     end
 
-    context 'member of 2 free groups' do
+    context 'guest of a free group' do
       before do
         free_group_a.add_guest(user)
-        free_group_z.add_guest(user)
+      end
+
+      it { is_expected.not_to include free_group_a }
+    end
+
+    context 'developer of a free group' do
+      before do
+        free_group_a.add_developer(user)
+      end
+
+      it { is_expected.not_to include free_group_a }
+    end
+
+    context 'maintainer of a free group' do
+      before do
+        free_group_a.add_maintainer(user)
+      end
+
+      it { is_expected.to include free_group_a }
+    end
+
+    context 'owner of 2 free groups' do
+      before do
+        free_group_a.add_owner(user)
+        free_group_z.add_owner(user)
       end
 
       it { is_expected.to eq [free_group_a, free_group_z] }

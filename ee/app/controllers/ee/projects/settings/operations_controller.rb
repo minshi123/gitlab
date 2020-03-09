@@ -41,6 +41,10 @@ module EE
             project.feature_available?(:tracing, current_user)
           end
 
+          def has_status_page_license?
+            project.feature_available?(:status_page, current_user)
+          end
+
           def track_tracing_external_url
             external_url_previous_change = project&.tracing_setting&.external_url_previous_change
             return unless external_url_previous_change
@@ -58,7 +62,15 @@ module EE
             permitted_params[:tracing_setting_attributes] = [:external_url]
           end
 
+          if has_status_page_license?
+            permitted_params.merge!(status_page_setting_params)
+          end
+
           permitted_params
+        end
+
+        def status_page_setting_params
+          { status_page_setting_attributes: [:aws_s3_bucket_name, :aws_region, :aws_access_key, :aws_secret_key, :enabled] }
         end
 
         override :track_events

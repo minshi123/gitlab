@@ -12,6 +12,35 @@ describe 'admin/application_settings/_elasticsearch_form' do
     allow(view).to receive(:expanded) { true }
   end
 
+  context 'es indexing' do
+    let(:application_setting) { build(:application_setting) }
+    let(:button_text) { 'Index all projects' }
+
+    before do
+      allow(Gitlab::CurrentSettings).to(receive(:elasticsearch_indexing?)).and_return(es_indexing)
+    end
+
+    context 'indexing is enabled' do
+      let(:es_indexing) { true }
+
+      it 'hides index button when indexing is disabled' do
+        render
+
+        expect(rendered).to have_css('a.btn-success', text: button_text)
+      end
+    end
+
+    context 'indexing is disabled' do
+      let(:es_indexing) { false }
+
+      it 'shows index button when indexing is enabled' do
+        render
+
+        expect(rendered).not_to have_css('a.btn-success', text: button_text)
+      end
+    end
+  end
+
   context 'when elasticsearch_aws_secret_access_key is not set' do
     let(:application_setting) { build(:application_setting) }
 

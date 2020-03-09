@@ -32,8 +32,9 @@ class Service < ApplicationRecord
   belongs_to :project, inverse_of: :services
   has_one :service_hook
 
-  validates :project_id, presence: true, unless: proc { |service| service.template? }
+  validates :project_id, presence: true, unless: -> { template? }
   validates :type, presence: true
+  validates :template, uniqueness: { scope: :type }, if: -> { template? }
 
   scope :visible, -> { where.not(type: 'GitlabIssueTrackerService') }
   scope :issue_trackers, -> { where(category: 'issue_tracker') }
@@ -68,10 +69,6 @@ class Service < ApplicationRecord
 
   def editable?
     true
-  end
-
-  def template?
-    template
   end
 
   def category
@@ -320,10 +317,6 @@ class Service < ApplicationRecord
 
   def deprecation_message
     nil
-  end
-
-  def self.find_by_template
-    find_by(template: true)
   end
 
   # override if needed

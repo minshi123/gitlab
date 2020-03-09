@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-class ElasticNamespaceIndexerWorker
+class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
 
-  feature_category :search
+  feature_category :global_search
   sidekiq_options retry: 2
 
   def perform(namespace_id, operation)

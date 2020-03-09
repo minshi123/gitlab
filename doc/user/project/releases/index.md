@@ -13,7 +13,7 @@ assets output by your CI system to use them, not just the raw source
 code.
 
 GitLab's **Releases** are a way to track deliverables in your project. Consider them
-a snapshot in time of the source, build output, and other metadata or artifacts
+a snapshot in time of the source, build output, artifacts, and other metadata
 associated with a released version of your code.
 
 There are several ways to create a Release:
@@ -27,6 +27,18 @@ There are several ways to create a Release:
 
 Start by giving a [description](#release-description) to the Release and
 including its [assets](#release-assets), as follows.
+
+## Release versioning
+
+Release versions are manually assigned by the user in the Release title. GitLab uses [Semantic Versioning](https://semver.org/) for our releases, and we recommend you do too. Use `(Major).(Minor).(Patch)`, as detailed in the [GitLab Policy for Versioning](../../../policy/maintenance.md#versioning).
+
+For example, for GitLab version `10.5.7`:
+
+- `10` represents the major version. The major release was `10.0.0`, but often referred to as `10.0`.
+- `5` represents the minor version. The minor release was `10.5.0`, but often referred to as `10.5`.
+- `7` represents the patch number.
+
+Any part of the version number can be multiple digits, for example, `13.10.11`.
 
 ### Release description
 

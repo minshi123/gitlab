@@ -182,9 +182,33 @@ If **Public pipelines** is disabled:
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/9362) in GitLab 9.1.
 
-If you want to auto-cancel all pending non-HEAD pipelines on branch, when
-new pipeline will be created (after your Git push or manually from UI),
-check **Auto-cancel pending pipelines** checkbox and save the changes.
+If you want all pending non-HEAD pipelines on branches to auto-cancel each time
+a new pipeline is created, such as after a Git push or manually from the UI,
+you can enable this in the project settings:
+
+1. Go to **{settings}** **Settings > CI / CD**.
+1. Expand **General Pipelines**.
+1. Check the **Auto-cancel redundant, pending pipelines** checkbox.
+1. Click **Save changes**.
+
+## Skip older, pending deployment jobs
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/25276) in GitLab 12.9.
+
+Your project may have multiple concurrent deployment jobs that are
+scheduled to run within the same time frame.
+
+This can lead to a situation where an older deployment job runs after a
+newer one, which may not be what you want.
+
+To avoid this scenario:
+
+1. Go to **{settings}** **Settings > CI / CD**.
+1. Expand **General pipelines**.
+1. Check the **Skip older, pending deployment jobs** checkbox.
+1. Click **Save changes**.
+
+The pending deployment jobs will be skipped.
 
 ## Pipeline Badges
 
@@ -262,6 +286,14 @@ https://example.gitlab.com/<namespace>/<project>/badges/<branch>/coverage.svg?st
 ## Environment Variables
 
 [Environment variables](../../../ci/variables/README.html#gitlab-cicd-environment-variables) can be set in an environment to be available to a runner.
+
+## Deploy Keys
+
+With Deploy Keys, GitLab allows you to import SSH public keys. You can then have
+read only or read/write access to your project from the machines the keys were generated from.
+
+SSH keys added to your project settings will be used for continuous integration,
+staging, or production servers.
 
 <!-- ## Troubleshooting
 

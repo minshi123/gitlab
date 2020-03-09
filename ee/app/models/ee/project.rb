@@ -20,7 +20,6 @@ module EE
       include EE::DeploymentPlatform # rubocop: disable Cop/InjectEnterpriseEditionModule
       include EachBatch
       include InsightsFeature
-      include Vulnerable
       include DeprecatedApprovalsBeforeMerge
       include UsageStatistics
 
@@ -49,6 +48,7 @@ module EE
       has_one :tracing_setting, class_name: 'ProjectTracingSetting'
       has_one :alerting_setting, inverse_of: :project, class_name: 'Alerting::ProjectAlertingSetting'
       has_one :feature_usage, class_name: 'ProjectFeatureUsage'
+      has_one :status_page_setting, inverse_of: :project
 
       has_many :reviews, inverse_of: :project
       has_many :approvers, as: :target, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
@@ -59,6 +59,7 @@ module EE
       has_many :audit_events, as: :entity
       has_many :designs, inverse_of: :project, class_name: 'DesignManagement::Design'
       has_many :path_locks
+      has_many :requirements
 
       # the rationale behind vulnerabilities and vulnerability_findings can be found here:
       # https://gitlab.com/gitlab-org/gitlab/issues/10252#terminology
@@ -93,6 +94,8 @@ module EE
       has_many :upstream_projects, class_name: 'Project', through: :upstream_project_subscriptions, source: :upstream_project
       has_many :downstream_project_subscriptions, class_name: 'Ci::Subscriptions::Project', foreign_key: :upstream_project_id, inverse_of: :upstream_project
       has_many :downstream_projects, class_name: 'Project', through: :downstream_project_subscriptions, source: :downstream_project
+
+      has_many :sourced_pipelines, class_name: 'Ci::Sources::Project', foreign_key: :source_project_id
 
       scope :with_shared_runners_limit_enabled, -> { with_shared_runners.non_public_only }
 
@@ -163,7 +166,7 @@ module EE
       validates :repository_size_limit,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }
       validates :max_pages_size,
-        numericality: { only_integer: true, greater_than: 0, allow_nil: true,
+        numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true,
                         less_than: ::Gitlab::Pages::MAX_SIZE / 1.megabyte }
 
       validates :approvals_before_merge, numericality: true, allow_blank: true
@@ -180,6 +183,7 @@ module EE
 
       accepts_nested_attributes_for :tracing_setting, update_only: true, allow_destroy: true
       accepts_nested_attributes_for :alerting_setting, update_only: true
+      accepts_nested_attributes_for :status_page_setting, update_only: true, allow_destroy: true
 
       alias_attribute :fallback_approvals_required, :approvals_before_merge
     end
@@ -312,6 +316,12 @@ module EE
 
     def code_owner_approval_required_available?
       feature_available?(:code_owner_approval_required)
+    end
+
+    def github_external_pull_request_pipelines_available?
+      mirror? &&
+        feature_available?(:ci_cd_projects) &&
+        feature_available?(:github_project_service_integration)
     end
 
     def scoped_approval_rules_enabled?
@@ -492,16 +502,6 @@ module EE
       username_only_import_url
     end
 
-    def change_repository_storage(new_repository_storage_key)
-      return if repository_read_only?
-      return if repository_storage == new_repository_storage_key
-
-      raise ArgumentError unless ::Gitlab.config.repositories.storages.key?(new_repository_storage_key)
-
-      run_after_commit { ProjectUpdateRepositoryStorageWorker.perform_async(id, new_repository_storage_key) }
-      self.repository_read_only = true
-    end
-
     def repository_and_lfs_size
       statistics.total_repository_size
     end
@@ -675,7 +675,7 @@ module EE
     def expire_caches_before_rename(old_path)
       super
 
-      design = ::Repository.new("#{old_path}#{EE::Gitlab::GlRepository::DESIGN.path_suffix}", self)
+      design = ::Repository.new("#{old_path}#{::EE::Gitlab::GlRepository::DESIGN.path_suffix}", self, shard: repository_storage, repo_type: ::EE::Gitlab::GlRepository::DESIGN)
 
       if design.exists?
         design.before_delete
@@ -747,6 +747,10 @@ module EE
       return true if namespace_id == ::Gitlab::CurrentSettings.current_application_settings.custom_project_templates_group_id
 
       ::Project.with_groups_level_repos_templates.exists?(id)
+    end
+
+    def jira_subscription_exists?
+      feature_available?(:jira_dev_panel_integration) && JiraConnectSubscription.for_project(self).exists?
     end
 
     private

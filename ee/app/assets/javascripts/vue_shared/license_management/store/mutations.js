@@ -15,7 +15,11 @@ export default {
   [types.SET_API_SETTINGS](state, data) {
     Object.assign(state, data);
   },
-
+  [types.SET_IS_ADMIN](state, data) {
+    Object.assign(state, {
+      isAdmin: data,
+    });
+  },
   [types.RECEIVE_MANAGED_LICENSES_SUCCESS](state, licenses = []) {
     const managedLicenses = licenses.map(normalizeLicense).reverse();
 
@@ -91,5 +95,11 @@ export default {
       isSaving: false,
       currentLicenseInModal: null,
     });
+  },
+  [types.ADD_PENDING_LICENSE](state, id) {
+    state.pendingLicenses.push(id);
+  },
+  [types.REMOVE_PENDING_LICENSE](state, id) {
+    state.pendingLicenses = state.pendingLicenses.filter(pendingLicense => pendingLicense !== id);
   },
 };

@@ -56,7 +56,7 @@ module EE
         return :geo unless geo_push_user_headers_provided?
         return geo_push_user.user if geo_push_user.user
 
-        raise ::Gitlab::GitAccess::UnauthorizedError, 'Geo push user is invalid.'
+        raise ::Gitlab::GitAccess::ForbiddenError, 'Geo push user is invalid.'
       end
 
       override :authenticate_user
@@ -79,7 +79,7 @@ module EE
       end
 
       def repository_full_path
-        File.join(params[:namespace_id], project_path)
+        File.join(params[:namespace_id], repository_path)
       end
 
       def decoded_authorization

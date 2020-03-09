@@ -2,14 +2,13 @@
 
 require 'spec_helper'
 
-describe 'Projects > Snippets > Create Snippet', :js do
-  include DropzoneHelper
-
-  let(:user) { create(:user) }
-  let(:project) { create(:project, :public) }
+shared_examples_for 'snippet editor' do
+  before do
+    stub_feature_flags(monaco_snippets: flag)
+  end
 
   def description_field
-    find('.js-description-input input,textarea')
+    find('.js-description-input').find('input,textarea')
   end
 
   def fill_form
@@ -20,7 +19,8 @@ describe 'Projects > Snippets > Create Snippet', :js do
     fill_in 'project_snippet_description', with: 'My Snippet **Description**'
 
     page.within('.file-editor') do
-      find('.ace_text-input', visible: false).send_keys('Hello World!')
+      el = flag == true ? find('.inputarea') : find('.ace_text-input', visible: false)
+      el.send_keys 'Hello World!'
     end
   end
 
@@ -33,6 +33,7 @@ describe 'Projects > Snippets > Create Snippet', :js do
       visit project_snippets_path(project)
 
       click_on('New snippet')
+      wait_for_requests
     end
 
     it 'shows collapsible description input' do
@@ -102,12 +103,31 @@ describe 'Projects > Snippets > Create Snippet', :js do
     end
 
     it 'shows a public snippet on the index page but not the New snippet button' do
-      snippet = create(:project_snippet, :public, project: project)
+      snippet = create(:project_snippet, :public, :repository, project: project)
 
       visit project_snippets_path(project)
 
       expect(page).to have_content(snippet.title)
       expect(page).not_to have_content('New snippet')
+    end
+  end
+end
+
+describe 'Projects > Snippets > Create Snippet', :js do
+  include DropzoneHelper
+
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project, :public) }
+
+  context 'when using Monaco' do
+    it_behaves_like "snippet editor" do
+      let(:flag) { true }
+    end
+  end
+
+  context 'when using ACE' do
+    it_behaves_like "snippet editor" do
+      let(:flag) { false }
     end
   end
 end

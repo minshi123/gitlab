@@ -8,7 +8,8 @@ module EE
     def project_analytics_navbar_links(project, current_user)
       super + [
         insights_navbar_link(project, current_user),
-        code_review_analytics_navbar_link(project, current_user)
+        code_review_analytics_navbar_link(project, current_user),
+        project_issues_analytics_navbar_link(project, current_user)
       ].compact
     end
 
@@ -18,11 +19,35 @@ module EE
         contribution_analytics_navbar_link(group, current_user),
         group_insights_navbar_link(group, current_user),
         issues_analytics_navbar_link(group, current_user),
-        productivity_analytics_navbar_link(group, current_user)
+        productivity_analytics_navbar_link(group, current_user),
+        group_cycle_analytics_navbar_link(group, current_user)
       ].compact
     end
 
     private
+
+    def project_issues_analytics_navbar_link(project, current_user)
+      return unless ::Feature.enabled?(:project_level_issues_analytics, project, default_enabled: true)
+      return unless project_nav_tab?(:issues_analytics)
+
+      navbar_sub_item(
+        title: _('Issues'),
+        path: 'issues_analytics#show',
+        link: project_analytics_issues_analytics_path(project)
+      )
+    end
+
+    def group_cycle_analytics_navbar_link(group, current_user)
+      return unless ::Feature.enabled?(:analytics_pages_under_group_analytics_sidebar, group, default_enabled: true)
+      return unless ::Feature.enabled?(:group_level_cycle_analytics)
+      return unless group_sidebar_link?(:cycle_analytics)
+
+      navbar_sub_item(
+        title: _('Value Stream'),
+        path: 'groups/analytics/cycle_analytics#show',
+        link: group_analytics_cycle_analytics_path(group)
+      )
+    end
 
     def productivity_analytics_navbar_link(group, current_user)
       return unless ::Feature.enabled?(:analytics_pages_under_group_analytics_sidebar, group, default_enabled: true)
@@ -30,9 +55,9 @@ module EE
       return unless group_sidebar_link?(:productivity_analytics)
 
       navbar_sub_item(
-        title: _('Productivity Analytics'),
+        title: _('Productivity'),
         path: 'groups/analytics/productivity_analytics#show',
-        link: group_analytics_productivity_analytics_path(@group)
+        link: group_analytics_productivity_analytics_path(group)
       )
     end
 
@@ -41,7 +66,7 @@ module EE
       return unless group_sidebar_link?(:contribution_analytics)
 
       navbar_sub_item(
-        title: _('Contribution Analytics'),
+        title: _('Contribution'),
         path: 'groups/contribution_analytics#show',
         link: group_contribution_analytics_path(group),
         link_to_options: { data: { placement: 'right', qa_selector: 'contribution_analytics_link' } }
@@ -65,7 +90,7 @@ module EE
       return unless group_sidebar_link?(:analytics)
 
       navbar_sub_item(
-        title: _('Issues Analytics'),
+        title: _('Issues'),
         path: 'issues_analytics#show',
         link: group_issues_analytics_path(group)
       )

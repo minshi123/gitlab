@@ -17,6 +17,7 @@ class License < ApplicationRecord
     description_diffs
     elastic_search
     export_issues
+    group_activity_analytics
     group_bulk_edit
     group_burndown_charts
     group_webhooks
@@ -126,6 +127,7 @@ class License < ApplicationRecord
     report_approver_rules
     sast
     security_dashboard
+    status_page
     subepics
     threat_monitoring
     tracing
@@ -281,6 +283,12 @@ class License < ApplicationRecord
 
     def trial_ends_on
       Gitlab::CurrentSettings.license_trial_ends_on
+    end
+
+    def promo_feature_available?(feature)
+      return false unless ::Feature.enabled?(:free_period_for_pull_mirroring, default_enabled: true)
+
+      ANY_PLAN_FEATURES.include?(feature)
     end
   end
 
@@ -476,7 +484,7 @@ class License < ApplicationRecord
   def valid_license
     return if license?
 
-    self.errors.add(:base, "The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.")
+    self.errors.add(:base, _('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'))
   end
 
   def prior_historical_max
@@ -542,6 +550,6 @@ class License < ApplicationRecord
   def not_expired
     return unless self.license? && self.expired?
 
-    self.errors.add(:base, "This license has already expired.")
+    self.errors.add(:base, _('This license has already expired.'))
   end
 end

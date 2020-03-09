@@ -14,6 +14,7 @@ application is using an external (open source) library which is known to be vuln
 
 If you are using [GitLab CI/CD](../../../ci/README.md), you can analyze your dependencies for known
 vulnerabilities using Dependency Scanning.
+All dependencies are scanned, including the transitive dependencies (also known as nested dependencies).
 
 You can take advantage of Dependency Scanning by either [including the CI job](#configuration)
 in your existing `.gitlab-ci.yml` file or by implicitly using
@@ -164,6 +165,8 @@ The following variables are used for configuring specific analyzers (used for a 
 | `BUNDLER_AUDIT_UPDATE_DISABLED`         | `bundler-audit`    | `false`                      | Disable automatic updates for the `bundler-audit` analyzer. Useful if you're running Dependency Scanning in an offline, air-gapped environment.|
 | `BUNDLER_AUDIT_ADVISORY_DB_URL`         | `bundler-audit`    | `https://github.com/rubysec/ruby-advisory-db` | URL of the advisory database used by bundler-audit. |
 | `BUNDLER_AUDIT_ADVISORY_DB_REF_NAME`    | `bundler-audit`    | `master`                     | Git ref for the advisory database specified by `BUNDLER_AUDIT_ADVISORY_DB_URL`. |
+| `RETIREJS_JS_ADVISORY_DB`               | `retire.js`        | `https://raw.githubusercontent.com/RetireJS/retire.js/master/repository/jsrepository.json` | Path or URL to Retire.js js vulnerability data file. |
+| `RETIREJS_NODE_ADVISORY_DB`             | `retire.js`        | `https://raw.githubusercontent.com/RetireJS/retire.js/master/repository/npmrepository.json` | Path or URL to Retire.js node vulnerability data file. |
 
 ### Using private Maven repos
 

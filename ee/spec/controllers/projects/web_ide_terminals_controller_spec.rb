@@ -3,13 +3,13 @@
 require 'spec_helper'
 
 describe Projects::WebIdeTerminalsController do
-  let(:owner) { create(:owner) }
-  let(:admin) { create(:admin) }
-  let(:maintainer) { create(:user) }
-  let(:developer) { create(:user) }
-  let(:reporter) { create(:user) }
-  let(:guest) { create(:user) }
-  let(:project) { create(:project, :private, :repository, namespace: owner.namespace) }
+  let_it_be(:owner) { create(:owner) }
+  let_it_be(:admin) { create(:admin) }
+  let_it_be(:maintainer) { create(:user) }
+  let_it_be(:developer) { create(:user) }
+  let_it_be(:reporter) { create(:user) }
+  let_it_be(:guest) { create(:user) }
+  let_it_be(:project) { create(:project, :private, :repository, namespace: owner.namespace) }
   let(:pipeline) { create(:ci_pipeline, project: project, source: :webide, config_source: :webide_source, user: user) }
   let(:job) { create(:ci_build, pipeline: pipeline, user: user, project: project) }
   let(:user) { maintainer }
@@ -107,8 +107,9 @@ describe Projects::WebIdeTerminalsController do
     let(:result) { { status: :success } }
 
     before do
-      allow_any_instance_of(::Ci::WebIdeConfigService)
-        .to receive(:execute).and_return(result)
+      allow_next_instance_of(::Ci::WebIdeConfigService) do |instance|
+        allow(instance).to receive(:execute).and_return(result)
+      end
 
       post :check_config, params: {
                             namespace_id: project.namespace.to_param,
@@ -145,8 +146,9 @@ describe Projects::WebIdeTerminalsController do
       let(:pipeline) { build.pipeline }
 
       before do
-        allow_any_instance_of(::Ci::CreateWebIdeTerminalService)
-          .to receive(:execute).and_return(status: :success, pipeline: pipeline)
+        allow_next_instance_of(::Ci::CreateWebIdeTerminalService) do |instance|
+          allow(instance).to receive(:execute).and_return(status: :success, pipeline: pipeline)
+        end
 
         subject
       end
@@ -169,8 +171,9 @@ describe Projects::WebIdeTerminalsController do
       let(:user) { admin }
 
       it 'returns 400' do
-        allow_any_instance_of(::Ci::CreateWebIdeTerminalService)
-          .to receive(:execute).and_return(status: :error, message: 'foobar')
+        allow_next_instance_of(::Ci::CreateWebIdeTerminalService) do |instance|
+          allow(instance).to receive(:execute).and_return(status: :error, message: 'foobar')
+        end
 
         subject
 
@@ -203,7 +206,8 @@ describe Projects::WebIdeTerminalsController do
   end
 
   describe 'POST retry' do
-    let(:job) { create(:ci_build, :failed, pipeline: pipeline, user: user, project: project) }
+    let(:status) { :failed }
+    let(:job) { create(:ci_build, status, pipeline: pipeline, user: user, project: project) }
 
     before do
       post(:retry, params: {
@@ -217,10 +221,34 @@ describe Projects::WebIdeTerminalsController do
     it_behaves_like 'when pipeline is not from a webide source'
 
     context 'when job is not retryable' do
-      let!(:job) { create(:ci_build, :running, pipeline: pipeline, user: user) }
+      let(:status) { :running }
 
       it 'returns 422' do
         expect(response).to have_gitlab_http_status(:unprocessable_entity)
+      end
+    end
+
+    context 'when job is cancelled' do
+      let(:status) { :canceled }
+
+      it 'returns 200' do
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    context 'when job fails' do
+      let(:status) { :failed }
+
+      it 'returns 200' do
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    context 'when job is successful' do
+      let(:status) { :success }
+
+      it 'returns 200' do
+        expect(response).to have_gitlab_http_status(:ok)
       end
     end
   end
