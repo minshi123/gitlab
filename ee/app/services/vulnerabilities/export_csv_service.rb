@@ -21,7 +21,7 @@ module Vulnerabilities
     def header_to_value_hash
       {
         'Scanner Type' => 'report_type',
-        'Scanner Name' => -> (finding) { finding.scanner.name },
+        'Scanner Name' => 'scanner_name',
         'Vulnerability' => 'name',
         'Details' => 'description',
         'Additional Info' => -> (finding) { finding.metadata['message'] },
