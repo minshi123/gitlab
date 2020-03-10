@@ -426,6 +426,32 @@ Example response:
 }
 ```
 
+## Create Release Evidence
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/199065) in GitLab 12.9.
+
+Create Evidence for an existing Release.
+
+```plaintext
+POST /projects/:id/releases/:tag_name/evidence
+```
+
+| Attribute     | Type           | Required | Description                                                                         |
+| ------------- | -------------- | -------- | ----------------------------------------------------------------------------------- |
+| `id`          | integer/string | yes      | The ID or [URL-encoded path of the project](../README.md#namespaced-path-encoding). |
+| `tag_name`    | string         | yes      | The tag where the release will be created from.                                     |
+
+Example request:
+
+```shell
+curl --request POST --header "PRIVATE-TOKEN: gDybLx3yrUK_HLp3qPjS" "https://gitlab.example.com/api/v4/projects/24/releases/v0.1/evidence"
+```
+
+Example response:
+
+```json
+```
+
 ## Update a release
 
 Update a Release.
