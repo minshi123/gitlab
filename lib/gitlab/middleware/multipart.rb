@@ -92,7 +92,7 @@ module Gitlab
 
           packages_config = Gitlab.config.packages
           if allow_packages_storage_path?(packages_config)
-            allowed_paths << File.join(packages_config.storage_path, 'tmp/uploads')
+            allowed_paths << ::Packages::PackageFileUploader.workhorse_upload_path
           end
 
           ::UploadedFile.from_params(params, key, allowed_paths)
