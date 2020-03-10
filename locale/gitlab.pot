@@ -13820,6 +13820,9 @@ msgstr ""
 msgid "PackageRegistry|Remove package"
 msgstr ""
 
+msgid "PackageRegistry|There are no %{packageType} packages yet"
+msgstr ""
+
 msgid "PackageRegistry|There are no packages yet"
 msgstr ""
 
