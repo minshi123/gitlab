@@ -36,7 +36,7 @@ If you are using gitlab.com, you can take advantage of our [shared Runner fleet]
 We are investigating making these [available for self-managed instances as well](https://gitlab.com/gitlab-org/customers-gitlab-com/issues/414).
 
 In the end, a Jenkins agent or GitLab Runner is just a host, so to convert one simply uninstall the
-Jenkins agent and install the runner following the [instructions in the Runner documentation](https://docs.gitlab.com/ee/ci/runners/).
+Jenkins agent then install and register the runner following the [instructions in the Runner documentation](https://docs.gitlab.com/ee/ci/runners/).
 The runner itself does not require much overhead so you can size hosts similarly to how you did for
 Jenkins.
 
