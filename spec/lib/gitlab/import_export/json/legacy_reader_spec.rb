@@ -29,7 +29,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
 
     subject { legacy_reader.root_attributes(excluded_attributes) }
 
-    it 'returns hash exclude excluded_attributes' do
+    it 'returns hash without excluded attributes' do
       expect(subject).to eq({
         "description" => "Nisi et repellendus ut enim quo accusamus vel magnam.",
         "import_type" => "gitlab_project",
