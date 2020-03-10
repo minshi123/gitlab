@@ -24,32 +24,31 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
   end
 
   describe '#root_attributes' do
-    let(:excluded_attributes) { %w[milestones labels issues services snippets] }
     let(:path) { fixture }
 
     subject { legacy_reader.root_attributes(excluded_attributes) }
 
-    it 'returns hash without excluded attributes' do
-      expect(subject).to eq({
-        "description" => "Nisi et repellendus ut enim quo accusamus vel magnam.",
-        "import_type" => "gitlab_project",
-        "creator_id" => 123,
-        "visibility_level" => 10,
-        "archived" => false,
-        "hooks" => []
-      })
+    context 'No excluded or consumed relations' do
+      let(:excluded_attributes) { [] }
+
+      it 'returns the whole tree from parsed JSON' do
+        expect(subject).to eq(project_tree)
+      end
     end
 
-    it 'returns hash without excluded attributes and consumed relations' do
-      legacy_reader.consume_relation('import_type')
-      legacy_reader.consume_relation('archived')
+    context 'Some attributes are excluded' do
+      let(:excluded_attributes) { %w[milestones labels issues services snippets] }
 
-      expect(subject).to eq({
-        "description" => "Nisi et repellendus ut enim quo accusamus vel magnam.",
-        "creator_id" => 123,
-        "visibility_level" => 10,
-        "hooks" => []
-      })
+      it 'returns hash without excluded attributes' do
+        expect(subject).not_to include('milestones', 'labels', 'issues', 'services', 'snippets')
+      end
+
+      it 'returns hash without excluded attributes and consumed relations' do
+        legacy_reader.consume_relation('import_type')
+        legacy_reader.consume_relation('archived')
+
+        expect(subject).not_to include('milestones', 'labels', 'issues', 'services', 'snippets', 'import_type', 'archived')
+      end
     end
   end
 
@@ -86,7 +85,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
         expect(legacy_reader).to receive(:tree_hash).and_return({ key => 'value' })
       end
 
-      it 'yield the value with 0 index' do
+      it 'yield the value with index 0' do
         expect do |blk|
           legacy_reader.consume_relation(key, &blk)
         end.to yield_with_args('value', 0)
