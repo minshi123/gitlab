@@ -13,6 +13,22 @@ describe Gitlab::Checks::PushSingleFileCheck do
   describe '#validate!' do
     using RSpec::Parameterized::TableSyntax
 
+    before do
+      allow(snippet.repository).to receive(:new_commits).and_return(
+        snippet.repository.commits_between(oldrev, newrev)
+      )
+    end
+
+    context 'initial creation' do
+      let(:oldrev) { '4b825dc642cb6eb9a060e54bf8d69288fbee4904' }
+      let(:newrev) { TestEnv::BRANCH_SHA["snippet/single-file"] }
+      let(:ref) { "refs/heads/snippet/single-file" }
+
+      it 'allows creation' do
+        expect { subject.validate! }.not_to raise_error
+      end
+    end
+
     where(:old, :new, :valid) do
       'single-file' | 'edit-file'            | true
       'single-file' | 'multiple-files'       | false
@@ -24,12 +40,6 @@ describe Gitlab::Checks::PushSingleFileCheck do
       let(:oldrev) { TestEnv::BRANCH_SHA["snippet/#{old}"] }
       let(:newrev) { TestEnv::BRANCH_SHA["snippet/#{new}"] }
       let(:ref) { "refs/heads/snippet/#{new}" }
-
-      before do
-        allow(snippet.repository).to receive(:new_commits).and_return(
-          snippet.repository.commits_between(oldrev, newrev)
-        )
-      end
 
       it "verifies" do
         if valid

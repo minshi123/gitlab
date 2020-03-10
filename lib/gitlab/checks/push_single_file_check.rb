@@ -3,19 +3,16 @@
 module Gitlab
   module Checks
     class PushSingleFileCheck < BaseChecker
-      include Gitlab::Utils::StrongMemoize
-
-      attr_reader :oldrev, :newrev, :ref, :commits, :logger
+      attr_reader :commits, :logger
 
       LOG_MESSAGES = {
         diff_content_check: "Validating diff contents being single file..."
       }.freeze
 
-      ERROR = "Creating/deleting file on snippet repositories are prohibited."
+      ERROR = "Creating/deleting files on snippet repositories is prohibited"
 
       def initialize(change, repository:, logger:)
-        @oldrev, @newrev, @ref = change.values_at(:oldrev, :newrev, :ref)
-        @commits = repository.new_commits(newrev)
+        @commits = repository.new_commits(change[:newrev])
         @logger = logger
       end
 
@@ -53,7 +50,11 @@ module Gitlab
         case raw_deltas.size
         when 1
           delta = raw_deltas.first
-          raise_error if delta.new_file? || delta.deleted_file?
+          if delta.deleted_file?
+            raise_error
+          elsif delta.new_file? && commit.repository.ls_files(commit.sha).size != 1 # allow creating file from empty repo
+            raise_error
+          end
         when 2
           # Rename may be recognized as creation + deletion if content change is too significant.
           delta1 = raw_deltas.first
