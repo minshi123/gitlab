@@ -99,7 +99,7 @@ module Metrics
       end
 
       def create_merge_request
-        merge_request_params = { source_branch: project.default_branch, target_branch: branch } if branch != project.default_branch
+        merge_request_params = { source_branch: branch, target_branch: project.default_branch }
         ::MergeRequests::CreateService.new(project, current_user, merge_request_params).execute
       end
     end
