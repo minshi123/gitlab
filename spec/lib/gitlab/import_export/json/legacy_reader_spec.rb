@@ -40,7 +40,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
       })
     end
 
-    it 'returns hash exclude excluded_attributes and consumed_relations' do
+    it 'returns hash without excluded attributes and consumed relations' do
       legacy_reader.consume_relation('import_type')
       legacy_reader.consume_relation('archived')
 
