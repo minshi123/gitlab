@@ -1,8 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlLoadingIcon } from '@gitlab/ui';
 
 import { FIXTURES_PATH } from 'spec/test_constants';
 import component from '~/blob/pdf/pdf_viewer.vue';
-import pdfLab from '~/pdf/index.vue';
+import PdfLab from '~/pdf/index.vue';
 
 const testPDF = `${FIXTURES_PATH}/blob/pdf/test.pdf`;
 
@@ -17,8 +18,8 @@ describe('PDF renderer', () => {
     });
   };
 
-  const findLoading = () => wrapper.find('.loading');
-  const findPdfLab = () => wrapper.find(pdfLab);
+  const findLoading = () => wrapper.find(GlLoadingIcon);
+  const findPdfLab = () => wrapper.find(PdfLab);
   const findLoadError = () => wrapper.find({ ref: 'loadError' });
 
   beforeEach(() => {

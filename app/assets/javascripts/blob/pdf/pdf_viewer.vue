@@ -1,10 +1,10 @@
 <script>
-import pdfLab from '../../pdf/index.vue';
+import PdfLab from '../../pdf/index.vue';
 import { GlLoadingIcon } from '@gitlab/ui';
 
 export default {
   components: {
-    pdfLab,
+    PdfLab,
     GlLoadingIcon,
   },
   props: {
