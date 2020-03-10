@@ -1,4 +1,4 @@
-import { xxx } from 'lodash';
+import { uniq } from 'lodash';
 import { TEST_HOST } from 'helpers/test_constants';
 import { getJSONFixture } from 'helpers/fixtures';
 import mutations from 'ee/analytics/cycle_analytics/store/mutations';
