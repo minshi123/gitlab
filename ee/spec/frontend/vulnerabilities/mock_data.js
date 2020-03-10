@@ -13,3 +13,5 @@ export const vulnerabilities = [
     state: 'opened',
   },
 ];
+
+export const generateVulnerabilities = () => vulnerabilities;

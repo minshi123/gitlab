@@ -16230,6 +16230,9 @@ msgstr ""
 msgid "Release|Something went wrong while saving the release details"
 msgstr ""
 
+msgid "Remediated: Needs review"
+msgstr ""
+
 msgid "Remember me"
 msgstr ""
 
