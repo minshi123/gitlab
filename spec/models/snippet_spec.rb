@@ -30,7 +30,7 @@ describe Snippet do
 
     it { is_expected.to validate_length_of(:file_name).is_at_most(255) }
 
-    it { is_expected.to validate_presence_of(:content) }
+    it { is_expected.to_not validate_presence_of(:content) }
 
     it { is_expected.to validate_inclusion_of(:visibility_level).in_array(Gitlab::VisibilityLevel.values) }
 

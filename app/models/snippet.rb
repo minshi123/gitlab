@@ -50,7 +50,6 @@ class Snippet < ApplicationRecord
   validates :file_name,
     length: { maximum: 255 }
 
-  validates :content, presence: true
   validates :content,
             length: {
               maximum: ->(_) { Gitlab::CurrentSettings.snippet_size_limit },
