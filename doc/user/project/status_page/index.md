@@ -21,7 +21,8 @@ At this time only AWS S3 is supported as a deploy target.
 The incident detail page shows detailed information about a particular incident, including:
 
 - Status on the incident including when the incident was last updated
-- The description of the incident, including any images that may have been included
+- Incident title
+- The description of the incident
 - A chronological ordered list of updates to the incident
 
 ![Status Page detail](../img/status_page_detail.png)
@@ -30,7 +31,7 @@ The incident detail page shows detailed information about a particular incident,
 
 ### Publishing Incidents
 
-To publish an Incident, you first need to create an Issue in the Project you enabled  the Status Page settings in.
+To publish an Incident, you first need to create an Issue in the Project you enabled the Status Page settings in.
 
 Once this Issue is created, a background worker will publish the issue onto the status page using the credentials you provided during set-up.
 
@@ -42,7 +43,7 @@ To publish an update to the Incident, simply update the incident Issue's descrip
 
 To add comments to the Status Page Incident, you simply create a comment on the incident Issue.
 
-When you're ready to publish the comment, add a microphone emoji (`:microphone` 🎤) [award emoji](../../../user/award_emojis.md) to the comment. This marks the comment as which should be deployed to the Status Page.
+When you're ready to publish the comment, add a microphone emoji reaction (`:microphone` 🎤) [award emoji](../../../user/award_emojis.md) to the comment. This marks the comment as one which should be deployed to the Status Page.
 
 CAUTION: **Caution:**
 Anyone with access to view the Issue can add an Emoji Award to a comment, so you may want to keep your Issues limited to team members only.
