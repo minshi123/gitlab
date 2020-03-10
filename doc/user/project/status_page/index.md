@@ -44,6 +44,9 @@ To add comments to the Status Page Incident, you simply create a comment on the 
 
 When you're ready to publish the comment, add a microphone emoji (`:microphone` 🎤) [award emoji](../../../user/award_emojis.md) to the comment. This marks the comment as which should be deployed to the Status Page.
 
+CAUTION: **Caution:**
+Anyone with access to view the Issue can add an Emoji Award to a comment, so you may want to keep your Issues limited to team members only.
+
 ### Changing the Incident status
 
 To change the incident status from `open` to `closed`, you can simply close the incident Issue within GitLab. This will then be updated shortly on the Status page website.
