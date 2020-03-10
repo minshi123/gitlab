@@ -11,6 +11,9 @@ class SearchService
   SEARCH_TERM_LIMIT = 64
   SEARCH_CHAR_LIMIT = 4096
 
+  DEFAULT_PER_PAGE = 20
+  MAX_PER_PAGE = 200
+
   def initialize(current_user, params = {})
     @current_user = current_user
     @params = params.dup
@@ -65,7 +68,7 @@ class SearchService
   end
 
   def search_objects
-    @search_objects ||= redact_unauthorized_results(search_results.objects(scope, params[:page]))
+    @search_objects ||= redact_unauthorized_results(search_results.objects(scope, params[:page], per_page))
   end
 
   def redactable_results
@@ -73,6 +76,14 @@ class SearchService
   end
 
   private
+
+  def per_page
+    per_page_param = params[:per_page].to_i
+
+    return DEFAULT_PER_PAGE unless per_page_param.positive?
+
+    [MAX_PER_PAGE, per_page_param].min
+  end
 
   def visible_result?(object)
     return true unless object.respond_to?(:to_ability_name) && DeclarativePolicy.has_policy?(object)
