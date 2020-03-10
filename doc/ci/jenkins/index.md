@@ -62,6 +62,19 @@ There are some high level differences between the products worth mentioning:
   container images to set up your build environment.
 - Totally stuck and not sure where to turn for advice? The [GitLab community forum](https://forum.gitlab.com/) can be a great resource.
 
+## Agents vs. Runners
+
+In the end, a Jenkins agent or GitLab Runner is just a host, so to convert one simply uninstall the
+Jenkins agent and install the runner following the [instructions in the Runner documentation](https://docs.gitlab.com/ee/ci/runners/).
+The runner itself does not require much overhead so you can size hosts similarly to how you did for
+Jenkins.
+
+There are some important differences in the way agents work vs. Runners to be aware of, though:
+
+- Runners can be set up as [shared across an instance, be added at the group level, or set up at the project level](https://docs.gitlab.com/ee/ci/runners/#shared-specific-and-group-runners). They will self-select jobs from the scope you've given it automatically.
+- You can also [use tags](https://docs.gitlab.com/ee/ci/runners/#using-tags) for finer control and associate runners with specific jobs. For example, for a step that requires dedicated, more powerful, and/or specific hardware.
+- GitLab has [autoscaling for Runners](https://docs.gitlab.com/runner/configuration/autoscale.html) which will let you set things up so they are provisioned as needed, and scaled down when not, similar to Jenkins' ephemeral agents.
+
 ## Groovy vs. YAML
 
 Jenkins Pipelines are based on [Groovy](https://groovy-lang.org/), so the pipeline specification is written as code.
