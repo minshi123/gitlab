@@ -114,6 +114,23 @@ describe API::Geo do
           expect(response.headers['X-Sendfile']).to eq(note.attachment.path)
         end
       end
+
+      context 'with attachment on a legacy diff note' do
+        it 'responds with 200 with X-Sendfile' do
+          legacy_diff_note = create(:legacy_diff_note_on_commit, :with_attachment)
+          upload = Upload.find_by(model: legacy_diff_note, uploader: 'AttachmentUploader')
+          transfer = Gitlab::Geo::Replication::FileTransfer.new(:attachment, upload)
+          req_header = Gitlab::Geo::TransferRequest.new(transfer.request_data).headers
+
+          binding.pry
+
+          get api("/geo/transfers/attachment/#{upload.id}"), headers: req_header
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response.headers['Content-Type']).to eq('application/octet-stream')
+          expect(response.headers['X-Sendfile']).to eq(legacy_diff_note.attachment.path)
+        end
+      end
     end
 
     describe 'GET /geo/transfers/avatar/1' do
