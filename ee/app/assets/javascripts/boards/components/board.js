@@ -4,6 +4,7 @@ import { GlTooltip } from '@gitlab/ui';
 import Board from '~/boards/components/board';
 import { __, sprintf, s__ } from '~/locale';
 import boardsStore from '~/boards/stores/boards_store';
+import eventHub from '~/sidebar/event_hub';
 
 export default Board.extend({
   data() {
@@ -42,6 +43,7 @@ export default Board.extend({
   methods: {
     ...mapActions(['setActiveListId']),
     openSidebarSettings() {
+      eventHub.$emit('sidebar.closeAll', { omit: 'BoardSettingsSidebar' });
       this.setActiveListId(this.list.id);
     },
   },

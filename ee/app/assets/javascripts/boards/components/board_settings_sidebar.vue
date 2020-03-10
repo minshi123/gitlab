@@ -12,6 +12,7 @@ import { mapActions, mapState } from 'vuex';
 import { __, n__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import boardsStoreEE from '../stores/boards_store_ee';
+import eventHub from '~/sidebar/event_hub';
 import flash from '~/flash';
 
 // NOTE: need to revisit how we handle headerHeight, because we have so many different header and footer options.
@@ -29,6 +30,7 @@ export default {
   wipLimitText: __('Work in progress Limit'),
   removeLimitText: __('Remove limit'),
   inputPlaceholderText: __('Enter number of issues'),
+  name: 'BoardSettingsSidebar',
   components: {
     GlDrawer,
     GlLabel,
@@ -46,6 +48,7 @@ export default {
       edit: false,
       currentWipLimit: null,
       updating: false,
+      sidebarName: 'BoardSettingsSidebar',
     };
   },
   computed: {
@@ -97,6 +100,16 @@ export default {
         }
       }
     },
+  },
+  created() {
+    eventHub.$on('sidebar.closeAll', (event) => {
+      if (event?.omit !== this.sidebarName) {
+        this.closeSidebar();
+      }
+    });
+  },
+  beforeDestroy() {
+    eventHub.$off('sidebar.closeAll');
   },
   methods: {
     ...mapActions(['setActiveListId', 'updateListWipLimit']),
