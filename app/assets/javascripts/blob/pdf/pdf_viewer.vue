@@ -40,9 +40,9 @@ export default {
     </div>
     <pdf-lab v-if="!loadError" :pdf="pdf" @pdflabload="onLoad" @pdflaberror="onError" />
     <p v-if="error" class="text-center">
-      <span v-if="loadError">{{
-        __('An error occurred while loading the file. Please try again later.')
-      }}</span>
+      <span v-if="loadError" ref="loadError">
+        {{ __('An error occurred while loading the file. Please try again later.') }}
+      </span>
       <span v-else>{{ __('An error occurred while decoding the file.') }}</span>
     </p>
   </div>
