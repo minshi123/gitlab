@@ -1,5 +1,7 @@
+import { shallowMount } from '@vue/test-utils';
+
 import { FIXTURES_PATH } from 'spec/test_constants';
-import renderPDF from '~/blob/pdf';
+import component from '~/blob/pdf/pdf_viewer.vue';
 
 const testPDF = `${FIXTURES_PATH}/blob/pdf/test.pdf`;
 
