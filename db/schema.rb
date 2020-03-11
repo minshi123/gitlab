@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_09_195710) do
+ActiveRecord::Schema.define(version: 2020_03_11_110649) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3942,6 +3942,7 @@ ActiveRecord::Schema.define(version: 2020_03_09_195710) do
     t.boolean "template", default: false
     t.index ["project_id"], name: "index_services_on_project_id"
     t.index ["template"], name: "index_services_on_template"
+    t.index ["type", "active", "id"], name: "index_services_on_type_and_active_and_id"
     t.index ["type", "template"], name: "index_services_on_type_and_template", unique: true, where: "(template IS TRUE)"
     t.index ["type"], name: "index_services_on_type"
   end
