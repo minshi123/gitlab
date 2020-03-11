@@ -8,6 +8,7 @@ module EE
 
         prepended do
           helpers do
+            include ::Gitlab::Utils::StrongMemoize
             extend ::Gitlab::Utils::Override
 
             override :lfs_authentication_url
@@ -17,22 +18,57 @@ module EE
 
             override :ee_post_receive_response_hook
             def ee_post_receive_response_hook(response)
-              response.add_basic_message(geo_secondary_lag_message) if ::Gitlab::Geo.primary?
+              response.add_basic_message(geo_not_yet_replicated_message) if display_geo_not_yet_replicated_message?
+              response.add_basic_message(geo_secondary_lag_message) if geo_display_secondary_lag_message?
+            end
+
+            def geo_display_secondary_lag_message?
+              ::Gitlab::Geo.primary? && geo_current_replication_lag.to_i > 0
             end
 
             def geo_secondary_lag_message
-              lag = current_replication_lag
-              return if lag.to_i <= 0
-
-              "Current replication lag: #{lag} seconds"
+              "Current replication lag: #{geo_current_replication_lag} seconds"
             end
 
-            def current_replication_lag
-              fetch_geo_node_referrer&.status&.db_replication_lag_seconds
+            def display_geo_not_yet_replicated_message?
+              # FIXME:
+              true
             end
 
-            def fetch_geo_node_referrer
-              ::Gitlab::Geo::GitPushHttp.new(params[:identifier], params[:gl_repository]).fetch_referrer_node
+            def geo_not_yet_replicated_message
+              project_path = project.full_path
+              geo_project_secondary_url = "#{geo_referred_node.url.chomp('/')}/#{project_path}"
+              geo_project_primary_url = "#{geo_current_node.url.chomp('/')}/#{project_path}"
+
+              <<~EOS
+              You attempted to access:
+
+              #{geo_project_secondary_url}
+
+              but this project is currently not yet replicated. You are being redirected to
+              the primary:
+
+              #{geo_project_primary_url}
+
+              Please contact your systems administrator to ensure all relevant projects are
+              replicated to your closest Geo secondary.
+              EOS
+            end
+
+            def geo_current_node
+              ::Gitlab::Geo.current_node
+            end
+
+            def geo_current_replication_lag
+              strong_memoize(:geo_current_replication_lag) do
+                geo_referred_node&.status&.db_replication_lag_seconds
+              end
+            end
+
+            def geo_referred_node
+              strong_memoize(:geo_referred_node) do
+                ::Gitlab::Geo::GitPushHttp.new(params[:identifier], params[:gl_repository]).fetch_referrer_node
+              end
             end
 
             override :check_allowed
