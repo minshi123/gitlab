@@ -119,7 +119,7 @@ describe Gitlab::ImportExport::Group::TreeRestorer do
         allow(shared).to receive(:export_path).and_call_original
 
         expect(group_tree_restorer.restore).to eq(false)
-        expect(shared.errors).to include('missing relation reader for [FILTERED]')
+        expect(shared.errors).to include('Incorrect JSON format')
       end
     end
   end
