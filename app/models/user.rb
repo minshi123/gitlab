@@ -59,7 +59,6 @@ class User < ApplicationRecord
 
   MINIMUM_INACTIVE_DAYS = 180
 
-  enum bot_type: ::UserBotTypeEnums.bots
   enum user_type: ::UserTypeEnums.types
 
   # Override Devise::Models::Trackable#update_tracked_fields!
@@ -336,8 +335,8 @@ class User < ApplicationRecord
   scope :with_emails, -> { preload(:emails) }
   scope :with_dashboard, -> (dashboard) { where(dashboard: dashboard) }
   scope :with_public_profile, -> { where(private_profile: false) }
-  scope :bots, -> { where.not(bot_type: nil) }
-  scope :humans, -> { where(user_type: nil, bot_type: nil) }
+  scope :bots, -> { where(user_type: UserTypeEnums.bots.values) }
+  scope :humans, -> { where(user_type: nil) }
 
   scope :with_expiring_and_not_notified_personal_access_tokens, ->(at) do
     where('EXISTS (?)',
@@ -617,7 +616,7 @@ class User < ApplicationRecord
     def alert_bot
       email_pattern = "alert%s@#{Settings.gitlab.host}"
 
-      unique_internal(where(bot_type: :alert_bot), 'alert-bot', email_pattern) do |u|
+      unique_internal(where(user_type: :AlertBot), 'alert-bot', email_pattern) do |u|
         u.bio = 'The GitLab alert bot'
         u.name = 'GitLab Alert Bot'
       end
@@ -639,7 +638,7 @@ class User < ApplicationRecord
   end
 
   def bot?
-    bot_type.present?
+    UserTypeEnums.bots.has_key?(user_type)
   end
 
   def internal?

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_09_195710) do
+ActiveRecord::Schema.define(version: 2020_03_11_082301) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -4390,7 +4390,7 @@ ActiveRecord::Schema.define(version: 2020_03_09_195710) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["state"], name: "index_users_on_state"
     t.index ["state"], name: "index_users_on_state_and_internal", where: "(ghost IS NOT TRUE)"
-    t.index ["state"], name: "index_users_on_state_and_internal_ee", where: "((ghost IS NOT TRUE) AND (bot_type IS NULL))"
+    t.index ["state"], name: "index_users_on_state_and_internal_ee", where: "((ghost IS NOT TRUE) AND (user_type IS NULL))"
     t.index ["static_object_token"], name: "index_users_on_static_object_token", unique: true
     t.index ["unconfirmed_email"], name: "index_users_on_unconfirmed_email", where: "(unconfirmed_email IS NOT NULL)"
     t.index ["user_type"], name: "index_users_on_user_type"
