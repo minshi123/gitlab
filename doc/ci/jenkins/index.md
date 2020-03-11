@@ -31,6 +31,7 @@ There are some high level differences between the products worth mentioning:
   container images to set up your build environment.
 
 ## Agents vs. Runners
+
 If you are using `gitlab.com`, you can take advantage of our [shared Runner fleet](https://docs.gitlab.com/ee/user/gitlab_com/#shared-runners).
 We are investigating making these [available for self-managed instances as well](https://gitlab.com/gitlab-org/customers-gitlab-com/issues/414).
 
