@@ -109,13 +109,12 @@ module API
         post do
           authorize_upload!(authorized_user_project)
 
-          # file_params = params.merge(
-          #   file: uploaded_package_file(:content),
-          #   file_name: params[:name],
-          #   sha256: params[:sha256_digest],
-          #   version: params[:version],
-          #   requires_python: params[:requires_python]
-          # )
+          # version: params[:version],
+          # requires_python: params[:requires_python]
+
+          ::Packages::Pypi::CreatePackageService
+            .new(authorized_user_project, current_user, params)
+            .execute
 
           created!
         rescue ObjectStorage::RemoteStoreError => e
