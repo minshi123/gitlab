@@ -13,7 +13,7 @@ export default {
     popoverId: uniqueId('remediated_badge_'),
   }),
   strings: {
-    badgeContent: __('Remediated: Needs review'),
+    badgeContent: __('Remediated: needs review'),
     popoverTitle: __('Vulnerability remediated. Review before resolving.'),
     popoverContent: __(
       'The vulnerability is no longer detected. Verify the vulnerability has been fixed or removed before changing its status.',
