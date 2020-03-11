@@ -14,7 +14,8 @@ module Metrics
 
           result = ::Files::UpdateService.new(project, current_user, dashboard_attrs).execute
 
-          create_merge_request if new_branch?
+          create_merge_request if project.default_branch != params[:branch]
+          # need merge request path returned
 
           throw(:error, result.merge(http_status: :bad_request)) unless result[:status] == :success
 
@@ -94,12 +95,8 @@ module Metrics
         @repository ||= project.repository
       end
 
-      def new_branch?
-        !repository.branch_exists?(params[:branch])
-      end
-
       def create_merge_request
-        merge_request_params = { source_branch: branch, target_branch: project.default_branch }
+        merge_request_params = { source_branch: branch, target_branch: project.default_branch, title: params[:commit_message] }
         ::MergeRequests::CreateService.new(project, current_user, merge_request_params).execute
       end
     end
