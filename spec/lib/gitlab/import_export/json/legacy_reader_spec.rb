@@ -113,5 +113,13 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
     it 'parses the JSON into the expected tree' do
       expect(subject).to eq(project_tree)
     end
+
+    context 'invalid JSON' do
+      let(:path) { 'spec/fixtures/lib/gitlab/import_export/invalid_json/project.json' }
+
+      it 'raise Exception' do
+        expect { subject }.to raise_exception(Gitlab::ImportExport::Error, 'Incorrect JSON format')
+      end
+    end
   end
 end
