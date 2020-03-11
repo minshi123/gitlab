@@ -23,20 +23,10 @@ module Gitlab
           @relation_reader = @relation_readers.find(&:valid?)
           raise "missing relation reader for #{@path}" unless @relation_reader
 
-          @group_members = []
-
-          @relation_reader.consume_relation('members') do |member|
-            @group_members << member
-          end
-
-          @children = []
-
-          @relation_reader.consume_relation('children') do |child|
-            @children << child
-          end
-
-          @relation_reader.consume_relation('name')
-          @relation_reader.consume_relation('path')
+          @group_members = delete_relation('members')
+          @children = delete_relation('children')
+          delete_relation('name')
+          delete_relation('path')
 
           if members_mapper.map && restorer.restore
             @children&.each do |group_hash|
@@ -115,6 +105,10 @@ module Gitlab
               config: Gitlab::ImportExport.group_config_file
             ).to_h
           )
+        end
+
+        def delete_relation(key)
+          @relation_reader.to_enum(:consume_relation, key).to_a.map(&:first)
         end
       end
     end
