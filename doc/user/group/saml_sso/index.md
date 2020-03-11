@@ -76,6 +76,7 @@ When this option is enabled:
 
 - All existing and new users in the group will be required to log in via the SSO URL associated with the group.
 - After the group-managed account has been created, group activity will require the use of this user account.
+- Users can't share a project in the group outside the top-level group (also applies to forked projects).
 
 Upon successful authentication, GitLab prompts the user with options, based on the email address received from the configured identity provider:
 
@@ -112,8 +113,12 @@ a subgroup of the same root group only.
 ##### Other restrictions for Group-managed accounts
 
 > [Introduced in GitLab 12.9](https://gitlab.com/gitlab-org/gitlab/issues/12420)
+Projects within groups with enabled group-managed accounts are not to be shared with:
 
-Projects within groups with enabled group-managed accounts are not to be shared with groups outside of parent group or with members who are not users managed by this group. The same restriction concers projects forked from or to those groups.
+- Groups outside of the parent group
+- Members who are not users managed by this group
+
+This restriction also applies to projects forked from or to those groups.
 
 #### Assertions
 
