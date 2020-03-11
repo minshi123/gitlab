@@ -6,7 +6,6 @@ module Banzai
     # a given link format. To transform references to DB
     # resources in place, prefer to inherit from AbstractReferenceFilter.
     class InlineEmbedsFilter < HTML::Pipeline::Filter
-      include Gitlab::Utils::StrongMemoize
       # Find every relevant link, create a new node based on
       # the link, and insert this node after any html content
       # surrounding the link.
