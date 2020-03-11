@@ -16,7 +16,7 @@
 build-qa-image:
   extends:
     - .review-docker
-    - .review:rules:mr-and-schedule
+    - .review:rules:mr-and-schedule-auto
   stage: prepare
   script:
     - '[[ ! -d "ee/" ]] || export GITLAB_EDITION="ee"'
@@ -48,7 +48,7 @@ review-build-cng:
   extends:
     - .default-tags
     - .default-retry
-    - .review:rules:mr-and-schedule
+    - .review:rules:mr-and-schedule-auto
   image: ruby:2.6-alpine
   stage: review-prepare
   before_script:
@@ -80,7 +80,7 @@ review-build-cng:
 review-deploy:
   extends:
     - .review-workflow-base
-    - .review:rules:mr-and-schedule
+    - .review:rules:mr-and-schedule-changes-dependent
   stage: review
   needs:
     - job: review-build-cng
@@ -176,7 +176,7 @@ review-stop:
 review-qa-smoke:
   extends:
     - .review-qa-base
-    - .review:rules:mr-only-auto
+    - .review:rules:mr-only-changes-dependent
   script:
     - gitlab-qa Test::Instance::Smoke "${QA_IMAGE}" "${CI_ENVIRONMENT_URL}"
 
@@ -193,7 +193,7 @@ review-qa-all:
 review-performance:
   extends:
     - .review-docker
-    - .review:rules:mr-and-schedule
+    - .review:rules:mr-and-schedule-changes-dependent
   stage: qa
   needs:
     - job: review-deploy

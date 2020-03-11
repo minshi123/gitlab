@@ -65,16 +65,22 @@
   - "{,ee/}spec/**/*"
   - "doc/README.md"  # Some RSpec test rely on this file
 
+.frontend-patterns: &frontend-patterns
+  - "{babel.config,jest.config}.js"
+  - ".csscomb.json"
+  - "Dockerfile.assets"
+  - "{,ee/}{app/assets,app/helpers,app/presenters,app/uploaders,app/validators,app/views,bin,config,haml_lint,lib,locale,public,symbol}/**/*"
+
 .code-patterns: &code-patterns
   - ".gitlab/ci/**/*"
   - ".{eslintignore,gitattributes,nvmrc,prettierrc,stylelintrc,yamllint}"
   - ".{codeclimate,eslintrc,gitlab-ci,haml-lint,haml-lint_todo,rubocop,rubocop_todo,scss-lint}.yml"
+  - "{babel.config,jest.config}.js"
   - ".csscomb.json"
   - "Dockerfile.assets"
   - "*_VERSION"
   - "Gemfile{,.lock}"
   - "Rakefile"
-  - "{babel.config,jest.config}.js"
   - "config.ru"
   - "{package.json,yarn.lock}"
   - "{,ee/}{app,bin,config,db,haml_lint,lib,locale,public,scripts,symbol,vendor}/**/*"
@@ -88,12 +94,12 @@
   - ".gitlab/ci/**/*"
   - ".{eslintignore,gitattributes,nvmrc,prettierrc,stylelintrc,yamllint}"
   - ".{codeclimate,eslintrc,gitlab-ci,haml-lint,haml-lint_todo,rubocop,rubocop_todo,scss-lint}.yml"
+  - "{babel.config,jest.config}.js"
   - ".csscomb.json"
   - "Dockerfile.assets"
   - "*_VERSION"
   - "Gemfile{,.lock}"
   - "Rakefile"
-  - "{babel.config,jest.config}.js"
   - "config.ru"
   - "{package.json,yarn.lock}"
   - "{,ee/}{app,bin,config,db,haml_lint,lib,locale,public,scripts,symbol,vendor}/**/*"
@@ -110,12 +116,12 @@
   - ".gitlab/ci/**/*"
   - ".{eslintignore,gitattributes,nvmrc,prettierrc,stylelintrc,yamllint}"
   - ".{codeclimate,eslintrc,gitlab-ci,haml-lint,haml-lint_todo,rubocop,rubocop_todo,scss-lint}.yml"
+  - "{babel.config,jest.config}.js"
   - ".csscomb.json"
   - "Dockerfile.assets"
   - "*_VERSION"
   - "Gemfile{,.lock}"
   - "Rakefile"
-  - "{babel.config,jest.config}.js"
   - "config.ru"
   - "{package.json,yarn.lock}"
   - "{,ee/}{app,bin,config,db,haml_lint,lib,locale,public,scripts,symbol,vendor}/**/*"
@@ -128,12 +134,12 @@
   - ".gitlab/ci/**/*"
   - ".{eslintignore,gitattributes,nvmrc,prettierrc,stylelintrc,yamllint}"
   - ".{codeclimate,eslintrc,gitlab-ci,haml-lint,haml-lint_todo,rubocop,rubocop_todo,scss-lint}.yml"
+  - "{babel.config,jest.config}.js"
   - ".csscomb.json"
   - "Dockerfile.assets"
   - "*_VERSION"
   - "Gemfile{,.lock}"
   - "Rakefile"
-  - "{babel.config,jest.config}.js"
   - "config.ru"
   - "{package.json,yarn.lock}"
   - "{,ee/}{app,bin,config,db,haml_lint,lib,locale,public,scripts,symbol,vendor}/**/*"
@@ -420,11 +426,22 @@
 ################
 # Review rules #
 ################
-.review:rules:mr-and-schedule:
+.review:rules:mr-and-schedule-auto:
   rules:
     - <<: *if-dot-com-gitlab-org-merge-request
       changes: *code-qa-patterns
       when: on_success
+    - <<: *if-dot-com-gitlab-org-schedule
+      when: on_success
+
+.review:rules:mr-and-schedule-changes-dependent:
+  rules:
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *frontend-patterns
+      when: on_success
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *code-qa-patterns
+      when: manual
     - <<: *if-dot-com-gitlab-org-schedule
       when: on_success
 
@@ -433,6 +450,15 @@
     - <<: *if-dot-com-gitlab-org-merge-request
       changes: *code-qa-patterns
       when: on_success
+
+.review:rules:mr-only-changes-dependent:
+  rules:
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *frontend-patterns
+      when: on_success
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *code-qa-patterns
+      when: manual
 
 .review:rules:mr-only-manual:
   rules:
