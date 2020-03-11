@@ -59,6 +59,9 @@ module Gitlab
 
         def read_hash
           ActiveSupport::JSON.decode(IO.read(@path))
+        rescue => e
+          Rails.logger.error("Import/Export error: #{e.message}") # rubocop:disable Gitlab/RailsLogger
+          raise Gitlab::ImportExport::Error.new('Incorrect JSON format')
         end
       end
     end
