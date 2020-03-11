@@ -74,9 +74,7 @@ module Banzai
       # Ex) 'https://<root>/<project>/<environment>/metrics?title=Title&group=Group'
       #       --> { title: 'Title', group: 'Group' }
       def query_params(url)
-        strong_memoize(:query_params) do
-          Gitlab::Metrics::Dashboard::Url.parse_query(url)
-        end
+        Gitlab::Metrics::Dashboard::Url.parse_query(url)
       end
 
       # Implement in child class.
