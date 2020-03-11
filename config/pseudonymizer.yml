@@ -469,7 +469,7 @@ tables:
     - ghost
     - last_activity_on
     - notified_of_own_activity
-    - bot_type
+    - user_type
     - preferred_language
     - theme_id
 
