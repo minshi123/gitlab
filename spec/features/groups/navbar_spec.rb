@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 describe 'Group navbar' do
+  include NavbarStructureHelper
+
   let(:user) { create(:user) }
   let(:group) { create(:group) }
 
@@ -11,6 +13,20 @@ describe 'Group navbar' do
       nav_item: _('Analytics'),
       nav_sub_items: [
         _('Contribution')
+      ]
+    }
+  end
+
+  let(:settings_nav_item) do
+    {
+      nav_item: _('Settings'),
+      nav_sub_items: [
+        _('General'),
+        _('Projects'),
+        _('CI / CD'),
+        _('Webhooks'),
+        _('Audit Events'),
+        _('Usage Quotas')
       ]
     }
   end
@@ -49,11 +65,13 @@ describe 'Group navbar' do
     ]
   end
 
+  before do
+    group.add_maintainer(user)
+    sign_in(user)
+  end
+
   it_behaves_like 'verified navigation bar' do
     before do
-      group.add_maintainer(user)
-      sign_in(user)
-
       visit group_path(group)
     end
   end
@@ -64,9 +82,6 @@ describe 'Group navbar' do
         stub_licensed_features(productivity_analytics: true)
 
         analytics_nav_item[:nav_sub_items] << _('Productivity')
-
-        group.add_maintainer(user)
-        sign_in(user)
 
         visit group_path(group)
       end
@@ -80,8 +95,73 @@ describe 'Group navbar' do
 
         analytics_nav_item[:nav_sub_items] << _('Value Stream')
 
-        group.add_maintainer(user)
-        sign_in(user)
+        visit group_path(group)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
+
+    context 'when epics are available' do
+      before do
+        stub_licensed_features(epics: true)
+
+        add_nav_item(
+          structure: structure,
+          before_nav_item_name: _('Group overview'),
+          new_nav_item: {
+            nav_item: _('Epics'),
+            nav_sub_items: [
+              _('List'),
+              _('Roadmap')
+            ]
+          }
+        )
+
+        visit group_path(group)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
+
+    context 'when the logged in user is the owner' do
+      before do
+        group.add_owner(user)
+
+        add_nav_item(
+          structure: structure,
+          before_nav_item_name: _('Members'),
+          new_nav_item: settings_nav_item
+        )
+
+        visit group_path(group)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
+
+    context 'when security dashboard is available' do
+      before do
+        group.add_owner(user)
+
+        stub_licensed_features(security_dashboard: true, group_level_compliance_dashboard: true)
+
+        add_nav_item(
+          structure: structure,
+          before_nav_item_name: _('Merge Requests'),
+          new_nav_item: {
+            nav_item: _('Security & Compliance'),
+            nav_sub_items: [
+              _('Security'),
+              _('Compliance')
+            ]
+          }
+        )
+
+        add_nav_item(
+          structure: structure,
+          before_nav_item_name: _('Members'),
+          new_nav_item: settings_nav_item
+        )
 
         visit group_path(group)
       end

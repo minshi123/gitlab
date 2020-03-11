@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 describe 'Project navbar' do
+  include NavbarStructureHelper
+
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository) }
 
@@ -109,6 +111,23 @@ describe 'Project navbar' do
     end
   end
 
+  context 'when pages are available' do
+    before do
+      allow(Gitlab.config.pages).to receive(:enabled).and_return(true)
+
+      add_sub_nav_item(
+        structure: structure,
+        nav_item_name: _('Settings'),
+        before_sub_nav_item_name: _('Operations'),
+        new_sub_nav_item_name: _('Pages')
+      )
+
+      visit project_path(project)
+    end
+
+    it_behaves_like 'verified navigation bar'
+  end
+
   if Gitlab.ee?
     context 'when issues analytics is available' do
       before do
@@ -116,6 +135,69 @@ describe 'Project navbar' do
 
         analytics_nav_item[:nav_sub_items] << _('Issues')
         analytics_nav_item[:nav_sub_items].sort!
+
+        visit project_path(project)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
+
+    context 'when service desk is available' do
+      before do
+        stub_licensed_features(service_desk: true)
+
+        add_sub_nav_item(
+          structure: structure,
+          nav_item_name: _('Issues'),
+          before_sub_nav_item_name: _('Labels'),
+          new_sub_nav_item_name: _('Service Desk')
+        )
+
+        visit project_path(project)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
+
+    context 'when security dashboard is available' do
+      before do
+        stub_licensed_features(security_dashboard: true)
+
+        add_nav_item(
+          structure: structure,
+          before_nav_item_name: _('CI / CD'),
+          new_nav_item: {
+            nav_item: _('Security & Compliance'),
+            nav_sub_items: [
+              _('Security Dashboard'),
+              _('Vulnerability List'),
+              _('Configuration'),
+              _('Threat Monitoring')
+            ]
+          }
+        )
+
+        visit project_path(project)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
+
+    context 'when packages are available' do
+      before do
+        allow(Gitlab.config.packages).to receive(:enabled).and_return(true)
+        stub_licensed_features(packages: true)
+
+        add_nav_item(
+          structure: structure,
+          before_nav_item_name: _('Operations'),
+          new_nav_item: {
+            nav_item: _('Packages'),
+            nav_sub_items: [
+              _('List')
+            ]
+          }
+        )
 
         visit project_path(project)
       end
