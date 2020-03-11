@@ -4391,6 +4391,21 @@ CREATE SEQUENCE public.packages_packages_id_seq
 
 ALTER SEQUENCE public.packages_packages_id_seq OWNED BY public.packages_packages.id;
 
+CREATE TABLE public.packages_pypi_metadata (
+    id bigint NOT NULL,
+    package_id bigint NOT NULL,
+    required_python character varying(255) NOT NULL
+);
+
+CREATE SEQUENCE public.packages_pypi_metadata_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.packages_pypi_metadata_id_seq OWNED BY public.packages_pypi_metadata.id;
+
 CREATE TABLE public.packages_tags (
     id bigint NOT NULL,
     package_id integer NOT NULL,
@@ -7146,6 +7161,8 @@ ALTER TABLE ONLY public.packages_package_files ALTER COLUMN id SET DEFAULT nextv
 
 ALTER TABLE ONLY public.packages_packages ALTER COLUMN id SET DEFAULT nextval('public.packages_packages_id_seq'::regclass);
 
+ALTER TABLE ONLY public.packages_pypi_metadata ALTER COLUMN id SET DEFAULT nextval('public.packages_pypi_metadata_id_seq'::regclass);
+
 ALTER TABLE ONLY public.packages_tags ALTER COLUMN id SET DEFAULT nextval('public.packages_tags_id_seq'::regclass);
 
 ALTER TABLE ONLY public.pages_domain_acme_orders ALTER COLUMN id SET DEFAULT nextval('public.pages_domain_acme_orders_id_seq'::regclass);
@@ -7944,6 +7961,9 @@ ALTER TABLE ONLY public.packages_package_files
 
 ALTER TABLE ONLY public.packages_packages
     ADD CONSTRAINT packages_packages_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.packages_pypi_metadata
+    ADD CONSTRAINT packages_pypi_metadata_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.packages_tags
     ADD CONSTRAINT packages_tags_pkey PRIMARY KEY (id);
@@ -9476,6 +9496,8 @@ CREATE INDEX index_packages_packages_on_project_id_and_package_type ON public.pa
 CREATE INDEX index_packages_packages_on_project_id_and_version ON public.packages_packages USING btree (project_id, version);
 
 CREATE INDEX index_packages_project_id_name_partial_for_nuget ON public.packages_packages USING btree (project_id, name) WHERE (((name)::text <> 'NuGet.Temporary.Package'::text) AND (version IS NOT NULL) AND (package_type = 4));
+
+CREATE UNIQUE INDEX index_packages_pypi_metadata_on_package_id ON public.packages_pypi_metadata USING btree (package_id);
 
 CREATE INDEX index_packages_tags_on_package_id ON public.packages_tags USING btree (package_id);
 
@@ -11302,6 +11324,9 @@ ALTER TABLE ONLY public.board_labels
 ALTER TABLE ONLY public.scim_identities
     ADD CONSTRAINT fk_rails_9421a0bffb FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.packages_pypi_metadata
+    ADD CONSTRAINT fk_rails_9698717cdd FOREIGN KEY (package_id) REFERENCES public.packages_packages(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY public.packages_dependency_links
     ADD CONSTRAINT fk_rails_96ef1c00d3 FOREIGN KEY (package_id) REFERENCES public.packages_packages(id) ON DELETE CASCADE;
 
@@ -12709,6 +12734,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200318163148'),
 ('20200318164448'),
 ('20200318165448'),
+('20200318183553'),
 ('20200319203901'),
 ('20200323075043');
 

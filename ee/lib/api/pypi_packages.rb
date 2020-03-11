@@ -72,6 +72,10 @@ module API
         post do
           authorize_upload!(authorized_user_project)
 
+          ::Packages::Pypi::CreatePackageService
+            .new(authorized_user_project, current_user, params.merge(file: uploaded_package_file(:content)))
+            .execute
+
           created!
         rescue ObjectStorage::RemoteStoreError => e
           Gitlab::ErrorTracking.track_exception(e, extra: { file_name: params[:name], project_id: authorized_user_project.id })
