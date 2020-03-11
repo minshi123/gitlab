@@ -126,6 +126,18 @@ describe Projects::Security::ConfigurationPresenter do
         )
       end
 
+      it 'detect new license compliance job' do
+        create(:ee_ci_build, :license_scanning, pipeline: pipeline)
+
+        expect(JSON.parse(subject[:features])).to contain_exactly(
+          security_scan(:dast, configured: true),
+          security_scan(:sast, configured: true),
+          security_scan(:container_scanning, configured: false),
+          security_scan(:dependency_scanning, configured: false),
+          security_scan(:license_management, configured: true)
+        )
+      end
+
       it 'includes a link to the latest pipeline' do
         expect(subject[:latest_pipeline_path]).to eq(project_pipeline_path(project, pipeline))
       end
