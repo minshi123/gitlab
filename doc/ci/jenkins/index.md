@@ -63,8 +63,7 @@ There are some high level differences between the products worth mentioning:
 - Totally stuck and not sure where to turn for advice? The [GitLab community forum](https://forum.gitlab.com/) can be a great resource.
 
 ## Agents vs. Runners
-
-If you are using gitlab.com, you can take advantage of our [shared Runner fleet](https://docs.gitlab.com/ee/user/gitlab_com/#shared-runners).
+If you are using `gitlab.com`, you can take advantage of our [shared Runner fleet](https://docs.gitlab.com/ee/user/gitlab_com/#shared-runners).
 We are investigating making these [available for self-managed instances as well](https://gitlab.com/gitlab-org/customers-gitlab-com/issues/414).
 
 In the end, a Jenkins agent or GitLab Runner is just a host, so to convert one simply uninstall the
