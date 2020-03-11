@@ -45,7 +45,6 @@ $ sudo gitlab-ctl reconfigure
 [Following the steps for configuring the container registry under an existing domain](../../ee/administration/packages/container_registry.html#configure-container-registry-under-an-existing-gitlab-domain), let's enable the registry.
 
 
-
 Make the following changes to `/etc/gitlab/gitlab.rb`:
 
 - Change `external_registry_url` to match `external_url`, but append the port `:4567`
