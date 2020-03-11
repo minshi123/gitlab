@@ -3689,7 +3689,7 @@ Represents an instance security dashboard
 type InstanceSecurityDashboard {
   """
   Vulnerabilities reported for projects on this instance security dashboard.
-  Available only when feature flag first_class_vulnerabilities is enabled.
+  Available only when feature flag `first_class_vulnerabilities` is enabled.
   """
   vulnerabilities(
     """
@@ -7100,7 +7100,7 @@ type Query {
   ): Group
 
   """
-  Find an instance security dashboard. Available only when feature flag instance_security_dashboard is enabled.
+  Find an instance security dashboard. Available only when feature flag `instance_security_dashboard` is enabled.
   """
   instanceSecurityDashboard: InstanceSecurityDashboard
 
