@@ -1,7 +1,7 @@
 /**
  * Common code between environmets app and folder view
  */
-import _ from 'underscore';
+import { isEqual, isFunction, isNull, isUndefined, omit } from 'underscore';
 import Visibility from 'visibilityjs';
 import EnvironmentsStore from 'ee_else_ce/environments/stores/environments_store';
 import Poll from '../../lib/utils/poll';
@@ -48,7 +48,7 @@ export default {
       const response = this.filterNilValues(resp.config.params);
       const request = this.filterNilValues(this.requestData);
 
-      if (_.isEqual(response, request)) {
+      if (isEqual(response, request)) {
         this.store.storeAvailableCount(resp.data.available_count);
         this.store.storeStoppedCount(resp.data.stopped_count);
         this.store.storeEnvironments(resp.data.environments);
@@ -58,7 +58,7 @@ export default {
     },
 
     filterNilValues(obj) {
-      return _.omit(obj, value => _.isUndefined(value) || _.isNull(value));
+      return omit(obj, value => isUndefined(value) || isNull(value));
     },
 
     /**
@@ -103,7 +103,7 @@ export default {
           .then(() => this.fetchEnvironments())
           .catch(err => {
             this.isLoading = false;
-            Flash(_.isFunction(errorMessage) ? errorMessage(err.response.data) : errorMessage);
+            Flash(isFunction(errorMessage) ? errorMessage(err.response.data) : errorMessage);
           });
       }
     },
