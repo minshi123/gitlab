@@ -5,7 +5,8 @@ This page lists all the information available for running GitLab in an air-gappe
 
 ## Quick start
 
-If you plan on deploying a GitLab instance on a physically-isolated and offline network, see the [quick start guide](guick_start_guide.md) for how to configure your GitLab instance to work entirely offline.
+If you plan to deploy a GitLab instance on a physically-isolated and offline network, see the
+[quick start guide](guick_start_guide.md) for configuration steps.
 
 ## Features
 
