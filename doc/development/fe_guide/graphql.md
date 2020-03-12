@@ -342,7 +342,9 @@ apollo: {
 },
 ```
 
-When we want to move to the next page, we will use an Apollo `fetchMore` method, passing a new cursor (and optionally new variables) there. In `updateQuery` hook we have to return a result we want to see in Apollo cache after fetching the next page.
+When we want to move to the next page, we use an Apollo `fetchMore` method, passing a
+new cursor (and, optionally, new variables) there. In the `updateQuery` hook, we have
+to return a result we want to see in the Apollo cache after fetching the next page.
 
 ```javascript
 fetchNextPage() {
