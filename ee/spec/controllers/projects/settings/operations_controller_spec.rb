@@ -302,7 +302,7 @@ describe Projects::Settings::OperationsController do
             stub_feature_flags(status_page: false)
           end
 
-          it { is_expected.to be(nil) }
+          it { is_expected.to be_nil }
         end
       end
 
