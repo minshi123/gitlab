@@ -25,7 +25,8 @@ end
 describe Gitlab::ImportExport::JSON::LegacyReader::File do
   let(:fixture) { 'spec/fixtures/lib/gitlab/import_export/light/project.json' }
   let(:project_tree) { JSON.parse(File.read(fixture)) }
-  let(:legacy_reader) { described_class.new(path) }
+  let(:relation_names) { [] }
+  let(:legacy_reader) { described_class.new(path, relation_names) }
 
   describe '#valid?' do
     subject { legacy_reader.valid? }
@@ -48,8 +49,9 @@ describe Gitlab::ImportExport::JSON::LegacyReader::File do
 
     subject { legacy_reader.root_attributes(excluded_attributes) }
 
-    context 'No excluded or deleted relations' do
+    context 'No excluded attributes' do
       let(:excluded_attributes) { [] }
+      let(:relation_names) { [] }
 
       it 'returns the whole tree from parsed JSON' do
         expect(subject).to eq(project_tree)
@@ -58,15 +60,9 @@ describe Gitlab::ImportExport::JSON::LegacyReader::File do
 
     context 'Some attributes are excluded' do
       let(:excluded_attributes) { %w[milestones labels issues services snippets] }
+      let(:relation_names) { %w[import_type archived] }
 
-      it 'returns hash without excluded attributes' do
-        expect(subject).not_to include('milestones', 'labels', 'issues', 'services', 'snippets')
-      end
-
-      it 'returns hash without excluded attributes and deleted relations' do
-        legacy_reader.delete('import_type')
-        legacy_reader.delete('archived')
-
+      it 'returns hash without excluded attributes and relations' do
         expect(subject).not_to include('milestones', 'labels', 'issues', 'services', 'snippets', 'import_type', 'archived')
       end
     end
@@ -78,7 +74,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader::File do
 
     context 'key has been deleted' do
       before do
-        legacy_reader.consume_relation(key)
+        legacy_reader.delete(key)
       end
 
       it 'does not yield' do
@@ -90,7 +86,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader::File do
 
     context 'value is nil' do
       before do
-        expect(legacy_reader).to receive(:tree_hash).and_return({ key => nil })
+        expect(legacy_reader).to receive(:relations).and_return({ key => nil })
       end
 
       it 'does not yield' do
@@ -102,7 +98,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader::File do
 
     context 'value is not array' do
       before do
-        expect(legacy_reader).to receive(:tree_hash).and_return({ key => 'value' })
+        expect(legacy_reader).to receive(:relations).and_return({ key => 'value' })
       end
 
       it 'yield the value with index 0' do
@@ -114,7 +110,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader::File do
 
     context 'value is an array' do
       before do
-        expect(legacy_reader).to receive(:tree_hash).and_return({ key => %w[item1 item2 item3] })
+        expect(legacy_reader).to receive(:relations).and_return({ key => %w[item1 item2 item3] })
       end
 
       it 'yield each array element with index' do
