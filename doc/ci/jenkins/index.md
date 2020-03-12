@@ -76,7 +76,7 @@ There are some important differences in the way agents work vs. Runners to be aw
 
 - Runners can be set up as [shared across an instance, be added at the group level, or set up at the project level](../runners/#shared-specific-and-group-runners). They will self-select jobs from the scope you've given it automatically.
 - You can also [use tags](../ci/runners/#using-tags) for finer control and associate runners with specific jobs. For example, for a step that requires dedicated, more powerful, and/or specific hardware.
-- GitLab has [autoscaling for Runners](../../runner/configuration/autoscale.html) which will let you set things up so they are provisioned as needed, and scaled down when not, similar to Jenkins' ephemeral agents.
+- GitLab has [autoscaling for Runners](../../runner/configuration/autoscale.md) which will let you set things up so they are provisioned as needed, and scaled down when not, similar to Jenkins' ephemeral agents.
 
 ## Groovy vs. YAML
 
