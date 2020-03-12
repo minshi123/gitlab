@@ -30,7 +30,7 @@ module Projects
         dast: _('Dynamic Application Security Testing (DAST)'),
         dependency_scanning: _('Dependency Scanning'),
         license_management: _('License Compliance'),
-        license_scanning: _('License Scanning'),
+        license_scanning: ('License Scanning'),
         sast: _('Static Application Security Testing (SAST)')
       }.freeze
 
