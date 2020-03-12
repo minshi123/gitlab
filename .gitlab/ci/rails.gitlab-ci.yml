@@ -65,6 +65,7 @@ downtime_check:
   extends: .rails-job-base
   stage: test
   needs:
+    - job: danger-review
     - job: setup-test-env
       artifacts: true
     - job: retrieve-tests-metadata
@@ -140,6 +141,7 @@ rspec fast_spec_helper:
     - .use-pg9
   stage: test
   needs:
+    - job: danger-review
     - job: setup-test-env
       artifacts: true
 

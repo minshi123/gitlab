@@ -1,0 +1,13 @@
+danger-review:
+  extends:
+    - .default-tags
+    - .default-retry
+    - .default-cache
+    - .review:rules:danger
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:danger
+  stage: prepare
+  script:
+    - git version
+    - node --version
+    - yarn install --frozen-lockfile --cache-folder .yarn-cache --prefer-offline
+    - danger --fail-on-errors=true --verbose

@@ -23,7 +23,8 @@ cache gems:
   extends:
     - .default-tags
     - .default-retry
-  needs: []
+  needs:
+    - job: danger-review
 
 gitlab_git_test:
   extends:

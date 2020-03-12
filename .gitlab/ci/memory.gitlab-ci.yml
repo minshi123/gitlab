@@ -10,6 +10,7 @@ memory-static:
   extends: .only-code-memory-job-base
   stage: test
   needs:
+    - job: danger-review
     - job: setup-test-env
       artifacts: true
   variables:
@@ -42,6 +43,7 @@ memory-on-boot:
     - .use-pg10
   stage: test
   needs:
+    - job: danger-review
     - job: setup-test-env
       artifacts: true
     - job: compile-assets pull-cache

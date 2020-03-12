@@ -71,7 +71,10 @@ graphql-reference-verify:
     - .docs:rules:graphql-reference-verify
     - .use-pg9
   stage: test
-  needs: ["setup-test-env"]
+  needs:
+    - job: danger-review
+    - job: setup-test-env
+      artifacts: true
   script:
-    - bundle exec rake gitlab:graphql:check_docs
-    - bundle exec rake gitlab:graphql:check_schema
+    - bin/rake gitlab:graphql:check_docs
+    - bin/rake gitlab:graphql:check_schema

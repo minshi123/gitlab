@@ -129,6 +129,7 @@ compile-assets pull-cache as-if-foss:
     - .use-pg9
   stage: fixtures
   needs:
+    - job: "danger-review"
     - job: "setup-test-env"
       artifacts: true
     - job: "compile-assets pull-cache"
