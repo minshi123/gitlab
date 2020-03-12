@@ -62,7 +62,7 @@ class User < ApplicationRecord
 
   enum user_type: ::UserTypeEnums.types
 
-  ignore_column :bot_type, remove_with: '12.10', remove_after: '2020-03-22'
+  ignore_column :bot_type, remove_with: '12.11', remove_after: '2020-04-22'
 
   # Override Devise::Models::Trackable#update_tracked_fields!
   # to limit database writes to at most once every hour

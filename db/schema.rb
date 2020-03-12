@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_11_082301) do
+ActiveRecord::Schema.define(version: 2020_03_12_091106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -4368,7 +4368,6 @@ ActiveRecord::Schema.define(version: 2020_03_11_082301) do
     t.string "commit_email"
     t.integer "group_view"
     t.integer "managing_group_id"
-    t.integer "bot_type", limit: 2
     t.string "first_name", limit: 255
     t.string "last_name", limit: 255
     t.string "static_object_token", limit: 255
@@ -4377,7 +4376,6 @@ ActiveRecord::Schema.define(version: 2020_03_11_082301) do
     t.index "lower((name)::text)", name: "index_on_users_name_lower"
     t.index ["accepted_term_id"], name: "index_users_on_accepted_term_id"
     t.index ["admin"], name: "index_users_on_admin"
-    t.index ["bot_type"], name: "index_users_on_bot_type"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["created_at"], name: "index_users_on_created_at"
     t.index ["email"], name: "index_users_on_email", unique: true
