@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_11_165635) do
+ActiveRecord::Schema.define(version: 2020_03_12_125121) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3953,6 +3953,7 @@ ActiveRecord::Schema.define(version: 2020_03_11_165635) do
     t.boolean "comment_on_event_enabled", default: true, null: false
     t.boolean "template", default: false
     t.boolean "instance", default: false, null: false
+    t.index ["active", "template", "type", "id"], name: "index_services_on_active_and_template_and_type_and_id"
     t.index ["project_id"], name: "index_services_on_project_id"
     t.index ["template"], name: "index_services_on_template"
     t.index ["type", "instance"], name: "index_services_on_type_and_instance", unique: true, where: "(instance IS TRUE)"
