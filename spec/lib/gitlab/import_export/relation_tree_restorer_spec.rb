@@ -68,7 +68,7 @@ describe Gitlab::ImportExport::RelationTreeRestorer do
     let(:reader) { Gitlab::ImportExport::Reader.new(shared: shared) }
 
     context 'using legacy reader' do
-      let(:relation_reader) { Gitlab::ImportExport::JSON::LegacyReader.new(path) }
+      let(:relation_reader) { Gitlab::ImportExport::JSON::LegacyReader::File.new(path) }
 
       it_behaves_like 'import project successfully'
     end
