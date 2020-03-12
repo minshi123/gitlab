@@ -1,4 +1,4 @@
-# Airgapped GitLab
+# Air-gapped GitLab
 
 Computers in an air-gapped network are isolated from the public internet as a security measure.
 This page lists all the information available for running GitLab in an air-gapped environment.
