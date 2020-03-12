@@ -310,7 +310,14 @@ query {
 
 #### Using `fetchMore` method in components
 
-Usually, when making an initial fetch, we want to start a pagination from the beginning, In this case, we can skip passing a cursor or we can pass `null` explicitly to `after`. After data is fetched, we should save a `pageInfo` object. Let's assume we're storing it to Vue component `data`:
+When making an initial fetch, we usually want to start a pagination from the beginning.
+In this case, we can either:
+
+- Skip passing a cursor.
+- Pass `null` explicitly to `after`.
+
+After data is fetched, we should save a `pageInfo` object. Let's assume we're storing
+it to Vue component `data`:
 
 ```javascript
 data() {
