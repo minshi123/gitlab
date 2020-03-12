@@ -1,7 +1,7 @@
 # Getting started with an Airgapped GitLab Installation
 
-This is a step-by-step guide that will help you installing, configuring, and utilizing
-a self-managed GitLab Instance entirely offline.
+This is a step-by-step guide that helps you install, configure, and use a self-managed GitLab
+instance entirely offline.
 
 ## Requirements
 
