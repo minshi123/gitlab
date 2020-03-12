@@ -91,7 +91,9 @@ module Projects
       end
 
       def license_compliance_substitute(scans)
-        license_scanning = scans.delete_if { |scan_type| scan_type[:name] == 'License Scanning' }.first
+        license_scanning = scans.find { |scan_type| scan_type[:name] == 'License Scanning' }
+
+        scans.delete_if { |scan_type| scan_type[:name] == 'License Scanning' }
         license_compliance_config = license_scanning[:configured]
 
         if license_compliance_config
@@ -99,6 +101,7 @@ module Projects
             scan_type[:configured] = true if scan_type[:name] == 'License Compliance'
           end
         end
+
         scans
       end
 
