@@ -2,7 +2,27 @@
 
 require 'spec_helper'
 
-describe Gitlab::ImportExport::JSON::LegacyReader do
+describe Gitlab::ImportExport::JSON::LegacyReader::User do
+  let(:legacy_reader) { described_class.new(tree_hash) }
+
+  describe '#valid?' do
+    subject { legacy_reader.valid? }
+
+    context 'tree_hash not present' do
+      let(:tree_hash) { nil }
+
+      it { is_expected.to be false }
+    end
+
+    context 'tree_hash presents' do
+      let(:tree_hash) { { "issues": [] } }
+
+      it { is_expected.to be true }
+    end
+  end
+end
+
+describe Gitlab::ImportExport::JSON::LegacyReader::File do
   let(:fixture) { 'spec/fixtures/lib/gitlab/import_export/light/project.json' }
   let(:project_tree) { JSON.parse(File.read(fixture)) }
   let(:legacy_reader) { described_class.new(path) }
@@ -28,7 +48,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
 
     subject { legacy_reader.root_attributes(excluded_attributes) }
 
-    context 'No excluded or consumed relations' do
+    context 'No excluded or deleted relations' do
       let(:excluded_attributes) { [] }
 
       it 'returns the whole tree from parsed JSON' do
@@ -43,9 +63,9 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
         expect(subject).not_to include('milestones', 'labels', 'issues', 'services', 'snippets')
       end
 
-      it 'returns hash without excluded attributes and consumed relations' do
-        legacy_reader.consume_relation('import_type')
-        legacy_reader.consume_relation('archived')
+      it 'returns hash without excluded attributes and deleted relations' do
+        legacy_reader.delete('import_type')
+        legacy_reader.delete('archived')
 
         expect(subject).not_to include('milestones', 'labels', 'issues', 'services', 'snippets', 'import_type', 'archived')
       end
@@ -56,7 +76,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader do
     let(:path) { fixture }
     let(:key) { 'description' }
 
-    context 'key has been consumed' do
+    context 'key has been deleted' do
       before do
         legacy_reader.consume_relation(key)
       end

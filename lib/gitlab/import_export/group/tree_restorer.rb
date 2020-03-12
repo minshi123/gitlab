@@ -17,7 +17,7 @@ module Gitlab
         end
 
         def restore
-          @relation_reader = ImportExport::JSON::LegacyReader.new(@path, tree_hash: @group_hash)
+          @relation_reader = @group_hash.present? ? ImportExport::JSON::LegacyReader::User.new(@group_hash) : ImportExport::JSON::LegacyReader::File.new(@path)
 
           @group_members = @relation_reader.delete('members')
           @children = @relation_reader.delete('children')
