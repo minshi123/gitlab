@@ -21,7 +21,7 @@ module Gitlab
 
           def read_hash
             ActiveSupport::JSON.decode(IO.read(@path))
-          rescue => e
+          rescue
             raise Gitlab::ImportExport::Error.new('Incorrect JSON format')
           end
         end
