@@ -4490,6 +4490,7 @@ ActiveRecord::Schema.define(version: 2020_03_11_154110) do
     t.string "status", limit: 255, null: false
     t.datetime "started_at"
     t.datetime "finished_at"
+    t.index ["project_id", "id"], name: "index_vulnerability_exports_on_project_id_and_id", unique: true
   end
 
   create_table "vulnerability_feedback", id: :serial, force: :cascade do |t|
