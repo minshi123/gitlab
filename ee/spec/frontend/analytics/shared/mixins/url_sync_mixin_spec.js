@@ -2,9 +2,9 @@ import Vue from 'vue';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import store from 'ee/analytics/cycle_analytics/store';
-import UrlSyncMixin from 'ee/analytics/cycle_analytics/mixins/url_sync_mixin';
+import UrlSyncMixin from 'ee/analytics/shared/mixins/url_sync_mixin';
 import { toYmd } from 'ee/analytics/shared/utils';
-import { startDate, endDate } from '../mock_data';
+import { startDate, endDate } from '../../cycle_analytics/mock_data';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);

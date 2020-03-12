@@ -1,7 +1,7 @@
 import { mapState, mapGetters } from 'vuex';
 import { historyPushState } from '~/lib/utils/common_utils';
 import { setUrlParams } from '~/lib/utils/url_utility';
-import { toYmd } from '../../shared/utils';
+import { toYmd } from '../utils';
 
 export default {
   computed: {
