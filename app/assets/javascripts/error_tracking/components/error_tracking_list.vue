@@ -220,8 +220,8 @@ export default {
 <template>
   <div class="error-list">
     <div v-if="errorTrackingEnabled">
-      <div class="row flex-column flex-sm-row align-items-sm-center row-top m-0 mt-sm-2 p-0 p-sm-3">
-        <div class="search-box flex-fill mr-sm-2 my-3 m-sm-0 p-3 p-sm-0 bg-secondary">
+      <div class="row flex-column flex-md-row align-items-md-center m-0 mt-sm-2 p-3 p-sm-3 bg-secondary border">
+        <div class="search-box flex-fill mb-1 mb-md-0">
           <div class="filtered-search-box mb-0">
             <gl-dropdown
               :text="__('Recent searches')"
@@ -273,7 +273,7 @@ export default {
 
         <gl-dropdown
           :text="$options.statusFilters[statusFilter]"
-          class="status-dropdown mr-2"
+          class="status-dropdown mx-md-1 mb-1 mb-md-0"
           menu-class="dropdown"
           :disabled="loading"
         >

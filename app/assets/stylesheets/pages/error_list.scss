@@ -1,5 +1,3 @@
-$gray-border: 1px solid $border-color;
-
 .error-list {
   .sort-control {
     .btn {
@@ -10,13 +8,6 @@ $gray-border: 1px solid $border-color;
       position: absolute;
       right: 0.5rem;
       top: 0.5rem;
-    }
-  }
-
-  @include media-breakpoint-up(sm) {
-    .row-top {
-      border: $gray-border;
-      background-color: $gray-50;
     }
   }
 
