@@ -374,7 +374,17 @@ fetchNextPage() {
 Please note we don't have to save `pageInfo` one more time; `fetchMore` triggers a query
 `result` hook as well.
 
-> Currently, bidirectional pagination doesn't work: `hasNextPage` returns a correct value only when we paginate forward (using `endCursor` and `first` parameters) and `hasPreviousPage` returns a correct value only when we paginate backward (using `startCursor` and `last` parameters). This should be resolved in the scope of https://gitlab.com/gitlab-org/gitlab/-/issues/208301 
+#### Limitations
+
+Currently, bidirectional pagination doesn't work:
+
+- `hasNextPage` returns a correct value only when we paginate forward using `endCursor`
+  and `first` parameters.
+- `hasPreviousPage` returns a correct value only when we paginate backward using
+  `startCursor` and `last` parameters.
+
+This should be resolved in the scope of the issue
+[Bi-directional Pagination in GraphQL doesn't work as expected](https://gitlab.com/gitlab-org/gitlab/-/issues/208301].
 
 
 ### Testing
