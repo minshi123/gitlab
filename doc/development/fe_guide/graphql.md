@@ -260,7 +260,9 @@ export default {
 
 ### Working with pagination
 
-At GitLab, we use a [Relay-style cursor pagination](https://www.apollographql.com/docs/react/data/pagination/#cursor-based) for our connection types. This means a "cursor" is used to keep track of where in the data set the next items should be fetched from.
+GitLab's GraphQL API uses [Relay-style cursor pagination](https://www.apollographql.com/docs/react/data/pagination/#cursor-based)
+for connection types. This means a "cursor" is used to keep track of where in the data
+set the next items should be fetched from.
 
 Every connection type (i.e. `DesignConnection`, `DiscussionConnection` etc) has a field `pageInfo` that contains an information required for pagination:
 
