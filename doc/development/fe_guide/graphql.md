@@ -264,7 +264,7 @@ GitLab's GraphQL API uses [Relay-style cursor pagination](https://www.apollograp
 for connection types. This means a "cursor" is used to keep track of where in the data
 set the next items should be fetched from.
 
-Every connection type (i.e. `DesignConnection`, `DiscussionConnection` etc) has a field `pageInfo` that contains an information required for pagination:
+Every connection type (for example, `DesignConnection` and `DiscussionConnection`) has a field `pageInfo` that contains an information required for pagination:
 
 ```javascript
 pageInfo {
