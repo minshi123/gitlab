@@ -4,16 +4,46 @@ module Gitlab
   module ImportExport
     module JSON
       class LegacyReader
-        attr_reader :path
+        class File < LegacyReader
+          def initialize(path)
+            @path = path
+            @logger = Gitlab::Import::Logger.build
+          end
 
-        def initialize(path, tree_hash: nil)
-          @path = path
-          @tree_hash = tree_hash
-          @logger = Gitlab::Import::Logger.build
+          def valid?
+            ::File.exist?(@path)
+          end
+
+          protected
+
+          def tree_hash
+            @tree_hash ||= read_hash
+          end
+
+          def read_hash
+            ActiveSupport::JSON.decode(IO.read(@path))
+          rescue => e
+            @logger.error(message: "Import/Export error: #{e.message}")
+            raise Gitlab::ImportExport::Error.new('Incorrect JSON format')
+          end
+        end
+
+        class User < LegacyReader
+          def initialize(tree_hash)
+            @tree_hash = tree_hash
+          end
+
+          def valid?
+            @tree_hash.present?
+          end
+
+          protected
+
+          attr_reader :tree_hash
         end
 
         def valid?
-          File.exist?(@path)
+          raise NotImplementedError
         end
 
         def root_attributes(excluded_attributes = [])
@@ -50,14 +80,7 @@ module Gitlab
         protected
 
         def tree_hash
-          @tree_hash ||= read_hash
-        end
-
-        def read_hash
-          ActiveSupport::JSON.decode(IO.read(@path))
-        rescue => e
-          @logger.error(message: "Import/Export error: #{e.message}")
-          raise Gitlab::ImportExport::Error.new('Incorrect JSON format')
+          raise NotImplementedError
         end
       end
     end
