@@ -8,6 +8,15 @@ module EE
       scope :project_id_in, ->(ids) { joins(:project).merge(Project.id_in(ids)) }
     end
 
+    class_methods do
+      def exists_by_path?(path)
+        where(
+          project: path.repository_project,
+          name: path.repository_name
+        ).exists?
+      end
+    end
+
     def push_blob(digest, file_path)
       client.push_blob(path, digest, file_path)
     end

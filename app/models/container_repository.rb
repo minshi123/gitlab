@@ -101,13 +101,6 @@ class ContainerRepository < ApplicationRecord
     self.find_by!(project: path.repository_project,
                   name: path.repository_name)
   end
-
-  def self.exists_by_path?(path)
-    where(
-      project: path.repository_project,
-      name: path.repository_name
-    ).exists?
-  end
 end
 
 ContainerRepository.prepend_if_ee('EE::ContainerRepository')

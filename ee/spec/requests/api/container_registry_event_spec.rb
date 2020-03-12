@@ -14,7 +14,7 @@ describe API::ContainerRegistryEvent do
 
     it 'returns 200 status and events are passed to event handler' do
       handler = spy(:handle)
-      allow(::ContainerRegistry::EventHandler).to receive(:new).with(events).and_return(handler)
+      allow(::ContainerRegistry::EventsHandler).to receive(:new).with(events).and_return(handler)
 
       post api('/container_registry_event/events'),
            params: { events: events }.to_json,
