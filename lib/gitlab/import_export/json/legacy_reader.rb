@@ -9,7 +9,7 @@ module Gitlab
         def initialize(path, tree_hash: nil)
           @path = path
           @tree_hash = tree_hash
-          @consumed_relations = []
+          @logger = Gitlab::Import::Logger.build
         end
 
         def valid?
@@ -18,16 +18,12 @@ module Gitlab
 
         def root_attributes(excluded_attributes = [])
           tree_hash.reject do |key, _|
-            excluded_attributes.include?(key) || @consumed_relations.include?(key)
+            excluded_attributes.include?(key)
           end
         end
 
         def consume_relation(key)
-          return if @consumed_relations.include?(key)
-
-          @consumed_relations << key
-
-          value = tree_hash[key]
+          value = delete(key)
           return if value.nil?
 
           return unless block_given?
@@ -47,6 +43,10 @@ module Gitlab
           yield(tree_hash[key])
         end
 
+        def delete(key)
+          tree_hash.delete(key)
+        end
+
         protected
 
         def tree_hash
@@ -56,7 +56,7 @@ module Gitlab
         def read_hash
           ActiveSupport::JSON.decode(IO.read(@path))
         rescue => e
-          Rails.logger.error("Import/Export error: #{e.message}") # rubocop:disable Gitlab/RailsLogger
+          @logger.error(message: "Import/Export error: #{e.message}")
           raise Gitlab::ImportExport::Error.new('Incorrect JSON format')
         end
       end

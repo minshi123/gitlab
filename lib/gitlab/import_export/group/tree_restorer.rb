@@ -19,10 +19,10 @@ module Gitlab
         def restore
           @relation_reader = ImportExport::JSON::LegacyReader.new(@path, tree_hash: @group_hash)
 
-          @group_members = delete_relation('members')
-          @children = delete_relation('children')
-          delete_relation('name')
-          delete_relation('path')
+          @group_members = @relation_reader.delete('members')
+          @children = @relation_reader.delete('children')
+          @relation_reader.delete('name')
+          @relation_reader.delete('path')
 
           if members_mapper.map && restorer.restore
             @children&.each do |group_hash|
@@ -101,10 +101,6 @@ module Gitlab
               config: Gitlab::ImportExport.group_config_file
             ).to_h
           )
-        end
-
-        def delete_relation(key)
-          @relation_reader.to_enum(:consume_relation, key).to_a.map(&:first)
         end
       end
     end
