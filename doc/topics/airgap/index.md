@@ -1,7 +1,7 @@
 # Airgapped GitLab
 
-This page gathers all the resources for the topic **Airgap** within GitLab.
-An airgapped network is one in which the the computers are isolated from the public internet.
+Computers in an air-gapped network are isolated from the public internet as a security measure.
+This page lists all the information available for running GitLab in an air-gapped environment.
 
 ## Quick start
 
