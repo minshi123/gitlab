@@ -217,7 +217,6 @@ module EE
         {
           project: { id: project.id, name: project.name },
           vulnerabilities_endpoint: project_security_vulnerability_findings_path(project),
-          vulnerabilities_export_endpoint: project_security_vulnerability_findings_path(project, format: :csv),
           vulnerabilities_summary_endpoint: summary_project_security_vulnerability_findings_path(project),
           vulnerability_feedback_help_path: help_page_path("user/application_security/index", anchor: "interacting-with-the-vulnerabilities"),
           empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),

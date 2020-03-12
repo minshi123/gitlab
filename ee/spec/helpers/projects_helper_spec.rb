@@ -111,10 +111,6 @@ describe ProjectsHelper do
 
       it 'returns the "vulnerability findings" endpoint paths' do
         expect(subject[:vulnerabilities_endpoint]).to eq project_security_vulnerability_findings_path(project)
-        expect(subject[:vulnerabilities_export_endpoint]).to(
-          eq(
-            project_security_vulnerability_findings_path(project, format: :csv)
-          ))
         expect(subject[:vulnerabilities_summary_endpoint]).to(
           eq(
             summary_project_security_vulnerability_findings_path(project)
