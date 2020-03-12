@@ -5,8 +5,9 @@ module Gitlab
     module JSON
       class LegacyReader
         class File < LegacyReader
-          def initialize(path)
+          def initialize(path, relation_names)
             @path = path
+            super(relation_names)
           end
 
           def valid?
@@ -40,14 +41,16 @@ module Gitlab
           attr_reader :tree_hash
         end
 
+        def initialize(relation_names)
+          @relation_names = relation_names.map(&:to_s)
+        end
+
         def valid?
           raise NotImplementedError
         end
 
         def root_attributes(excluded_attributes = [])
-          tree_hash.reject do |key, _|
-            excluded_attributes.include?(key)
-          end
+          attributes.except(*excluded_attributes.map(&:to_s))
         end
 
         def consume_relation(key)
@@ -66,19 +69,29 @@ module Gitlab
         end
 
         def transform_relation!(key)
-          return unless tree_hash[key].is_a?(Array)
+          return unless relations[key].is_a?(Array)
 
-          yield(tree_hash[key])
+          yield(relations[key])
         end
 
         def delete(key)
-          tree_hash.delete(key)
+          relations.delete(key)
         end
 
         protected
 
+        attr_reader :relation_names
+
         def tree_hash
           raise NotImplementedError
+        end
+
+        def relations
+          @relations ||= tree_hash.slice(*relation_names)
+        end
+
+        def attributes
+          @attributes ||= tree_hash.except!(*relation_names)
         end
       end
     end
