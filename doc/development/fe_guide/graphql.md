@@ -282,7 +282,12 @@ Here:
 - `hasPreviousPage` and `hasNextPage` allow us to check if there are more pages
   available before or after the current page.
 
-When we fetch data with a connection type, we can pass cursor as `after` or `before` parameter, indicating a starting or ending point of our pagination. They should be followed with `first` or `last` parameter respectively to indicate _how many_ items do we want to fetch after or before a given endpoint. For example, here we're fetching 10 designs after a cursor:
+When we fetch data with a connection type, we can pass cursor as `after` or `before`
+parameter, indicating a starting or ending point of our pagination. They should be
+followed with `first` or `last` parameter respectively to indicate _how many_ items
+we want to fetch after or before a given endpoint.
+
+For example, here we're fetching 10 designs after a cursor:
 
 ```javascript
 query {
