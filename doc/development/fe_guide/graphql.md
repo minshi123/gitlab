@@ -384,8 +384,7 @@ Currently, bidirectional pagination doesn't work:
   `startCursor` and `last` parameters.
 
 This should be resolved in the scope of the issue
-[Bi-directional Pagination in GraphQL doesn't work as expected](https://gitlab.com/gitlab-org/gitlab/-/issues/208301].
-
+[Bi-directional Pagination in GraphQL doesn't work as expected](https://gitlab.com/gitlab-org/gitlab/-/issues/208301).
 
 ### Testing
 
