@@ -10,7 +10,6 @@ module Gitlab
           @path = path
           @tree_hash = tree_hash
           @consumed_relations = []
-          @before_consume = {}
         end
 
         def valid?
@@ -23,10 +22,6 @@ module Gitlab
           end
         end
 
-        def before_consume_hook(key, proc)
-          @before_consume[key] = proc
-        end
-
         def consume_relation(key)
           return if @consumed_relations.include?(key)
 
@@ -37,11 +32,6 @@ module Gitlab
 
           return unless block_given?
 
-          proc = @before_consume[key]
-          if proc
-            value = proc.call(value)
-          end
-
           if value.is_a?(Array)
             value.each.with_index do |item, idx|
               yield(item, idx)
@@ -49,6 +39,12 @@ module Gitlab
           else
             yield(value, 0)
           end
+        end
+
+        def transform_relation!(key)
+          return unless tree_hash[key].is_a?(Array)
+
+          yield(tree_hash[key])
         end
 
         protected

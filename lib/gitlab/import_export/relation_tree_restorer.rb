@@ -211,9 +211,9 @@ module Gitlab
       end
 
       def update_relation_hashes!
-        sort_by_id = lambda { |arr| arr&.sort_by! { |hash| hash['id'] } }
-
-        @relation_reader.before_consume_hook('ci_pipelines', sort_by_id)
+        @relation_reader.transform_relation!('ci_pipelines') do |relation_value|
+          relation_value&.sort_by! { |hash| hash['id'] }
+        end
       end
     end
   end
