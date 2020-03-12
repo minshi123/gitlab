@@ -21,8 +21,6 @@ module Vulnerabilities
     validates :format, presence: true
     validates :file, presence: true, if: :finished?
 
-    delegate :path, :content_type, to: :file
-
     state_machine :status, initial: :created do
       event :start do
         transition created: :running
@@ -32,7 +30,7 @@ module Vulnerabilities
         transition running: :finished
       end
 
-      event :fail do
+      event :failed do
         transition [:created, :running] => :failed
       end
 
