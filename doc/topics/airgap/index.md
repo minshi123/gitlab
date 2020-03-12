@@ -9,6 +9,6 @@ If you plan on deploying a GitLab instance on a physically-isolated and offline 
 
 ## Features
 
-Best practices to utilize GitLab features in an offline environment:
+Follow these best practices to use GitLab's features in an offline environment:
 
 - [GitLab SAST in an offline air-gapped installation](../user/application_security/sast/index.html#gitlab-sast-in-an-offline-air-gapped-installation)
