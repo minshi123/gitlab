@@ -127,7 +127,7 @@ describe Projects::Security::ConfigurationPresenter do
       end
 
       it 'detect new license compliance job' do
-        create(:ee_ci_build, :license_scanning, pipeline: pipeline)
+        create(:ci_build, :license_scanning, pipeline: pipeline)
 
         expect(JSON.parse(subject[:features])).to contain_exactly(
           security_scan(:dast, configured: true),
