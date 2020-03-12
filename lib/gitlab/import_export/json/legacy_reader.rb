@@ -7,7 +7,6 @@ module Gitlab
         class File < LegacyReader
           def initialize(path)
             @path = path
-            @logger = Gitlab::Import::Logger.build
           end
 
           def valid?
@@ -23,7 +22,6 @@ module Gitlab
           def read_hash
             ActiveSupport::JSON.decode(IO.read(@path))
           rescue => e
-            @logger.error(message: "Import/Export error: #{e.message}")
             raise Gitlab::ImportExport::Error.new('Incorrect JSON format')
           end
         end
