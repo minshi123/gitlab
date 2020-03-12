@@ -69,6 +69,20 @@ export default {
     showChangedFileIcon() {
       return !this.isTree && this.isModified;
     },
+    tooltipTitle() {
+      if (!this.file.changed) return undefined;
+      const type = this.file.tempFile ? 'addition' : 'modification';
+
+      if (this.file.staged) {
+        return sprintf(__('Staged %{type}'), {
+          type,
+        });
+      }
+
+      return sprintf(__('Unstaged %{type}'), {
+        type,
+      });
+    },
   },
 };
 </script>
@@ -93,6 +107,7 @@ export default {
       :file="file"
       :show-tooltip="true"
       :show-staged-icon="false"
+      :tooltip-title="tooltipTitle"
     />
     <new-dropdown
       :type="file.type"
