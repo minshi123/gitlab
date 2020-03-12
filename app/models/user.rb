@@ -21,7 +21,6 @@ class User < ApplicationRecord
   include OptionallySearch
   include FromUnion
   include BatchDestroyDependentAssociations
-  include IgnorableColumns
 
   DEFAULT_NOTIFICATION_LEVEL = :participating
 
@@ -61,8 +60,6 @@ class User < ApplicationRecord
   MINIMUM_INACTIVE_DAYS = 180
 
   enum user_type: ::UserTypeEnums.types
-
-  ignore_column :bot_type, remove_with: '12.11', remove_after: '2020-04-22'
 
   # Override Devise::Models::Trackable#update_tracked_fields!
   # to limit database writes to at most once every hour
