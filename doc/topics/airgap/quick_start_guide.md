@@ -9,8 +9,12 @@ To load our software onto the isolated host, a method must be used for sideloadi
 
 ## Installation
 
-**Note**: The below guide assumes the server to be Ubuntu 18.04, individual instructions may vary.
-**Note**: The below guide assumes the server host resolves as `my-host` and should be substituted for your true server name.
+NOTE: **Note:**
+This guide assumes the server is Ubuntu 18.04. Instructions for other servers may vary.
+
+NOTE: **Note:**
+This guide assumes the server host resolves as `my-host`, which you should replace with your
+server's name.
 
 https://about.gitlab.com/install/#ubuntu
 
