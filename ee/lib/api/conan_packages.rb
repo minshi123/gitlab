@@ -101,7 +101,12 @@ module API
         get 'packages/:conan_package_reference' do
           authorize!(:read_package, project)
 
-          presenter = ::Packages::Conan::PackagePresenter.new(recipe, current_user, project)
+          presenter = ::Packages::Conan::PackagePresenter.new(
+            recipe,
+            current_user,
+            project,
+            conan_package_reference: params[:conan_package_reference]
+          )
 
           present presenter, with: EE::API::Entities::ConanPackage::ConanPackageSnapshot
         end
