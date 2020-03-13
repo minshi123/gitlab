@@ -15,7 +15,12 @@ module Gitlab
         end
 
         def restore
-          @relation_reader = ImportExport::JSON::LegacyReader::File.new(File.join(shared.export_path, 'project.json'), reader.project_relation_names)
+          @relation_readers = []
+          @relation_readers << ImportExport::JSON::LegacyReader::File.new(File.join(shared.export_path, 'project.json'), reader.project_relation_names)
+          @relation_readers << ImportExport::JSON::NdjsonReader.new(File.join(shared.export_path, 'tree'), :project)
+
+          @relation_reader = @relation_readers.find(&:valid?)
+          raise "missing relation reader for #{shared.export_path}" unless @relation_reader
 
           @project_members = @relation_reader.consume_relation('project_members')
 
