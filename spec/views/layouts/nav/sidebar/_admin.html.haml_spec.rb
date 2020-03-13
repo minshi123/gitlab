@@ -91,4 +91,33 @@ describe 'layouts/nav/sidebar/_admin' do
     it_behaves_like 'page has active tab', 'Monitoring'
     it_behaves_like 'page has active sub tab', 'Background Jobs'
   end
+
+  context 'on settings' do
+    let(:custom_file_templates) { true }
+
+    before do
+      allow(License).to receive(:feature_available?).and_call_original
+      allow(License).to receive(:feature_available?).with(:custom_file_templates) { custom_file_templates }
+
+      render
+    end
+
+    it 'includes General link' do
+      expect(rendered).to have_link('General', href: general_admin_application_settings_path)
+    end
+
+    context 'license with custom_file_templates feature' do
+      it 'includes Templates link' do
+        expect(rendered).to have_link('Templates', href: templates_admin_application_settings_path)
+      end
+    end
+
+    context 'license without custom_file_templates feature' do
+      let(:custom_file_templates) { false }
+
+      it 'does not include Templates link' do
+        expect(rendered).not_to have_link('Templates', href: templates_admin_application_settings_path)
+      end
+    end
+  end
 end
