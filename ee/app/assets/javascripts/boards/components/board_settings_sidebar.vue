@@ -102,14 +102,10 @@ export default {
     },
   },
   created() {
-    eventHub.$on('sidebar.closeAll', (event) => {
-      if (event?.omit !== this.sidebarName) {
-        this.closeSidebar();
-      }
-    });
+    eventHub.$on('sidebar.closeAll', this.closeSidebar);
   },
   beforeDestroy() {
-    eventHub.$off('sidebar.closeAll');
+    eventHub.$off('sidebar.closeAll', this.closeSidebar);
   },
   methods: {
     ...mapActions(['setActiveListId', 'updateListWipLimit']),

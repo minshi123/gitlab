@@ -1,4 +1,4 @@
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import boardPromotionState from 'ee/boards/components/board_promotion_state';
 import { GlTooltip } from '@gitlab/ui';
 import Board from '~/boards/components/board';
@@ -17,6 +17,7 @@ export default Board.extend({
     boardPromotionState,
   },
   computed: {
+    ...mapState(['activeListId']),
     issuesTooltip() {
       const { issuesSize, maxIssueCount } = this.list;
 
@@ -43,7 +44,10 @@ export default Board.extend({
   methods: {
     ...mapActions(['setActiveListId']),
     openSidebarSettings() {
-      eventHub.$emit('sidebar.closeAll', { omit: 'BoardSettingsSidebar' });
+      // If no list is opened, close all sidebars first
+      if (!this.activeListId) {
+        eventHub.$emit('sidebar.closeAll');
+      }
       this.setActiveListId(this.list.id);
     },
   },

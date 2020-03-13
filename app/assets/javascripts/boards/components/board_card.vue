@@ -68,7 +68,10 @@ export default {
     showIssue(e) {
       if (e.target.classList.contains('js-no-trigger')) return;
 
-      sidebarEventHub.$emit('sidebar.closeAll', { omit: 'BoardSidebar' });
+      // If no issues are opened, close all sidebars first
+      if (!boardsStore.detail?.issue?.id) {
+        sidebarEventHub.$emit('sidebar.closeAll');
+      }
 
       // If CMD or CTRL is clicked
       const isMultiSelect = this.canMultiSelect && (e.ctrlKey || e.metaKey);

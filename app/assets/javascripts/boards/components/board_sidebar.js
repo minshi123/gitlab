@@ -103,14 +103,14 @@ export default Vue.extend({
     eventHub.$on('sidebar.addAssignee', this.addAssignee);
     eventHub.$on('sidebar.removeAllAssignees', this.removeAllAssignees);
     eventHub.$on('sidebar.saveAssignees', this.saveAssignees);
-    eventHub.$on('sidebar.closeAll', this.closeAllSidebars);
+    eventHub.$on('sidebar.closeAll', this.closeSidebar);
   },
   beforeDestroy() {
     eventHub.$off('sidebar.removeAssignee', this.removeAssignee);
     eventHub.$off('sidebar.addAssignee', this.addAssignee);
     eventHub.$off('sidebar.removeAllAssignees', this.removeAllAssignees);
     eventHub.$off('sidebar.saveAssignees', this.saveAssignees);
-    eventHub.$off('sidebar.closeAll');
+    eventHub.$off('sidebar.closeAll', this.closeSidebar);
   },
   mounted() {
     new IssuableContext(this.currentUser);
@@ -122,13 +122,6 @@ export default Vue.extend({
   methods: {
     closeSidebar() {
       this.detail.issue = {};
-    },
-    closeAllSidebars(event) {
-      if (event?.omit === this.sidebarName) {
-        return;
-      }
-
-      this.closeSidebar();
     },
     assignSelf() {
       // Notify gl dropdown that we are now assigning to current user
