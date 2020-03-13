@@ -60,9 +60,10 @@ module Gitlab
 
         def consume_relation(key)
           value = relations.delete(key)
-          return if value.nil?
 
           return value unless block_given?
+
+          return if value.nil?
 
           if value.is_a?(Array)
             value.each.with_index do |item, idx|
