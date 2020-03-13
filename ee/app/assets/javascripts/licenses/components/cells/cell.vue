@@ -1,5 +1,5 @@
 <script>
-import _ from 'underscore';
+import { isNumber } from 'lodash';
 
 export default {
   // name: 'Cell' is a false positive: https://gitlab.com/gitlab-org/frontend/eslint-plugin-i18n/issues/25
