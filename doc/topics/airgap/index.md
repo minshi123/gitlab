@@ -9,4 +9,3 @@ Follow these best practices to use GitLab's features in an offline environment:
 
 - [GitLab DAST in an offline, air-gapped installation](../../user/application_security/dast/index.md#running-dast-in-an-offline-air-gapped-installation)
 - [GitLab SAST in an offline, air-gapped installation](../../user/application_security/sast/index.md#gitlab-sast-in-an-offline-air-gapped-installation)
-
