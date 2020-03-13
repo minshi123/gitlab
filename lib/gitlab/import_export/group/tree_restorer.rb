@@ -17,12 +17,12 @@ module Gitlab
         end
 
         def restore
-          @relation_reader = @group_hash.present? ? ImportExport::JSON::LegacyReader::User.new(@group_hash) : ImportExport::JSON::LegacyReader::File.new(@path, reader.group_relation_names)
+          @relation_reader = @group_hash.present? ? ImportExport::JSON::LegacyReader::User.new(@group_hash, reader.group_relation_names) : ImportExport::JSON::LegacyReader::File.new(@path, reader.group_relation_names)
 
-          @group_members = @relation_reader.delete('members')
-          @children = @relation_reader.delete('children')
-          @relation_reader.delete('name')
-          @relation_reader.delete('path')
+          @group_members = @relation_reader.delete_relation('members')
+          @children = @relation_reader.delete_attribute('children')
+          @relation_reader.delete_attribute('name')
+          @relation_reader.delete_attribute('path')
 
           if members_mapper.map && restorer.restore
             @children&.each do |group_hash|
