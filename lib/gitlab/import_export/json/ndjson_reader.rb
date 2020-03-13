@@ -11,6 +11,8 @@ module Gitlab
         def initialize(dir_path, root)
           @dir_path = dir_path
           @root = root
+          @consumed_relations = []
+          @consumed_attributes = []
         end
 
         def valid?
@@ -22,16 +24,20 @@ module Gitlab
         end
 
         def root_attributes(excluded_attributes = [])
+          excluded_attributes.concat(@consumed_attributes).uniq
+
           consume_relation(root) do |hash|
-            return hash.reject do |key, _|
+            hash.reject do |key, _|
               excluded_attributes.include?(key)
             end
           end
-
-          nil
         end
 
         def consume_relation(key)
+          return unless @consumed_relations.include?(key)
+
+          @consumed_relations << key
+
           return unless File.exist?(file_path(key))
 
           File.foreach(file_path(key)).with_index do |line, line_num|
@@ -41,7 +47,7 @@ module Gitlab
         end
 
         def consume_attribute(key)
-          raise NotImplementedError #TODO
+          @consumed_attributes << key
         end
 
         private
