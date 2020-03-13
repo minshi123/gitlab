@@ -1,6 +1,7 @@
 import Filter from 'ee/security_dashboard/components/filter.vue';
 import { mount } from '@vue/test-utils';
 import stubChildren from 'helpers/stub_children';
+import { trimText } from 'helpers/text_helper';
 
 const generateOption = index => ({
   name: `Option ${index}`,
@@ -64,10 +65,9 @@ describe('Filter component', () => {
     });
 
     it('should correctly display the selected text', () => {
-      const selectedText = wrapper.find('.dropdown-toggle').text();
+      const selectedText = trimText(wrapper.find('.dropdown-toggle').text());
 
-      expect(selectedText).toContain(options[0].name);
-      expect(selectedText).toContain('+2 more');
+      expect(selectedText).toBe(`${options[0].name} +2 more`);
     });
 
     it('should display "Severity" as the option name', () => {

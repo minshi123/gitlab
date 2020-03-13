@@ -27,12 +27,11 @@ export default {
     selection() {
       return this.filter.selection;
     },
-    selectedOptionText() {
-      const { options, selection } = this.filter;
-      const firstOption = options.find(filter => selection.has(filter.id)).name || '-';
-      const extraOptionCount = selection.size - 1;
-
-      return { firstOption, extraOptionCount };
+    firstSelectedOption() {
+      return this.filter.options.find(option => this.selection.has(option.id)).name || '-';
+    },
+    extraOptionCount() {
+      return this.selection.size - 1;
     },
     filteredOptions() {
       return this.filter.options.filter(option =>
@@ -63,11 +62,11 @@ export default {
     <gl-dropdown ref="dropdown" class="d-block mt-1" menu-class="dropdown-extended-height">
       <template slot="button-content">
         <span class="text-truncate" :data-qa-selector="qaSelector">
-          {{ selectedOptionText.firstOption }}
+          {{ firstSelectedOption }}
         </span>
-        <span v-if="selectedOptionText.extraOptionCount" class="flex-grow-1 ml-1">
+        <span v-if="extraOptionCount" class="flex-grow-1 ml-1">
           <gl-sprintf :message="__('+%{extraOptionCount} more')">
-            <template #extraOptionCount>{{ selectedOptionText.extraOptionCount }}</template>
+            <template #extraOptionCount>{{ extraOptionCount }}</template>
           </gl-sprintf>
         </span>
 
