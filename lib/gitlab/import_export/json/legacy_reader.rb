@@ -50,6 +50,10 @@ module Gitlab
           raise NotImplementedError
         end
 
+        def legacy?
+          true
+        end
+
         def root_attributes(excluded_attributes = [])
           attributes.except(*excluded_attributes.map(&:to_s))
         end
@@ -69,12 +73,6 @@ module Gitlab
           end
         end
 
-        def transform_relation!(key)
-          return unless relations[key].is_a?(Array)
-
-          yield(relations[key])
-        end
-
         def delete_attribute(key)
           attributes.delete(key)
         end
@@ -83,16 +81,16 @@ module Gitlab
           relations.delete(key)
         end
 
+        def relations
+          @relations ||= tree_hash.extract!(*relation_names)
+        end
+
         protected
 
         attr_reader :relation_names
 
         def tree_hash
           raise NotImplementedError
-        end
-
-        def relations
-          @relations ||= tree_hash.extract!(*relation_names)
         end
 
         def attributes

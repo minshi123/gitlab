@@ -30,7 +30,7 @@ module Gitlab
             bulk_inserts_enabled = @importable.class == ::Project &&
               Feature.enabled?(:import_bulk_inserts, @importable.group)
             BulkInsertableAssociations.with_bulk_insert(enabled: bulk_inserts_enabled) do
-              update_relation_hashes!
+              fix_ci_pipelines_not_sorted_on_legacy_project_json!
               create_relations!
             end
           end
@@ -210,10 +210,13 @@ module Gitlab
         }
       end
 
-      def update_relation_hashes!
-        @relation_reader.transform_relation!('ci_pipelines') do |relation_value|
-          relation_value&.sort_by! { |hash| hash['id'] }
-        end
+      # Temporary fix for https://gitlab.com/gitlab-org/gitlab/-/issues/27883 when import from legacy project.json
+      # This should be removed once legacy JSON format is deprecated.
+      # Ndjson export file will fix the order during project export.
+      def fix_ci_pipelines_not_sorted_on_legacy_project_json!
+        return unless relation_reader.legacy?
+
+        relation_reader.relations['ci_pipelines']&.sort_by! { |hash| hash['id'] }
       end
     end
   end
