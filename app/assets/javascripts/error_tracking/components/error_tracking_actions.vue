@@ -70,7 +70,7 @@ export default {
         :title="resolveBtn.title"
         @click="onStatusUpdate({ errorId: error.id, status: resolveBtn.status })"
       >
-        <gl-icon class="d-none d-md-inline" :name="resolveBtn.icon" :size="12" />
+        <gl-icon class="d-none d-md-inline m-0" :name="resolveBtn.icon" :size="12" />
         <span class="d-md-none">{{ resolveBtn.title }}</span>
       </gl-button>
     </gl-button-group>
