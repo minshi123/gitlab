@@ -8,5 +8,5 @@ This page lists all the information available for running GitLab in an air-gappe
 Follow these best practices to use GitLab's features in an offline environment:
 
 - [GitLab DAST in an offline, air-gapped installation](../user/application_security/dast/index.html#running-dast-in-an-offline-air-gapped-installation)
-- [GitLab SAST in an offline, air-gapped installation](../user/application_security/sast/index.html#gitlab-sast-in-an-offline-air-gapped-installation)
+- [GitLab SAST in an offline, air-gapped installation](../../user/application_security/sast/index.md#gitlab-sast-in-an-offline-air-gapped-installation)
 
