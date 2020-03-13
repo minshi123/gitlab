@@ -13,7 +13,6 @@ import {
   GlDropdownDivider,
   GlTooltipDirective,
   GlPagination,
-  GlButtonGroup,
 } from '@gitlab/ui';
 import AccessorUtils from '~/lib/utils/accessor';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
@@ -81,7 +80,6 @@ export default {
     GlFormInput,
     GlPagination,
     TimeAgo,
-    GlButtonGroup,
     ErrorTrackingActions,
   },
   directives: {
