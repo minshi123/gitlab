@@ -24,10 +24,10 @@ module Gitlab
               ImportExport::JSON::LegacyReader::File.new(@path, reader.group_relation_names)
             end
 
-          @group_members = @relation_reader.delete_relation('members')
-          @children = @relation_reader.delete_attribute('children')
-          @relation_reader.delete_attribute('name')
-          @relation_reader.delete_attribute('path')
+          @group_members = @relation_reader.consume_relation('members')
+          @children = @relation_reader.consume_attribute('children')
+          @relation_reader.consume_attribute('name')
+          @relation_reader.consume_attribute('path')
 
           if members_mapper.map && restorer.restore
             @children&.each do |group_hash|
