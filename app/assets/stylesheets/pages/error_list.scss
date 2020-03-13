@@ -18,6 +18,7 @@
 
         &:last-child {
           background-color: $gray-normal;
+
           &::before {
             content: none !important;
           }
