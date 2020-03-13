@@ -38,7 +38,7 @@ export default {
     tooltipTitle: {
       type: String,
       required: false,
-      default: 'hello',
+      default: null,
     },
   },
   computed: {

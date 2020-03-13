@@ -60,7 +60,7 @@ describe('Changed file icon', () => {
     ${newFile()}     | ${'file-addition'}       | ${'Unstaged addition'}     | ${'with file new'}
   `('$desc', ({ file, iconName, tooltipText }) => {
     beforeEach(() => {
-      factory({ file });
+      factory({ file, tooltipTitle: tooltipText });
     });
 
     it('renders icon', () => {
