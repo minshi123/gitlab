@@ -70,9 +70,8 @@ $ sudo mkdir -p /etc/docker/certs.d/my-host.internal:5000
 $ sudo cp /etc/gitlab/ssl/my-host.internal.crt /etc/docker/certs.d/my-host.internal:5000/ca.crt
 ```
 
-[Following the steps for using trusted certificates with our runner](../../runner/install/docker.html#installing-trusted-ssl-server-certificates), we must provide our gitlab runner (to be installed next) with our certs.
-
-- 
+Provide your GitLab Runner (to be installed next) with your certs by
+[following the steps for using trusted certificates with your Runner](https://docs.gitlab.com/runner/install/docker.html#installing-trusted-ssl-server-certificates):
 
 ```shell
 $ sudo mkdir -p /etc/gitlab-runner/certs
