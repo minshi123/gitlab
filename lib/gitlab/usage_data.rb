@@ -107,10 +107,12 @@ module Gitlab
             suggestions: count(Suggestion),
             todos: count(Todo),
             uploads: count(Upload),
-            web_hooks: count(WebHook)
+            web_hooks: count(WebHook),
+            labels: count(Label),
+            merge_requests: count(MergeRequest),
+            notes: count(Note)
           }.merge(
             services_usage,
-            approximate_counts,
             usage_counters,
             user_preferences_usage,
             ingress_modsecurity_usage
