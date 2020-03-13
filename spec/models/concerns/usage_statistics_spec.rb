@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe EE::UsageStatistics do
+describe UsageStatistics do
   describe '.distinct_count_by' do
     let(:user_1) { create(:user) }
     let(:user_2) { create(:user) }
