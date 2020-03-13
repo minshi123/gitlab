@@ -17,9 +17,9 @@ describe('Remediated badge component', () => {
 
   it('should link the badge and the popover', () => {
     const badge = wrapper.find(GlBadge);
-    const popover = wrapper.find(GlPopover);
+    const { popover } = wrapper.vm.$refs;
 
-    expect(badge.attributes().id).toEqual(popover.attributes().target);
+    expect(popover.$attrs.target()).toEqual(badge.element);
   });
 
   it('should pass down the data to the popover', () => {

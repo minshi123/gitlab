@@ -1,6 +1,5 @@
 <script>
 import { __ } from '~/locale';
-import { uniqueId } from 'underscore';
 import { GlBadge, GlPopover } from '@gitlab/ui';
 
 export default {
@@ -9,9 +8,6 @@ export default {
     GlBadge,
     GlPopover,
   },
-  data: () => ({
-    popoverId: uniqueId('remediated_badge_'),
-  }),
   strings: {
     badgeContent: __('Remediated: needs review'),
     popoverTitle: __('Vulnerability remediated. Review before resolving.'),
@@ -24,10 +20,11 @@ export default {
 
 <template>
   <div class="d-inline-block">
-    <gl-badge :id="popoverId" variant="info">{{ $options.strings.badgeContent }}</gl-badge>
+    <gl-badge ref="badge" variant="info">{{ $options.strings.badgeContent }}</gl-badge>
     <gl-popover
+      ref="popover"
       :content="$options.strings.popoverContent"
-      :target="popoverId"
+      :target="() => $refs.badge.$el"
       :title="$options.strings.popoverTitle"
       placement="top"
       triggers="hover focus"
