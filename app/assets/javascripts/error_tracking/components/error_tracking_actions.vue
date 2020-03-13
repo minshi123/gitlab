@@ -59,7 +59,7 @@ export default {
         :title="ignoreBtn.title"
         @click="onStatusUpdate({ errorId: error.id, status: ignoreBtn.status })"
       >
-        <gl-icon class="d-none d-md-inline" :name="ignoreBtn.icon" :size="12" />
+        <gl-icon class="d-none d-md-inline m-0" :name="ignoreBtn.icon" :size="12" />
         <span class="d-md-none">{{ ignoreBtn.title }}</span>
       </gl-button>
       <gl-button
