@@ -12,7 +12,8 @@ module Metrics
       steps :check_push_authorized,
         :check_branch_name,
         :check_file_type,
-        :update_file
+        :update_file,
+        :create_merge_request
 
       def execute
         execute_steps
@@ -49,8 +50,16 @@ module Metrics
         end
       end
 
-      # def create_merge_request(result)
-      # end
+      def create_merge_request(result)
+        merge_request_params = { source_branch: branch, target_branch: project.default_branch, title: params[:commit_message] }
+        merge_request_response = ::MergeRequests::CreateService.new(project, current_user, merge_request_params).execute
+
+        if merge_request_response[:status] == :success
+          success(result.merge(merge_request_response, http_status: :created, dashboard: dashboard_details))
+        else
+          error(merge_request_response[:message], :bad_request)
+        end
+      end
 
       def push_authorized?
         Gitlab::UserAccess.new(current_user, project: project).can_push_to_branch?(branch)
