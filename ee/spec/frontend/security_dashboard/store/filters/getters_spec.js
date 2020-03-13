@@ -1,17 +1,11 @@
 import createState from 'ee/security_dashboard/store/modules/filters/state';
 import * as getters from 'ee/security_dashboard/store/modules/filters/getters';
-import { BASE_FILTERS } from 'ee/security_dashboard/store/modules/filters/constants';
 
 describe('filters module getters', () => {
   const mockedGetters = state => {
     const getFilter = filterId => getters.getFilter(state)(filterId);
-    const getSelectedOptions = filterId =>
-      getters.getSelectedOptions(state, { getFilter })(filterId);
 
-    return {
-      getFilter,
-      getSelectedOptions,
-    };
+    return { getFilter };
   };
   let state;
 
@@ -24,64 +18,6 @@ describe('filters module getters', () => {
       const typeFilter = getters.getFilter(state)('report_type');
 
       expect(typeFilter.name).toEqual('Report type');
-    });
-  });
-
-  describe('getSelectedOptions', () => {
-    describe('with one selected option', () => {
-      it('should return the base filter as the selected option', () => {
-        const selectedOptions = getters.getSelectedOptions(state, mockedGetters(state))(
-          'report_type',
-        );
-
-        expect(selectedOptions).toHaveLength(1);
-        expect(selectedOptions[0].name).toBe(BASE_FILTERS.report_type.name);
-      });
-    });
-
-    describe('with multiple selected options', () => {
-      it('should return both "High" and "Critical" ', () => {
-        state = {
-          filters: [
-            {
-              id: 'severity',
-              options: [{ id: 'critical' }, { id: 'high' }],
-              selection: new Set(['critical', 'high']),
-            },
-          ],
-        };
-        const selectedOptions = getters.getSelectedOptions(state, mockedGetters(state))('severity');
-
-        expect(selectedOptions).toHaveLength(2);
-      });
-    });
-  });
-
-  describe('getSelectedOptionNames', () => {
-    it('should return the base filter as the selected option', () => {
-      const selectedOptionNames = getters.getSelectedOptionNames(state, mockedGetters(state))(
-        'severity',
-      );
-
-      expect(selectedOptionNames.firstOption).toBe(BASE_FILTERS.severity.name);
-      expect(selectedOptionNames.extraOptionCount).toBe('');
-    });
-
-    it('should return the correct message when multiple filters are selected', () => {
-      state = {
-        filters: [
-          {
-            id: 'severity',
-            options: [{ name: 'Critical', id: 1 }, { name: 'High', id: 2 }],
-            selection: new Set([1, 2]),
-          },
-        ],
-      };
-      const selectedOptionNames = getters.getSelectedOptionNames(state, mockedGetters(state))(
-        'severity',
-      );
-
-      expect(selectedOptionNames).toEqual({ firstOption: 'Critical', extraOptionCount: '+1 more' });
     });
   });
 
