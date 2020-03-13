@@ -1,17 +1,17 @@
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import { GlDropdown, GlSearchBoxByType } from '@gitlab/ui';
+import { GlDropdown, GlSearchBoxByType, GlSprintf } from '@gitlab/ui';
 import Icon from '~/vue_shared/components/icon.vue';
 
 export default {
   components: {
     GlDropdown,
     GlSearchBoxByType,
+    GlSprintf,
     Icon,
   },
   props: {
-    filterId: {
-      type: String,
+    filter: {
+      type: Object,
       required: true,
     },
   },
@@ -21,15 +21,18 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('filters', ['getFilter', 'getSelectedOptions', 'getSelectedOptionNames']),
-    filter() {
-      return this.getFilter(this.filterId);
+    filterId() {
+      return this.filter.id;
     },
     selection() {
-      return this.getFilter(this.filterId).selection;
+      return this.filter.selection;
     },
     selectedOptionText() {
-      return this.getSelectedOptionNames(this.filterId) || '-';
+      const { options, selection } = this.filter;
+      const firstOption = options.find(filter => selection.has(filter.id)).name || '-';
+      const extraOptionCount = selection.size - 1;
+
+      return { firstOption, extraOptionCount };
     },
     filteredOptions() {
       return this.filter.options.filter(option =>
@@ -41,12 +44,8 @@ export default {
     },
   },
   methods: {
-    ...mapActions('filters', ['setFilter']),
     clickFilter(option) {
-      this.setFilter({
-        filterId: this.filterId,
-        optionId: option.id,
-      });
+      this.$emit('setFilter', { filterId: this.filterId, optionId: option.id });
     },
     isSelected(option) {
       return this.selection.has(option.id);
@@ -67,7 +66,9 @@ export default {
           {{ selectedOptionText.firstOption }}
         </span>
         <span v-if="selectedOptionText.extraOptionCount" class="flex-grow-1 ml-1">
-          {{ selectedOptionText.extraOptionCount }}
+          <gl-sprintf :message="__('+%{extraOptionCount} more')">
+            <template #extraOptionCount>{{ selectedOptionText.extraOptionCount }}</template>
+          </gl-sprintf>
         </span>
 
         <i class="fa fa-chevron-down" aria-hidden="true"></i>

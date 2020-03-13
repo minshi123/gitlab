@@ -1,6 +1,8 @@
 import { sprintf, __ } from '~/locale';
 import { isBaseFilterOption } from './utils';
 
+// TODO: Clear this up, I'm pretty sure a few of these are no-longer used.
+
 export const getFilter = state => filterId => state.filters.find(filter => filter.id === filterId);
 
 export const getSelectedOptions = (state, getters) => filterId => {
