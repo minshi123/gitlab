@@ -2,7 +2,6 @@
 
 module Gitlab
   class UsageData
-    APPROXIMATE_COUNT_MODELS = [Label, MergeRequest, Note, Todo].freeze
     BATCH_SIZE = 100
 
     class << self
@@ -251,16 +250,6 @@ module Gitlab
         end
       rescue ActiveRecord::StatementInvalid
         fallback
-      end
-
-      def approximate_counts
-        approx_counts = Gitlab::Database::Count.approximate_counts(APPROXIMATE_COUNT_MODELS)
-
-        APPROXIMATE_COUNT_MODELS.each_with_object({}) do |model, result|
-          key = model.name.underscore.pluralize.to_sym
-
-          result[key] = approx_counts[model] || -1
-        end
       end
 
       def installation_type
