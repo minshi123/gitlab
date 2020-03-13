@@ -25,13 +25,15 @@ module Projects
         sast: 'user/application_security/sast/index'
       }.freeze
 
+      SCAN_LICENSE_COMPLIANCE_KEY = 'License Scanning'.freeze
+
       SCAN_NAMES = {
-        container_scanning: _('Container Scanning'),
-        dast: _('Dynamic Application Security Testing (DAST)'),
-        dependency_scanning: _('Dependency Scanning'),
-        license_management: _('License Compliance'),
-        license_scanning: ('License Scanning'),
-        sast: _('Static Application Security Testing (SAST)')
+      container_scanning: _('Container Scanning'),
+      dast: _('Dynamic Application Security Testing (DAST)'),
+      dependency_scanning: _('Dependency Scanning'),
+      license_management: _('License Compliance'),
+      license_scanning: SCAN_LICENSE_COMPLIANCE_KEY,
+      sast: _('Static Application Security Testing (SAST)')
       }.freeze
 
       def to_h
@@ -91,14 +93,14 @@ module Projects
       end
 
       def license_compliance_substitute(scans)
-        license_scanning = scans.find { |scan_type| scan_type[:name] == 'License Scanning' }
+        license_scanning = scans.find { |scan_type| scan_type[:name] == SCAN_LICENSE_COMPLIANCE_KEY }
 
-        scans.delete_if { |scan_type| scan_type[:name] == 'License Scanning' }
+        scans.delete_if { |scan_type| scan_type[:name] == SCAN_LICENSE_COMPLIANCE_KEY }
         license_compliance_config = license_scanning[:configured]
 
         if license_compliance_config
           scans.map do |scan_type|
-            scan_type[:configured] = true if scan_type[:name] == 'License Compliance'
+            scan_type[:configured] = true if scan_type[:name] == _('License Compliance')
           end
         end
 
