@@ -23,26 +23,28 @@ $ sudo EXTERNAL_URL="http://my-host.internal" install gitlab-ee
 ```
 ## Enabling SSL
 
-[Following the steps for Omnibus manual nginx SSL configuration](../../omnibus/settings/nginx.html#manually-configuring-https), let's enable SSL for our fresh instance.
+Follow these steps to enable SSL for your fresh instance. Note that these steps reflect those for
+[manually configuring SSL in Omnibus's NGINX configuration](https://docs.gitlab.com/omnibus/settings/nginx.html#manually-configuring-https):
 
-Make the following changes to `/etc/gitlab/gitlab.rb`:
+1. Make the following changes to `/etc/gitlab/gitlab.rb`:
 
-- Update `external_url` from "http" to "https"
-- Replace `# letsencrypt['enable'] = nil` with `letsencrypt['enable'] = false`
+   - Update `external_url` from `"http"` to `"https"`.
+   - Replace `# letsencrypt['enable'] = nil` with `letsencrypt['enable'] = false`.
 
-Create the following directories with the appropriate permissions for generating self-signed certificates:
+1. Create the following directories with the appropriate permissions for generating self-signed
+   certificates:
 
-```shell
-$ sudo mkdir -p /etc/gitlab/ssl
-$ sudo chmod 755 /etc/gitlab/ssl
-$ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/gitlab/ssl/my-host.internal.key -out /etc/gitlab/ssl/my-host.internal.crt
-```
+   ```shell
+   $ sudo mkdir -p /etc/gitlab/ssl
+   $ sudo chmod 755 /etc/gitlab/ssl
+   $ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/gitlab/ssl/my-host.internal.key -out /etc/gitlab/ssl/my-host.internal.crt
+   ```
 
-To apply the changes, now reconfigure your instance:
+1. Reconfigure your instance to apply the changes:
 
-```shell
-$ sudo gitlab-ctl reconfigure
-```
+   ```shell
+   $ sudo gitlab-ctl reconfigure
+   ```
 
 ## Enabling the GitLab Container Registry
 
