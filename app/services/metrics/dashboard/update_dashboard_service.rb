@@ -49,6 +49,9 @@ module Metrics
         end
       end
 
+      # def create_merge_request(result)
+      # end
+
       def push_authorized?
         Gitlab::UserAccess.new(current_user, project: project).can_push_to_branch?(branch)
       end
