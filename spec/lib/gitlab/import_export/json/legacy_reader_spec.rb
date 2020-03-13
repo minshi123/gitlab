@@ -73,6 +73,13 @@ describe Gitlab::ImportExport::JSON::LegacyReader::File do
     let(:path) { fixture }
     let(:key) { 'description' }
 
+    context 'block not given' do
+      it 'returns value of the key' do
+        expect(legacy_reader).to receive(:relations).and_return({ key => 'test value' })
+        expect(legacy_reader.consume_relation(key)).to eq('test value')
+      end
+    end
+
     context 'key has been consumed' do
       before do
         legacy_reader.consume_relation(key)
