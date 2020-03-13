@@ -4335,4 +4335,36 @@ describe User, :do_not_mock_admin_mode do
       it { expect(user.user_detail).to be_persisted }
     end
   end
+
+  describe '#headless?' do
+    subject { user.special_user? }
+
+    let!(:user) { build(:user) }
+
+    context 'when bot user' do
+      before do
+        user.bot_type = 'alert_bot'
+      end
+
+      it 'returns true' do
+        expect(subject).to be true
+      end
+    end
+
+    context 'when ghost user' do
+      before do
+        user.ghost = true
+      end
+
+      it 'returns true' do
+        expect(subject).to be true
+      end
+    end
+
+    context 'when normal user' do
+      it 'returns false' do
+        expect(subject).to be false
+      end
+    end
+  end
 end

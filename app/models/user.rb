@@ -1672,8 +1672,8 @@ class User < ApplicationRecord
     callouts.any?
   end
 
-  def editable?
-    false
+  def headless?
+    ghost? || bot?
   end
 
   # @deprecated
