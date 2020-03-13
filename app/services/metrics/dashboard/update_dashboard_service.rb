@@ -51,13 +51,15 @@ module Metrics
       end
 
       def create_merge_request(result)
-        merge_request_params = { source_branch: branch, target_branch: project.default_branch, title: params[:commit_message] }
-        merge_request_response = ::MergeRequests::CreateService.new(project, current_user, merge_request_params).execute
+        return success(result) if project.default_branch == params[:branch]
 
-        if merge_request_response[:status] == :success
-          success(result.merge(merge_request_response, http_status: :created, dashboard: dashboard_details))
+        merge_request_params = { source_branch: branch, target_branch: project.default_branch }
+        merge_request = ::MergeRequests::CreateService.new(project, current_user, merge_request_params).execute
+
+        if merge_request.persisted?
+          success(result.merge(merge_request: Gitlab::UrlBuilder.build(merge_request)))
         else
-          error(merge_request_response[:message], :bad_request)
+          error(merge_request.errors.full_messages.join(','), :bad_request)
         end
       end
 
