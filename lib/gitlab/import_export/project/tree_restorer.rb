@@ -17,7 +17,7 @@ module Gitlab
         def restore
           @relation_reader = ImportExport::JSON::LegacyReader::File.new(File.join(shared.export_path, 'project.json'), reader.project_relation_names)
 
-          @project_members = @relation_reader.delete_relation('project_members')
+          @project_members = @relation_reader.consume_relation('project_members')
 
           if relation_tree_restorer.restore
             import_failure_service.with_retry(action: 'set_latest_merge_request_diff_ids!') do

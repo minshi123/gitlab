@@ -59,10 +59,10 @@ module Gitlab
         end
 
         def consume_relation(key)
-          value = delete_relation(key)
+          value = relations.delete(key)
           return if value.nil?
 
-          return unless block_given?
+          return value unless block_given?
 
           if value.is_a?(Array)
             value.each.with_index do |item, idx|
@@ -73,12 +73,8 @@ module Gitlab
           end
         end
 
-        def delete_attribute(key)
+        def consume_attribute(key)
           attributes.delete(key)
-        end
-
-        def delete_relation(key)
-          relations.delete(key)
         end
 
         def relations

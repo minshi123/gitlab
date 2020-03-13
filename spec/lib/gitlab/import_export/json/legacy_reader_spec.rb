@@ -73,9 +73,9 @@ describe Gitlab::ImportExport::JSON::LegacyReader::File do
     let(:path) { fixture }
     let(:key) { 'description' }
 
-    context 'key has been deleted' do
+    context 'key has been consumed' do
       before do
-        legacy_reader.delete_relation(key)
+        legacy_reader.consume_relation(key)
       end
 
       it 'does not yield' do
