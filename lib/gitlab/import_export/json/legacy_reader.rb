@@ -28,8 +28,9 @@ module Gitlab
         end
 
         class User < LegacyReader
-          def initialize(tree_hash)
+          def initialize(tree_hash, relation_names)
             @tree_hash = tree_hash
+            super(relation_names)
           end
 
           def valid?
@@ -54,7 +55,7 @@ module Gitlab
         end
 
         def consume_relation(key)
-          value = delete(key)
+          value = delete_relation(key)
           return if value.nil?
 
           return unless block_given?
@@ -74,7 +75,11 @@ module Gitlab
           yield(relations[key])
         end
 
-        def delete(key)
+        def delete_attribute(key)
+          attributes.delete(key)
+        end
+
+        def delete_relation(key)
           relations.delete(key)
         end
 
@@ -87,11 +92,11 @@ module Gitlab
         end
 
         def relations
-          @relations ||= tree_hash.slice(*relation_names)
+          @relations ||= tree_hash.extract!(*relation_names)
         end
 
         def attributes
-          @attributes ||= tree_hash.except!(*relation_names)
+          @attributes ||= tree_hash.slice!(*relation_names)
         end
       end
     end

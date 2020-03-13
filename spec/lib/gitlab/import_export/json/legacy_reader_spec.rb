@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 describe Gitlab::ImportExport::JSON::LegacyReader::User do
-  let(:legacy_reader) { described_class.new(tree_hash) }
+  let(:relation_names) { [] }
+  let(:legacy_reader) { described_class.new(tree_hash, relation_names) }
 
   describe '#valid?' do
     subject { legacy_reader.valid? }
@@ -74,7 +75,7 @@ describe Gitlab::ImportExport::JSON::LegacyReader::File do
 
     context 'key has been deleted' do
       before do
-        legacy_reader.delete(key)
+        legacy_reader.delete_relation(key)
       end
 
       it 'does not yield' do
