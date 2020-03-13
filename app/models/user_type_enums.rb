@@ -2,7 +2,7 @@
 
 module UserTypeEnums
   def self.types
-    bots
+    bots.merge(ghost: 5)
   end
 
   def self.bots
