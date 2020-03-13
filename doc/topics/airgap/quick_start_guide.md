@@ -121,7 +121,8 @@ sudo docker run -d --restart always --name gitlab-runner -v /etc/gitlab-runner:/
 
 ### Authenticating the registry against the host OS
 
-As noted in [Docker's registry authentication documentation](../../registry/insecure/#docker-still-complains-about-the-certificate-when-using-authentication), certain versions of docker require trusting the certificate chain at the OS level itself.
+As noted in [Docker's registry authentication documentation](https://docs.docker.com/registry/insecure/#docker-still-complains-about-the-certificate-when-using-authentication),
+certain versions of Docker require trusting the certificate chain at the OS level.
 
 In the case of Ubuntu, this involves using `update-ca-certificates`:
 
