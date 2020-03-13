@@ -13,7 +13,6 @@ export default {
     GlButton,
     GlIcon,
     GlButtonGroup,
-    GlTooltipDirective,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
