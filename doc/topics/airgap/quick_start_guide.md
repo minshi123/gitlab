@@ -44,7 +44,7 @@ To apply the changes, now reconfigure your instance:
 $ sudo gitlab-ctl reconfigure
 ```
 
-## Enabling GitLab Container Registry
+## Enabling the GitLab Container Registry
 
 [Following the steps for configuring the container registry under an existing domain](../../ee/administration/packages/container_registry.html#configure-container-registry-under-an-existing-gitlab-domain), let's enable the registry.
 
