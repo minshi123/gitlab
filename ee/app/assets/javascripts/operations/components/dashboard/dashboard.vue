@@ -1,5 +1,5 @@
 <script>
-import _ from 'underscore';
+import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'vuex';
 import { GlModal, GlModalDirective, GlButton, GlDashboardSkeleton } from '@gitlab/ui';
 import VueDraggable from 'vuedraggable';
@@ -58,7 +58,7 @@ export default {
       return this.searchCount > 0;
     },
     okDisabled() {
-      return _.isEmpty(this.selectedProjects);
+      return isEmpty(this.selectedProjects);
     },
   },
   created() {
