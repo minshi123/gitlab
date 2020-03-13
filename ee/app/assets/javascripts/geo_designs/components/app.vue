@@ -32,16 +32,16 @@ export default {
     },
   },
   computed: {
-    ...mapState(['isLoading', 'totalDesigns']),
+    ...mapState(['isLoading', 'totalReplicableItems']),
     hasDesigns() {
-      return this.totalDesigns > 0;
+      return this.totalReplicableItems > 0;
     },
   },
   created() {
-    this.fetchDesigns();
+    this.fetchReplicableItems();
   },
   methods: {
-    ...mapActions(['fetchDesigns']),
+    ...mapActions(['fetchReplicableItems']),
   },
 };
 </script>

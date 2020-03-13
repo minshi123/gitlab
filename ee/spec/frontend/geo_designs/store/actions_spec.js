@@ -71,7 +71,7 @@ describe('GeoDesigns Store Actions', () => {
     });
   });
 
-  describe('fetchDesigns', () => {
+  describe('fetchReplicableItems', () => {
     describe('on success', () => {
       beforeEach(() => {
         mock
@@ -81,7 +81,7 @@ describe('GeoDesigns Store Actions', () => {
 
       it('should dispatch the request and success actions', done => {
         testAction(
-          actions.fetchDesigns,
+          actions.fetchReplicableItems,
           {},
           state,
           [],
@@ -101,7 +101,7 @@ describe('GeoDesigns Store Actions', () => {
 
       it('should dispatch the request and error actions', done => {
         testAction(
-          actions.fetchDesigns,
+          actions.fetchReplicableItems,
           {},
           state,
           [],
@@ -120,7 +120,7 @@ describe('GeoDesigns Store Actions', () => {
     });
 
     describe('no params set', () => {
-      it('should call fetchDesigns with default queryParams', () => {
+      it('should call fetchReplicableItems with default queryParams', () => {
         state.isLoading = true;
 
         function fetchDesignsCall() {
@@ -132,7 +132,7 @@ describe('GeoDesigns Store Actions', () => {
         }
 
         testAction(
-          actions.fetchDesigns,
+          actions.fetchReplicableItems,
           {},
           state,
           [],
@@ -146,7 +146,7 @@ describe('GeoDesigns Store Actions', () => {
     });
 
     describe('with params set', () => {
-      it('should call fetchDesigns with queryParams', () => {
+      it('should call fetchReplicableItems with queryParams', () => {
         state.isLoading = true;
         state.currentPage = 3;
         state.searchFilter = 'test search';
@@ -163,7 +163,7 @@ describe('GeoDesigns Store Actions', () => {
         }
 
         testAction(
-          actions.fetchDesigns,
+          actions.fetchReplicableItems,
           {},
           state,
           [],
@@ -222,7 +222,7 @@ describe('GeoDesigns Store Actions', () => {
     });
   });
 
-  describe('initiateAllDesignSyncs', () => {
+  describe('initiateAllReplicableSyncs', () => {
     let action;
 
     describe('on success', () => {
@@ -234,7 +234,7 @@ describe('GeoDesigns Store Actions', () => {
 
       it('should dispatch the request and success actions', done => {
         testAction(
-          actions.initiateAllDesignSyncs,
+          actions.initiateAllReplicableSyncs,
           action,
           state,
           [],
@@ -256,7 +256,7 @@ describe('GeoDesigns Store Actions', () => {
 
       it('should dispatch the request and error actions', done => {
         testAction(
-          actions.initiateAllDesignSyncs,
+          actions.initiateAllReplicableSyncs,
           action,
           state,
           [],
@@ -315,7 +315,7 @@ describe('GeoDesigns Store Actions', () => {
     });
   });
 
-  describe('initiateDesignSync', () => {
+  describe('initiateReplicableSync', () => {
     let action;
     let projectId;
     let name;
@@ -331,7 +331,7 @@ describe('GeoDesigns Store Actions', () => {
 
       it('should dispatch the request and success actions', done => {
         testAction(
-          actions.initiateDesignSync,
+          actions.initiateReplicableSync,
           { projectId, name, action },
           state,
           [],
@@ -355,7 +355,7 @@ describe('GeoDesigns Store Actions', () => {
 
       it('should dispatch the request and error actions', done => {
         testAction(
-          actions.initiateDesignSync,
+          actions.initiateReplicableSync,
           { projectId, name, action },
           state,
           [],

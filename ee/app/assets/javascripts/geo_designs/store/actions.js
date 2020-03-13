@@ -19,7 +19,7 @@ export const receiveReplicableItemsError = ({ commit }) => {
   commit(types.RECEIVE_REPLICABLE_ITEMS_ERROR);
 };
 
-export const fetchDesigns = ({ state, dispatch }) => {
+export const fetchReplicableItems = ({ state, dispatch }) => {
   dispatch('requestReplicableItems');
 
   const statusFilterName = state.filterOptions[state.currentFilterIndex]
@@ -61,7 +61,7 @@ export const receiveInitiateAllReplicableSyncsError = ({ commit }) => {
   commit(types.RECEIVE_INITIATE_ALL_REPLICABLE_SYNCS_ERROR);
 };
 
-export const initiateAllDesignSyncs = ({ dispatch }, action) => {
+export const initiateAllReplicableSyncs = ({ dispatch }, action) => {
   dispatch('requestInitiateAllReplicableSyncs');
 
   Api.initiateAllGeoDesignSyncs(action)
@@ -84,7 +84,7 @@ export const receiveInitiateReplicableSyncError = ({ commit }, { name }) => {
   commit(types.RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR);
 };
 
-export const initiateDesignSync = ({ dispatch }, { projectId, name, action }) => {
+export const initiateReplicableSync = ({ dispatch }, { projectId, name, action }) => {
   dispatch('requestInitiateReplicableSync');
 
   Api.initiateGeoDesignSync({ projectId, action })

@@ -28,7 +28,7 @@ describe('GeoDesignsApp', () => {
   };
 
   const actionSpies = {
-    fetchDesigns: jest.fn(),
+    fetchReplicableItems: jest.fn(),
     setEndpoint: jest.fn(),
   };
 
@@ -89,10 +89,10 @@ describe('GeoDesignsApp', () => {
         wrapper.vm.$store.state.isLoading = false;
       });
 
-      describe('with designs', () => {
+      describe('with replicableItems', () => {
         beforeEach(() => {
-          wrapper.vm.$store.state.designs = MOCK_BASIC_FETCH_DATA_MAP.data;
-          wrapper.vm.$store.state.totalDesigns = MOCK_BASIC_FETCH_DATA_MAP.total;
+          wrapper.vm.$store.state.replicableItems = MOCK_BASIC_FETCH_DATA_MAP.data;
+          wrapper.vm.$store.state.totalReplicableItems = MOCK_BASIC_FETCH_DATA_MAP.total;
         });
 
         it('shows designs', () => {
@@ -108,10 +108,10 @@ describe('GeoDesignsApp', () => {
         });
       });
 
-      describe('with no designs', () => {
+      describe('with no replicableItems', () => {
         beforeEach(() => {
-          wrapper.vm.$store.state.designs = [];
-          wrapper.vm.$store.state.totalDesigns = 0;
+          wrapper.vm.$store.state.replicableItems = [];
+          wrapper.vm.$store.state.totalReplicableItems = 0;
         });
 
         it('hides designs', () => {
@@ -134,8 +134,8 @@ describe('GeoDesignsApp', () => {
       createComponent();
     });
 
-    it('calls fetchDesigns', () => {
-      expect(actionSpies.fetchDesigns).toHaveBeenCalled();
+    it('calls fetchReplicableItems', () => {
+      expect(actionSpies.fetchReplicableItems).toHaveBeenCalled();
     });
   });
 });

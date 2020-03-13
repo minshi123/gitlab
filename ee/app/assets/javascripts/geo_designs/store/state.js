@@ -3,8 +3,8 @@ import { FILTER_STATES } from './constants';
 const createState = () => ({
   isLoading: false,
 
-  designs: [],
-  totalDesigns: 0,
+  replicableItems: [],
+  totalReplicableItems: 0,
   pageSize: 0,
   currentPage: 1,
 
