@@ -940,6 +940,14 @@ module Ci
         failure_reason: :data_integrity_failure)
     end
 
+    def each_report(report_types)
+      job_artifacts_for_types(report_types).each do |report_artifact|
+        report_artifact.each_blob do |blob|
+          yield report_artifact.file_type, blob, report_artifact
+        end
+      end
+    end
+
     private
 
     def build_data
@@ -951,14 +959,6 @@ module Ci
         :last
       else
         :out_of_date
-      end
-    end
-
-    def each_report(report_types)
-      job_artifacts_for_types(report_types).each do |report_artifact|
-        report_artifact.each_blob do |blob|
-          yield report_artifact.file_type, blob, report_artifact
-        end
       end
     end
 
