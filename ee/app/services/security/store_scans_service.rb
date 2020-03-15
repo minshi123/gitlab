@@ -15,7 +15,7 @@ module Security
           Security::Scan.safe_find_or_create_by!(
             build: @build,
             scan_type: file_type,
-            scanned_resources_count: job_artifact_json['scan']['scanned_resources'].length()
+            scanned_resources_count: job_artifact_json['scan']['scanned_resources'].length
           )
         end
       end
