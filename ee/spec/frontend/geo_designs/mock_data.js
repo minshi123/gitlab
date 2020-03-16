@@ -41,3 +41,5 @@ export const MOCK_BASIC_FETCH_DATA_MAP = {
 export const MOCK_BASIC_POST_RESPONSE = {
   status: 'ok',
 };
+
+export const MOCK_REPLICATION_URL = `/api/${window.gon.api_version}/geo_replication`;
