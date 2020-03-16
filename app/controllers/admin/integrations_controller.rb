@@ -12,10 +12,22 @@ class Admin::IntegrationsController < Admin::ApplicationController
   def update
     @service.attributes = service_params[:service]
 
-    if @service.save(context: :manual_change)
-      redirect_to edit_admin_application_settings_integration_path(@service), notice: success_message
-    else
-      render :edit
+    saved = @service.save(context: :manual_change)
+
+    respond_to do |format|
+      format.html do
+        if saved
+          redirect_to edit_admin_application_settings_integration_path(@service), notice: success_message
+        else
+          render :edit
+        end
+      end
+
+      format.json do
+        status = saved ? :ok : :unprocessable_entity
+
+        render json: serialize_as_json, status: status
+      end
     end
   end
 
@@ -46,6 +58,12 @@ class Admin::IntegrationsController < Admin::ApplicationController
     message = @service.active? ? _('activated') : _('settings saved, but not activated')
 
     _('%{service_title} %{message}.') % { service_title: @service.title, message: message }
+  end
+
+  def serialize_as_json
+    @service
+      .as_json(only: @service.json_fields)
+      .merge(errors: @service.errors.as_json)
   end
 
   def service_test_response
