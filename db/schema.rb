@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_12_163407) do
+ActiveRecord::Schema.define(version: 2020_03_14_060834) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3877,6 +3877,7 @@ ActiveRecord::Schema.define(version: 2020_03_12_163407) do
     t.datetime_with_timezone "updated_at", null: false
     t.bigint "build_id", null: false
     t.integer "scan_type", limit: 2, null: false
+    t.integer "scanned_resources_count", default: 0, null: false
     t.index ["build_id", "scan_type"], name: "idx_security_scans_on_build_and_scan_type", unique: true
     t.index ["scan_type"], name: "idx_security_scans_on_scan_type"
   end
