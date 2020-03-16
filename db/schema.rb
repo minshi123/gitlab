@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_14_060834) do
+ActiveRecord::Schema.define(version: 2020_03_12_163407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -344,11 +344,11 @@ ActiveRecord::Schema.define(version: 2020_03_14_060834) do
     t.boolean "updating_name_disabled_for_users", default: false, null: false
     t.integer "instance_administrators_group_id"
     t.integer "elasticsearch_indexed_field_length_limit", default: 0, null: false
+    t.integer "elasticsearch_max_bulk_size_mb", limit: 2, default: 10, null: false
+    t.integer "elasticsearch_max_bulk_concurrency", limit: 2, default: 10, null: false
     t.boolean "disable_overriding_approvers_per_merge_request", default: false, null: false
     t.boolean "prevent_merge_requests_author_approval", default: false, null: false
     t.boolean "prevent_merge_requests_committers_approval", default: false, null: false
-    t.integer "elasticsearch_max_bulk_size_mb", limit: 2, default: 10, null: false
-    t.integer "elasticsearch_max_bulk_concurrency", limit: 2, default: 10, null: false
     t.boolean "email_restrictions_enabled", default: false, null: false
     t.text "email_restrictions"
     t.boolean "npm_package_requests_forwarding", default: true, null: false
@@ -1527,6 +1527,7 @@ ActiveRecord::Schema.define(version: 2020_03_14_060834) do
     t.string "state", default: "available", null: false
     t.string "slug", null: false
     t.datetime_with_timezone "auto_stop_at"
+    t.index ["auto_stop_at"], name: "index_environments_on_auto_stop_at", where: "(auto_stop_at IS NOT NULL)"
     t.index ["name"], name: "index_environments_on_name_varchar_pattern_ops", opclass: :varchar_pattern_ops
     t.index ["project_id", "name"], name: "index_environments_on_project_id_and_name", unique: true
     t.index ["project_id", "slug"], name: "index_environments_on_project_id_and_slug", unique: true
@@ -2834,7 +2835,6 @@ ActiveRecord::Schema.define(version: 2020_03_14_060834) do
     t.index ["created_at"], name: "index_notes_on_created_at"
     t.index ["discussion_id"], name: "index_notes_on_discussion_id"
     t.index ["id", "noteable_type"], name: "note_mentions_temp_index", where: "(note ~~ '%@%'::text)"
-    t.index ["id"], name: "snippet_mentions_temp_index", where: "((note ~~ '%@%'::text) AND ((noteable_type)::text = 'Snippet'::text))"
     t.index ["line_code"], name: "index_notes_on_line_code"
     t.index ["note"], name: "index_notes_on_note_trigram", opclass: :gin_trgm_ops, using: :gin
     t.index ["noteable_id", "noteable_type"], name: "index_notes_on_noteable_id_and_noteable_type"
@@ -2866,8 +2866,8 @@ ActiveRecord::Schema.define(version: 2020_03_14_060834) do
     t.boolean "issue_due"
     t.boolean "new_epic"
     t.string "notification_email"
-    t.boolean "new_release"
     t.boolean "fixed_pipeline"
+    t.boolean "new_release"
     t.index ["source_id", "source_type"], name: "index_notification_settings_on_source_id_and_source_type"
     t.index ["user_id", "source_id", "source_type"], name: "index_notifications_on_user_id_and_source_id_and_source_type", unique: true
     t.index ["user_id"], name: "index_notification_settings_on_user_id"
@@ -3877,7 +3877,6 @@ ActiveRecord::Schema.define(version: 2020_03_14_060834) do
     t.datetime_with_timezone "updated_at", null: false
     t.bigint "build_id", null: false
     t.integer "scan_type", limit: 2, null: false
-    t.integer "scanned_resources_count", default: 0, null: false
     t.index ["build_id", "scan_type"], name: "idx_security_scans_on_build_and_scan_type", unique: true
     t.index ["scan_type"], name: "idx_security_scans_on_scan_type"
   end
