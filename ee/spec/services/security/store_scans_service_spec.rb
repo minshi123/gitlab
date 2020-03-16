@@ -27,12 +27,11 @@ describe Security::StoreScansService do
   context 'scan already exists' do
     before do
       create(:ee_ci_job_artifact, :dast, job: build)
-      create(:security_scan, build: build, scan_type: 'dast')
+      create(:security_scan, build: build, scan_type: 'dast', scanned_resources_count: 6)
     end
 
     it 'does not save' do
       subject
-
       expect(Security::Scan.where(build: build).count).to be(1)
     end
   end
