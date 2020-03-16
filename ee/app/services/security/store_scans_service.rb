@@ -13,7 +13,6 @@ module Security
 
       ActiveRecord::Base.transaction do
         security_reports.each do |report|
-
           Security::Scan.safe_find_or_create_by!(
             build: @build,
             scan_type: report.file_type,
