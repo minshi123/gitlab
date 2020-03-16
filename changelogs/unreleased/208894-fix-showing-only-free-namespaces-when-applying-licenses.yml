@@ -1,0 +1,5 @@
+---
+title: Fix managed_free_namespaces scope
+merge_request: 27356
+author:
+type: fixed
