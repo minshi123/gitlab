@@ -790,7 +790,7 @@ $mr-widget-min-height: 69px;
     position: sticky;
     top: $header-height + $mr-tabs-height;
     margin-left: -16px;
-    width: calc(100% + 32px);
+    width: calc(100% + 16px);
 
     .mr-version-menus-container {
       flex-wrap: nowrap;

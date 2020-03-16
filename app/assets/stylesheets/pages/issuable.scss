@@ -321,8 +321,6 @@
   }
 
   &.right-sidebar-expanded {
-    width: $gutter-width;
-
     .value {
       line-height: 1;
 
@@ -402,7 +400,6 @@
       display: block;
     }
 
-    width: $gutter-collapsed-width;
     padding: 0;
 
     .block {
