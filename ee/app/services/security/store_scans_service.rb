@@ -9,16 +9,18 @@ module Security
     def execute
       return if @build.canceled? || @build.skipped?
 
-      ActiveRecord::Base.transaction do
-        @build.each_report(::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES) do |file_type, blob, artifact|
-          job_artifact_json = JSON.parse(blob)
+      security_reports = @build.job_artifacts.security_reports
 
-          scanned_resource_count = job_artifact_json.fetch('scan', {}).fetch('scanned_resources', []).length
+      ActiveRecord::Base.transaction do
+        security_reports.each do |report|
 
           Security::Scan.safe_find_or_create_by!(
             build: @build,
-            scan_type: file_type,
-            scanned_resources_count: scanned_resource_count
+            scan_type: report.file_type,
+            scanned_resources_count: ::Gitlab::Ci::Parsers.fabricate!(report.file_type).parse_scanned_resources_count!(
+              report.blob,
+              report.file_type
+            )
           )
         end
       end

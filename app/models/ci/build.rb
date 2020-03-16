@@ -940,6 +940,8 @@ module Ci
         failure_reason: :data_integrity_failure)
     end
 
+    private
+
     def each_report(report_types)
       job_artifacts_for_types(report_types).each do |report_artifact|
         report_artifact.each_blob do |blob|
@@ -947,8 +949,6 @@ module Ci
         end
       end
     end
-
-    private
 
     def build_data
       @build_data ||= Gitlab::DataBuilder::Build.build(self)

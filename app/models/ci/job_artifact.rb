@@ -190,6 +190,14 @@ module Ci
         end
     end
 
+    def blob
+      blobs = []
+      each_blob do |blob|
+        blobs << blob
+      end
+      blobs.join
+    end
+
     def each_blob(&blk)
       unless file_format_adapter_class
         raise NotSupportedAdapterError, 'This file format requires a dedicated adapter'
