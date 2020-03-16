@@ -31,8 +31,10 @@
             %p
               = _("Suggestions:")
               %code= 'gitlab'
-              %code= @project.path # Path contains no spaces, but dashes
-              %code= @project.full_path
+              %code= 'project'
+              - if @project
+                %code= @project.path # Path contains no spaces, but dashes
+                %code= @project.full_path
 
         .form-group
           = label_tag :url, 'URL', class: 'col-12 col-form-label label-bold'
