@@ -9,7 +9,6 @@ module Gitlab
         attr_reader :group
 
         def initialize(user:, shared:, group:, group_hash:)
-          @path = File.join(shared.export_path, 'group.json')
           @user = user
           @shared = shared
           @group = group
@@ -17,12 +16,17 @@ module Gitlab
         end
 
         def restore
-          @relation_reader ||=
-            if @group_hash.present?
-              ImportExport::JSON::LegacyReader::User.new(@group_hash, reader.group_relation_names)
-            else
-              ImportExport::JSON::LegacyReader::File.new(@path, reader.group_relation_names)
-            end
+          @relation_readers = []
+
+          if @group_hash.present?
+            @relation_readers << ImportExport::JSON::LegacyReader::User.new(@group_hash, reader.group_relation_names)
+          else
+            @relation_readers << ImportExport::JSON::LegacyReader::File.new(File.join(shared.export_path, 'group.json'), reader.group_relation_names)
+            @relation_readers << ImportExport::JSON::NdjsonReader.new(File.join(shared.export_path, 'tree'), :project)
+          end
+
+          @relation_reader = @relation_readers.find(&:valid?)
+          raise "missing relation reader for #{shared.export_path}" unless @relation_reader
 
           @group_members = @relation_reader.consume_relation('members')
           @children = @relation_reader.consume_attribute('children')
