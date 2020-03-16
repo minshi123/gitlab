@@ -13,6 +13,7 @@ module Gitlab
           attr_reader :occurrences
           attr_reader :scanners
           attr_reader :identifiers
+          attr_accessor :scanned_resources_count
 
           attr_accessor :error
 
