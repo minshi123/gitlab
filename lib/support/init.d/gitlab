@@ -26,7 +26,7 @@
 
 ### Environment variables
 RAILS_ENV="production"
-EXPERIMENTAL_PUMA=""
+USE_PUMA=""
 
 # Script variable names should be lower-case not to conflict with
 # internal /bin/sh variables such as PATH, EDITOR or SHELL.
@@ -68,7 +68,7 @@ if ! cd "$app_root" ; then
 fi
 
 # Select the web server to use
-if [ -z "$EXPERIMENTAL_PUMA" ]; then
+if [ -z "$USE_PUMA" ]; then
   use_web_server="unicorn"
 else
   use_web_server="puma"

@@ -963,6 +963,7 @@ To use GitLab with Puma:
    sudo -u git -H cp config/puma.rb.example config/puma.rb
    ```
 
+1. Edit the system `init.d` script to use `USE_PUMA=1` flag. If you have `/etc/default/gitlab`, then you should edit it instead.
 1. Restart GitLab.
 
 ## Troubleshooting
