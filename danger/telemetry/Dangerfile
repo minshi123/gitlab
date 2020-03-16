@@ -12,7 +12,7 @@ if usage_data_changed_files.any?
   warn format(TELEMETRY_CHANGED_FILES_MESSAGE)
 
   USAGE_DATA_FILES_MESSAGE = <<~MSG
-  For the following files it is recommended a review from the [Data team and Telemetry team](https://gitlab.com/groups/gitlab-org/growth/telemetry/-/group_members?with_inherited_permissions=exclude):
+  For the following files, a review from the [Data team and Telemetry team](https://gitlab.com/groups/gitlab-org/growth/telemetry/-/group_members?with_inherited_permissions=exclude) is recommended:
   MSG
 
   markdown(USAGE_DATA_FILES_MESSAGE + helper.markdown_list(usage_data_changed_files))
