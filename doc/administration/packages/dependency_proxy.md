@@ -11,9 +11,8 @@ dependency proxies, see the [user guide](../../user/group/dependency_proxy/index
 
 NOTE: **Note:**
 Dependency proxy requires the Puma web server to be enabled.
-Puma support is EXPERIMENTAL at this time.
 
-To enable the Dependency proxy feature:
+To enable the dependency proxy feature:
 
 **Omnibus GitLab installations**
 
