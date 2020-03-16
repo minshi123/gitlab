@@ -5,13 +5,21 @@ require 'spec_helper'
 describe Import::GitlabProjectsController do
   let_it_be(:namespace) { create(:namespace) }
   let_it_be(:user) { namespace.owner }
-  let(:file) { fixture_file_upload('spec/fixtures/project_export.tar.gz', 'text/plain') }
 
   before do
     sign_in(user)
   end
 
   describe 'POST create' do
+    let(:file_path) {'spec/fixtures/project_export.tar.gz'}
+    let(:file) { file_to_upload(file_path, filename: 'project_export.tar.gz') }
+
+    # Because we use Workhorse-accelerated uploades, we could not use `fixture_file_upload`
+    # to generate the `file` param, as we expect to get an `::UploadedFile` instance.
+    before do
+      allow(subject).to receive(:params).and_wrap_original { |m, *args| m.call(*args).merge!(file: file) }
+    end
+
     context 'with an invalid path' do
       it 'redirects with an error' do
         post :create, params: { namespace_id: namespace.id, path: '/test', file: file }
@@ -38,6 +46,13 @@ describe Import::GitlabProjectsController do
     end
 
     it_behaves_like 'project import rate limiter'
+
+    def file_to_upload(path, params = {})
+      upload = Tempfile.new('upload')
+      FileUtils.copy(path, upload.path)
+
+      UploadedFile.new(upload.path, params)
+    end
   end
 
   describe 'POST authorize' do
