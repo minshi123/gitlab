@@ -14,7 +14,7 @@ module Gitlab
             ::File.exist?(@path)
           end
 
-          protected
+          private
 
           def tree_hash
             @tree_hash ||= read_hash
@@ -83,7 +83,7 @@ module Gitlab
           relations['ci_pipelines']&.sort_by! { |hash| hash['id'] }
         end
 
-        protected
+        private
 
         attr_reader :relation_names
 
