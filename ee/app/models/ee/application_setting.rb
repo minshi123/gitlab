@@ -143,18 +143,18 @@ module EE
     end
 
     def elasticsearch_limited_projects(ignore_namespaces = false)
-      return ::Project.where(id: ElasticsearchIndexedProject.select(:project_id)) if ignore_namespaces
+      return ::Project.where(id: elasticsearch_project_ids) if ignore_namespaces
 
       union = ::Gitlab::SQL::Union.new([
                                          ::Project.where(namespace_id: elasticsearch_limited_namespaces.select(:id)),
-                                         ::Project.where(id: ElasticsearchIndexedProject.select(:project_id))
+                                         ::Project.where(id: elasticsearch_project_ids)
                                        ]).to_sql
 
       ::Project.from("(#{union}) projects")
     end
 
     def elasticsearch_limited_namespaces(ignore_descendants = false)
-      namespaces = ::Namespace.where(id: ElasticsearchIndexedNamespace.select(:namespace_id))
+      namespaces = ::Namespace.where(id: elasticsearch_namespace_ids)
 
       return namespaces if ignore_descendants
 

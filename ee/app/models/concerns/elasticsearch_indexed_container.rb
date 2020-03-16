@@ -6,11 +6,22 @@ module ElasticsearchIndexedContainer
   included do
     after_commit :index, on: :create
     after_commit :delete_from_index, on: :destroy
+    after_commit :drop_target_ids_cache!, on: [:create, :destroy]
+
+    def drop_target_ids_cache!
+      Rails.cache.delete self.class.target_ids_cache_key
+    end
   end
 
   class_methods do
+    def target_ids_cache_key
+      [self.name.underscore.to_sym, :target_ids]
+    end
+
     def target_ids
-      pluck(target_attr_name)
+      Rails.cache.fetch target_ids_cache_key do
+        pluck(target_attr_name)
+      end
     end
 
     def remove_all(except: [])
