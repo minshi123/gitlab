@@ -258,6 +258,22 @@ class Service < ApplicationRecord
     self.category == :issue_tracker
   end
 
+  def self.find_or_create_templates
+    templates = where(template: true, type: available_services_types)
+
+    if templates.size == available_services_types.size
+      templates
+    else
+      create_templates
+    end
+  end
+
+  def self.create_templates
+    attributes = Service.available_services_types.map { |type| { template: true, type: type } }
+
+    Service.insert_all(attributes)
+  end
+
   def self.available_services_names
     service_names = %w[
       alerts
@@ -298,6 +314,10 @@ class Service < ApplicationRecord
     end
 
     service_names.sort_by(&:downcase)
+  end
+
+  def self.available_services_types
+    available_services_names.map { |service_name| "#{service_name}_service".camelize }
   end
 
   def self.build_from_template(project_id, template)

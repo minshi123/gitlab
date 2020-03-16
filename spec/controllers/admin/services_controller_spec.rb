@@ -9,21 +9,62 @@ describe Admin::ServicesController do
     sign_in(admin)
   end
 
+  describe 'GET #index' do
+    it 'creates service templates' do
+      expect { get :index }.to change { Service.count }.from(0).to(Service.available_services_names.size)
+    end
+
+    it 'avoids N+1 queries' do
+      query_count = ActiveRecord::QueryRecorder.new { get :index }.count
+
+      expect(query_count).to eq(7)
+    end
+
+    context 'with all existing templates' do
+      before do
+        Service.create_templates
+      end
+
+      it 'does not create service templates' do
+        expect { get :index }.to change { Service.count }.by(0)
+      end
+
+      it 'avoids N+1 queries' do
+        query_count = ActiveRecord::QueryRecorder.new { get :index }.count
+
+        expect(query_count).to eq(6)
+      end
+    end
+
+    context 'with a few existing templates' do
+      before do
+        Service.create(template: true, type: 'JiraService')
+      end
+
+      it 'creates the rest of the service templates' do
+        expect { get :index }.to change { Service.count }.from(1).to(Service.available_services_names.size)
+      end
+
+      it 'avoids N+1 queries' do
+        query_count = ActiveRecord::QueryRecorder.new { get :index }.count
+
+        expect(query_count).to eq(7)
+      end
+    end
+  end
+
   describe 'GET #edit' do
     let!(:project) { create(:project) }
 
-    Service.available_services_names.each do |service_name|
-      context "#{service_name}" do
-        let!(:service) do
-          service_template = "#{service_name}_service".camelize.constantize
-          service_template.where(template: true).first_or_create
-        end
+    Service.available_services_types.each do |type|
+      let!(:service) do
+        Service.create(template: true, type: type)
+      end
 
-        it 'successfully displays the template' do
-          get :edit, params: { id: service.id }
+      it 'successfully displays the template' do
+        get :edit, params: { id: service.id }
 
-          expect(response).to have_gitlab_http_status(:ok)
-        end
+        expect(response).to have_gitlab_http_status(:ok)
       end
     end
   end
