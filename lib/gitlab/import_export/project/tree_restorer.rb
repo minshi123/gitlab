@@ -22,7 +22,7 @@ module Gitlab
           @relation_reader = @relation_readers.find(&:valid?)
           raise "missing relation reader for #{shared.export_path}" unless @relation_reader
 
-          @project_members = @relation_reader.consume_relation('project_members')
+          @project_members = @relation_reader.to_enum(:consume_relation, 'project_members').to_a.map(&:first)
 
           if relation_tree_restorer.restore
             import_failure_service.with_retry(action: 'set_latest_merge_request_diff_ids!') do

@@ -27,14 +27,14 @@ module Gitlab
           excluded_attributes.concat(@consumed_attributes).uniq
 
           consume_relation(root) do |hash|
-            hash.reject do |key, _|
+            return hash.reject do |key, _|
               excluded_attributes.include?(key)
             end
           end
         end
 
         def consume_relation(key)
-          return unless @consumed_relations.include?(key)
+          return if @consumed_relations.include?(key)
 
           @consumed_relations << key
 

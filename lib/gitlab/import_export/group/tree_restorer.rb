@@ -28,7 +28,7 @@ module Gitlab
           @relation_reader = @relation_readers.find(&:valid?)
           raise "missing relation reader for #{shared.export_path}" unless @relation_reader
 
-          @group_members = @relation_reader.consume_relation('members')
+          @group_members = @relation_reader.to_enum(:consume_relation, 'members').to_a.map(&:first)
           @children = @relation_reader.consume_attribute('children')
           @relation_reader.consume_attribute('name')
           @relation_reader.consume_attribute('path')
