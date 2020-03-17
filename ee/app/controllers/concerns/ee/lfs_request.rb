@@ -21,7 +21,7 @@ module EE
     def render_size_error
       render(
         json: {
-          message: ::Gitlab::RepositorySizeError.new(project).push_error(@exceeded_limit), # rubocop:disable Gitlab/ModuleWithInstanceVariables
+          message: ::Gitlab::RepositorySizeErrorMessageForProject.new(project).push_error(@exceeded_limit), # rubocop:disable Gitlab/ModuleWithInstanceVariables
           documentation_url: help_url
         },
         content_type: ::LfsRequest::CONTENT_TYPE,

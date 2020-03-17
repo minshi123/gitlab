@@ -98,7 +98,7 @@ module EE
 
       def check_size_before_push!
         if check_size_limit? && project.above_size_limit?
-          raise ::Gitlab::GitAccess::ForbiddenError, ::Gitlab::RepositorySizeError.new(project).push_error
+          raise ::Gitlab::GitAccess::ForbiddenError, ::Gitlab::RepositorySizeErrorMessageForProject.new(project).push_error
         end
       end
 
@@ -154,7 +154,7 @@ module EE
 
       def check_size_against_limit(size)
         if project.changes_will_exceed_size_limit?(size)
-          raise ::Gitlab::GitAccess::ForbiddenError, ::Gitlab::RepositorySizeError.new(project).new_changes_error
+          raise ::Gitlab::GitAccess::ForbiddenError, ::Gitlab::RepositorySizeErrorMessageForProject.new(project).new_changes_error
         end
       end
 

@@ -177,7 +177,7 @@ module EE
     end
 
     def project_above_size_limit_message
-      ::Gitlab::RepositorySizeError.new(@project).above_size_limit_message
+      ::Gitlab::RepositorySizeErrorMessageForProject.new(@project).above_size_limit_message
     end
 
     override :membership_locked?

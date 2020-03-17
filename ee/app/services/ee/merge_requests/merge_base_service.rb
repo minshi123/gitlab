@@ -50,7 +50,7 @@ module EE
 
       def check_size_limit
         if merge_request.target_project.above_size_limit?
-          message = ::Gitlab::RepositorySizeError.new(merge_request.target_project).merge_error
+          message = ::Gitlab::RepositorySizeErrorMessageForProject.new(merge_request.target_project).merge_error
 
           raise ::MergeRequests::MergeService::MergeError, message
         end
