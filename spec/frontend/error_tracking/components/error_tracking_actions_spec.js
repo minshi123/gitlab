@@ -43,7 +43,7 @@ describe('Error Tracking Actions', () => {
         findButtons()
           .at(0)
           .attributes('title'),
-      ).toEqual('Ignore');
+      ).toBe('Ignore');
       expect(
         findButtons()
           .at(1)
