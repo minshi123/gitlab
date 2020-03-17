@@ -14,6 +14,7 @@ import SummaryTable from './summary_table.vue';
 import StageTable from './stage_table.vue';
 import TasksByTypeChart from './tasks_by_type_chart.vue';
 import UrlSyncMixin from '../../shared/mixins/url_sync_mixin';
+import { toYmd } from '../../shared/utils';
 
 export default {
   name: 'CycleAnalytics',
@@ -123,6 +124,14 @@ export default {
         endDate,
         subject,
         selectedLabelIds,
+      };
+    },
+    query() {
+      return {
+        group_id: this.currentGroupPath,
+        'project_ids[]': this.selectedProjectIds,
+        created_after: toYmd(this.startDate),
+        created_before: toYmd(this.endDate),
       };
     },
   },

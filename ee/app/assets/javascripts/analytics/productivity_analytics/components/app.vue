@@ -8,13 +8,17 @@ import {
   GlButton,
   GlTooltipDirective,
 } from '@gitlab/ui';
+import dateFormat from 'dateformat';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import featureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import Icon from '~/vue_shared/components/icon.vue';
+import { beginOfDayTime, endOfDayTime } from '~/lib/utils/datetime_utility';
 import MetricChart from './metric_chart.vue';
 import Scatterplot from '../../shared/components/scatterplot.vue';
 import MergeRequestTable from './mr_table.vue';
 import { chartKeys } from '../constants';
+import { dateFormats } from '../../shared/constants';
+import urlSyncMixin from '../../shared/mixins/url_sync_mixin';
 
 export default {
   components: {
@@ -32,7 +36,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [featureFlagsMixin()],
+  mixins: [featureFlagsMixin(), urlSyncMixin],
   props: {
     emptyStateSvgPath: {
       type: String,
@@ -49,7 +53,15 @@ export default {
     };
   },
   computed: {
-    ...mapState('filters', ['groupNamespace']),
+    ...mapState('filters', [
+      'groupNamespace',
+      'projectPath',
+      'authorUsername',
+      'labelName',
+      'milestoneTitle',
+      'startDate',
+      'endDate',
+    ]),
     ...mapState('table', ['isLoadingTable', 'mergeRequests', 'pageInfo', 'columnMetric']),
     ...mapGetters(['getMetricTypes']),
     ...mapGetters('charts', [
@@ -85,6 +97,17 @@ export default {
     },
     showSecondaryCharts() {
       return !this.chartLoading(chartKeys.main) && this.chartHasData(chartKeys.main);
+    },
+    query() {
+      return {
+        group_id: this.groupNamespace,
+        project_id: this.projectPath,
+        author_username: this.authorUsername,
+        'label_name[]': this.labelName,
+        milestone_title: this.milestoneTitle,
+        merged_after: `${dateFormat(this.startDate, dateFormats.isoDate)}${beginOfDayTime}`,
+        merged_before: `${dateFormat(this.endDate, dateFormats.isoDate)}${endOfDayTime}`,
+      };
     },
   },
   mounted() {
