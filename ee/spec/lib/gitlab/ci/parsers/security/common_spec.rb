@@ -24,7 +24,7 @@ describe Gitlab::Ci::Parsers::Security::Common do
       expect(report.occurrences.map(&:confidence)).not_to include("undefined")
     end
 
-    it 'should set the number of resources scanned' do
+    it 'sets the number of resources scanned' do
       expect(report.scanned_resources_count).to be(0)
     end
   end
