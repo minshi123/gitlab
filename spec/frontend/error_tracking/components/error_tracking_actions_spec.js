@@ -39,7 +39,7 @@ describe('Error Tracking Actions', () => {
   describe('when error status is unresolved', () => {
     it('renders the correct actions buttons to allow ignore and resolve', () => {
       expect(findButtons().exists()).toBe(true);
-  
+
       return wrapper.vm.$nextTick().then(() => {
         expect(
           findButtons()
@@ -62,7 +62,7 @@ describe('Error Tracking Actions', () => {
 
     it('renders the correct action button to undo ignore', () => {
       expect(findButtons().exists()).toBe(true);
-  
+
       return wrapper.vm.$nextTick().then(() => {
         expect(
           findButtons()
@@ -77,10 +77,10 @@ describe('Error Tracking Actions', () => {
     beforeEach(() => {
       mountComponent({ error: { status: 'resolved' } });
     });
-    
+
     it('renders the correct action button to undo unresolve', () => {
       expect(findButtons().exists()).toBe(true);
-  
+
       return wrapper.vm.$nextTick().then(() => {
         expect(
           findButtons()

@@ -39,11 +39,6 @@ export default {
       return `error_tracking/${this.error.id}/details`;
     },
   },
-  methods: {
-    onStatusUpdate(statusUpdate) {
-      this.$emit('update-issue-status', statusUpdate);
-    },
-  },
 };
 </script>
 
@@ -56,7 +51,7 @@ export default {
         v-gl-tooltip.hover
         class="d-block mb-2 mb-md-0 w-100"
         :title="ignoreBtn.title"
-        @click="onStatusUpdate({ errorId: error.id, status: ignoreBtn.status })"
+        @click="$emit('update-issue-status', { errorId: error.id, status: ignoreBtn.status })"
       >
         <gl-icon class="d-none d-md-inline m-0" :name="ignoreBtn.icon" :size="12" />
         <span class="d-md-none">{{ ignoreBtn.title }}</span>
@@ -67,7 +62,7 @@ export default {
         v-gl-tooltip.hover
         class="d-block mb-2 mb-md-0 w-100"
         :title="resolveBtn.title"
-        @click="onStatusUpdate({ errorId: error.id, status: resolveBtn.status })"
+        @click="$emit('update-issue-status', { errorId: error.id, status: resolveBtn.status })"
       >
         <gl-icon class="d-none d-md-inline m-0" :name="resolveBtn.icon" :size="12" />
         <span class="d-md-none">{{ resolveBtn.title }}</span>
