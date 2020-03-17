@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Gitlab::ImportExport::JSON::NdjsonReader do
-  let(:fixture) { 'spec/fixtures/lib/gitlab/import_export/ndjson/light/tree' }
+  let(:fixture) { 'spec/fixtures/lib/gitlab/import_export/light/tree' }
   let(:root_tree) { JSON.parse(File.read(File.join(fixture, 'project.ndjson'))) }
   let(:root) { :project }
   let(:ndjson_reader) { described_class.new(path, root) }
