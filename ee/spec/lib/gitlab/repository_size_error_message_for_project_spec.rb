@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Gitlab::RepositorySizeError do
+describe Gitlab::RepositorySizeErrorMessageForProject do
   let(:project) do
     create(:project, statistics: build(:project_statistics, repository_size: 15.megabytes))
   end
