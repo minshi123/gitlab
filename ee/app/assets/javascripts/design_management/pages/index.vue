@@ -158,6 +158,12 @@ export default {
         createFlash(skippedWarningMessage, 'warning');
       }
 
+      // Handling errors-as-data
+      const errors = res?.data?.designManagementUpload?.errors || [];
+      if (errors.length > 0) {
+        createFlash(errors[0]);
+      }
+
       // if this upload resulted in a new version being created, redirect user to the latest version
       if (!this.isLatestVersion) {
         this.$router.push({ name: DESIGNS_ROUTE_NAME });
