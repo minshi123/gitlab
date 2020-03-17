@@ -26,7 +26,14 @@
   :idempotent: 
 - :name: cronjob:elastic_index_bulk_cron
   :feature_category: :global_search
-  :has_external_dependencies: 
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+- :name: cronjob:elastic_metrics_update
+  :feature_category: :global_search
+  :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
