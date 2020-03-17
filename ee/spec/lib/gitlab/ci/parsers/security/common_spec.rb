@@ -25,7 +25,7 @@ describe Gitlab::Ci::Parsers::Security::Common do
     end
 
     it 'should set the number of resources scanned' do
-      expect(report.scanned_resources_count).to eql(0)
+      expect(report.scanned_resources_count).to be(0)
     end
   end
 end
