@@ -48,6 +48,10 @@ describe Gitlab::Database::BatchCount do
       [1, 2, 4, 5, 6].each { |i| expect(described_class.batch_count(model, batch_size: i)).to eq(5) }
     end
 
+    it 'counts relations with a select present' do
+      expect(described_class.batch_count(model.select(:id))).to eq(5)
+    end
+
     context 'in a transaction' do
       let(:in_transaction) { true }
 
@@ -83,6 +87,10 @@ describe Gitlab::Database::BatchCount do
     it 'will not count table with batch_size 1K' do
       fallback = ::Gitlab::Database::BatchCounter::FALLBACK
       expect(described_class.batch_distinct_count(model, column, batch_size: fallback / 2)).to eq(fallback)
+    end
+
+    it 'counts relations with a select present' do
+      expect(described_class.batch_distinct_count(model.select(:id))).to eq(5)
     end
 
     it 'counts with a small edge case batch_sizes than result' do

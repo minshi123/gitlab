@@ -81,8 +81,9 @@ module Gitlab
       end
 
       def batch_fetch(start, finish, mode)
-        # rubocop:disable GitlabSecurity/PublicSend
-        @relation.select(@column).public_send(mode).where(@column => start..(finish - 1)).count
+        scope = @relation
+        scope = scope.select(@column) unless @relation.all.select_values.present?
+        scope.public_send(mode).where(@column => start..(finish - 1)).count # rubocop:disable GitlabSecurity/PublicSend
       end
     end
   end
