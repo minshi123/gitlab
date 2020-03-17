@@ -176,6 +176,24 @@ describe Admin::SessionsController, :do_not_mock_admin_mode do
             expect(controller.current_user_mode.admin_mode?).to be(true)
           end
         end
+
+        context 'on a read-only instance' do
+          before do
+            allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+          end
+
+          it 'does not attempt to write to the database' do
+            expect_any_instance_of(User).not_to receive(:save)
+            expect_any_instance_of(User).not_to receive(:save!)
+
+            controller.store_location_for(:redirect, admin_root_path)
+            controller.current_user_mode.request_admin_mode!
+
+            authenticate_2fa(otp_attempt: user.current_otp)
+
+            expect(response).to redirect_to admin_root_path
+          end
+        end
       end
 
       context 'when using two-factor authentication via U2F' do
