@@ -22,6 +22,14 @@ describe Security::StoreScansService do
       expect(scans.sast.count).to be(1)
       expect(scans.dast.count).to be(1)
     end
+
+    it 'stores the scanned resources count on the report' do
+      subject
+
+      scans = Security::Scan.where(build: build)
+      expect(scans.sast.first.scanned_resources_count).to be(0)
+      expect(scans.dast.first.scanned_resources_count).to be(6)
+    end
   end
 
   context 'scan already exists' do
