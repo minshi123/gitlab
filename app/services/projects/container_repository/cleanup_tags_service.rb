@@ -13,7 +13,6 @@ module Projects
         tags = without_latest(tags)
         tags = filter_by_name(tags)
         tags = with_manifest(tags)
-        tags = order_by_date(tags)
         tags = filter_keep_n(tags)
         tags = filter_by_older_than(tags)
 
@@ -74,6 +73,9 @@ module Projects
       end
 
       def filter_keep_n(tags)
+        return tags unless params['keep_n']
+
+        tags = order_by_date(tags)
         tags.drop(params['keep_n'].to_i)
       end
 

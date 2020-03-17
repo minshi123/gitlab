@@ -57,7 +57,7 @@ describe Projects::ContainerRepository::CleanupTagsService do
           expect_delete('sha256:configC')
           expect_delete('sha256:configD')
 
-          is_expected.to include(status: :success, deleted: %w(D Bb Ba C))
+          is_expected.to include(status: :success, deleted: %w(Ba Bb C D))
         end
       end
 
@@ -85,7 +85,7 @@ describe Projects::ContainerRepository::CleanupTagsService do
         expect_delete('sha256:configC')
         expect_delete('sha256:configD')
 
-        is_expected.to include(status: :success, deleted: %w(D C))
+        is_expected.to include(status: :success, deleted: %w(C D))
       end
 
       context 'with overriding allow regex' do
@@ -137,7 +137,37 @@ describe Projects::ContainerRepository::CleanupTagsService do
         expect_delete('sha256:configC')
         expect_delete('sha256:configD')
 
-        is_expected.to include(status: :success, deleted: %w(D C))
+        is_expected.to include(status: :success, deleted: %w(C D))
+      end
+    end
+
+    context 'when keep_n is used' do
+      let(:params) do
+        { 'name_regex' => 'C|D',
+          'keep_n' => 1 }
+      end
+
+      it 'sorts tags by date' do
+        expect_delete('sha256:configC')
+
+        expect(service).to receive(:order_by_date).and_call_original
+
+        is_expected.to include(status: :success, deleted: %w(C))
+      end
+    end
+
+    context 'when keep_n is not used' do
+      let(:params) do
+        { 'name_regex' => 'C|D' }
+      end
+
+      it 'does not sort tags by date' do
+        expect_delete('sha256:configC')
+        expect_delete('sha256:configD')
+
+        expect(service).not_to receive(:order_by_date)
+
+        is_expected.to include(status: :success, deleted: %w(C D))
       end
     end
 
@@ -164,7 +194,7 @@ describe Projects::ContainerRepository::CleanupTagsService do
         expect_delete('sha256:configB').twice
         expect_delete('sha256:configC')
 
-        is_expected.to include(status: :success, deleted: %w(Bb Ba C))
+        is_expected.to include(status: :success, deleted: %w(Ba Bb C))
       end
     end
 
