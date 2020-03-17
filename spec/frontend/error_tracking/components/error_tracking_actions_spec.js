@@ -74,7 +74,7 @@ describe('Error Tracking Actions', () => {
         findButtons()
           .at(1)
           .attributes('title'),
-      ).toEqual('Unresolve');
+      ).toBe('Unresolve');
     });
   });
 });
