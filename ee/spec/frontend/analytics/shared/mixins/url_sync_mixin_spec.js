@@ -1,71 +1,64 @@
-import Vue from 'vue';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
-import store from 'ee/analytics/cycle_analytics/store';
+import { shallowMount } from '@vue/test-utils';
 import UrlSyncMixin from 'ee/analytics/shared/mixins/url_sync_mixin';
-import { toYmd } from 'ee/analytics/shared/utils';
-import { startDate, endDate } from '../../cycle_analytics/mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+const defaultData = {
+  group_id: null,
+  project_ids: [],
+};
 
-const createComponent = () => {
-  const Component = Vue.extend({
-    localVue,
-    store,
-    mixins: [UrlSyncMixin],
-    render(h) {
-      return h('div');
+const createComponent = (opts = {}) => {
+  return shallowMount(
+    {
+      mixins: [UrlSyncMixin],
+      render(h) {
+        return h('div');
+      },
     },
-  });
-
-  return shallowMount(Component);
+    {
+      computed: {
+        query() {
+          return {
+            group_id: this.group_id,
+            project_ids: this.project_ids,
+          };
+        },
+      },
+      data() {
+        return { ...defaultData };
+      },
+      ...opts,
+    },
+  );
 };
 
 describe('UrlSyncMixin', () => {
   let wrapper;
   beforeEach(() => {
-    wrapper = createComponent();
-    wrapper.vm.$store.dispatch('initializeCycleAnalytics', {
-      createdAfter: startDate,
-      createdBefore: endDate,
-    });
+    wrapper = createComponent({});
   });
 
   afterEach(() => {
     wrapper.vm.$destroy();
   });
 
-  describe('watch', () => {
-    describe('query', () => {
-      const defaultState = {
-        group_id: null,
-        'project_ids[]': [],
-        created_after: toYmd(startDate),
-        created_before: toYmd(endDate),
-      };
+  describe('query', () => {
+    it('has the default state', () => {
+      expect(wrapper.vm.query).toEqual(defaultData);
+    });
 
-      it('sets the start and end date to the default state values', () => {
-        expect(wrapper.vm.query).toEqual(defaultState);
-      });
-
+    describe('with parameter changes', () => {
       it.each`
-        param               | action                   | payload                                                  | updatedParams
-        ${'group_id'}       | ${'setSelectedGroup'}    | ${{ fullPath: 'test-group', name: 'test group' }}        | ${{ group_id: 'test-group' }}
-        ${'project_ids'}    | ${'setSelectedProjects'} | ${[{ id: 1 }, { id: 2 }]}                                | ${{ 'project_ids[]': [1, 2] }}
-        ${'created_after'}  | ${'setDateRange'}        | ${{ startDate: '2020-06-18', endDate, skipFetch: true }} | ${{ created_after: toYmd('2020-06-18') }}
-        ${'created_before'} | ${'setDateRange'}        | ${{ endDate: '2020-06-18', startDate, skipFetch: true }} | ${{ created_before: toYmd('2020-06-18') }}
-      `(
-        'sets the $param parameter when $action is dispatched',
-        ({ action, payload, updatedParams }) => {
-          wrapper.vm.$store.dispatch(action, payload);
+        param            | payload         | updatedParams
+        ${'group_id'}    | ${'test-group'} | ${{ group_id: 'test-group' }}
+        ${'project_ids'} | ${[1, 2]}       | ${{ project_ids: [1, 2] }}
+      `('is updated when the $param parameter changes', ({ param, payload, updatedParams }) => {
+        wrapper.setData({ [param]: payload });
 
-          expect(wrapper.vm.query).toEqual({
-            ...defaultState,
-            ...updatedParams,
-          });
-        },
-      );
+        expect(wrapper.vm.query).toEqual({
+          ...defaultData,
+          ...updatedParams,
+        });
+      });
     });
   });
 });
