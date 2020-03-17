@@ -1,5 +1,4 @@
 <script>
-import { __ } from '~/locale';
 import { GlBadge, GlPopover } from '@gitlab/ui';
 
 export default {
@@ -8,24 +7,21 @@ export default {
     GlBadge,
     GlPopover,
   },
-  strings: {
-    badgeContent: __('Remediated: needs review'),
-    popoverTitle: __('Vulnerability remediated. Review before resolving.'),
-    popoverContent: __(
-      'The vulnerability is no longer detected. Verify the vulnerability has been fixed or removed before changing its status.',
-    ),
-  },
 };
 </script>
 
 <template>
   <div class="d-inline-block">
-    <gl-badge ref="badge" variant="info">{{ $options.strings.badgeContent }}</gl-badge>
+    <gl-badge ref="badge" variant="info">{{ __('Remediated: needs review') }}</gl-badge>
     <gl-popover
       ref="popover"
-      :content="$options.strings.popoverContent"
+      :content="
+        __(
+          'The vulnerability is no longer detected. Verify the vulnerability has been fixed or removed before changing its status.',
+        )
+      "
       :target="() => $refs.badge.$el"
-      :title="$options.strings.popoverTitle"
+      :title="__('Vulnerability remediated. Review before resolving.')"
       placement="top"
       triggers="hover focus"
     />
