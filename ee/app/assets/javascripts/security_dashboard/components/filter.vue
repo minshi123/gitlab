@@ -1,12 +1,11 @@
 <script>
-import { GlDropdown, GlSearchBoxByType, GlSprintf } from '@gitlab/ui';
+import { GlDropdown, GlSearchBoxByType } from '@gitlab/ui';
 import Icon from '~/vue_shared/components/icon.vue';
 
 export default {
   components: {
     GlDropdown,
     GlSearchBoxByType,
-    GlSprintf,
     Icon,
   },
   props: {
@@ -65,11 +64,8 @@ export default {
           {{ firstSelectedOption }}
         </span>
         <span v-if="extraOptionCount" class="flex-grow-1 ml-1">
-          <gl-sprintf :message="__('+%{extraOptionCount} more')">
-            <template #extraOptionCount>{{ extraOptionCount }}</template>
-          </gl-sprintf>
+          {{ n__('+%d more', '+%d more', extraOptionCount) }}
         </span>
-
         <i class="fa fa-chevron-down" aria-hidden="true"></i>
       </template>
 

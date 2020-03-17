@@ -1,7 +1,5 @@
 import { isBaseFilterOption } from './utils';
 
-export const getFilter = state => filterId => state.filters.find(filter => filter.id === filterId);
-
 /**
  * Loops through all the filters and returns all the active ones
  * stripping out base filter options.

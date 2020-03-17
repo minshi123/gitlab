@@ -9,7 +9,7 @@ export default {
     GlToggleVuex,
   },
   computed: {
-    ...mapGetters('filters', ['visibleFilters', 'getFilter']),
+    ...mapGetters('filters', ['visibleFilters']),
   },
   methods: {
     ...mapActions('filters', ['setFilter']),
@@ -24,7 +24,7 @@ export default {
         v-for="filter in visibleFilters"
         :key="filter.id"
         class="col-sm-6 col-md-4 col-lg-2 p-2 js-filter"
-        :filter="getFilter(filter.id)"
+        :filter="filter"
         @setFilter="setFilter"
       />
       <div class="ml-lg-auto p-2">

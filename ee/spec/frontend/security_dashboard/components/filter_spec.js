@@ -21,7 +21,6 @@ describe('Filter component', () => {
         ...stubChildren(Filter),
         GlDropdown: false,
         GlSearchBoxByType: false,
-        GlSprintf: false,
       },
       propsData,
       attachToDocument: true,
