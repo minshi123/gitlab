@@ -108,11 +108,7 @@ When visiting one of these views, you can now hover over a code reference to see
 
 Sourcegraph powered code intelligence is avaialable for all public projects on GitLab.com. 
 
-If you would like to use it in private projects as of GitLab 12.5, you can do so by
-setting up a self-managed GitLab instance.
-
-Follow the epic [&2201](https://gitlab.com/groups/gitlab-org/-/epics/2201) for
-updates.
+Support for private projects is currently not avaialble for GitLab.com; follow the epic [&2201](https://gitlab.com/groups/gitlab-org/-/epics/2201) for updates.
 
 ## Sourcegraph and Privacy
 
