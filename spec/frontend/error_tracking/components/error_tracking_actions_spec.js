@@ -5,7 +5,7 @@ import ErrorTrackingActions from '~/error_tracking/components/error_tracking_act
 describe('Error Tracking Actions', () => {
   let wrapper;
 
-  function mountComponent() {
+  function mountComponent(props) {
     wrapper = shallowMount(ErrorTrackingActions, {
       propsData: {
         error: {
@@ -18,6 +18,7 @@ describe('Error Tracking Actions', () => {
           lastSeen: '2019-11-06T03:21:39Z',
           status: 'unresolved',
         },
+        ...props,
       },
       stubs: { GlButton },
     });
@@ -35,46 +36,58 @@ describe('Error Tracking Actions', () => {
 
   const findButtons = () => wrapper.findAll(GlButton);
 
-  it('renders the correct buttons when the error status is unresolved', () => {
-    expect(findButtons().exists()).toBe(true);
-
-    return wrapper.vm.$nextTick().then(() => {
-      expect(
-        findButtons()
-          .at(0)
-          .attributes('title'),
-      ).toBe('Ignore');
-      expect(
-        findButtons()
-          .at(1)
-          .attributes('title'),
-      ).toBe('Resolve');
+  describe('when error status is unresolved', () => {
+    it('renders the correct actions buttons to allow ignore and resolve', () => {
+      expect(findButtons().exists()).toBe(true);
+  
+      return wrapper.vm.$nextTick().then(() => {
+        expect(
+          findButtons()
+            .at(0)
+            .attributes('title'),
+        ).toBe('Ignore');
+        expect(
+          findButtons()
+            .at(1)
+            .attributes('title'),
+        ).toBe('Resolve');
+      });
     });
   });
 
-  it('renders the correct button when the error status is ignored', () => {
-    wrapper.setProps({ error: { status: 'ignored' } });
-    expect(findButtons().exists()).toBe(true);
+  describe('when error status is ignored', () => {
+    beforeEach(() => {
+      mountComponent({ error: { status: 'ignored' } });
+    });
 
-    return wrapper.vm.$nextTick().then(() => {
-      expect(
-        findButtons()
-          .at(0)
-          .attributes('title'),
-      ).toBe('Undo Ignore');
+    it('renders the correct action button to undo ignore', () => {
+      expect(findButtons().exists()).toBe(true);
+  
+      return wrapper.vm.$nextTick().then(() => {
+        expect(
+          findButtons()
+            .at(0)
+            .attributes('title'),
+        ).toBe('Undo Ignore');
+      });
     });
   });
 
-  it('renders the correct button when the error status is resolved', () => {
-    wrapper.setProps({ error: { status: 'resolved' } });
-    expect(findButtons().exists()).toBe(true);
-
-    return wrapper.vm.$nextTick().then(() => {
-      expect(
-        findButtons()
-          .at(1)
-          .attributes('title'),
-      ).toBe('Unresolve');
+  describe('when error status is resolved', () => {
+    beforeEach(() => {
+      mountComponent({ error: { status: 'resolved' } });
+    });
+    
+    it('renders the correct action button to undo unresolve', () => {
+      expect(findButtons().exists()).toBe(true);
+  
+      return wrapper.vm.$nextTick().then(() => {
+        expect(
+          findButtons()
+            .at(1)
+            .attributes('title'),
+        ).toBe('Unresolve');
+      });
     });
   });
 });
