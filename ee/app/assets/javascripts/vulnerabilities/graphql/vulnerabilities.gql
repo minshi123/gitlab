@@ -1,0 +1,18 @@
+query project($fullPath: ID!, $after: String, $first: Int) {
+  project(fullPath: $fullPath) {
+    vulnerabilities(after:$after, first:$first){
+      nodes{
+      	id
+        title
+        description
+        state
+      	severity
+        vulnerabilityPath
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}

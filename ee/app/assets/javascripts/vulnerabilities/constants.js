@@ -18,3 +18,5 @@ export const VULNERABILITY_STATES = {
     description: s__('VulnerabilityManagement|Verified as fixed or mitigated'),
   },
 };
+
+export const VULNERABILITIES_PER_PAGE = 20;

@@ -1,23 +1,20 @@
 <script>
-import { mapActions, mapState } from 'vuex';
 import { s__ } from '~/locale';
-import { GlAlert, GlEmptyState } from '@gitlab/ui';
-import PaginationLinks from '~/vue_shared/components/pagination_links.vue';
+import { GlAlert, GlButton, GlEmptyState, GlIntersectionObserver } from '@gitlab/ui';
 import VulnerabilityList from 'ee/vulnerabilities/components/vulnerability_list.vue';
+import vulnerabilitiesQuery from '../graphql/vulnerabilities.gql';
+import { VULNERABILITIES_PER_PAGE } from '../constants';
 
 export default {
   name: 'VulnerabilitiesApp',
   components: {
     GlAlert,
+    GlButton,
     GlEmptyState,
-    PaginationLinks,
+    GlIntersectionObserver,
     VulnerabilityList,
   },
   props: {
-    vulnerabilitiesEndpoint: {
-      type: String,
-      required: true,
-    },
     dashboardDocumentation: {
       type: String,
       required: true,
@@ -26,24 +23,59 @@ export default {
       type: String,
       required: true,
     },
+    projectFullPath: {
+      type: String,
+      required: true,
+    },
+  },
+  data: () => ({
+    pageInfo: {},
+    vulnerabilities: [],
+    initialVulnerabilitiesLoad: false,
+    errorLoadingVulnerabilities: false,
+  }),
+  apollo: {
+    vulnerabilities: {
+      query: vulnerabilitiesQuery,
+      variables() {
+        return {
+          fullPath: this.projectFullPath,
+          first: VULNERABILITIES_PER_PAGE,
+        };
+      },
+      update: data => data?.project?.vulnerabilities?.nodes || [],
+      result(res) {
+        this.initialVulnerabilitiesLoad = true;
+        this.pageInfo = res?.data?.project?.vulnerabilities?.pageInfo || {};
+      },
+      error() {
+        this.errorLoadingVulnerabilities = true;
+      },
+    },
   },
   computed: {
-    ...mapState('vulnerabilities', [
-      'errorLoadingVulnerabilities',
-      'isLoadingVulnerabilities',
-      'pageInfo',
-      'vulnerabilities',
-    ]),
-    ...mapState('filters', ['activeFilters']),
-  },
-  created() {
-    this.setVulnerabilitiesEndpoint(this.vulnerabilitiesEndpoint);
-    this.fetchVulnerabilities();
+    isLoadingVulnerabilities() {
+      return this.$apollo.queries.vulnerabilities.loading;
+    },
   },
   methods: {
-    ...mapActions('vulnerabilities', ['setVulnerabilitiesEndpoint', 'fetchVulnerabilities']),
-    fetchPage(page) {
-      this.fetchVulnerabilities({ ...this.activeFilters, page });
+    nextPage() {
+      if (this.pageInfo.hasNextPage) {
+        this.$apollo.queries.vulnerabilities.fetchMore({
+          variables: {
+            first: VULNERABILITIES_PER_PAGE,
+            after: this.pageInfo.endCursor,
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            const result = { ...fetchMoreResult };
+            result.project.vulnerabilities.nodes = [
+              ...prev.project.vulnerabilities.nodes,
+              ...fetchMoreResult.project.vulnerabilities.nodes,
+            ];
+            return result;
+          },
+        });
+      }
     },
   },
   emptyStateDescription: s__(
@@ -63,7 +95,7 @@ export default {
     </gl-alert>
     <vulnerability-list
       v-else
-      :is-loading="isLoadingVulnerabilities"
+      :is-loading="!initialVulnerabilitiesLoad"
       :dashboard-documentation="dashboardDocumentation"
       :empty-state-svg-path="emptyStateSvgPath"
       :vulnerabilities="vulnerabilities"
@@ -78,11 +110,13 @@ export default {
         />
       </template>
     </vulnerability-list>
-    <pagination-links
-      v-if="pageInfo.total > 1"
-      class="justify-content-center prepend-top-default"
-      :page-info="pageInfo"
-      :change="fetchPage"
-    />
+    <gl-intersection-observer v-if="pageInfo.hasNextPage" class="text-center" @appear="nextPage">
+      <gl-button
+        :loading="isLoadingVulnerabilities"
+        :disabled="isLoadingVulnerabilities"
+        @click="nextPage"
+        >{{ __('Load more vulnerabilities') }}</gl-button
+      >
+    </gl-intersection-observer>
   </div>
 </template>
