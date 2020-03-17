@@ -3,8 +3,6 @@
 - page_title _("Vulnerabilities")
 
 .issue-details.issuable-details
-  %h2.title= _("Vulnerabilities")
-
   #app{ data: { empty_state_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
     project_full_path: @project.full_path,
     dashboard_documentation: help_page_path('user/application_security/security_dashboard/index') } }
