@@ -292,7 +292,7 @@ export const updateStoreAfterUpdateImageDiffNote = (store, data, query, queryVar
 
 export const updateStoreAfterUploadDesign = (store, data, query) => {
   if (hasErrors(data)) {
-    onError(data, UPLOAD_DESIGN_ERROR);
+    onError(data, data.errors[0]);
   } else {
     addNewDesignToStore(store, data, query);
   }
