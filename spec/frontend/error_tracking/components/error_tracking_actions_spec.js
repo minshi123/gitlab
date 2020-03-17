@@ -61,7 +61,7 @@ describe('Error Tracking Actions', () => {
         findButtons()
           .at(0)
           .attributes('title'),
-      ).toEqual('Undo Ignore');
+      ).toBe('Undo Ignore');
     });
   });
 
