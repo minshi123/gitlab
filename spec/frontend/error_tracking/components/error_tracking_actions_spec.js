@@ -48,7 +48,7 @@ describe('Error Tracking Actions', () => {
         findButtons()
           .at(1)
           .attributes('title'),
-      ).toEqual('Resolve');
+      ).toBe('Resolve');
     });
   });
 
