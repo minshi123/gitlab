@@ -69,5 +69,11 @@ describe Gitlab::Ci::Parsers::Security::Dast do
         end
       end
     end
+
+    describe 'scanned_resources_count' do
+      it 'sets the number of resources scanned' do
+        expect(report.scanned_resources_count).to be(6)
+      end
+    end
   end
 end
