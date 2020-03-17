@@ -52,7 +52,7 @@ export default {
     <gl-button-group class="flex-column flex-md-row ml-0 ml-md-n4">
       <gl-button
         :key="ignoreBtn.status"
-        :ref="ignoreBtn.title.toLowerCase() + 'Error'"
+        :ref="`${ignoreBtn.title.toLowerCase()}Error`"
         v-gl-tooltip.hover
         class="d-block mb-2 mb-md-0 w-100"
         :title="ignoreBtn.title"
