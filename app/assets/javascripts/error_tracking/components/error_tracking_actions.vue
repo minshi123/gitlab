@@ -63,7 +63,7 @@ export default {
       </gl-button>
       <gl-button
         :key="resolveBtn.status"
-        :ref="resolveBtn.title.toLowerCase() + 'Error'"
+        :ref="`${resolveBtn.title.toLowerCase()}Error`"
         v-gl-tooltip.hover
         class="d-block mb-2 mb-md-0 w-100"
         :title="resolveBtn.title"
