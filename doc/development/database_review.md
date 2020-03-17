@@ -85,7 +85,7 @@ the following preparations into account.
 - Make migrations reversible by using the `change` method or include a `down` method when using `up`.
   - Include either a rollback procedure or describe how to rollback changes.
 - Add the output of the migration(s) to the MR description.
-- Add tests for the migration in `spec/migrations` if necessary. See [Testing Rails migrations at GitLab](testing_guide/testing_migrations_guide.html) for more details.
+- Add tests for the migration in `spec/migrations` if necessary. See [Testing Rails migrations at GitLab](testing_guide/testing_migrations_guide.md) for more details.
 
 #### Preparation when adding or modifying queries
 
@@ -185,6 +185,6 @@ NOTE: **Note:** Keep in mind that all runtimes should be measured against GitLab
 
 | Migration Type | Execution Time Recommended | Notes |
 |----|----|---|
-| Regular migrations on `db/migrate` | `3 minutes` | A valid exception  are index creation as this can take a long time. |
+| Regular migrations on `db/migrate` | `3 minutes` | A valid exception are index creation as this can take a long time. |
 | Post migrations on `db/post_migrate` | `10 minutes` | |
 | Background migrations | --- | Since these are suitable for larger tables, it's not possible to set a precise timing guideline, however, any single query must stay below `1 second` execution time with cold caches. |

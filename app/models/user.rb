@@ -164,6 +164,7 @@ class User < ApplicationRecord
   has_one :status, class_name: 'UserStatus'
   has_one :user_preference
   has_one :user_detail
+  has_one :user_highest_role
 
   #
   # Validations
@@ -1562,7 +1563,7 @@ class User < ApplicationRecord
 
   def read_only_attribute?(attribute)
     if Feature.enabled?(:ldap_readonly_attributes, default_enabled: true)
-      enabled = Gitlab::Auth::LDAP::Config.enabled?
+      enabled = Gitlab::Auth::Ldap::Config.enabled?
       read_only = attribute.to_sym.in?(UserSyncedAttributesMetadata::SYNCABLE_ATTRIBUTES)
 
       return true if enabled && read_only
@@ -1679,6 +1680,13 @@ class User < ApplicationRecord
   # override, from Devise::Validatable
   def password_required?
     return false if internal?
+
+    super
+  end
+
+  # override from Devise::Confirmable
+  def confirmation_period_valid?
+    return false if Feature.disabled?(:soft_email_confirmation)
 
     super
   end

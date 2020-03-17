@@ -215,7 +215,7 @@ sudo gitlab-rake gitlab:geo:check
    - Ensure that you entered the `external_url` or `gitlab_rails['geo_node_name']` when adding the secondary node in the admin are of the **primary** node.
    - Prior to GitLab 12.4, edit the secondary node in the Admin Area of the **primary** node and ensure that there is a trailing `/` in the `Name` field.
 
-1. Check returns Exception: PG::UndefinedTable: ERROR:  relation "geo_nodes" does not exist
+1. Check returns `Exception: PG::UndefinedTable: ERROR:  relation "geo_nodes" does not exist`
 
    ```plaintext
    Checking Geo ...
@@ -252,7 +252,7 @@ sudo gitlab-rake gitlab:geo:check
 The following sections outline troubleshooting steps for fixing replication
 errors.
 
-### Message: "ERROR:  replication slots can only be used if max_replication_slots > 0"?
+### Message: `ERROR:  replication slots can only be used if max_replication_slots > 0`?
 
 This means that the `max_replication_slots` PostgreSQL variable needs to
 be set on the **primary** database. In GitLab 9.4, we have made this setting
@@ -263,7 +263,7 @@ Be sure to restart PostgreSQL for this to take
 effect. See the [PostgreSQL replication
 setup][database-pg-replication] guide for more details.
 
-### Message: "FATAL:  could not start WAL streaming: ERROR:  replication slot "geo_secondary_my_domain_com" does not exist"?
+### Message: `FATAL:  could not start WAL streaming: ERROR:  replication slot "geo_secondary_my_domain_com" does not exist`?
 
 This occurs when PostgreSQL does not have a replication slot for the
 **secondary** node by that name.
@@ -513,6 +513,27 @@ or `gitlab-ctl promote-to-primary-node`, either:
   if the failover was just a test. A [caching-related
   bug](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/22021) was
   fixed.
+
+### Message: `sudo: gitlab-pg-ctl: command not found`
+
+When
+[promoting a **secondary** node with HA](../disaster_recovery/index.md#promoting-a-secondary-node-with-ha),
+you need to run the `gitlab-pg-ctl` command to promote the PostgreSQL
+read-replica database.
+
+In GitLab 12.8 and earlier, this command will fail with the message:
+
+```plaintext
+sudo: gitlab-pg-ctl: command not found
+```
+
+In this case, the workaround is to use the full path to the binary, for example:
+
+```shell
+sudo /opt/gitlab/embedded/bin/gitlab-pg-ctl promote
+```
+
+GitLab 12.9 and later are [unaffected by this error](https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/5147).
 
 ## Fixing Foreign Data Wrapper errors
 

@@ -5,6 +5,8 @@ export default [
     size: '3',
     clusterType: 'group_type',
     status: 'disabled',
+    cpu: '6 (100% free)',
+    memory: '22.50 (30% free)',
   },
   {
     name: 'My Cluster 2',
@@ -12,6 +14,8 @@ export default [
     size: '12',
     clusterType: 'project_type',
     status: 'unreachable',
+    cpu: '3 (50% free)',
+    memory: '11 (60% free)',
   },
   {
     name: 'My Cluster 3',
@@ -19,6 +23,8 @@ export default [
     size: '12',
     clusterType: 'project_type',
     status: 'authentication_failure',
+    cpu: '1 (0% free)',
+    memory: '22 (33% free)',
   },
   {
     name: 'My Cluster 4',
@@ -26,6 +32,8 @@ export default [
     size: '12',
     clusterType: 'project_type',
     status: 'deleting',
+    cpu: '6 (100% free)',
+    memory: '45 (15% free)',
   },
   {
     name: 'My Cluster 5',
@@ -33,5 +41,7 @@ export default [
     size: '12',
     clusterType: 'project_type',
     status: 'connected',
+    cpu: '6 (100% free)',
+    memory: '20.12 (35% free)',
   },
 ];

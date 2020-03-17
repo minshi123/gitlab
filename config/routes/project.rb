@@ -68,7 +68,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         end
 
         namespace :settings do
-          get :members, to: redirect("%{namespace_id}/%{project_id}/project_members")
+          get :members, to: redirect("%{namespace_id}/%{project_id}/-/project_members")
 
           resource :ci_cd, only: [:show, :update], controller: 'ci_cd' do
             post :reset_cache
@@ -172,6 +172,13 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           member do
             get :evidence
             get :downloads, path: 'downloads/*filepath', format: false
+          end
+        end
+
+        resources :logs, only: [:index] do
+          collection do
+            get :k8s
+            get :elasticsearch
           end
         end
 
@@ -288,6 +295,12 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         draw :repository_scoped
         draw :repository
         draw :wiki
+
+        namespace :import do
+          resource :jira, only: [:show], controller: :jira do
+            post :import
+          end
+        end
       end
       # End of the /-/ scope.
 

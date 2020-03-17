@@ -30,6 +30,7 @@ describe User, :do_not_mock_admin_mode do
     it { is_expected.to have_one(:status) }
     it { is_expected.to have_one(:max_access_level_membership) }
     it { is_expected.to have_one(:user_detail) }
+    it { is_expected.to have_one(:user_highest_role) }
     it { is_expected.to have_many(:snippets).dependent(:destroy) }
     it { is_expected.to have_many(:members) }
     it { is_expected.to have_many(:project_members) }
@@ -4197,7 +4198,7 @@ describe User, :do_not_mock_admin_mode do
   describe '#read_only_attribute?' do
     context 'when LDAP server is enabled' do
       before do
-        allow(Gitlab::Auth::LDAP::Config).to receive(:enabled?).and_return(true)
+        allow(Gitlab::Auth::Ldap::Config).to receive(:enabled?).and_return(true)
       end
 
       %i[name email location].each do |attribute|

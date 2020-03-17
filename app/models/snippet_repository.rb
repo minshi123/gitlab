@@ -4,7 +4,7 @@ class SnippetRepository < ApplicationRecord
   include Shardable
 
   DEFAULT_EMPTY_FILE_NAME = 'snippetfile'
-  EMPTY_FILE_PATTERN = /^#{DEFAULT_EMPTY_FILE_NAME}(\d)\.txt$/.freeze
+  EMPTY_FILE_PATTERN = /^#{DEFAULT_EMPTY_FILE_NAME}(\d+)\.txt$/.freeze
 
   CommitError = Class.new(StandardError)
 
@@ -16,12 +16,6 @@ class SnippetRepository < ApplicationRecord
     def find_snippet(disk_path)
       find_by(disk_path: disk_path)&.snippet
     end
-  end
-
-  def create_file(user, path, content, **options)
-    options[:actions] = transform_file_entries([{ file_path: path, content: content }])
-
-    capture_git_error { repository.multi_action(user, **options) }
   end
 
   def multi_files_action(user, files = [], **options)
@@ -51,14 +45,14 @@ class SnippetRepository < ApplicationRecord
   end
 
   def transform_file_entries(files)
-    last_index = get_last_empty_file_index
+    next_index = get_last_empty_file_index + 1
 
     files.each do |file_entry|
       file_entry[:action] = infer_action(file_entry) unless file_entry[:action]
 
       if file_entry[:file_path].blank?
-        file_entry[:file_path] = build_empty_file_name(last_index)
-        last_index += 1
+        file_entry[:file_path] = build_empty_file_name(next_index)
+        next_index += 1
       end
     end
   end
@@ -70,12 +64,10 @@ class SnippetRepository < ApplicationRecord
   end
 
   def get_last_empty_file_index
-    last_file = repository.ls_files(nil)
-                          .map! { |file| file.match(EMPTY_FILE_PATTERN) }
-                          .compact
-                          .max_by { |element| element[1] }
-
-    last_file ? (last_file[1].to_i + 1) : 1
+    repository.ls_files(nil).inject(0) do |max, file|
+      idx = file[EMPTY_FILE_PATTERN, 1].to_i
+      [idx, max].max
+    end
   end
 
   def build_empty_file_name(index)

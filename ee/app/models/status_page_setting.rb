@@ -35,6 +35,23 @@ class StatusPageSetting < ApplicationRecord
     '*' * 40
   end
 
+  def enabled?
+    super &&
+      project&.feature_available?(:status_page) &&
+      project&.beta_feature_available?(:status_page)
+  end
+
+  def storage_client
+    return unless enabled?
+
+    StatusPage::Storage::S3Client.new(
+      region: aws_region,
+      bucket_name: aws_s3_bucket_name,
+      access_key_id: aws_access_key,
+      secret_access_key: aws_secret_key
+    )
+  end
+
   private
 
   def check_secret_changes

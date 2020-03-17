@@ -62,6 +62,8 @@ However, users will not be prompted to log via SSO on each visit. GitLab will ch
 
 We intend to add a similar SSO requirement for [Git and API activity](https://gitlab.com/gitlab-org/gitlab/issues/9152) in the future.
 
+When SSO enforcement is enabled for a group, users cannot share a project in the group outside the top-level group, even if the project is forked.
+
 #### Group-managed accounts
 
 > [Introduced in GitLab 12.1](https://gitlab.com/groups/gitlab-org/-/epics/709).
@@ -74,6 +76,7 @@ When this option is enabled:
 
 - All existing and new users in the group will be required to log in via the SSO URL associated with the group.
 - After the group-managed account has been created, group activity will require the use of this user account.
+- Users can't share a project in the group outside the top-level group (also applies to forked projects).
 
 Upon successful authentication, GitLab prompts the user with options, based on the email address received from the configured identity provider:
 
@@ -106,6 +109,16 @@ This feature is similar to the [Credentials inventory for self-managed instances
 Groups with enabled group-managed accounts can allow or disallow forking of projects outside of root group
 by using separate toggle. If forking is disallowed any project of given root group or its subgroups can be forked to
 a subgroup of the same root group only.
+
+##### Other restrictions for Group-managed accounts
+
+> [Introduced in GitLab 12.9](https://gitlab.com/gitlab-org/gitlab/issues/12420)
+Projects within groups with enabled group-managed accounts are not to be shared with:
+
+- Groups outside of the parent group
+- Members who are not users managed by this group
+
+This restriction also applies to projects forked from or to those groups.
 
 #### Assertions
 
@@ -183,7 +196,7 @@ NOTE: **Note:** GitLab is unable to provide support for IdPs that are not listed
 | JumpCloud | [Single Sign On (SSO) with GitLab](https://support.jumpcloud.com/support/s/article/single-sign-on-sso-with-gitlab-2019-08-21-10-36-47) |
 | Okta | [Setting up a SAML application in Okta](https://developer.okta.com/docs/guides/saml-application-setup/overview/) |
 | OneLogin | [Use the OneLogin SAML Test Connector](https://onelogin.service-now.com/support?id=kb_article&sys_id=93f95543db109700d5505eea4b96198f) |
-| Ping Identity | [Add and configure a new SAML application](https://support.pingidentity.com/s/document-item?bundleId=pingone&topicId=xsh1564020480660-1.html) |
+| Ping One for Enterprise | [Add and configure a new SAML application](https://support.pingidentity.com/s/document-item?bundleId=pingone&topicId=xsh1564020480660-1.html) |
 
 When [configuring your identify provider](#configuring-your-identity-provider), please consider the notes below for specific providers to help avoid common issues and as a guide for terminology used.
 

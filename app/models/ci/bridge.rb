@@ -7,9 +7,10 @@ module Ci
     include Ci::Metadatable
     include Importable
     include AfterCommitQueue
-    include HasRef
+    include Ci::HasRef
 
     InvalidBridgeTypeError = Class.new(StandardError)
+    InvalidTransitionError = Class.new(StandardError)
 
     belongs_to :project
     belongs_to :trigger_request

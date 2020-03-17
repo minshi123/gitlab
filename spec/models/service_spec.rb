@@ -18,13 +18,42 @@ describe Service do
       expect(build(:service, project_id: nil, template: false)).to be_invalid
     end
 
+    it 'validates presence of project_id if not instance', :aggregate_failures do
+      expect(build(:service, project_id: nil, instance: true)).to be_valid
+      expect(build(:service, project_id: nil, instance: false)).to be_invalid
+    end
+
+    it 'validates absence of project_id if instance', :aggregate_failures do
+      expect(build(:service, project_id: nil, instance: true)).to be_valid
+      expect(build(:service, instance: true)).to be_invalid
+    end
+
+    it 'validates absence of project_id if template', :aggregate_failures do
+      expect(build(:service, template: true)).to validate_absence_of(:project_id)
+      expect(build(:service, template: false)).not_to validate_absence_of(:project_id)
+    end
+
+    it 'validates service is template or instance' do
+      expect(build(:service, project_id: nil, template: true, instance: true)).to be_invalid
+    end
+
     context 'with an existing service template' do
       before do
-        create(:service, type: 'Service', template: true)
+        create(:service, :template)
       end
 
       it 'validates only one service template per type' do
-        expect(build(:service, type: 'Service', template: true)).to be_invalid
+        expect(build(:service, :template)).to be_invalid
+      end
+    end
+
+    context 'with an existing instance service' do
+      before do
+        create(:service, :instance)
+      end
+
+      it 'validates only one service instance per type' do
+        expect(build(:service, :instance)).to be_invalid
       end
     end
   end
@@ -168,7 +197,7 @@ describe Service do
 
         context 'when data are stored in separated fields' do
           let(:template) do
-            create(:jira_service, data_params.merge(properties: {}, title: title, description: description, template: true))
+            create(:jira_service, :template, data_params.merge(properties: {}, title: title, description: description))
           end
 
           it_behaves_like 'service creation from a template'

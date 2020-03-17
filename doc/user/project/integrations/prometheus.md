@@ -76,7 +76,7 @@ The Prometheus server will [automatically detect and monitor](https://prometheus
 - `prometheus.io/port` to define the port of the metrics endpoint.
 - `prometheus.io/path` to define the path of the metrics endpoint. Defaults to `/metrics`.
 
-CPU and Memory consumption is monitored, but requires [naming conventions](prometheus_library/kubernetes.html#specifying-the-environment) in order to determine the environment. If you are using [Auto DevOps](../../../topics/autodevops/), this is handled automatically.
+CPU and Memory consumption is monitored, but requires [naming conventions](prometheus_library/kubernetes.md#specifying-the-environment) in order to determine the environment. If you are using [Auto DevOps](../../../topics/autodevops/), this is handled automatically.
 
 The [NGINX Ingress](../clusters/index.md#installing-applications) that is deployed by GitLab to clusters, is automatically annotated for monitoring providing key response metrics: latency, throughput, and error rates.
 
@@ -170,7 +170,15 @@ Variables for Prometheus queries must be lowercase.
 There are 2 methods to specify a variable in a query or dashboard:
 
 1. Variables can be specified using the [Liquid template format](https://help.shopify.com/en/themes/liquid/basics), for example `{{ci_environment_slug}}` ([added](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/20793) in GitLab 12.6).
-1. You can also enclose it in quotation marks with curly braces with a leading percent, for example `"%{ci_environment_slug}"`. This method is deprecated  though and support will be [removed in the next major release](https://gitlab.com/gitlab-org/gitlab/issues/37990).
+1. You can also enclose it in quotation marks with curly braces with a leading percent, for example `"%{ci_environment_slug}"`. This method is deprecated though and support will be [removed in the next major release](https://gitlab.com/gitlab-org/gitlab/issues/37990).
+
+#### Editing additional metrics from the dashboard
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/208976) in GitLab 12.9.
+
+You can edit existing additional custom metrics by clicking the **{ellipsis_v}** **More actions** dropdown and selecting **Edit metric**.
+
+![Edit metric](img/prometheus_dashboard_edit_metric_link_v_12_9.png)
 
 ### Defining custom dashboards per project
 
@@ -203,14 +211,17 @@ For example:
    panel_groups:
      - group: 'Group Title'
        panels:
-         - type: area-chart
-           title: "Chart Title"
-           y_label: "Y-Axis"
-           metrics:
-             - id: metric_of_ages
-               query_range: 'http_requests_total'
-               label: "Instance: {{instance}}, method: {{method}}"
-               unit: "count"
+       - type: area-chart
+         title: "Chart Title"
+         y_label: "Y-Axis"
+         y_axis:
+           format: number
+           precision: 0
+         metrics:
+         - id: my_metric_id
+           query_range: 'http_requests_total'
+           label: "Instance: {{instance}}, method: {{method}}"
+           unit: "count"
    ```
 
    The above sample dashboard would display a single area chart. Each file should
@@ -276,8 +287,17 @@ The following tables outline the details of expected properties.
 | `type` | enum | no, defaults to `area-chart` | Specifies the chart type to use, can be: `area-chart`, `line-chart` or `anomaly-chart`. |
 | `title` | string | yes | Heading for the panel. |
 | `y_label` | string | no, but highly encouraged | Y-Axis label for the panel. |
+| `y_axis` | string | no | Y-Axis configuration for the panel. |
 | `weight` | number | no, defaults to order in file | Order to appear within the grouping. Lower number means higher priority, which will be higher on the page. Numbers do not need to be consecutive. |
 | `metrics` | array | yes | The metrics which should be displayed in the panel. Any number of metrics can be displayed when `type` is `area-chart` or `line-chart`, whereas only 3 can be displayed when `type` is `anomaly-chart`. |
+
+**Axis (`panels[].y_axis`) properties:**
+
+| Property    | Type   | Required                  | Description                                                          |
+| ----------- | ------ | ------------------------- | -------------------------------------------------------------------- |
+| `name`      | string | no, but highly encouraged | Y-Axis label for the panel, it will replace `y_label` if set.        |
+| `format`    | string | no, defaults to `number`  | Unit format used. See the [full list of units](prometheus_units.md). |
+| `precision` | number | no, defaults to `2`       | Number of decimals to display in the number.                         |
 
 **Metrics (`metrics`) properties:**
 
@@ -297,7 +317,7 @@ When a static label is used and a query returns multiple time series, then all t
 
 ```yaml
 metrics:
-  - id: metric_of_ages
+  - id: my_metric_id
     query_range: 'http_requests_total'
     label: "Time Series"
     unit: "count"
@@ -311,7 +331,7 @@ For labels to be more explicit, using variables that reflect time series labels 
 
 ```yaml
 metrics:
-  - id: metric_of_ages
+  - id: my_metric_id
     query_range: 'http_requests_total'
     label: "Instance: {{instance}}, method: {{method}}"
     unit: "count"
@@ -325,7 +345,7 @@ There is also a shorthand value for dynamic dashboard labels that make use of on
 
 ```yaml
 metrics:
-  - id: metric_of_ages
+  - id: my_metric_id
     query_range: 'http_requests_total'
     label: "Method"
     unit: "count"
@@ -351,6 +371,9 @@ panel_groups:
       - type: area-chart # or line-chart
         title: 'Area Chart Title'
         y_label: "Y-Axis"
+        y_axis:
+          format: number
+          precision: 0
         metrics:
           - id: area_http_requests_total
             query_range: 'http_requests_total'
@@ -570,17 +593,17 @@ From each of the panels in the dashboard, you can access the context menu by cli
 
 The options are:
 
-- [View logs](#view-pod-logs-ultimate)
+- [View logs](#view-logs-ultimate)
 - [Download CSV](#downloading-data-as-csv)
 - [Generate link to chart](#embedding-gitlab-managed-kubernetes-metrics)
 - [Alerts](#setting-up-alerts-for-prometheus-metrics-ultimate)
 
-### View Pod Logs **(ULTIMATE)**
+### View Logs **(ULTIMATE)**
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/122013) in GitLab 12.8.
 
-If you have [Pod Logs](../clusters/kubernetes_pod_logs.md) enabled,
-you can navigate from the charts in the dashboard to view Pod Logs by
+If you have [Logs](../clusters/kubernetes_pod_logs.md) enabled,
+you can navigate from the charts in the dashboard to view Logs by
 clicking on the context menu in the upper-right corner.
 
 If you use the **Timeline zoom** function at the bottom of the chart, logs will narrow down to the time range you selected.
@@ -695,7 +718,7 @@ Prometheus server.
 
 > [Introduced][ce-29691] in GitLab 12.2.
 
-It is possible to display metrics charts within [GitLab Flavored Markdown](../../markdown.md#gitlab-flavored-markdown-gfm). The maximum number of embeds allowed in a GitLab Flavored Markdown field is 100.
+It is possible to display metrics charts within [GitLab Flavored Markdown](../../markdown.md#gitlab-flavored-markdown-gfm) fields such as issue or merge request descriptions. The maximum number of embedded charts allowed in a GitLab Flavored Markdown field is 100.
 
 This can be useful if you are sharing an application incident or performance
 metrics to others and want to have relevant information directly available.
@@ -732,6 +755,25 @@ The following requirements must be met for the metric to unfurl:
 It is also possible to embed either the default dashboard metrics or individual metrics in issue templates. For charts to render side-by-side, links to the entire metrics dashboard or individual metrics should be separated by either a comma or a space.
 
 ![Embedded Metrics in issue templates](img/embed_metrics_issue_template.png)
+
+### Embedding Cluster Health Charts **(ULTIMATE)**
+
+> [Introduced](<https://gitlab.com/gitlab-org/gitlab/issues/40997>) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.9.
+
+[Cluster Health Metrics](../clusters/index.md#monitoring-your-kubernetes-cluster-ultimate) can also be embedded in [GitLab-flavored Markdown](../../markdown.md).
+
+To embed a metric chart, include a link to that chart in the form `https://<root_url>/<project>/-/cluster/<cluster_id>?<query_params>` anywhere that GitLab-flavored Markdown is supported. To generate and copy a link to the chart, follow the instructions in the [Cluster Health Metric documentation](../clusters/index.md#monitoring-your-kubernetes-cluster-ultimate).
+
+The following requirements must be met for the metric to unfurl:
+
+- The `<cluster_id>` must correspond to a real cluster.
+- Prometheus must be monitoring the cluster.
+- The user must be allowed access to the project cluster metrics.
+- The dashboards must be reporting data on the [Cluster Health Page](../clusters/index.md#monitoring-your-kubernetes-cluster-ultimate)
+
+ If the above requirements are met, then the metric will unfurl as seen below.
+
+![Embedded Cluster Metric in issue descriptions](img/prometheus_cluster_health_embed_v12_9.png)
 
 ### Embedding Grafana charts
 
@@ -786,7 +828,7 @@ Prerequisites for embedding from a Grafana instance:
    ![Grafana Metric Panel](img/grafana_panel_v12_5.png)
 1. In the upper-left corner of the page, select a specific value for each variable required for the queries in the chart.
    ![Select Query Variables](img/select_query_variables_v12_5.png)
-1. In Grafana, click on a panel's title, then click **Share** to open the panel's sharing dialog to the **Link** tab.
+1. In Grafana, click on a panel's title, then click **Share** to open the panel's sharing dialog to the **Link** tab. If you click the _dashboard's_ share panel instead, GitLab will attempt to embed the first supported panel on the dashboard (if available).
 1. If your Prometheus queries use Grafana's custom template variables, ensure that "Template variables" option is toggled to **On**. Of Grafana global template variables, only `$__interval`, `$__from`, and `$__to` are currently supported. Toggle **On** the "Current time range" option to specify the time range of the chart. Otherwise, the default range will be the last 8 hours.
    ![Grafana Sharing Dialog](img/grafana_sharing_dialog_v12_5.png)
 1. Click **Copy** to copy the URL to the clipboard.
@@ -800,7 +842,7 @@ If the "No data found" screen continues to appear, it could be due to:
 - No successful deployments have occurred to this environment.
 - Prometheus does not have performance data for this environment, or the metrics
   are not labeled correctly. To test this, connect to the Prometheus server and
-  [run a query](prometheus_library/kubernetes.html#metrics-supported), replacing `$CI_ENVIRONMENT_SLUG`
+  [run a query](prometheus_library/kubernetes.md#metrics-supported), replacing `$CI_ENVIRONMENT_SLUG`
   with the name of your environment.
 - You may need to re-add the GitLab predefined common metrics. This can be done by running the [import common metrics rake task](../../../administration/raketasks/maintenance.md#import-common-metrics).
 

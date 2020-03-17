@@ -121,10 +121,10 @@ class License < ApplicationRecord
     license_management
     license_scanning
     personal_access_token_expiration_policy
-    pod_logs
     prometheus_alerts
     pseudonymizer
     report_approver_rules
+    requirements
     sast
     security_dashboard
     status_page

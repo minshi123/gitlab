@@ -119,9 +119,6 @@ export default {
     ingressInstalled() {
       return this.applications.ingress.status === APPLICATION_STATUS.INSTALLED;
     },
-    ingressEnableModsecurity() {
-      return this.applications.ingress.modsecurity_enabled;
-    },
     ingressExternalEndpoint() {
       return this.applications.ingress.externalIp || this.applications.ingress.externalHostname;
     },
@@ -263,7 +260,6 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
 
 <template>
   <section id="cluster-applications">
-    <h4>{{ s__('ClusterIntegration|Applications') }}</h4>
     <p class="append-bottom-0">
       {{
         s__(`ClusterIntegration|Choose which applications to install on your Kubernetes cluster.

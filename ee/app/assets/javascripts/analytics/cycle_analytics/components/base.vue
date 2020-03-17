@@ -13,6 +13,7 @@ import StageDropdownFilter from './stage_dropdown_filter.vue';
 import SummaryTable from './summary_table.vue';
 import StageTable from './stage_table.vue';
 import TasksByTypeChart from './tasks_by_type_chart.vue';
+import UrlSyncMixin from '../mixins/url_sync_mixin';
 
 export default {
   name: 'CycleAnalytics',
@@ -28,7 +29,7 @@ export default {
     Scatterplot,
     TasksByTypeChart,
   },
-  mixins: [glFeatureFlagsMixin()],
+  mixins: [glFeatureFlagsMixin(), UrlSyncMixin],
   props: {
     emptyStateSvgPath: {
       type: String,
@@ -64,6 +65,7 @@ export default {
       'stages',
       'summary',
       'labels',
+      'topRankedLabels',
       'currentStageEvents',
       'customStageFormEvents',
       'errorCode',
@@ -112,7 +114,7 @@ export default {
         startDate,
         endDate,
         selectedProjectIds,
-        tasksByType: { subject, labelIds: selectedLabelIds },
+        tasksByType: { subject, selectedLabelIds },
       } = this;
       return {
         selectedGroup,
@@ -199,7 +201,6 @@ export default {
   maxDateRange: DATE_RANGE_LIMIT,
 };
 </script>
-
 <template>
   <div class="js-cycle-analytics">
     <div class="page-title-holder d-flex align-items-center">

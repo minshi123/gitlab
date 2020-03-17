@@ -24,6 +24,7 @@ query groupEpics(
         node {
           id
           title
+          description
           state
           webUrl
           startDate

@@ -4,7 +4,7 @@ module Analytics
   class RefreshApprovalsData
     include MergeRequestMetricsRefresh
 
-    # Override MergeRequestMetricsRefresh#initialize` to accept single MR only
+    # Override `MergeRequestMetricsRefresh#initialize` to accept single MR only
     def initialize(merge_request)
       super
     end

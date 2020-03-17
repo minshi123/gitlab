@@ -73,4 +73,63 @@ describe StatusPageSetting do
       end
     end
   end
+
+  describe '#enabled?' do
+    let(:status_page_setting) { build(:status_page_setting, :enabled) }
+
+    subject { status_page_setting.enabled? }
+
+    before do
+      stub_licensed_features(status_page: true)
+    end
+
+    it { is_expected.to eq(true) }
+
+    context 'when status page setting is diabled' do
+      before do
+        status_page_setting.enabled = false
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when license is not available' do
+      before do
+        stub_licensed_features(status_page: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(status_page: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#storage_client' do
+    let(:status_page_setting) { build(:status_page_setting, :enabled) }
+
+    before do
+      allow(status_page_setting)
+        .to receive(:enabled?).and_return(status_page_setting_enabled)
+    end
+
+    subject { status_page_setting.storage_client }
+
+    context 'when status page settings is enabled' do
+      let(:status_page_setting_enabled) { true }
+
+      it { is_expected.to be_instance_of(StatusPage::Storage::S3Client) }
+    end
+
+    context 'when not enabled' do
+      let(:status_page_setting_enabled) { false }
+
+      it { is_expected.to be_nil }
+    end
+  end
 end

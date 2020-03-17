@@ -11,7 +11,7 @@ module Mutations
 
       argument :group_path, GraphQL::ID_TYPE,
                required: true,
-               description: 'The group the epic to mutate is in'
+               description: 'The group the epic to mutate belongs to'
 
       field :epic,
             Types::EpicType,
@@ -23,7 +23,7 @@ module Mutations
       def find_object(group_path:, iid:)
         group = resolve_group(full_path: group_path)
         resolver = Resolvers::EpicResolver
-                     .single.new(object: group, context: context)
+                     .single.new(object: group, context: context, field: nil)
 
         resolver.resolve(iid: iid)
       end

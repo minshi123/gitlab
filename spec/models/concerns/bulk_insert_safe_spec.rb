@@ -5,8 +5,23 @@ require 'spec_helper'
 describe BulkInsertSafe do
   class BulkInsertItem < ApplicationRecord
     include BulkInsertSafe
+    include ShaAttribute
 
-    validates :name, presence: true
+    validates :name, :enum_value, :secret_value, :sha_value, presence: true
+
+    ENUM_VALUES = {
+      case_1: 1
+    }.freeze
+
+    sha_attribute :sha_value
+
+    enum enum_value: ENUM_VALUES
+
+    attr_encrypted :secret_value,
+      mode: :per_attribute_iv,
+      algorithm: 'aes-256-gcm',
+      key: Settings.attr_encrypted_db_key_base_32,
+      insecure_mode: false
   end
 
   module InheritedUnsafeMethods
@@ -29,8 +44,14 @@ describe BulkInsertSafe do
     ActiveRecord::Schema.define do
       create_table :bulk_insert_items, force: true do |t|
         t.string :name, null: true
+        t.integer :enum_value, null: false
+        t.text :encrypted_secret_value, null: false
+        t.string :encrypted_secret_value_iv, null: false
+        t.binary :sha_value, null: false, limit: 20
       end
     end
+
+    BulkInsertItem.reset_column_information
   end
 
   after(:all) do
@@ -41,13 +62,23 @@ describe BulkInsertSafe do
 
   def build_valid_items_for_bulk_insertion
     Array.new(10) do |n|
-      BulkInsertItem.new(name: "item-#{n}")
+      BulkInsertItem.new(
+        name: "item-#{n}",
+        enum_value: 'case_1',
+        secret_value: 'my-secret',
+        sha_value: '2fd4e1c67a2d28fced849ee1bb76e7391b93eb12'
+      )
     end
   end
 
   def build_invalid_items_for_bulk_insertion
     Array.new(10) do
-      BulkInsertItem.new # requires `name` to be set
+      BulkInsertItem.new(
+        name: nil, # requires `name` to be set
+        enum_value: 'case_1',
+        secret_value: 'my-secret',
+        sha_value: '2fd4e1c67a2d28fced849ee1bb76e7391b93eb12'
+      )
     end
   end
 
@@ -85,6 +116,16 @@ describe BulkInsertSafe do
       expect(BulkInsertItem).to receive(:insert_all!).twice
 
       BulkInsertItem.bulk_insert!(items, batch_size: 5)
+    end
+
+    it 'items can be properly fetched from database' do
+      items = build_valid_items_for_bulk_insertion
+
+      BulkInsertItem.bulk_insert!(items)
+
+      attribute_names = BulkInsertItem.attribute_names - %w[id]
+      expect(BulkInsertItem.last(items.size).pluck(*attribute_names)).to eq(
+        items.pluck(*attribute_names))
     end
 
     it 'rolls back the transaction when any item is invalid' do

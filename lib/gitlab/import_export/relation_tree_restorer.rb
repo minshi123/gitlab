@@ -216,7 +216,7 @@ module Gitlab
       def fix_ci_pipelines_not_sorted_on_legacy_project_json!
         return unless relation_reader.legacy?
 
-        relation_reader.relations['ci_pipelines']&.sort_by! { |hash| hash['id'] }
+        relation_reader.sort_ci_pipelines_by_id
       end
     end
   end

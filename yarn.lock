@@ -801,10 +801,10 @@
   resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-1.110.0.tgz#3c4f5f0e78fcf616ec63a265754158b84ed80af8"
   integrity sha512-bLVUW9Hj6j7zTdeoQELO3Bls5xDKr6AoSEU8gZbEZKLK9PV81hxRl/lJPJUo1qt4E7eJGapCTlH73tTIL4OZ3A==
 
-"@gitlab/ui@^9.23.0":
-  version "9.23.0"
-  resolved "https://registry.yarnpkg.com/@gitlab/ui/-/ui-9.23.0.tgz#0ad0232c529d1f8a386c8e86159e273111a55686"
-  integrity sha512-1VOob5tNPB3zjLHeTuMbQBMG3q6LF36iCq6XqH5eeYzpAI42zj/WhY5T47RKrfvlkflWRSUPTarGo97pQqIKzg==
+"@gitlab/ui@^9.23.1":
+  version "9.23.1"
+  resolved "https://registry.yarnpkg.com/@gitlab/ui/-/ui-9.23.1.tgz#791d0c8a6762b1dd73ed686326c1dfb3f0c7b987"
+  integrity sha512-7bGcV2W6qh/KK423W/vasv+S6myWJMD1tyMr5MBz1WQRg/B3eUlpr4HbjQXmtALRWiWkag8GMI/HSy0rby4WrA==
   dependencies:
     "@babel/standalone" "^7.0.0"
     "@gitlab/vue-toasted" "^1.3.0"
@@ -1866,14 +1866,14 @@ autosize@^4.0.2:
   resolved "https://registry.yarnpkg.com/autosize/-/autosize-4.0.2.tgz#073cfd07c8bf45da4b9fd153437f5bafbba1e4c9"
   integrity sha512-jnSyH2d+qdfPGpWlcuhGiHmqBJ6g3X+8T+iRwFrHPLVcdoGJE/x6Qicm6aDHfTsbgZKxyV8UU/YB2p4cjKDRRA==
 
-aws-sdk@^2.526.0:
-  version "2.526.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.526.0.tgz#e0f899be59edb7d50eb8cca7978bcd401a5d48c2"
-  integrity sha512-ZZqf8AnD9A8ZJd/4oU711R8taxm8sV7wcAOvT0HhrZxv8zASAzoz2lpZ19QAil6uJ52IOkq4ij/zGy7VBXEgPA==
+aws-sdk@^2.637.0:
+  version "2.637.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.637.0.tgz#810e25e53acf2250d35fc74498f9d4492e154217"
+  integrity sha512-e7EYX5rNtQyEaleQylUtLSNKXOmvOwfifQ4bYkfF80mFsVI3DSydczLHXrqPzXoEJaS/GI/9HqVnlQcPs6Q3ew==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
-    ieee754 "1.1.8"
+    ieee754 "1.1.13"
     jmespath "0.15.0"
     querystring "0.2.0"
     sax "1.2.1"
@@ -2779,10 +2779,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codesandbox-api@^0.0.20:
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/codesandbox-api/-/codesandbox-api-0.0.20.tgz#174bcd76c9f31521175c6bceabc37da6b1fbc30b"
-  integrity sha512-jhxZzAmjCKBZad8QWMeueiQVFE87igK6F2DBOEVFFJO6jgTXT8qjuzGYepr+B8bjgo/icN7bc/2xmEMBA63s2w==
+codesandbox-api@0.0.23:
+  version "0.0.23"
+  resolved "https://registry.yarnpkg.com/codesandbox-api/-/codesandbox-api-0.0.23.tgz#bf650a21b5f3c2369e03f0c19d10b4e2ba255b4f"
+  integrity sha512-fFGBkIghDkQILh7iHYlpZU5sfWncCDb92FQSFE4rR3VBcTfUsD5VZgpQi+JjZQuwWIdfl4cOhcIFrUYwshUezA==
 
 codesandbox-import-util-types@^1.2.11:
   version "1.2.11"
@@ -5752,10 +5752,10 @@ icss-utils@^2.1.0:
   dependencies:
     postcss "^6.0.1"
 
-ieee754@1.1.8, ieee754@^1.1.4:
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
-  integrity sha1-vjPUCsEO8ZJnAfbwii2G+/0a0+Q=
+ieee754@1.1.13, ieee754@^1.1.4:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
+  integrity sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==
 
 iferr@^0.1.5:
   version "0.1.5"
@@ -10334,12 +10334,12 @@ slugify@^1.3.1:
   resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.3.1.tgz#f572127e8535329fbc6c1edb74ab856b61ad7de2"
   integrity sha512-6BwyhjF5tG5P8s+0DPNyJmBSBePG6iMyhjvIW5zGdA3tFik9PtK+yNkZgTeiroCRGZYgkHftFA62tGVK1EI9Kw==
 
-smooshpack@^0.0.54:
-  version "0.0.54"
-  resolved "https://registry.yarnpkg.com/smooshpack/-/smooshpack-0.0.54.tgz#9044358b85052d348b801f385678c8a0c76f2bb6"
-  integrity sha512-yIwEWb17hqoW5IaWyzO6O6nxY89I5UdRoGIZy5hihoqXP9OYcoMbBTxKwS57MeXSKdNA2rtk86rlCcOgAYIgrA==
+smooshpack@^0.0.62:
+  version "0.0.62"
+  resolved "https://registry.yarnpkg.com/smooshpack/-/smooshpack-0.0.62.tgz#cb31b9f808f73de3146b050f84d044eb353b5503"
+  integrity sha512-lFuJV2f504/U78sifWy0V2FyoE/8mTgOXM4DL918ncNxAxbtu236XSCLAH3SQwXZWn0JdmRnWs/XU4+sIUVVmQ==
   dependencies:
-    codesandbox-api "^0.0.20"
+    codesandbox-api "0.0.23"
     codesandbox-import-utils "^1.2.3"
     lodash.isequal "^4.5.0"
 

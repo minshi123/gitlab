@@ -4,7 +4,7 @@ type: reference
 
 # GitLab CI/CD Pipeline Configuration Reference
 
-GitLab CI/CD [pipelines](../pipelines.md) are configured using a YAML file called `.gitlab-ci.yml` within each project.
+GitLab CI/CD [pipelines](../pipelines/index.md) are configured using a YAML file called `.gitlab-ci.yml` within each project.
 
 The `.gitlab-ci.yml` file defines the structure and order of the pipelines and determines:
 
@@ -165,33 +165,79 @@ rspec 2.6:
 You can disable inheritance of globally defined defaults
 and variables with the `inherit:` parameter.
 
+To enable or disable the inheritance of all `variables:` or `default:` parameters, use the following format:
+
+- `default: true` or `default: false`
+- `variables: true` or `variables: false`
+
+To inherit only a subset of `default:` parameters or `variables:`, specify what
+you wish to inherit, and any not listed will **not** be inherited. Use
+one of the following formats:
+
+```yaml
+inherit:
+  default: [parameter1, parameter2]
+  variables: [VARIABLE1, VARIABLE2]
+```
+
+Or:
+
+```yaml
+inherit:
+  default:
+    - parameter1
+    - parameter2
+  variables:
+    - VARIABLE1
+    - VARIABLE2
+```
+
 In the example below:
 
-- `rubocop` **will** inherit both the `before_script` and the variable `DOMAIN`.
-- `rspec` **will not** inherit the `before_script` or the variable `DOMAIN`.
-- `capybara` **will** inherit the `before_script`, but **will not** inherit the variable `DOMAIN`.
+- `rubocop`:
+  - **will** inherit: Nothing.
+- `rspec`:
+  - **will** inherit: the default `image` and the `WEBHOOK_URL` variable.
+  - **will not** inherit: the default `before_script` and the `DOMAIN` variable.
+- `capybara`:
+  - **will** inherit: the default `before_script` and `image`.
+  - **will not** inherit: the `DOMAIN` and `WEBHOOK_URL` variables.
+- `karma`:
+  - **will** inherit: the default `image` and `before_script`, and the `DOMAIN` variable.
+  - **will not** inherit: `WEBHOOK_URL` variable.
 
 ```yaml
 default:
+  image: 'ruby:2.4'
   before_script:
     - echo Hello World
 
 variables:
   DOMAIN: example.com
+  WEBHOOK_URL: https://my-webhook.example.com
 
 rubocop:
+  inherit:
+    default: false
+    variables: false
   script: bundle exec rubocop
 
 rspec:
   inherit:
-    default: false
-    variables: false
+    default: [image]
+    variables: [WEBHOOK_URL]
   script: bundle exec rspec
 
 capybara:
   inherit:
     variables: false
   script: bundle exec capybara
+
+karma:
+  inherit:
+    default: true
+    variables: [DOMAIN]
+  script: karma
 ```
 
 ## Parameter details
@@ -821,6 +867,10 @@ CAUTION: **Warning:**
 There are some points to be aware of when
 [using this feature with new branches or tags *without* pipelines for merge requests](#using-onlychanges-without-pipelines-for-merge-requests).
 
+CAUTION: **Warning:**
+There are some points to be aware of when
+[using this feature with scheduled pipelines](#using-onlychanges-with-scheduled-pipelines).
+
 ##### Using `only:changes` with pipelines for merge requests
 
 With [pipelines for merge requests](../merge_request_pipelines/index.md),
@@ -885,12 +935,21 @@ This could result in some unexpected behavior, including:
 - When pushing a new commit, the changed files are calculated using the previous commit
   as the base SHA.
 
+##### Using `only:changes` with scheduled pipelines
+
+`only:changes` always evaluates as "true" in [Scheduled pipelines](../pipelines/schedules.md).
+All files are considered to have "changed" when a scheduled pipeline
+runs.
+
 ### `rules`
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/29011) in GitLab 12.3.
 
 `rules` allows for a list of individual rule objects to be evaluated
 *in order*, until one matches and dynamically provides attributes to the job.
+Note that `rules` cannot be used in combination with `only/except` since it is intended
+to replace that functionality. If you attempt to do this the linter will return a
+`key may not be used with rules` error.
 
 Available rule clauses include:
 
@@ -2205,6 +2264,25 @@ concatenated into a single file. Use a filename pattern (`junit: rspec-*.xml`),
 an array of filenames (`junit: [rspec-1.xml, rspec-2.xml, rspec-3.xml]`), or a
 combination thereof (`junit: [rspec.xml, test-results/TEST-*.xml]`).
 
+##### `artifacts:reports:dotenv`
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/17066) in GitLab 12.9. Requires GitLab Runner 11.5 and later.
+
+The `dotenv` report collects a set of environment variables as artifacts.
+
+The collected variables are registered as runtime-created variables of the job,
+which is useful to [set dynamic environment URLs after a job finishes](../environments.md#set-dynamic-environment-urls-after-a-job-finishes).
+It is not available for download through the web interface.
+
+There are a couple of limitations on top of the [original dotenv rules](https://github.com/motdotla/dotenv#rules).
+
+- The variable key can contain only letters, digits and underscore ('_').
+- The size of dotenv file must be smaller than 5 kilobytes.
+- The number of variables must be less than 10.
+- It doesn't support variable substitution in the dotenv file itself.
+- It doesn't support empty lines and comments (`#`) in dotenv file.
+- It doesn't support quote escape, spaces in a quote, a new line expansion in a quote, in dotenv file.
+
 ##### `artifacts:reports:codequality` **(STARTER)**
 
 > Introduced in GitLab 11.5. Requires GitLab Runner 11.5 and above.
@@ -2676,7 +2754,7 @@ test:
 ```
 
 The job-level timeout can exceed the
-[project-level timeout](../../user/project/pipelines/settings.md#timeout) but can not
+[project-level timeout](../pipelines/settings.md#timeout) but can not
 exceed the Runner-specific timeout.
 
 ### `parallel`
@@ -2847,7 +2925,7 @@ starting, at the cost of reduced parallelization.
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/23464) in GitLab 12.3.
 
 `interruptible` is used to indicate that a job should be canceled if made redundant by a newer pipeline run. Defaults to `false`.
-This value will only be used if the [automatic cancellation of redundant pipelines feature](../../user/project/pipelines/settings.md#auto-cancel-pending-pipelines)
+This value will only be used if the [automatic cancellation of redundant pipelines feature](../pipelines/settings.md#auto-cancel-pending-pipelines)
 is enabled.
 
 When enabled, a pipeline on the same branch will be canceled when:
@@ -2993,7 +3071,7 @@ include:
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/53903) in GitLab 11.7.
 
 To include files from another private project under the same GitLab instance,
-use `include:file`. This file is referenced using full  paths relative to the
+use `include:file`. This file is referenced using full paths relative to the
 root directory (`/`). For example:
 
 ```yaml

@@ -14,7 +14,7 @@ Code Quality:
 - Uses [Code Climate Engines](https://codeclimate.com), which are
   free and open source. Code Quality doesn't require a Code Climate
   subscription.
-- Runs in [pipelines](../../../ci/pipelines.md) using a Docker image built in the
+- Runs in [pipelines](../../../ci/pipelines/index.md) using a Docker image built in the
   [GitLab Code
   Quality](https://gitlab.com/gitlab-org/security-products/codequality) project using [default Code Climate configurations](https://gitlab.com/gitlab-org/security-products/codequality/-/tree/master/codeclimate_defaults).
 - Can make use of a [template](#example-configuration).
@@ -26,6 +26,8 @@ Going a step further, GitLab can show the Code Quality report right
 in the merge request widget area:
 
 ![Code Quality Widget](img/code_quality.png)
+
+For more information, see the Code Climate list of [Supported Languages for Maintainability](https://docs.codeclimate.com/docs/supported-languages-for-maintainability).
 
 ## Use cases
 
@@ -269,7 +271,7 @@ Once the Code Quality job has completed:
   The Code Quality widget in the merge request compares the reports from the base and head of the branch,
   then lists any violations that will be resolved or created when the branch is merged.
 - The full JSON report is available as a
-  [downloadable artifact](../../../ci/pipelines/job_artifacts.html#downloading-artifacts)
+  [downloadable artifact](../../../ci/pipelines/job_artifacts.md#downloading-artifacts)
   for the `code_quality` job.
 
 If multiple jobs in a pipeline generate a code quality artifact, only the artifact from

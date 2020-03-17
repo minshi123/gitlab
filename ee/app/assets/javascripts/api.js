@@ -8,13 +8,13 @@ export default {
   ldapGroupsPath: '/api/:version/ldap/:provider/groups.json',
   subscriptionPath: '/api/:version/namespaces/:id/gitlab_subscription',
   childEpicPath: '/api/:version/groups/:id/epics/:epic_iid/epics',
-  groupEpicsPath:
-    '/api/:version/groups/:id/epics?include_ancestor_groups=:includeAncestorGroups&include_descendant_groups=:includeDescendantGroups',
+  groupEpicsPath: '/api/:version/groups/:id/epics',
   epicIssuePath: '/api/:version/groups/:id/epics/:epic_iid/issues/:issue_id',
   groupPackagesPath: '/api/:version/groups/:id/packages',
   projectPackagesPath: '/api/:version/projects/:id/packages',
   projectPackagePath: '/api/:version/projects/:id/packages/:package_id',
   cycleAnalyticsTasksByTypePath: '/-/analytics/type_of_work/tasks_by_type',
+  cycleAnalyticsTopLabelsPath: '/-/analytics/type_of_work/tasks_by_type/top_labels',
   cycleAnalyticsSummaryDataPath: '/-/analytics/value_stream_analytics/summary',
   cycleAnalyticsGroupStagesAndEventsPath: '/-/analytics/value_stream_analytics/stages',
   cycleAnalyticsStageEventsPath: '/-/analytics/value_stream_analytics/stages/:stage_id/records',
@@ -63,13 +63,25 @@ export default {
     });
   },
 
-  groupEpics({ groupId, includeAncestorGroups = false, includeDescendantGroups = true }) {
-    const url = Api.buildUrl(this.groupEpicsPath)
-      .replace(':id', groupId)
-      .replace(':includeAncestorGroups', includeAncestorGroups)
-      .replace(':includeDescendantGroups', includeDescendantGroups);
+  groupEpics({
+    groupId,
+    includeAncestorGroups = false,
+    includeDescendantGroups = true,
+    search = '',
+  }) {
+    const url = Api.buildUrl(this.groupEpicsPath).replace(':id', groupId);
+    const params = {
+      include_ancestor_groups: includeAncestorGroups,
+      include_descendant_groups: includeDescendantGroups,
+    };
 
-    return axios.get(url);
+    if (search) {
+      params.search = search;
+    }
+
+    return axios.get(url, {
+      params,
+    });
   },
 
   addEpicIssue({ groupId, epicIid, issueId }) {
@@ -88,41 +100,6 @@ export default {
       .replace(':issue_id', epicIssueId);
 
     return axios.delete(url);
-  },
-
-  /**
-   * Returns pods logs for an environment with an optional pod and container
-   *
-   * @param {Object} params
-   * @param {Object} param.environment - Environment object
-   * @param {string=} params.podName - Pod name, if not set the backend assumes a default one
-   * @param {string=} params.containerName - Container name, if not set the backend assumes a default one
-   * @param {string=} params.start - Starting date to query the logs in ISO format
-   * @param {string=} params.end - Ending date to query the logs in ISO format
-   * @returns {Promise} Axios promise for the result of a GET request of logs
-   */
-  getPodLogs({ environment, podName, containerName, search, start, end }) {
-    const url = this.buildUrl(environment.logs_api_path);
-
-    const params = {};
-
-    if (podName) {
-      params.pod_name = podName;
-    }
-    if (containerName) {
-      params.container_name = containerName;
-    }
-    if (search) {
-      params.search = search;
-    }
-    if (start) {
-      params.start = start;
-    }
-    if (end) {
-      params.end = end;
-    }
-
-    return axios.get(url, { params });
   },
 
   groupPackages(id, options = {}) {
@@ -153,6 +130,11 @@ export default {
 
   cycleAnalyticsTasksByType(params = {}) {
     const url = Api.buildUrl(this.cycleAnalyticsTasksByTypePath);
+    return axios.get(url, { params });
+  },
+
+  cycleAnalyticsTopLabels(params = {}) {
+    const url = Api.buildUrl(this.cycleAnalyticsTopLabelsPath);
     return axios.get(url, { params });
   },
 

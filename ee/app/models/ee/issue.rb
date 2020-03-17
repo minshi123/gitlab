@@ -26,6 +26,7 @@ module EE
         issue_ids = EpicIssue.where(epic_id: epics).select(:issue_id)
         id_in(issue_ids)
       end
+      scope :counts_by_health_status, -> { reorder(nil).group(:health_status).count }
 
       has_one :epic_issue
       has_one :epic, through: :epic_issue
@@ -63,6 +64,20 @@ module EE
     # override
     def allows_multiple_assignees?
       project.feature_available?(:multiple_issue_assignees)
+    end
+
+    def blocked?
+      blocking_issues_ids.any?
+    end
+
+    # Used on EE::IssueEntity to expose blocking issues URLs
+    def blocked_by_issues(user)
+      return ::Issue.none unless blocked?
+
+      issues =
+        ::IssuesFinder.new(user).execute.where(id: blocking_issues_ids)
+
+      issues.preload(project: [:route, { namespace: [:route] }])
     end
 
     # override
@@ -195,6 +210,10 @@ module EE
     end
 
     private
+
+    def blocking_issues_ids
+      @blocking_issues_ids ||= ::IssueLink.blocking_issue_ids_for(self)
+    end
 
     def update_generic_alert_title
       update(title: "#{title} #{iid}")

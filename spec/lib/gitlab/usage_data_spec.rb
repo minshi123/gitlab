@@ -27,7 +27,7 @@ describe Gitlab::UsageData do
           create(:service, project: projects[1], type: 'SlackService', active: true)
           create(:service, project: projects[2], type: 'SlackService', active: true)
           create(:service, project: projects[2], type: 'MattermostService', active: false)
-          create(:service, project: projects[2], type: 'MattermostService', active: true, template: true)
+          create(:service, :template, type: 'MattermostService', active: true)
           create(:service, project: projects[2], type: 'CustomIssueTrackerService', active: true)
           create(:project_error_tracking_setting, project: projects[0])
           create(:project_error_tracking_setting, project: projects[1], enabled: false)
@@ -385,29 +385,6 @@ describe Gitlab::UsageData do
           allow(relation).to receive(:count).and_raise(ActiveRecord::StatementInvalid.new(''))
 
           expect(described_class.count(relation, fallback: 15, batch: false)).to eq(15)
-        end
-      end
-
-      describe '#approximate_counts' do
-        it 'gets approximate counts for selected models', :aggregate_failures do
-          create(:label)
-
-          expect(Gitlab::Database::Count).to receive(:approximate_counts)
-                                               .with(described_class::APPROXIMATE_COUNT_MODELS).once.and_call_original
-
-          counts = described_class.approximate_counts.values
-
-          expect(counts.count).to eq(described_class::APPROXIMATE_COUNT_MODELS.count)
-          expect(counts.any? { |count| count < 0 }).to be_falsey
-        end
-
-        it 'returns default values if counts can not be retrieved', :aggregate_failures do
-          described_class::APPROXIMATE_COUNT_MODELS.map do |model|
-            model.name.underscore.pluralize.to_sym
-          end
-
-          expect(Gitlab::Database::Count).to receive(:approximate_counts).and_return({})
-          expect(described_class.approximate_counts.values.uniq).to eq([-1])
         end
       end
     end

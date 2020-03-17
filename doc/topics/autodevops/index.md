@@ -639,7 +639,8 @@ as it will be attempting to fetch the image using
 
 #### Kubernetes 1.16+
 
-> [Introduced](https://gitlab.com/gitlab-org/charts/auto-deploy-app/-/merge_requests/51) in GitLab 12.8.
+> - [Introduced](https://gitlab.com/gitlab-org/charts/auto-deploy-app/-/merge_requests/51) in GitLab 12.8.
+> - Support for deploying a PostgreSQL version that supports Kubernetes 1.16+ was [introduced](https://gitlab.com/gitlab-org/cluster-integration/auto-deploy-image/-/merge_requests/49) in GitLab 12.9.
 
 CAUTION: **Deprecation**
 The default value of `extensions/v1beta1` for the `deploymentApiVersion` setting is
@@ -657,9 +658,17 @@ To use Auto Deploy on a Kubernetes 1.16+ cluster, you must:
    deploymentApiVersion: apps/v1
    ```
 
-1. Set the `POSTGRES_ENABLED` variable to `false`. This will disable Auto Deploy's deployment of PostgreSQL.
-Support for enabling Auto Deploy's deployment of PostgreSQL in a Kubernetes 1.16+ cluster
-is [planned](https://gitlab.com/gitlab-org/charts/auto-deploy-app/issues/28).
+1. Set the:
+
+   - `AUTO_DEVOPS_POSTGRES_CHANNEL` variable to `2`.
+   - `POSTGRES_VERSION` variable to `9.6.16` or higher.
+
+   This will opt-in to using a version of the PostgreSQL chart that supports Kubernetes
+   1.16 and higher.
+
+DANGER: **Danger:** Opting into `AUTO_DEVOPS_POSTGRES_CHANNEL` version `2` will delete
+the version `1` PostgreSQL database. Please backup the contents of the PostgreSQL database
+first before opting into version `2`, so that you can restore into the version `2` database.
 
 #### Migrations
 
@@ -1366,7 +1375,7 @@ increasing the rollout up to 100%.
 
 If `INCREMENTAL_ROLLOUT_MODE` is set to `manual` in your project, then instead
 of the standard `production` job, 4 different
-[manual jobs](../../ci/pipelines.md#manual-actions-from-pipeline-graphs)
+[manual jobs](../../ci/pipelines/index.md#manual-actions-from-pipeline-graphs)
 will be created:
 
 1. `rollout 10%`

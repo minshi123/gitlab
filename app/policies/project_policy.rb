@@ -314,6 +314,8 @@ class ProjectPolicy < BasePolicy
     enable :admin_operations
     enable :read_deploy_token
     enable :create_deploy_token
+    enable :read_pod_logs
+    enable :destroy_deploy_token
   end
 
   rule { (mirror_available & can?(:admin_project)) | admin }.enable :admin_remote_mirror

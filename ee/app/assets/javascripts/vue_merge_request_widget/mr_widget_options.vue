@@ -1,5 +1,5 @@
 <script>
-import _ from 'underscore';
+import { isNumber, isString } from 'lodash';
 import GroupedSecurityReportsApp from 'ee/vue_shared/security_reports/grouped_security_reports_app.vue';
 import GroupedMetricsReportsApp from 'ee/vue_shared/metrics_reports/grouped_metrics_reports_app.vue';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
@@ -154,8 +154,8 @@ export default {
     shouldRenderMergeTrainHelperText() {
       return (
         this.mr.pipeline &&
-        _.isNumber(this.mr.pipeline.id) &&
-        _.isString(this.mr.pipeline.path) &&
+        isNumber(this.mr.pipeline.id) &&
+        isString(this.mr.pipeline.path) &&
         this.mr.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY &&
         !this.mr.autoMergeEnabled
       );
@@ -323,9 +323,6 @@ export default {
         :create-vulnerability-feedback-dismissal-path="mr.createVulnerabilityFeedbackDismissalPath"
         :pipeline-path="mr.pipeline.path"
         :pipeline-id="mr.securityReportsPipelineId"
-        :can-create-issue="mr.canCreateIssue"
-        :can-create-merge-request="mr.canCreateMergeRequest"
-        :can-dismiss-vulnerability="mr.canDismissVulnerability"
         :diverged-commits-count="mr.divergedCommitsCount"
         :mr-state="mr.state"
         :target-branch-tree-path="mr.targetBranchTreePath"

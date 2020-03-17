@@ -273,6 +273,7 @@ MergeRequest::Metrics:
 - modified_paths_size
 - commits_count
 - first_approved_at
+- first_reassigned_at
 Ci::Pipeline:
 - id
 - project_id
@@ -458,6 +459,7 @@ Service:
 - active
 - properties
 - template
+- instance
 - push_events
 - issues_events
 - commit_events

@@ -9,8 +9,8 @@ ensure that they are scalable and highly available. While these needs can be tac
 individually, they typically go hand in hand: a performant scalable environment
 will have availability by default, as its components are separated and pooled.
 
-On this page, we present recommendations for setups based on the number
-of users you expect. For larger setups we give several recommended
+On this page, we present a maturity model for a progression from simple to complex
+GitLab installations as your GitLab usage evolves. For larger setups we give several recommended
 architectures based on experience with GitLab.com and internal scale
 testing that aim to achieve the right balance between both scalability
 and availability.
@@ -20,31 +20,99 @@ watch [this 1 hour Q&A](https://www.youtube.com/watch?v=uCU8jdYzpac)
 with [John Northrup](https://gitlab.com/northrup), and live questions coming
 in from some of our customers.
 
+## Maturity levels
+
+### Level 1: Single-node Omnibus installation
+
+This solution is appropriate for many teams that have a single server at their disposal. With automatic backup of the GitLab repositories, configuration, and the database, this can be an optimal solution if you don't have strict availability requirements.
+
+This configuration is supported in [GitLab Starter, Premium and Ultimate](https://about.gitlab.com/pricing/).
+
+References:
+
+- [Installation Docs](../../install/README.md)
+- [Backup/Restore Docs](https://docs.gitlab.com/omnibus/settings/backups.html#backup-and-restore-omnibus-gitlab-configuration)
+
+### Level 2: Multiple application servers
+
+By separating components you can see a number of advantages compared to a single-node setup. Namely, you can:
+
+- Increase the number of users
+- Enable zero-downtime upgrades
+- Increase availability
+
+Additional application nodes will handle frontend traffic, with a load balancer in front to distribute traffic across those nodes. Meanwhile, each application node connects to a shared file server and database systems on the back end. This way, if one of the application servers fails, the workflow is not interrupted.
+
+This configuration is supported in [GitLab Starter, Premium and Ultimate](https://about.gitlab.com/pricing/).
+
+References:
+
+- [High Availability Reference Architectures](#reference-architectures), without HA components
+
+### Level 3: Highly Available
+
+By adding automatic failover for database systems, we can enable higher uptime with an additional layer of complexity.
+
+This configuration is supported in [GitLab Premium and Ultimate](https://about.gitlab.com/pricing/).
+
+References:
+
+- [High Availability Reference Architectures](#reference-architectures)
+
+### Level 4: GitLab Geo
+
+GitLab Geo allows you to replicate your GitLab instance to other geographical locations as a read-only fully operational instance that can also be promoted in case of disaster.
+
+This configuration is supported in [GitLab Premium and Ultimate](https://about.gitlab.com/pricing/).
+
+References:
+
+- [Geo Documentation](../geo/replication/index.md)
+- [GitLab Geo with a highly available configuration](../geo/replication/high_availability.md)
+
 ## Recommended setups based on number of users
 
 - 1 - 1000 Users: A single-node [Omnibus](https://docs.gitlab.com/omnibus/) setup with frequent backups. Refer to the [requirements page](../../install/requirements.md) for further details of the specs you will require.
+- 1000 - 10000 Users: A scaled environment based on one of our [Reference Architectures](#reference-architectures), without the HA components applied. This can be a reasonable step towards a fully HA environment.
 - 2000 - 50000+ Users: A scaled HA environment based on one of our [Reference Architectures](#reference-architectures) below.
 
 ## GitLab components and configuration instructions
 
-The GitLab application depends on the following [components](../../development/architecture.md#component-diagram)
-and services. They are included in the reference architectures along with our
-recommendations for their use and configuration. They are presented in the order
-in which you would typically configure them.
+The GitLab application depends on the following [components](../../development/architecture.md#component-diagram).
+It can also depend on several third party services depending on
+your environment setup. Here we'll detail both in the order in which
+you would typically configure them along with our recommendations for
+their use and configuration.
 
-| Component                                                                                                                                                         | Description                                                                                                                       | Configuration Instructions                                   |
-|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|
-| [Load Balancer(s)](load_balancer.md)[^6]                                                                                                                          | Handles load balancing for the GitLab nodes where required.                                                                       | [Load balancer HA configuration](load_balancer.md)                               |
-| [Consul](../../development/architecture.md#consul)[^3]                                                                                     | Service discovery and health checks/failover                                                                                      | [Consul HA configuration](consul.md) **(PREMIUM ONLY)**                                     |
-| [PostgreSQL](../../development/architecture.md#postgresql)                                                                                 | Database                                                                                                                          | [Database HA configuration](database.md) |
-| [PgBouncer](../../development/architecture.md#pgbouncer)                                                                                   | Database Pool Manager                                                                                                             | [PgBouncer HA configuration](pgbouncer.md) **(PREMIUM ONLY)**                                  |
-| [Redis](../../development/architecture.md#redis)[^3] with Redis Sentinel                                                                   | Key/Value store for shared data with HA watcher service                                                                           | [Redis HA configuration](redis.md)        |
-| [Gitaly](../../development/architecture.md#gitaly)[^2] [^5] [^7]                                                                           | Recommended high-level storage for Git repository data.                                                                           | [Gitaly HA configuration](gitaly.md)                                      |
-| [Sidekiq](../../development/architecture.md#sidekiq)                                                                                       | Asynchronous/Background jobs                                                                                                      |                                                        |
-| [Cloud Object Storage service](object_storage.md)[^4]                                                                                                                | Recommended store for shared data objects such as LFS, Uploads, Artifacts, etc...                                              | [Cloud Object Storage configuration](object_storage.md)                              |
-| [GitLab application nodes](../../development/architecture.md#unicorn)[^1]                                                                  | (Unicorn / Puma, Workhorse) - Web-requests (UI, API, Git over HTTP)                                                               | [GitLab app HA/scaling configuration](gitlab.md)                                      |
-| [NFS](nfs.md)[^5] [^7]                                                                                                                                            | Shared disk storage service. Can be used as an alternative for Gitaly or Object Storage. Required for GitLab Pages.               | [NFS configuration](nfs.md)                                         |
-| [Prometheus](../../development/architecture.md#prometheus) and [Grafana](../../development/architecture.md#grafana) | GitLab environment monitoring                                                                                                     | [Monitoring node for scaling/HA](monitoring_node.md)                             |
+### Third party services
+
+Here's some details of several third party services a typical environment
+will depend on. The services can be provided by numerous applications
+or providers and further advice can be given on how best to select.
+These should be configured first, before the [GitLab components](#gitlab-components).
+
+| Component                                              | Description                                                                                                         | Configuration instructions                              |
+|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
+| [Load Balancer(s)](load_balancer.md)[^6]               | Handles load balancing for the GitLab nodes where required                                                          | [Load balancer HA configuration](load_balancer.md)      |
+| [Cloud Object Storage service](object_storage.md)[^4]  | Recommended store for shared data objects                                                                           | [Cloud Object Storage configuration](object_storage.md) |
+| [NFS](nfs.md)[^5] [^7]                                 | Shared disk storage service. Can be used as an alternative for Gitaly or Object Storage. Required for GitLab Pages  | [NFS configuration](nfs.md)                             |
+
+### GitLab components
+
+Next are all of the components provided directly by GitLab. As mentioned
+earlier, they are presented in the typical order you would configure
+them.
+
+| Component                                                                                                           | Description                                                         | Configuration instructions                                    |
+|---------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|---------------------------------------------------------------|
+| [Consul](../../development/architecture.md#consul)[^3]                                                              | Service discovery and health checks/failover                        | [Consul HA configuration](consul.md) **(PREMIUM ONLY)**       |
+| [PostgreSQL](../../development/architecture.md#postgresql)                                                          | Database                                                            | [Database HA configuration](database.md)                      |
+| [PgBouncer](../../development/architecture.md#pgbouncer)                                                            | Database Pool Manager                                               | [PgBouncer HA configuration](pgbouncer.md) **(PREMIUM ONLY)** |
+| [Redis](../../development/architecture.md#redis)[^3] with Redis Sentinel                                            | Key/Value store for shared data with HA watcher service             | [Redis HA configuration](redis.md)                            |
+| [Gitaly](../../development/architecture.md#gitaly)[^2] [^5] [^7]                                                    | Recommended high-level storage for Git repository data              | [Gitaly HA configuration](gitaly.md)                          |
+| [Sidekiq](../../development/architecture.md#sidekiq)                                                                | Asynchronous/Background jobs                                        |                                                               |
+| [GitLab application nodes](../../development/architecture.md#unicorn)[^1]                                           | (Unicorn / Puma, Workhorse) - Web-requests (UI, API, Git over HTTP) | [GitLab app HA/scaling configuration](gitlab.md)              |
+| [Prometheus](../../development/architecture.md#prometheus) and [Grafana](../../development/architecture.md#grafana) | GitLab environment monitoring                                       | [Monitoring node for scaling/HA](monitoring_node.md)          |
 
 In some cases, components can be combined on the same nodes to reduce complexity as well.
 

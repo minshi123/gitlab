@@ -20,14 +20,14 @@ NOTE: **Scalable app deployment with GitLab and Google Cloud Platform**
 Using the GitLab project Kubernetes integration, you can:
 
 - Use [Review Apps](../../../ci/review_apps/index.md).
-- Run [pipelines](../../../ci/pipelines.md).
+- Run [pipelines](../../../ci/pipelines/index.md).
 - [Deploy](#deploying-to-a-kubernetes-cluster) your applications.
 - Detect and [monitor Kubernetes](#kubernetes-monitoring).
 - Use it with [Auto DevOps](#auto-devops).
 - Use [Web terminals](#web-terminals).
 - Use [Deploy Boards](#deploy-boards-premium). **(PREMIUM)**
 - Use [Canary Deployments](#canary-deployments-premium). **(PREMIUM)**
-- View [Pod logs](#pod-logs-ultimate). **(ULTIMATE)**
+- View [Logs](#logs).
 - Run serverless workloads on [Kubernetes with Knative](serverless/index.md).
 
 ### Deploy Boards **(PREMIUM)**
@@ -48,11 +48,11 @@ the need to leave GitLab.
 
 [Read more about Canary Deployments](../canary_deployments.md)
 
-### Pod logs **(ULTIMATE)**
+### Logs
 
 GitLab makes it easy to view the logs of running pods in connected Kubernetes clusters. By displaying the logs directly in GitLab, developers can avoid having to manage console tools or jump to a different interface.
 
-[Read more about Kubernetes pod logs](kubernetes_pod_logs.md)
+[Read more about Kubernetes logs](kubernetes_pod_logs.md)
 
 ### Kubernetes monitoring
 

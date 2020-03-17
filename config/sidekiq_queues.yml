@@ -30,6 +30,8 @@
   - 1
 - - analytics_code_review_metrics
   - 1
+- - authorized_keys
+  - 2
 - - authorized_projects
   - 2
 - - auto_devops
@@ -230,6 +232,8 @@
   - 2
 - - service_desk_email_receiver
   - 1
+- - sync_seat_link_request
+  - 1
 - - system_hook_push
   - 1
 - - todos_destroyer
@@ -245,4 +249,6 @@
 - - upload_checksum
   - 1
 - - web_hook
+  - 1
+- - x509_certificate_revoke
   - 1
