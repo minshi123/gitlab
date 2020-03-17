@@ -106,14 +106,9 @@ When visiting one of these views, you can now hover over a code reference to see
 
 ## Sourcegraph for GitLab.com
 
-Sourcegraph powered code intelligence will be incrementally rolled out on GitLab.com.
-It will eventually become available for all public projects, but for now, it is only
-available for some specific projects within the [`gitlab-org`](https://gitlab.com/gitlab-org/)
-group, e.g., <https://gitlab.com/gitlab-org/gitlab>. This means that you can see
-it working and use it to dig into the code of these projects, but you cannot use
-it on your own project on GitLab.com yet.
+Sourcegraph powered code intelligence is avaialable for all public projects on GitLab.com. 
 
-If you would like to use it in your own projects as of GitLab 12.5, you can do so by
+If you would like to use it in private projects as of GitLab 12.5, you can do so by
 setting up a self-managed GitLab instance.
 
 Follow the epic [&2201](https://gitlab.com/groups/gitlab-org/-/epics/2201) for
