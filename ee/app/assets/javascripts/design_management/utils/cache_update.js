@@ -4,7 +4,6 @@ import {
   ADD_IMAGE_DIFF_NOTE_ERROR,
   UPDATE_IMAGE_DIFF_NOTE_ERROR,
   ADD_DISCUSSION_COMMENT_ERROR,
-  UPLOAD_DESIGN_ERROR,
   designDeletionError,
 } from './error_messages';
 
