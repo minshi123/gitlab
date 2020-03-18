@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Security::WafAnomalySummaryService do
-  let(:environment) { create(:environment, :with_review_app) }
+  let(:environment) { create(:environment, :with_review_app, environment_type: 'review') }
   let!(:cluster) do
     create(:cluster, :provided_by_gcp, environment_scope: '*', projects: [environment.project])
   end
@@ -76,6 +76,16 @@ describe Security::WafAnomalySummaryService do
       end
     end
 
+    context 'with environment missing external_url' do
+      it 'returns nil' do
+        subject = described_class.new(
+          environment: environment
+        )
+
+        expect(subject.execute).to be_nil
+      end
+    end
+
     context 'with default histogram' do
       before do
         allow(es_client).to receive(:msearch) do
@@ -127,6 +137,36 @@ describe Security::WafAnomalySummaryService do
           expect(results.fetch(:total_traffic)).to eq 3
           expect(results.fetch(:anomalous_traffic)).to eq 0.33
         end
+      end
+    end
+
+    context 'with review app' do
+      it 'resolves transaction_id from external_url' do
+        subject = described_class.new(
+          environment: environment
+        )
+
+        allow(subject).to receive(:elasticsearch_client) { es_client }
+
+        expect(es_client).to receive(:msearch).with(
+          body: array_including(
+            hash_including(
+              query: hash_including(
+                bool: hash_including(
+                  must: array_including(
+                    hash_including(
+                      prefix: hash_including(
+                        'transaction.unique_id': environment.formatted_external_url
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ).and_return({ 'responses' => [{}, {}] })
+
+        subject.execute
       end
     end
 
