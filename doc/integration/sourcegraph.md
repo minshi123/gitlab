@@ -4,7 +4,8 @@ type: reference, how-to
 
 # Sourcegraph integration
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/16556) in GitLab 12.5. Please note that this integration is in BETA and [behind a feature flag](#enable-the-sourcegraph-feature-flag).
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/16556) in GitLab 12.5.
+> - Note that this integration is in BETA and deployed [behind a feature flag](#enable-the-sourcegraph-feature-flag) disabled by default. Self-managed instances can opt to enable it.
 
 [Sourcegraph](https://sourcegraph.com) provides code intelligence features, natively integrated into the GitLab UI.
 
