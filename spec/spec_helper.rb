@@ -197,6 +197,10 @@ RSpec.configure do |config|
       .with(:vue_issuable_epic_sidebar, anything)
       .and_return(false)
 
+    allow(Feature).to receive(:enabled?)
+      .with(/\Apromo_\w+\z/, default_enabled: false)
+      .and_return(false)
+
     # Stub these calls due to being expensive operations
     # It can be reenabled for specific tests via:
     #
