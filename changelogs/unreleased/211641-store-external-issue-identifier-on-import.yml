@@ -1,0 +1,5 @@
+---
+title: Add a DB column to track external issue id when importing from external sources
+merge_request:
+author:
+type: added
