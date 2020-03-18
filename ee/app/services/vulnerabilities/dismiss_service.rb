@@ -6,6 +6,8 @@ module Vulnerabilities
 
     FindingsDismissResult = Struct.new(:ok?, :finding, :message)
 
+    attr_reader :vulnerability, :user
+
     def initialize(user, vulnerability)
       @user = user
       @vulnerability = vulnerability
@@ -25,6 +27,8 @@ module Vulnerabilities
 
         @vulnerability.update(state: Vulnerability.states[:dismissed], dismissed_by: @user, dismissed_at: Time.current)
       end
+
+      create_vulnerability_note
 
       @vulnerability
     end
@@ -62,6 +66,12 @@ module Vulnerabilities
             finding_id: finding.id,
             message: message
           })
+    end
+
+    def create_vulnerability_note
+      return unless vulnerability.state_previously_changed?
+
+      SystemNoteService.change_vulnerability_state(vulnerability, user, 'dismissed')
     end
   end
 end
