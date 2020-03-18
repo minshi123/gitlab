@@ -10,7 +10,6 @@ import {
   designDeletionError,
   ADD_DISCUSSION_COMMENT_ERROR,
   ADD_IMAGE_DIFF_NOTE_ERROR,
-  UPLOAD_DESIGN_ERROR,
   UPDATE_IMAGE_DIFF_NOTE_ERROR,
 } from 'ee/design_management/utils/error_messages';
 import design from '../mock_data/design';
