@@ -17,7 +17,7 @@ At this time only AWS S3 is supported as a deploy target.
 
 ### Incident detail page
 
-The incident detail page shows detailed information about a particular incident, including:
+The incident detail page shows detailed information about a particular incident. For example:
 
 - Status on the incident, including when the incident was last updated.
 - The incident title.
