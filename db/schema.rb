@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_13_123934) do
+ActiveRecord::Schema.define(version: 2020_03_18_183553) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -3072,6 +3072,12 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.index ["project_id", "version"], name: "index_packages_packages_on_project_id_and_version"
   end
 
+  create_table "packages_pypi_metadata", force: :cascade do |t|
+    t.bigint "package_id", null: false
+    t.string "required_python", limit: 255, null: false
+    t.index ["package_id"], name: "index_packages_pypi_metadata_on_package_id", unique: true
+  end
+
   create_table "packages_tags", force: :cascade do |t|
     t.integer "package_id", null: false
     t.string "name", limit: 255, null: false
@@ -5042,6 +5048,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
   add_foreign_key "packages_maven_metadata", "packages_packages", column: "package_id", name: "fk_be88aed360", on_delete: :cascade
   add_foreign_key "packages_package_files", "packages_packages", column: "package_id", name: "fk_86f0f182f8", on_delete: :cascade
   add_foreign_key "packages_packages", "projects", on_delete: :cascade
+  add_foreign_key "packages_pypi_metadata", "packages_packages", column: "package_id", on_delete: :cascade
   add_foreign_key "packages_tags", "packages_packages", column: "package_id", on_delete: :cascade
   add_foreign_key "pages_domain_acme_orders", "pages_domains", on_delete: :cascade
   add_foreign_key "pages_domains", "projects", name: "fk_ea2f6dfc6f", on_delete: :cascade
