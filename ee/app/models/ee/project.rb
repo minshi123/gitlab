@@ -522,10 +522,6 @@ module EE
       repository_and_lfs_size > actual_size_limit
     end
 
-    def size_to_remove
-      repository_and_lfs_size - actual_size_limit
-    end
-
     def actual_size_limit
       return namespace.actual_size_limit if repository_size_limit.nil?
 

@@ -2161,14 +2161,6 @@ describe Project do
         expect(project.above_size_limit?).to be_falsey
       end
     end
-
-    describe '#size_to_remove' do
-      it 'returns the correct value' do
-        allow(project).to receive(:repository_and_lfs_size).and_return(100)
-
-        expect(project.size_to_remove).to eq(50)
-      end
-    end
   end
 
   describe '#repository_size_limit column' do

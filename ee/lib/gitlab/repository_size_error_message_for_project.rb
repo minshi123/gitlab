@@ -21,15 +21,11 @@ module Gitlab
     private
 
     def current_size
-      project.repository_and_lfs_size
+      @current_size ||= project.repository_and_lfs_size
     end
 
     def limit
-      project.actual_size_limit
-    end
-
-    def size_to_remove(exceeded_limit = nil)
-      exceeded_limit || project.size_to_remove
+      @limit ||= project.actual_size_limit
     end
   end
 end

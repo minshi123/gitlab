@@ -39,7 +39,7 @@ module Gitlab
     end
 
     def size_to_remove(exceeded_limit = nil)
-      raise NotImplementedError
+      exceeded_limit || (current_size - limit)
     end
 
     def formatted(number)
