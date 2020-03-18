@@ -19,10 +19,10 @@ At this time only AWS S3 is supported as a deploy target.
 
 The incident detail page shows detailed information about a particular incident, including:
 
-- Status on the incident including when the incident was last updated
-- Incident title
-- The description of the incident
-- A chronological ordered list of updates to the incident
+- Status on the incident, including when the incident was last updated.
+- The incident title.
+- The description of the incident.
+- A chronological ordered list of updates to the incident.
 
 ![Status Page detail](../img/status_page_detail.png)
 
