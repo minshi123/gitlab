@@ -312,7 +312,46 @@ describe "User creates wiki page" do
         visit(project_wikis_path(project))
 
         expect(page).to have_content('another')
+      end
+
+      context 'when there is a customized sidebar' do
+        before do
+          create(:wiki_page, wiki: wiki, attrs: { title: '_sidebar', content: 'My customized sidebar' })
+        end
+
+        it 'renders my customized sidebar instead of the default one' do
+          visit(project_wikis_path(project))
+
+          expect(page).to have_content('My customized sidebar')
+          expect(page).not_to have_content('Another')
+        end
+      end
+    end
+
+    context 'when there are more than 15 existing pages' do
+      before do
+        create(:wiki_page, wiki: wiki, attrs: { title: 'home', content: 'home' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-2', content: 'page-2' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-3', content: 'page-3' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-4', content: 'page-4' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-5', content: 'page-5' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-6', content: 'page-6' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-7', content: 'page-7' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-8', content: 'page-8' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-9', content: 'page-9' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-10', content: 'page-10' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-11', content: 'page-11' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-12', content: 'page-12' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-13', content: 'page-13' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-14', content: 'page-14' })
+        create(:wiki_page, wiki: wiki, attrs: { title: 'page-15', content: 'page-15' })
+      end
+
+      it 'renders a default sidebar when there is no customized sidebar' do
+        visit(project_wikis_path(project))
+
         expect(page).to have_content('View All Pages')
+        expect(page).to have_content('another')
       end
 
       context 'when there is a customized sidebar' do
