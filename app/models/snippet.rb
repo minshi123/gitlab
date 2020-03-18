@@ -264,6 +264,15 @@ class Snippet < ApplicationRecord
     @repository ||= Repository.new(full_path, self, shard: repository_storage, disk_path: disk_path, repo_type: Gitlab::GlRepository::SNIPPET)
   end
 
+  def repository_size_checker
+    strong_memoize(:repository_size_checker) do
+      ::Gitlab::RepositorySizeChecker.new(
+        current_size_proc: -> { repository.size },
+        limit: Gitlab::CurrentSettings.snippet_size_limit
+      )
+    end
+  end
+
   def storage
     @storage ||= Storage::Hashed.new(self, prefix: Storage::Hashed::SNIPPET_REPOSITORY_PATH_PREFIX)
   end
