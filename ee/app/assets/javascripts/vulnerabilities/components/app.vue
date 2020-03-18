@@ -23,6 +23,10 @@ export default {
   },
 
   props: {
+    occurrence: {
+      type: Object,
+      required: true,
+    },
     vulnerability: {
       type: Object,
       required: true,
@@ -84,7 +88,12 @@ export default {
             feedback_type: 'issue',
             category: this.vulnerability.report_type,
             project_fingerprint: this.projectFingerprint,
-            vulnerability_data: { ...this.vulnerability, category: this.vulnerability.report_type },
+            vulnerability_data: {
+              ...this.vulnerability,
+              category: this.vulnerability.report_type,
+              description: this.occurrence.description,
+              name: this.occurrence.name,
+            },
           },
         })
         .then(({ data: { issue_url } }) => {
