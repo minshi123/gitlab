@@ -23,6 +23,11 @@ describe('Vulnerability management app', () => {
     report_type: 'sast',
   };
 
+  const occurrence = {
+    description: 'This is the description of the occurrence',
+    name: 'THE occurrence',
+  };
+
   const dataset = {
     createIssueUrl: 'create_issue_url',
     projectFingerprint: 'abc123',
@@ -40,6 +45,7 @@ describe('Vulnerability management app', () => {
       propsData: {
         vulnerability: Object.assign({ state }, vulnerability),
         ...dataset,
+        occurrence: Object.assign({ state }, occurrence),
       },
     });
   };
@@ -104,7 +110,12 @@ describe('Vulnerability management app', () => {
             feedback_type: 'issue',
             category: vulnerability.report_type,
             project_fingerprint: dataset.projectFingerprint,
-            vulnerability_data: { ...vulnerability, category: vulnerability.report_type },
+            vulnerability_data: {
+              ...vulnerability,
+              category: vulnerability.report_type,
+              description: occurrence.description,
+              name: occurrence.name,
+            },
           },
         });
         expect(spy).toHaveBeenCalledWith(issueUrl);
