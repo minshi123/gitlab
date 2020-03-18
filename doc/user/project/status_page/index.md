@@ -1,4 +1,4 @@
-# Status Page
+# GitLab Status Page
 
 > [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/2479)
 in GitLab 12.9.
