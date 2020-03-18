@@ -1,8 +1,15 @@
 # frozen_string_literal: true
 
 module Gitlab
-  module RepositorySizeErrorMessage
+  class RepositorySizeErrorMessage
     include ActiveSupport::NumberHelper
+
+    attr_reader :current_size, :limit
+
+    def initialize(current_size:, limit:)
+      @current_size = current_size
+      @limit = limit
+    end
 
     def to_s
       "The size of this repository (#{formatted(current_size)}) exceeds the limit of #{formatted(limit)} by #{formatted(size_to_remove)}."
@@ -28,14 +35,6 @@ module Gitlab
 
     def base_message(exceeded_limit = nil)
       "because this repository has exceeded its size limit of #{formatted(limit)} by #{formatted(size_to_remove(exceeded_limit))}"
-    end
-
-    def current_size
-      raise NotImplementedError
-    end
-
-    def limit
-      raise NotImplementedError
     end
 
     def size_to_remove(exceeded_limit = nil)
