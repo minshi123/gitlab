@@ -22720,9 +22720,6 @@ msgstr ""
 msgid "Wiki|Edit Page"
 msgstr ""
 
-msgid "Wiki|More Pages"
-msgstr ""
-
 msgid "Wiki|New page"
 msgstr ""
 
@@ -22739,6 +22736,9 @@ msgid "Wiki|Pages"
 msgstr ""
 
 msgid "Wiki|Title"
+msgstr ""
+
+msgid "Wiki|View All Pages"
 msgstr ""
 
 msgid "Wiki|Wiki Pages"
