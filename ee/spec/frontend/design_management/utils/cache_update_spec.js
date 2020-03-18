@@ -33,7 +33,7 @@ describe('Design Management cache update', () => {
       ${'updateStoreAfterDesignsDelete'}        | ${updateStoreAfterDesignsDelete}        | ${designDeletionError({ singular: true })} | ${[[design]]}
       ${'updateStoreAfterAddDiscussionComment'} | ${updateStoreAfterAddDiscussionComment} | ${ADD_DISCUSSION_COMMENT_ERROR}            | ${[]}
       ${'updateStoreAfterAddImageDiffNote'}     | ${updateStoreAfterAddImageDiffNote}     | ${ADD_IMAGE_DIFF_NOTE_ERROR}               | ${[]}
-      ${'updateStoreAfterUploadDesign'}         | ${updateStoreAfterUploadDesign}         | ${UPLOAD_DESIGN_ERROR}                     | ${[]}
+      ${'updateStoreAfterUploadDesign'}         | ${updateStoreAfterUploadDesign}         | ${mockErrors[0]}                           | ${[]}
       ${'updateStoreAfterUpdateImageDiffNote'}  | ${updateStoreAfterUpdateImageDiffNote}  | ${UPDATE_IMAGE_DIFF_NOTE_ERROR}            | ${[]}
     `('$fnName handles errors in response', ({ subject, extraArgs, errorMessage }) => {
       expect(createFlash).not.toHaveBeenCalled();
