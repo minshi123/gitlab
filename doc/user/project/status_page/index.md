@@ -12,7 +12,7 @@ NOTE: **Note:**
 At this time only AWS S3 is supported as a deploy target.
 
 1. Navigate to **Settings > Operations > Status Page**
-1. Fill in your cloud provider's credentials and make sure the **Active** checkbox is clicked.
+1. Fill in your cloud provider's credentials and make sure the **Active** checkbox is checked.
 1. Submit the form and to save your details.
 
 ### Incident detail page
