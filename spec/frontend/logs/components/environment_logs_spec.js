@@ -2,6 +2,8 @@ import Vue from 'vue';
 import { GlSprintf, GlIcon, GlDropdown, GlDropdownItem, GlSearchBoxByClick } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import DateTimePicker from '~/vue_shared/components/date_time_picker/date_time_picker.vue';
+import LogSimpleFilters from '~/logs/components/log_simple_filters.vue';
+import LogAdvancedFilters from '~/logs/components/log_advanced_filters.vue';
 import EnvironmentLogs from '~/logs/components/environment_logs.vue';
 
 import { createStore } from '~/logs/stores';
@@ -44,13 +46,15 @@ describe('EnvironmentLogs', () => {
   const updateControlBtnsMock = jest.fn();
 
   const findEnvironmentsDropdown = () => wrapper.find('.js-environments-dropdown');
-  const findPodsDropdown = () => wrapper.find('.js-pods-dropdown');
-  const findPodsDropdownItems = () =>
-    findPodsDropdown()
-      .findAll(GlDropdownItem)
-      .filter(itm => !itm.attributes('disabled'));
-  const findSearchBar = () => wrapper.find('.js-logs-search');
-  const findTimeRangePicker = () => wrapper.find({ ref: 'dateTimePicker' });
+
+  const findSimpleFilters = () => wrapper.find({ ref: 'log-simple-filters' });
+  // const findPodsDropdown = () => wrapper.find('.js-pods-dropdown');
+  // const findPodsDropdownItems = () =>
+  //   findPodsDropdown()
+  //     .findAll(GlDropdownItem)
+  //     .filter(itm => !itm.attributes('disabled'));
+  // const findSearchBar = () => wrapper.find('.js-logs-search');
+  // const findTimeRangePicker = () => wrapper.find({ ref: 'dateTimePicker' });
   const findInfoAlert = () => wrapper.find('.js-elasticsearch-alert');
   const findLogControlButtons = () => wrapper.find({ name: 'log-control-buttons-stub' });
 
@@ -134,13 +138,15 @@ describe('EnvironmentLogs', () => {
 
     // top bar
     expect(findEnvironmentsDropdown().is(GlDropdown)).toBe(true);
-    expect(findPodsDropdown().is(GlDropdown)).toBe(true);
-    expect(findLogControlButtons().exists()).toBe(true);
+    expect(findSimpleFilters().exists()).toBe(true);
 
-    expect(findSearchBar().exists()).toBe(true);
-    expect(findSearchBar().is(GlSearchBoxByClick)).toBe(true);
-    expect(findTimeRangePicker().exists()).toBe(true);
-    expect(findTimeRangePicker().is(DateTimePicker)).toBe(true);
+    // expect(findPodsDropdown().is(GlDropdown)).toBe(true);
+    // expect(findSearchBar().exists()).toBe(true);
+    // expect(findSearchBar().is(GlSearchBoxByClick)).toBe(true);
+    // expect(findTimeRangePicker().exists()).toBe(true);
+    // expect(findTimeRangePicker().is(DateTimePicker)).toBe(true);
+
+    expect(findLogControlButtons().exists()).toBe(true);
 
     // log trace
     expect(findInfiniteScroll().exists()).toBe(true);
@@ -181,19 +187,19 @@ describe('EnvironmentLogs', () => {
       expect(findEnvironmentsDropdown().findAll(GlDropdownItem).length).toBe(0);
     });
 
-    it('displays a disabled pods dropdown', () => {
-      expect(findPodsDropdown().attributes('disabled')).toBe('true');
-      expect(findPodsDropdownItems().length).toBe(0);
-    });
+    // it('displays a disabled pods dropdown', () => {
+    //   expect(findPodsDropdown().attributes('disabled')).toBe('true');
+    //   expect(findPodsDropdownItems().length).toBe(0);
+    // });
 
-    it('displays a disabled search bar', () => {
-      expect(findSearchBar().exists()).toBe(true);
-      expect(findSearchBar().attributes('disabled')).toBe('true');
-    });
+    // it('displays a disabled search bar', () => {
+    //   expect(findSearchBar().exists()).toBe(true);
+    //   expect(findSearchBar().attributes('disabled')).toBe('true');
+    // });
 
-    it('displays a disabled time window dropdown', () => {
-      expect(findTimeRangePicker().attributes('disabled')).toBe('true');
-    });
+    // it('displays a disabled time window dropdown', () => {
+    //   expect(findTimeRangePicker().attributes('disabled')).toBe('true');
+    // });
 
     it('does not update buttons state', () => {
       expect(updateControlBtnsMock).not.toHaveBeenCalled();
@@ -237,13 +243,13 @@ describe('EnvironmentLogs', () => {
       initWrapper();
     });
 
-    it('displays a disabled time window dropdown', () => {
-      expect(findTimeRangePicker().attributes('disabled')).toBe('true');
-    });
+    // it('displays a disabled time window dropdown', () => {
+    //   expect(findTimeRangePicker().attributes('disabled')).toBe('true');
+    // });
 
-    it('displays a disabled search bar', () => {
-      expect(findSearchBar().attributes('disabled')).toBe('true');
-    });
+    // it('displays a disabled search bar', () => {
+    //   expect(findSearchBar().attributes('disabled')).toBe('true');
+    // });
 
     it('displays an alert to upgrade to ES', () => {
       expect(findInfoAlert().exists()).toBe(true);
@@ -271,20 +277,20 @@ describe('EnvironmentLogs', () => {
       updateControlBtnsMock.mockReset();
     });
 
-    it('displays an enabled search bar', () => {
-      expect(findSearchBar().attributes('disabled')).toBeFalsy();
+    // it('displays an enabled search bar', () => {
+    //   expect(findSearchBar().attributes('disabled')).toBeFalsy();
 
-      // input a query and click `search`
-      findSearchBar().vm.$emit('input', mockSearch);
-      findSearchBar().vm.$emit('submit');
+    //   // input a query and click `search`
+    //   findSearchBar().vm.$emit('input', mockSearch);
+    //   findSearchBar().vm.$emit('submit');
 
-      expect(dispatch).toHaveBeenCalledWith(`${module}/setInitData`, expect.any(Object));
-      expect(dispatch).toHaveBeenCalledWith(`${module}/setSearch`, mockSearch);
-    });
+    //   expect(dispatch).toHaveBeenCalledWith(`${module}/setInitData`, expect.any(Object));
+    //   expect(dispatch).toHaveBeenCalledWith(`${module}/setSearch`, mockSearch);
+    // });
 
-    it('displays an enabled time window dropdown', () => {
-      expect(findTimeRangePicker().attributes('disabled')).toBeFalsy();
-    });
+    // it('displays an enabled time window dropdown', () => {
+    //   expect(findTimeRangePicker().attributes('disabled')).toBeFalsy();
+    // });
 
     it('does not display an alert to upgrade to ES', () => {
       expect(findInfoAlert().exists()).toBe(false);
@@ -314,36 +320,36 @@ describe('EnvironmentLogs', () => {
       });
     });
 
-    it('populates pods dropdown', () => {
-      const items = findPodsDropdownItems();
+    // it('populates pods dropdown', () => {
+    //   const items = findPodsDropdownItems();
 
-      expect(findPodsDropdown().props('text')).toBe(mockPodName);
-      expect(items.length).toBe(mockPods.length + 1);
-      expect(items.at(0).text()).toBe('All pods');
-      mockPods.forEach((pod, i) => {
-        const item = items.at(i + 1);
-        expect(item.text()).toBe(pod);
-      });
-    });
+    //   expect(findPodsDropdown().props('text')).toBe(mockPodName);
+    //   expect(items.length).toBe(mockPods.length + 1);
+    //   expect(items.at(0).text()).toBe('All pods');
+    //   mockPods.forEach((pod, i) => {
+    //     const item = items.at(i + 1);
+    //     expect(item.text()).toBe(pod);
+    //   });
+    // });
 
     it('shows infinite scroll with height and no content', () => {
       expect(getInfiniteScrollAttr('max-list-height')).toBeGreaterThan(0);
       expect(getInfiniteScrollAttr('fetched-items')).toBe(mockTrace.length);
     });
 
-    it('dropdownhas one pod selected', () => {
-      const items = findPodsDropdownItems();
-      mockPods.forEach((pod, i) => {
-        const item = items.at(i);
-        const iconClass = item.find(GlIcon).attributes('class');
-        if (item.text() !== mockPodName) {
-          expect(iconClass).toMatch('invisible');
-        } else {
-          // selected
-          expect(iconClass).not.toMatch('invisible');
-        }
-      });
-    });
+    // it('dropdownhas one pod selected', () => {
+    //   const items = findPodsDropdownItems();
+    //   mockPods.forEach((pod, i) => {
+    //     const item = items.at(i);
+    //     const iconClass = item.find(GlIcon).attributes('class');
+    //     if (item.text() !== mockPodName) {
+    //       expect(iconClass).toMatch('invisible');
+    //     } else {
+    //       // selected
+    //       expect(iconClass).not.toMatch('invisible');
+    //     }
+    //   });
+    // });
 
     it('populates logs trace', () => {
       const trace = findLogTrace();
@@ -372,16 +378,16 @@ describe('EnvironmentLogs', () => {
         );
       });
 
-      it('pod name, trace is refreshed', () => {
-        const items = findPodsDropdownItems();
-        const index = 2; // any pod
+      // it('pod name, trace is refreshed', () => {
+      //   const items = findPodsDropdownItems();
+      //   const index = 2; // any pod
 
-        expect(dispatch).not.toHaveBeenCalledWith(`${module}/showPodLogs`, expect.anything());
+      //   expect(dispatch).not.toHaveBeenCalledWith(`${module}/showPodLogs`, expect.anything());
 
-        items.at(index + 1).vm.$emit('click');
+      //   items.at(index + 1).vm.$emit('click');
 
-        expect(dispatch).toHaveBeenCalledWith(`${module}/showPodLogs`, mockPods[index]);
-      });
+      //   expect(dispatch).toHaveBeenCalledWith(`${module}/showPodLogs`, mockPods[index]);
+      // });
 
       it('refresh button, trace is refreshed', () => {
         expect(dispatch).not.toHaveBeenCalledWith(`${module}/showPodLogs`, expect.anything());

@@ -383,20 +383,20 @@
     position: relative;
     top: 0;
 
-    .dropdown-menu-toggle {
-      width: 200px;
+    // .dropdown-menu-toggle {
+    //   width: 200px;
 
-      @include media-breakpoint-up(sm) {
-        width: 300px;
-      }
-    }
+    //   @include media-breakpoint-up(sm) {
+    //     width: 300px;
+    //   }
+    // }
 
     .controllers {
-      @include build-controllers(16px, flex-end, true, 2);
+      @include build-controllers(16px, flex-end, false, 2);
     }
 
     .refresh-control {
-      @include build-controllers(16px, flex-end, true, 0);
+      @include build-controllers(16px, flex-end, false, 0);
       margin-left: 2px;
     }
   }
