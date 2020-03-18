@@ -608,7 +608,7 @@ describe('Cycle Analytics component', () => {
     });
   });
 
-  describe('Url Sync', () => {
+  describe('Url parameters', () => {
     beforeEach(() => {
       commonUtils.historyPushState = jest.fn();
       urlUtils.setUrlParams = jest.fn();

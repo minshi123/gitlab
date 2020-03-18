@@ -6,7 +6,7 @@ const defaultData = {
   project_ids: [],
 };
 
-const createComponent = (opts = {}) => {
+const createComponent = () => {
   return shallowMount(
     {
       mixins: [UrlSyncMixin],
@@ -26,7 +26,6 @@ const createComponent = (opts = {}) => {
       data() {
         return { ...defaultData };
       },
-      ...opts,
     },
   );
 };
@@ -34,7 +33,7 @@ const createComponent = (opts = {}) => {
 describe('UrlSyncMixin', () => {
   let wrapper;
   beforeEach(() => {
-    wrapper = createComponent({});
+    wrapper = createComponent();
   });
 
   afterEach(() => {
