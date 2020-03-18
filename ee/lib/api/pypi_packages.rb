@@ -109,11 +109,8 @@ module API
         post do
           authorize_upload!(authorized_user_project)
 
-          # version: params[:version],
-          # requires_python: params[:requires_python]
-
           ::Packages::Pypi::CreatePackageService
-            .new(authorized_user_project, current_user, params)
+            .new(authorized_user_project, current_user, params.merge(file: uploaded_package_file(:content)))
             .execute
 
           created!

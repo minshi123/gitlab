@@ -125,7 +125,7 @@ describe API::PypiPackages do
     let_it_be(:file_name) { 'package.whl' }
     let(:url) { "/projects/#{project.id}/packages/pypi" }
     let(:headers) { {} }
-    let(:params) { { content: temp_file(file_name) } }
+    let(:params) { { content: temp_file(file_name), requires_python: '>=3.7', version: '1.0.0', name: 'sample-project', sha256_digest: '123' } }
 
     subject do
       workhorse_finalize(
@@ -146,7 +146,7 @@ describe API::PypiPackages do
         using RSpec::Parameterized::TableSyntax
 
         where(:project_visibility_level, :user_role, :member, :user_token, :shared_examples_name, :expected_status) do
-          'PUBLIC'  | :developer  | true  | true  | 'process PyPi api request' | :created
+          'PUBLIC'  | :developer  | true  | true  | 'PyPi package creation'    | :created
           'PUBLIC'  | :guest      | true  | true  | 'process PyPi api request' | :forbidden
           'PUBLIC'  | :developer  | true  | false | 'process PyPi api request' | :unauthorized
           'PUBLIC'  | :guest      | true  | false | 'process PyPi api request' | :unauthorized

@@ -1,5 +1,25 @@
 # frozen_string_literal: true
 
+RSpec.shared_examples 'PyPi package creation' do |user_type, status, add_member = true|
+  context "for user type #{user_type}" do
+    before do
+      project.send("add_#{user_type}", user) if add_member && user_type != :anonymous
+    end
+
+    it 'creates the file and metadata' do
+      subject
+
+      package = project.reload.packages.pypi.last
+
+      expect(package.name).to eq params[:name]
+      expect(package.version).to eq params[:version]
+      expect(package.pypi_metadatum.required_python).to eq params[:requires_python]
+    end
+
+    it_behaves_like 'returning response status', status
+  end
+end
+
 RSpec.shared_examples 'process PyPi api request' do |user_type, status, add_member = true|
   context "for user type #{user_type}" do
     before do
