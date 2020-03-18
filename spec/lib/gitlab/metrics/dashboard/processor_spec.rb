@@ -51,6 +51,7 @@ describe Gitlab::Metrics::Dashboard::Processor do
 
     context 'when the project has associated metrics' do
       let!(:project_response_metric) { create(:prometheus_metric, project: project, group: :response) }
+      let!(:project_response_metric2) { create(:prometheus_metric, project: project, group: :response) }
       let!(:project_system_metric) { create(:prometheus_metric, project: project, group: :system) }
       let!(:project_business_metric) { create(:prometheus_metric, project: project, group: :business) }
 
@@ -72,6 +73,16 @@ describe Gitlab::Metrics::Dashboard::Processor do
         actual_metrics_order = all_metrics.map { |m| m[:id] || m[:metric_id] }
 
         expect(actual_metrics_order).to eq expected_metrics_order
+      end
+
+      context 'when the project has multiple metrics in the same group' do
+        let!(:project_response_metric) { create(:prometheus_metric, project: project, group: :response) }
+        let!(:project_response_metric_2) { create(:prometheus_metric, project: project, group: :response) }
+
+        it 'includes multiple metrics' do
+          expect(all_metrics).to include get_metric_details(project_response_metric)
+          expect(all_metrics).to include get_metric_details(project_response_metric_2)
+        end
       end
 
       context 'when the dashboard should not include project metrics' do
