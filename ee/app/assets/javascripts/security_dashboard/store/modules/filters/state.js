@@ -1,4 +1,5 @@
-import { SEVERITY_LEVELS, REPORT_TYPES, BASE_FILTERS } from './constants';
+import { BASE_FILTERS } from './constants';
+import { SEVERITY_LEVELS, REPORT_TYPES } from '../../constants';
 import { s__ } from '~/locale';
 
 const optionsObjectToArray = obj => Object.entries(obj).map(([id, name]) => ({ id, name }));
