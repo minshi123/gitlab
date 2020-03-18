@@ -6,7 +6,7 @@ GitLab Status Page allows you to create and deploy a static website to communica
 
 ## How to set-up
 
-To use GitLab Status Page you first need to setup your account details for your cloud provider in the operations settings page.
+To use GitLab Status Page you first need to set up your account details for your cloud provider in the operations settings page.
 
 NOTE: **Note:**
 At this time only AWS S3 is supported as a deploy target.
