@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_13_123934) do
+ActiveRecord::Schema.define(version: 2020_03_18_140400) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -4619,6 +4619,17 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.index ["project_id", "external_id"], name: "index_vulnerability_scanners_on_project_id_and_external_id", unique: true
   end
 
+  create_table "vulnerability_user_mentions", force: :cascade do |t|
+    t.integer "vulnerability_id", null: false
+    t.integer "note_id"
+    t.integer "mentioned_users_ids", array: true
+    t.integer "mentioned_projects_ids", array: true
+    t.integer "mentioned_groups_ids", array: true
+    t.index ["note_id"], name: "index_vulnerability_user_mentions_on_note_id", unique: true, where: "(note_id IS NOT NULL)"
+    t.index ["vulnerability_id", "note_id"], name: "index_vulns_user_mentions_on_vulnerability_id_and_note_id", unique: true
+    t.index ["vulnerability_id"], name: "index_vulns_user_mentions_on_vulnerability_id", unique: true, where: "(note_id IS NULL)"
+  end
+
   create_table "web_hook_logs", id: :serial, force: :cascade do |t|
     t.integer "web_hook_id", null: false
     t.string "trigger"
@@ -5207,6 +5218,8 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
   add_foreign_key "vulnerability_occurrences", "vulnerability_identifiers", column: "primary_identifier_id", on_delete: :cascade
   add_foreign_key "vulnerability_occurrences", "vulnerability_scanners", column: "scanner_id", on_delete: :cascade
   add_foreign_key "vulnerability_scanners", "projects", on_delete: :cascade
+  add_foreign_key "vulnerability_user_mentions", "notes", on_delete: :cascade
+  add_foreign_key "vulnerability_user_mentions", "vulnerabilities", on_delete: :cascade
   add_foreign_key "web_hook_logs", "web_hooks", on_delete: :cascade
   add_foreign_key "web_hooks", "projects", name: "fk_0c8ca6d9d1", on_delete: :cascade
   add_foreign_key "x509_certificates", "x509_issuers", on_delete: :cascade
