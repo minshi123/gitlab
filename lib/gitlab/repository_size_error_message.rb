@@ -4,23 +4,23 @@ module Gitlab
   class RepositorySizeErrorMessage
     include ActiveSupport::NumberHelper
 
-    attr_reader :current_size, :limit
+    delegate :current_size, :limit, to: :@checker
 
-    def initialize(current_size:, limit:)
-      @current_size = current_size
-      @limit = limit
-    end
-
-    def to_s
-      "The size of this repository (#{formatted(current_size)}) exceeds the limit of #{formatted(limit)} by #{formatted(size_to_remove)}."
+    # @param checher [RepositorySizeChecker]
+    def initialize(checker)
+      @checker = checker
     end
 
     def commit_error
       "Your changes could not be committed, #{base_message}"
     end
 
-    def push_error(exceeded_limit = nil)
-      "Your push has been rejected, #{base_message(exceeded_limit)}. #{more_info_message}"
+    def merge_error
+      "This merge request cannot be merged, #{base_message}"
+    end
+
+    def push_error(exceeded_size = nil)
+      "Your push has been rejected, #{base_message(exceeded_size)}. #{more_info_message}"
     end
 
     def new_changes_error
@@ -31,14 +31,18 @@ module Gitlab
       'Please contact your GitLab administrator for more information.'
     end
 
-    private
-
-    def base_message(exceeded_limit = nil)
-      "because this repository has exceeded its size limit of #{formatted(limit)} by #{formatted(size_to_remove(exceeded_limit))}"
+    def above_size_limit_message
+      "The size of this repository (#{formatted(current_size)}) exceeds the limit of #{formatted(limit)} by #{formatted(size_to_remove)}. You won't be able to push new code to this project. #{more_info_message}"
     end
 
-    def size_to_remove(exceeded_limit = nil)
-      exceeded_limit || (current_size - limit)
+    private
+
+    def base_message(exceeded_size = nil)
+      "because this repository has exceeded its size limit of #{formatted(limit)} by #{formatted(size_to_remove(exceeded_size))}"
+    end
+
+    def size_to_remove(exceeded_size = nil)
+      exceeded_size || checker.exceeded_size
     end
 
     def formatted(number)
