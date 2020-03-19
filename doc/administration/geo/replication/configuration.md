@@ -314,6 +314,10 @@ It is important to note that selective synchronization:
      Selective synchronization restrictions are implemented on the **secondary** nodes,
      not the **primary** node.
 
+Since GitLab 12.9, git clone/pull/push operations over HTTP are supported for
+repositories that exist on the **primary** node but not on the **secondary**
+nodes where selective synchronization does not include the project.
+
 ## Upgrading Geo
 
 See the [updating the Geo nodes document](updating_the_geo_nodes.md).
