@@ -1,9 +1,11 @@
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import { set } from 'lodash';
 import { TEST_HOST } from 'helpers/test_constants';
 
 import SecurityDashboardApp from 'ee/security_dashboard/components/app.vue';
 import Filters from 'ee/security_dashboard/components/filters.vue';
+import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import SecurityDashboardTable from 'ee/security_dashboard/components/security_dashboard_table.vue';
 import VulnerabilityChart from 'ee/security_dashboard/components/vulnerability_chart.vue';
 import VulnerabilityCountList from 'ee/security_dashboard/components/vulnerability_count_list.vue';
@@ -19,6 +21,7 @@ const vulnerabilitiesEndpoint = `${TEST_HOST}/vulnerabilities`;
 const vulnerabilitiesCountEndpoint = `${TEST_HOST}/vulnerabilities_summary`;
 const vulnerabilitiesHistoryEndpoint = `${TEST_HOST}/vulnerabilities_history`;
 const vulnerableProjectsEndpoint = `${TEST_HOST}/vulnerable_projects`;
+const vulnerabilityFeedbackHelpPath = `${TEST_HOST}/vulnerabilities_feedback_help`;
 
 jest.mock('~/lib/utils/url_utility', () => ({
   getParameterValues: jest.fn().mockReturnValue([]),
@@ -52,7 +55,7 @@ describe('Security Dashboard app', () => {
         vulnerabilitiesHistoryEndpoint,
         vulnerableProjectsEndpoint,
         pipelineId,
-        vulnerabilityFeedbackHelpPath: `${TEST_HOST}/vulnerabilities_feedback_help`,
+        vulnerabilityFeedbackHelpPath,
         ...props,
       },
     });
@@ -107,6 +110,59 @@ describe('Security Dashboard app', () => {
       it('emits a vulnerabilitiesCountChanged event', () => {
         expect(wrapper.emitted('vulnerabilitiesCountChanged')).toEqual([[newCount]]);
       });
+    });
+
+    describe('issues modal', () => {
+      const mockModalData = {
+        vulnerability: {
+          create_vulnerability_feedback_issue_path: '',
+          create_vulnerability_feedback_merge_request_path: '',
+        },
+      };
+
+      beforeEach(() => {
+        wrapper.vm.$store.state.vulnerabilities.modal = mockModalData;
+        return wrapper.vm.$nextTick();
+      });
+
+      it('includes the modal', () => {
+        expect(wrapper.find(IssueModal).exists()).toBe(true);
+      });
+
+      it.each`
+        givenStatePath                                                    | hasValue          | propName                       | expectedPropValue
+        ${'modal'}                                                        | ${{ foo: 'bar' }} | ${'modal'}                     | ${{ foo: 'bar' }}
+        ${'modal.vulnerability.create_vulnerability_feedback_issue_path'} | ${null}           | ${'canCreateIssue'}            | ${false}
+        ${'modal.vulnerability.create_vulnerability_feedback_issue_path'} | ${'foo'}          | ${'canCreateIssue'}            | ${true}
+        ${'isCreatingIssue'}                                              | ${false}          | ${'isCreatingIssue'}           | ${false}
+        ${'isCreatingIssue'}                                              | ${true}           | ${'isCreatingIssue'}           | ${true}
+        ${'isCreatingIssue'}                                              | ${false}          | ${'isCreatingIssue'}           | ${false}
+        ${'isDismissingVulnerability'}                                    | ${true}           | ${'isDismissingVulnerability'} | ${true}
+      `(
+        'given the state at "$givenStatePath" is "$hasValue" it passes "$expectedPropValue" to the "$propName" prop',
+        ({ givenStatePath, hasValue, propName, expectedPropValue }) => {
+          set(wrapper.vm.$store.state.vulnerabilities, givenStatePath, hasValue);
+          return wrapper.vm.$nextTick().then(() => {
+            expect(wrapper.find(IssueModal).props(propName)).toStrictEqual(expectedPropValue);
+          });
+        },
+      );
+
+      // it.each`
+      //   statePath | value | modalData                                                                         | prop                       | expectedPropValue
+      //   ${}${{ foo: 'bar' }}                                                                 | ${'modal'}                 | ${{ foo: 'bar' }}
+      //   ${{ vulnerability: { create_vulnerability_feedback_issue_path: null } }}          | ${'canCreateIssue'}        | ${false}
+      //   ${{ vulnerability: { create_vulnerability_feedback_issue_path: 'foo' } }}         | ${'canCreateIssue'}        | ${true}
+      //   ${{ vulnerability: { create_vulnerability_feedback_merge_request_path: null } }}  | ${'canCreateMergeRequest'} | ${false}
+      //   ${{ vulnerability: { create_vulnerability_feedback_merge_request_path: 'foo' } }} | ${'canCreateMergeRequest'} | ${true}
+      //   ${{ vulnerability: { create_vulnerability_feedback_merge_request_path: 'foo' } }} | ${'isCreatingIssue'}       | ${false}
+      // `('passes the right prop to the modal', ({ prop, modalData, expectedPropValue }) => {
+      //   wrapper.vm.$store.state.vulnerabilities.modal = modalData;
+      //
+      //   return wrapper.vm.$nextTick().then(() => {
+      //     expect(wrapper.find(IssueModal).props(prop)).toStrictEqual(expectedPropValue);
+      //   });
+      // });
     });
   });
 

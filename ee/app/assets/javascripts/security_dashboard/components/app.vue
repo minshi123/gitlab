@@ -85,7 +85,7 @@ export default {
       return Boolean(path);
     },
     vulnerability() {
-      return this.modal.vulnerability;
+      return this.modal?.vulnerability || {};
     },
     isLockedToProject() {
       return this.lockToProject !== null;
