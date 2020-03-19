@@ -93,6 +93,14 @@ describe Note do
     end
   end
 
+  describe '#for_vulnerability' do
+    it 'is true when the noteable is a vulnerability' do
+      note = build(:note, noteable: build(:vulnerability))
+
+      expect(note).to be_for_vulnerability
+    end
+  end
+
   describe '.by_humans' do
     it 'excludes notes by bots and service users' do
       user_note = create(:note)
