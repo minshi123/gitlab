@@ -30,7 +30,7 @@ RSpec.shared_context 'Ldap::OmniauthCallbacksController' do
     @original_env_config_omniauth_auth = mock_auth_hash(provider.to_s, uid, user.email)
     stub_omniauth_provider(provider, context: request)
 
-    allow(Gitlab::Auth::Ldap::Access).to receive(:allowed?).and_return(valid_login?)
+    expect(Gitlab::Auth::Ldap::Access).to receive(:allowed?).at_least(:once).and_return(valid_login?)
   end
 
   after do
