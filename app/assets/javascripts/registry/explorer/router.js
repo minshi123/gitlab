@@ -21,7 +21,7 @@ export default function createRouter(base, store) {
           root: true,
         },
         beforeEnter: (to, from, next) => {
-          if (!from.name) {
+          if (!from.name || !store.state.images?.length) {
             store.dispatch('requestImagesList');
           }
           next();
