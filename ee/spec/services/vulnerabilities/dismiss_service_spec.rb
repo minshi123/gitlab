@@ -32,7 +32,7 @@ describe Vulnerabilities::DismissService do
     end
 
     it 'creates note' do
-      expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user, 'dismissed')
+      expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
 
       dismiss_vulnerability
     end

@@ -161,8 +161,8 @@ module EE
     end
 
     # Called when state is changed for 'vulnerability'
-    def change_vulnerability_state(noteable, author, state)
-      EE::SystemNotes::VulnerabilitiesService.new(noteable: noteable, project: noteable.project, author: author).change_vulnerability_state(state)
+    def change_vulnerability_state(noteable, author)
+      EE::SystemNotes::VulnerabilitiesService.new(noteable: noteable, project: noteable.project, author: author).change_vulnerability_state
     end
   end
 end

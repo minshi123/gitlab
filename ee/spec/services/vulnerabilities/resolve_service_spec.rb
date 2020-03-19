@@ -31,7 +31,7 @@ describe Vulnerabilities::ResolveService do
     end
 
     it 'creates note' do
-      expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user, 'resolved')
+      expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
 
       resolve_vulnerability
     end

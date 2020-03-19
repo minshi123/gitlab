@@ -31,7 +31,7 @@ describe Vulnerabilities::ConfirmService do
     end
 
     it 'creates note' do
-      expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user, 'confirmed')
+      expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
 
       confirm_vulnerability
     end
