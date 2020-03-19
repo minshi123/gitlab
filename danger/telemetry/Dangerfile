@@ -16,4 +16,12 @@ if usage_data_changed_files.any?
   MSG
 
   markdown(USAGE_DATA_FILES_MESSAGE + helper.markdown_list(usage_data_changed_files))
+
+  unless gitlab.mr_labels.include?('telemetry::reviewed')
+    telemetry_labels = ['telemetry', 'telemetry::review pending']
+
+    gitlab.api.update_merge_request(gitlab.mr_json['project_id'],
+                                        gitlab.mr_json['iid'],
+                                        labels: (gitlab.mr_labels + telemetry_labels).join(','))
+  end
 end
