@@ -25,6 +25,19 @@ describe('Vulnerability management app', () => {
 
   const occurrence = {
     description: 'This is the description of the occurrence',
+    identifiers: [
+      {
+        name: 'CVE-2018-18520',
+        url: 'https://security-tracker.debian.org/tracker/CVE-2018-18520',
+      },
+    ],
+    links: [{ url: 'https://security-tracker.debian.org/tracker/CVE-2018-18520' }],
+    location: {
+      dependency: {},
+      image:
+        'registry.gitlab.com/groulot/container-scanning-test/master:5f21de6956aee99ddb68ae49498662d9872f50ff',
+      operating_system: 'debian:9',
+    },
     name: 'THE occurrence',
   };
 
@@ -105,6 +118,7 @@ describe('Vulnerability management app', () => {
         expect(mockAxios.history.post).toHaveLength(1);
         const [postRequest] = mockAxios.history.post;
         expect(postRequest.url).toBe(dataset.createIssueUrl);
+        const { description, identifiers, links, location, name } = occurrence;
         expect(JSON.parse(postRequest.data)).toMatchObject({
           vulnerability_feedback: {
             feedback_type: 'issue',
@@ -113,8 +127,11 @@ describe('Vulnerability management app', () => {
             vulnerability_data: {
               ...vulnerability,
               category: vulnerability.report_type,
-              description: occurrence.description,
-              name: occurrence.name,
+              description,
+              identifiers,
+              links,
+              location,
+              name,
             },
           },
         });
