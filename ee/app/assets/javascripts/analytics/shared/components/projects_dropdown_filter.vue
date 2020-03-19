@@ -1,7 +1,14 @@
 <script>
 import $ from 'jquery';
 import _ from 'underscore';
-import { GlLoadingIcon, GlButton, GlAvatar, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import {
+  GlLoadingIcon,
+  GlButton,
+  GlAvatar,
+  GlDropdown,
+  GlDropdownHeader,
+  GlDropdownItem,
+} from '@gitlab/ui';
 import Icon from '~/vue_shared/components/icon.vue';
 import { n__, s__, __ } from '~/locale';
 import Api from '~/api';
@@ -15,6 +22,7 @@ export default {
     GlButton,
     GlAvatar,
     GlDropdown,
+    GlDropdownHeader,
     GlDropdownItem,
   },
   props: {
@@ -107,6 +115,7 @@ export default {
       this.$emit('selected', this.selectedProjects);
     },
     fetchData(term, callback) {
+      console.log('fetchData', term);
       this.loading = true;
       return Api.groupProjects(this.groupId, term, this.queryParams, projects => {
         this.loading = false;
@@ -141,7 +150,10 @@ export default {
 
 <template>
   <div>
-    <gl-dropdown ref="projectsDropdown" class="dropdown dropdown-projects">
+    <gl-dropdown
+      ref="projectsDropdown"
+      class="dropdown dropdown-projects wide shadow-none bg-white"
+    >
       <!-- <gl-button
         class="dropdown-menu-toggle wide shadow-none bg-white"
         type="button"
@@ -162,8 +174,22 @@ export default {
         {{ selectedProjectsLabel }}
         <icon name="chevron-down" />
       </gl-button> -->
+      <template #button-content>
+        <gl-avatar
+          v-if="isOnlyOneProjectSelected"
+          :src="selectedProjects[0].avatar_url"
+          :entity-id="selectedProjects[0].id"
+          :entity-name="selectedProjects[0].name"
+          :size="16"
+          shape="rect"
+          :alt="selectedProjects[0].name"
+          class="d-inline-flex align-text-bottom"
+        />
+        {{ selectedProjectsLabel }}
+        <icon name="chevron-down" />
+      </template>
       <gl-dropdown-header>{{ __('Projects') }}</gl-dropdown-header>
-      <gl-dropdown-item v-for="project in defaultProjects" :key="project.id">
+      <gl-dropdown-item v-for="project in selectedProjects" :key="project.id">
         <!-- TODO: should this be using camelCase? -->
         <gl-avatar v-if="project.avatar_url" :size="24" :src="project.avatar_url" />
         {{ project.name }}
