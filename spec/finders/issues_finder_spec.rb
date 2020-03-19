@@ -429,7 +429,7 @@ describe IssuesFinder do
       end
 
       context 'filtering by no label' do
-        let(:params) { { label_name: described_class::FILTER_NONE } }
+        let(:params) { { label_name: described_class::Params::FILTER_NONE } }
 
         it 'returns issues with no labels' do
           expect(issues).to contain_exactly(issue1, issue4)
@@ -437,7 +437,7 @@ describe IssuesFinder do
       end
 
       context 'filtering by any label' do
-        let(:params) { { label_name: described_class::FILTER_ANY } }
+        let(:params) { { label_name: described_class::Params::FILTER_ANY } }
 
         it 'returns issues that have one or more label' do
           create_list(:label_link, 2, label: create(:label, project: project2), target: issue3)
@@ -452,14 +452,6 @@ describe IssuesFinder do
         it 'returns issues with title and description match for search term' do
           expect(issues).to contain_exactly(issue1, issue2)
         end
-
-        context 'using NOT' do
-          let(:params) { { not: { search: 'git' } } }
-
-          it 'returns issues with no title and description match for search term' do
-            expect(issues).to contain_exactly(issue3, issue4)
-          end
-        end
       end
 
       context 'filtering by issue term in title' do
@@ -467,14 +459,6 @@ describe IssuesFinder do
 
         it 'returns issues with title match for search term' do
           expect(issues).to contain_exactly(issue1)
-        end
-
-        context 'using NOT' do
-          let(:params) { { not: { search: 'git', in: 'title' } } }
-
-          it 'returns issues with no title match for search term' do
-            expect(issues).to contain_exactly(issue2, issue3, issue4)
-          end
         end
       end
 

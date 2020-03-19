@@ -130,10 +130,10 @@ class IssuesFinder < IssuableFinder
     return @user_can_see_all_confidential_issues = true if current_user.can_read_all_resources?
 
     @user_can_see_all_confidential_issues =
-      if project? && project
-        project.team.max_member_access(current_user.id) >= CONFIDENTIAL_ACCESS_LEVEL
-      elsif group
-        group.max_member_access_for_user(current_user) >= CONFIDENTIAL_ACCESS_LEVEL
+      if params.project? && params.project
+        params.project.team.max_member_access(current_user.id) >= CONFIDENTIAL_ACCESS_LEVEL
+      elsif params.group
+        params.group.max_member_access_for_user(current_user) >= CONFIDENTIAL_ACCESS_LEVEL
       else
         false
       end

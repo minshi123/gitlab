@@ -96,6 +96,7 @@ module Issuable
     scope :authored, ->(user) { where(author_id: user) }
     scope :recent, -> { reorder(id: :desc) }
     scope :of_projects, ->(ids) { where(project_id: ids) }
+    scope :not_of_projects, ->(ids) { where.not(project_id: ids) }
     scope :opened, -> { with_state(:opened) }
     scope :only_opened, -> { with_state(:opened) }
     scope :closed, -> { with_state(:closed) }
@@ -112,6 +113,16 @@ module Issuable
       assignees_table = Arel::Table.new("#{to_ability_name}_assignees")
       sql = assignees_table.project('true').where(assignees_table[:user_id].in(u)).where(Arel::Nodes::SqlLiteral.new("#{to_ability_name}_id = #{to_ability_name}s.id"))
       where("EXISTS (#{sql.to_sql})")
+    end
+    scope :not_assigned_to, ->(u) do
+      assignees_table = Arel::Table.new("#{to_ability_name}_assignees")
+      sql = assignees_table.project('true').where(assignees_table[:user_id].in(u)).where(Arel::Nodes::SqlLiteral.new("#{to_ability_name}_id = #{to_ability_name}s.id"))
+      where("NOT EXISTS (#{sql.to_sql})")
+    end
+    scope :without_labels, ->(label_names) do
+      sql = select(:id).joins(:labels).where(labels: { title: label_names })
+
+      where.not(id: sql)
     end
     # rubocop:enable GitlabSecurity/SqlInjection
 
@@ -272,9 +283,8 @@ module Issuable
         .reorder(Gitlab::Database.nulls_last_order('highest_priority', direction))
     end
 
-    def with_label(title, sort = nil, not_query: false)
-      multiple_labels = title.is_a?(Array) && title.size > 1
-      if multiple_labels && !not_query
+    def with_label(title, sort = nil)
+      if title.is_a?(Array) && title.size > 1
         joins(:labels).where(labels: { title: title }).group(*grouping_columns(sort)).having("COUNT(DISTINCT labels.title) = #{title.size}")
       else
         joins(:labels).where(labels: { title: title })

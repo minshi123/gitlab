@@ -42,21 +42,17 @@ module EE
     end
 
     def filter_by_no_weight?
-      params[:weight].to_s.downcase == ::IssuesFinder::FILTER_NONE
+      params[:weight].to_s.downcase == ::IssuesFinder::Params::FILTER_NONE
     end
 
     def filter_by_any_weight?
-      params[:weight].to_s.downcase == ::IssuesFinder::FILTER_ANY
-    end
-
-    def assignee_ids?
-      params[:assignee_ids].present?
+      params[:weight].to_s.downcase == ::IssuesFinder::Params::FILTER_ANY
     end
 
     override :by_assignee
     def by_assignee(items)
-      if assignees.any? && !not_query?
-        assignees.each do |assignee|
+      if params.assignees.any?
+        params.assignees.each do |assignee|
           items = items.assigned_to(assignee)
         end
 
@@ -66,25 +62,25 @@ module EE
       super
     end
 
-    override :assignees
-    # rubocop: disable CodeReuse/ActiveRecord
-    def assignees
-      strong_memoize(:assignees) do
-        if assignee_ids?
-          ::User.where(id: params[:assignee_ids])
-        else
-          super
+    override :by_negated_assignee
+    def by_negated_assignee(items)
+      if not_params.assignees.any?
+        not_params.assignees.each do |assignee|
+          items = items.not_assigned_to(assignee)
         end
+
+        return items
       end
+
+      super
     end
-    # rubocop: enable CodeReuse/ActiveRecord
 
     def by_epic?
       params[:epic_id].present?
     end
 
     def filter_by_no_epic?
-      params[:epic_id].to_s.downcase == ::IssuesFinder::FILTER_NONE
+      params[:epic_id].to_s.downcase == ::IssuesFinder::Params::FILTER_NONE
     end
 
     def epics
