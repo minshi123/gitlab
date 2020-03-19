@@ -55,6 +55,11 @@ export default {
   },
 
   computed: {
+    hasIssue() {
+      return Boolean(
+        this.occurrence.issue_feedback && this.occurrence.issue_feedback.issue_iid,
+      );
+    },
     variant() {
       // Get the badge variant based on the vulnerability state, defaulting to 'warning'.
       return VULNERABILITY_STATES[this.state]?.variant || 'warning';
@@ -139,7 +144,9 @@ export default {
       :initial-state="state"
       @change="onVulnerabilityStateChange"
     />
+
     <loading-button
+      v-if="!hasIssue"
       ref="create-issue-btn"
       class="align-items-center d-inline-flex ml-2"
       :loading="isCreatingIssue"
@@ -147,5 +154,6 @@ export default {
       container-class="btn btn-success btn-inverted"
       @click="createIssue"
     />
+
   </div>
 </template>
