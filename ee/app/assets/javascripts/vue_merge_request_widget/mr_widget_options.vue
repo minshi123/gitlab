@@ -345,6 +345,7 @@ export default {
         class="js-reports-container"
         :endpoint="mr.testResultsPath"
       />
+      <terraform-plan />
       <div class="mr-widget-section">
         <component :is="componentName" :mr="mr" :service="service" />
 
