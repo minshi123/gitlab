@@ -5,11 +5,12 @@ require 'spec_helper'
 describe EE::SystemNotes::VulnerabilitiesService do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:author) { create(:user) }
-  let_it_be(:noteable) { create(:vulnerability, project: project) }
-  let_it_be(:service) { described_class.new(noteable: noteable, project: project, author: author) }
+
+  let(:noteable) { create(:vulnerability, project: project, state: state) }
+  let(:service) { described_class.new(noteable: noteable, project: project, author: author) }
 
   describe '#change_vulnerability_state' do
-    subject { service.change_vulnerability_state(state) }
+    subject { service.change_vulnerability_state }
 
     context 'state changed to dismissed' do
       let(:state) { 'dismissed' }

@@ -222,14 +222,12 @@ describe SystemNoteService do
   end
 
   describe '.change_vulnerability_state' do
-    let(:state) { double }
-
     it 'calls VulnerabilitiesService' do
       expect_next_instance_of(EE::SystemNotes::VulnerabilitiesService) do |service|
-        expect(service).to receive(:change_vulnerability_state).with(state)
+        expect(service).to receive(:change_vulnerability_state)
       end
 
-      described_class.change_vulnerability_state(noteable, author, state)
+      described_class.change_vulnerability_state(noteable, author)
     end
   end
 end
