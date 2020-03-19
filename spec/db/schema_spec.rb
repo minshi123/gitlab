@@ -54,6 +54,7 @@ describe 'Database schema' do
     ldap_group_links: %w[group_id],
     members: %w[source_id created_by_id],
     merge_requests: %w[last_edited_by_id state_id],
+    metrics_dashboard_annotations: %w[panel_id dashboard_id],
     namespaces: %w[owner_id parent_id],
     notes: %w[author_id commit_id noteable_id updated_by_id resolved_by_id confirmed_by_id discussion_id],
     notification_settings: %w[source_id],
