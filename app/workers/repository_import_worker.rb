@@ -34,6 +34,10 @@ class RepositoryImportWorker # rubocop:disable Scalability/IdempotentWorker
     end
 
     project.after_import
+  rescue => exception
+    Gitlab::ErrorTracking.track_exception(exception)
+
+    raise
   end
 
   private
