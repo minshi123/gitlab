@@ -472,6 +472,11 @@
       changes: *code-backstage-qa-patterns
       when: on_success
 
+.setup:rules:dont-interrupt-me:
+  rules:
+    - <<: *if-master-or-tag
+    - when: manual
+
 .setup:rules:gitlab_git_test:
   rules:
     - <<: *if-default-refs
