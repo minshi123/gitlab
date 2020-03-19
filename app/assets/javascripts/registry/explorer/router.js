@@ -21,7 +21,9 @@ export default function createRouter(base, store) {
           root: true,
         },
         beforeEnter: (to, from, next) => {
-          store.dispatch('requestImagesList');
+          if (!from.name) {
+            store.dispatch('requestImagesList');
+          }
           next();
         },
       },
