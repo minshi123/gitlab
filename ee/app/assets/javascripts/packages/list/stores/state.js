@@ -43,4 +43,8 @@ export default () => ({
     sort: 'desc',
     orderBy: 'version',
   },
+  /**
+   * The search query that is used to filter packages by name
+   */
+  filterQuery: '',
 });
