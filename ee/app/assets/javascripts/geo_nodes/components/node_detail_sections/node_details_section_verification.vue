@@ -1,5 +1,8 @@
 <script>
-import { s__ } from '~/locale';
+import { GlPopover } from '@gitlab/ui';
+
+import { s__, sprintf } from '~/locale';
+import Icon from '~/vue_shared/components/icon.vue';
 
 import { VALUE_TYPE, HELP_INFO_URL } from '../../constants';
 
@@ -10,6 +13,8 @@ import SectionRevealButton from './section_reveal_button.vue';
 
 export default {
   components: {
+    Icon,
+    GlPopover,
     GeoNodeDetailItem,
     SectionRevealButton,
   },
@@ -37,6 +42,16 @@ export default {
         ? this.getPrimaryNodeDetailItems()
         : this.getSecondaryNodeDetailItems();
     },
+    verificationInfoText() {
+      const nodeText = this.nodeTypePrimary
+        ? s__('GeoNodes|secondary nodes')
+        : s__('GeoNodes|primary node');
+
+      return sprintf(
+        s__('GeoNodes|Replicated data is verified with the %{nodeText} using checksums'),
+        { nodeText },
+      );
+    },
   },
   methods: {
     getPrimaryNodeDetailItems() {
@@ -48,13 +63,6 @@ export default {
           successLabel: s__('GeoNodes|Checksummed'),
           neutraLabel: s__('GeoNodes|Not checksummed'),
           failureLabel: s__('GeoNodes|Failed'),
-          helpInfo: {
-            title: s__(
-              'GeoNodes|Repositories checksummed for verification with their counterparts on Secondary nodes',
-            ),
-            url: HELP_INFO_URL,
-            urlText: s__('GeoNodes|Learn more about Repository checksum progress'),
-          },
         },
         {
           itemTitle: s__('GeoNodes|Wiki checksum progress'),
@@ -63,13 +71,6 @@ export default {
           successLabel: s__('GeoNodes|Checksummed'),
           neutraLabel: s__('GeoNodes|Not checksummed'),
           failureLabel: s__('GeoNodes|Failed'),
-          helpInfo: {
-            title: s__(
-              'GeoNodes|Wikis checksummed for verification with their counterparts on Secondary nodes',
-            ),
-            url: HELP_INFO_URL,
-            urlText: s__('GeoNodes|Learn more about Wiki checksum progress'),
-          },
         },
       ];
     },
@@ -82,13 +83,6 @@ export default {
           successLabel: s__('GeoNodes|Verified'),
           neutraLabel: s__('GeoNodes|Unverified'),
           failureLabel: s__('GeoNodes|Failed'),
-          helpInfo: {
-            title: s__(
-              'GeoNodes|Repositories verified with their counterparts on the Primary node',
-            ),
-            url: HELP_INFO_URL,
-            urlText: s__('GeoNodes|Learn more about Repository verification'),
-          },
         },
         {
           itemTitle: s__('GeoNodes|Wiki verification progress'),
@@ -97,11 +91,6 @@ export default {
           successLabel: s__('GeoNodes|Verified'),
           neutraLabel: s__('GeoNodes|Unverified'),
           failureLabel: s__('GeoNodes|Failed'),
-          helpInfo: {
-            title: s__('GeoNodes|Wikis verified with their counterparts on the Primary node'),
-            url: HELP_INFO_URL,
-            urlText: s__('GeoNodes|Learn more about Wiki verification'),
-          },
         },
       ];
     },
@@ -109,16 +98,24 @@ export default {
       this.showSectionItems = toggleState;
     },
   },
+  HELP_INFO_URL,
 };
 </script>
 
 <template>
   <div class="row-fluid clearfix py-3 border-top border-color-default verification-section">
-    <div class="col-md-12">
+    <div class="col-md-12 d-flex align-items-center">
       <section-reveal-button
         :button-title="__('Verification information')"
         @toggleButton="handleSectionToggle"
       />
+      <icon ref="verificationInfo" name="question" class="text-primary-600 ml-1 cursor-pointer" />
+      <gl-popover :target="() => $refs.verificationInfo.$el" placement="top" triggers="hover">
+        <p>{{ verificationInfoText }}</p>
+        <a class="mt-3" :href="$options.HELP_INFO_URL" target="_blank">{{
+          __('More information')
+        }}</a>
+      </gl-popover>
     </div>
     <template v-if="showSectionItems">
       <div class="col-md-6 ml-2 mt-2 section-items-container">
@@ -135,7 +132,6 @@ export default {
           :neutral-label="nodeDetailItem.neutraLabel"
           :failure-label="nodeDetailItem.failureLabel"
           :custom-type="nodeDetailItem.customType"
-          :help-info="nodeDetailItem.helpInfo"
         />
       </div>
     </template>
