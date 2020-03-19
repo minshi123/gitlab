@@ -199,6 +199,7 @@ module API
       mount ::API::Variables
       mount ::API::Version
       mount ::API::Wikis
+      mount ::API::Monitoring::Annotations
     end
 
     mount ::API::Internal::Base
