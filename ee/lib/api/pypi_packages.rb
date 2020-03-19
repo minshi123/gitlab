@@ -19,28 +19,6 @@ module API
       render_api_error!(e.message, 400)
     end
 
-    helpers do
-      def find_packages
-        packages = package_finder.execute
-
-        not_found!('Packages') unless packages.exists?
-
-        packages
-      end
-
-      def find_package
-        package = package_finder(package_version: params[:package_version]).execute
-                                                                           .first
-
-        not_found!('Package') unless package
-
-        package
-      end
-
-      def package_finder(finder_params = {})
-      end
-    end
-
     before do
       require_packages_enabled!
     end
@@ -52,6 +30,10 @@ module API
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       before do
         authorize_packages_feature!(authorized_user_project)
+
+        unless ::Feature.enabled?(:pypi_packages, authorized_user_project, default_enabled: false)
+          not_found!
+        end
       end
 
       namespace ':id/packages/pypi' do
@@ -65,14 +47,6 @@ module API
 
         get 'files/*file_identifier', :txt do
           authorize_read_package!(authorized_user_project)
-
-          if params[:file_identifier] != 'sample_project-1.0.0-py3-none-any'
-            not_found!
-          end
-
-          content_type "application/octet-stream"
-          env['api.format'] = :binary
-          body File.read(Rails.root.join('spec', 'fixtures', 'sample_project-1.0.0-py3-none-any.whl'))
         end
 
         desc 'The PyPi Simple Endpoint' do
@@ -85,17 +59,6 @@ module API
 
         get 'simple/*package_name', format: :txt do
           authorize_read_package!(authorized_user_project)
-
-          if params[:package_name] != 'sample-project'
-            not_found!
-          end
-
-          package = Packages::Package.new(name: 'sample-project', version: '1.0.0')
-          presenter = ::Packages::Pypi::PackagePresenter.new([package], authorized_user_project)
-
-          content_type "text/html; charset=utf-8"
-          env['api.format'] = :binary
-          body presenter.body
         end
 
         desc 'The PyPi Package upload endpoint' do
@@ -108,14 +71,6 @@ module API
 
         post do
           authorize_upload!(authorized_user_project)
-
-          # file_params = params.merge(
-          #   file: uploaded_package_file(:content),
-          #   file_name: params[:name],
-          #   sha256: params[:sha256_digest],
-          #   version: params[:version],
-          #   requires_python: params[:requires_python]
-          # )
 
           created!
         rescue ObjectStorage::RemoteStoreError => e
