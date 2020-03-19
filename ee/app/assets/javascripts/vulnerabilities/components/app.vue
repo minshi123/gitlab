@@ -82,6 +82,7 @@ export default {
     },
     createIssue() {
       this.isCreatingIssue = true;
+      const { description, identifiers, links, location, name } = this.occurrence;
       axios
         .post(this.createIssueUrl, {
           vulnerability_feedback: {
@@ -91,8 +92,11 @@ export default {
             vulnerability_data: {
               ...this.vulnerability,
               category: this.vulnerability.report_type,
-              description: this.occurrence.description,
-              name: this.occurrence.name,
+              description,
+              identifiers,
+              links,
+              location,
+              name,
             },
           },
         })
