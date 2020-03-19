@@ -170,7 +170,8 @@ A single design
 | `filename` | String! | The filename of the design |
 | `fullPath` | String! | The full path to the design file |
 | `id` | ID! | The ID of this design |
-| `image` | String! | The URL of the image |
+| `image` | String! | The URL of the full-sized image |
+| `imageV432x230` | String | The URL of the design resized to fit within the bounds of 432x230. This will be `null` if the image has not been generated |
 | `issue` | Issue! | The issue the design belongs to |
 | `notesCount` | Int! | The total count of user-created notes for this design |
 | `project` | Project! | The project the design belongs to |
@@ -187,7 +188,8 @@ A design pinned to a specific version. The image field reflects the design as of
 | `filename` | String! | The filename of the design |
 | `fullPath` | String! | The full path to the design file |
 | `id` | ID! | The ID of this design |
-| `image` | String! | The URL of the image |
+| `image` | String! | The URL of the full-sized image |
+| `imageV432x230` | String | The URL of the design resized to fit within the bounds of 432x230. This will be `null` if the image has not been generated |
 | `issue` | Issue! | The issue the design belongs to |
 | `notesCount` | Int! | The total count of user-created notes for this design |
 | `project` | Project! | The project the design belongs to |
@@ -898,6 +900,7 @@ Information about pagination in a connection.
 | `removeSourceBranchAfterMerge` | Boolean | Indicates if `Delete source branch` option should be enabled by default for all new merge requests of the project |
 | `repository` | Repository | Git repository of the project |
 | `requestAccessEnabled` | Boolean | Indicates if users can request member access to the project |
+| `requirement` | Requirement | Find a single requirement. Available only when feature flag `requirements_management` is enabled. |
 | `sentryDetailedError` | SentryDetailedError | Detailed version of a Sentry error on the project |
 | `sentryErrors` | SentryErrorCollection | Paginated collection of Sentry errors on the project |
 | `serviceDeskAddress` | String | E-mail address of the service desk. |
@@ -1158,9 +1161,11 @@ Represents a snippet entry
 | `description` | String | Description of the snippet |
 | `descriptionHtml` | String | The GitLab Flavored Markdown rendering of `description` |
 | `fileName` | String | File Name of the snippet |
+| `httpUrlToRepo` | String | HTTP URL to the snippet repository |
 | `id` | ID! | Id of the snippet |
 | `project` | Project | The project the snippet is associated with |
 | `rawUrl` | String! | Raw URL of the snippet |
+| `sshUrlToRepo` | String | SSH URL to the snippet repository |
 | `title` | String! | Title of the snippet |
 | `updatedAt` | Time! | Timestamp this snippet was updated |
 | `userPermissions` | SnippetPermissions! | Permissions for the current user on the resource |

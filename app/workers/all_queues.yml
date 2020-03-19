@@ -528,6 +528,55 @@
   :resource_boundary: :unknown
   :weight: 2
   :idempotent: 
+- :name: jira_importer:jira_import_advance_stage
+  :feature_category: :importers
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
+- :name: jira_importer:jira_import_stage_finish_import
+  :feature_category: :importers
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
+- :name: jira_importer:jira_import_stage_import_attachments
+  :feature_category: :importers
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
+- :name: jira_importer:jira_import_stage_import_issues
+  :feature_category: :importers
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
+- :name: jira_importer:jira_import_stage_import_labels
+  :feature_category: :importers
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
+- :name: jira_importer:jira_import_stage_import_notes
+  :feature_category: :importers
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
+- :name: jira_importer:jira_import_stage_start_import
+  :feature_category: :importers
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
 - :name: mail_scheduler:mail_scheduler_issue_due
   :feature_category: :issue_tracking
   :has_external_dependencies: 
@@ -605,6 +654,13 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: 
+- :name: pipeline_background:ci_daily_report_results
+  :feature_category: :continuous_integration
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
 - :name: pipeline_cache:expire_job_cache
   :feature_category: :continuous_integration
   :has_external_dependencies: 
@@ -739,13 +795,6 @@
   :weight: 5
   :idempotent: 
 - :name: pipeline_processing:pipeline_process
-  :feature_category: :continuous_integration
-  :has_external_dependencies: 
-  :urgency: :high
-  :resource_boundary: :unknown
-  :weight: 5
-  :idempotent: 
-- :name: pipeline_processing:pipeline_success
   :feature_category: :continuous_integration
   :has_external_dependencies: 
   :urgency: :high

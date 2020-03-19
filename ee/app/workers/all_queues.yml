@@ -27,6 +27,13 @@
 - :name: cronjob:elastic_index_bulk_cron
   :feature_category: :global_search
   :has_external_dependencies: 
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+- :name: cronjob:elastic_metrics_update
+  :feature_category: :global_search
+  :has_external_dependencies: 
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -482,7 +489,7 @@
 - :name: elastic_commit_indexer
   :feature_category: :global_search
   :has_external_dependencies: 
-  :urgency: :low
+  :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: 
@@ -496,7 +503,7 @@
 - :name: elastic_indexer
   :feature_category: :global_search
   :has_external_dependencies: 
-  :urgency: :low
+  :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: 
@@ -570,7 +577,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: 
-- :name: status_page_publish_incident
+- :name: status_page_publish
   :feature_category: :status_page
   :has_external_dependencies: true
   :urgency: :low

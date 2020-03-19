@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_13_123934) do
+ActiveRecord::Schema.define(version: 2020_03_16_111759) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -738,6 +738,18 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.index ["build_id"], name: "index_ci_builds_runner_session_on_build_id", unique: true
   end
 
+  create_table "ci_daily_report_results", force: :cascade do |t|
+    t.date "date", null: false
+    t.bigint "project_id", null: false
+    t.bigint "last_pipeline_id", null: false
+    t.float "value", null: false
+    t.bigint "param_type", null: false
+    t.string "ref_path", null: false
+    t.string "title", null: false
+    t.index ["last_pipeline_id"], name: "index_ci_daily_report_results_on_last_pipeline_id"
+    t.index ["project_id", "ref_path", "param_type", "date", "title"], name: "index_daily_report_results_unique_columns", unique: true
+  end
+
   create_table "ci_group_variables", id: :serial, force: :cascade do |t|
     t.string "key", null: false
     t.text "value"
@@ -1187,6 +1199,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.string "external_ip"
     t.string "external_hostname"
     t.boolean "modsecurity_enabled"
+    t.integer "modsecurity_mode", limit: 2, default: 0, null: false
     t.index ["cluster_id"], name: "index_clusters_applications_ingress_on_cluster_id", unique: true
   end
 
@@ -2298,6 +2311,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.index ["fingerprint"], name: "index_keys_on_fingerprint", unique: true
     t.index ["fingerprint_sha256"], name: "index_keys_on_fingerprint_sha256"
     t.index ["id", "type"], name: "index_on_deploy_keys_id_and_type_and_public", unique: true, where: "(public = true)"
+    t.index ["id"], name: "index_keys_on_id_and_ldap_key_type", where: "((type)::text = 'LDAPKey'::text)"
     t.index ["last_used_at"], name: "index_keys_on_last_used_at", order: "DESC NULLS LAST"
     t.index ["user_id"], name: "index_keys_on_user_id"
   end
@@ -2412,6 +2426,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.integer "milestone_id"
     t.integer "max_issue_count", default: 0, null: false
     t.integer "max_issue_weight", default: 0, null: false
+    t.string "limit_metric", limit: 20
     t.index ["board_id", "label_id"], name: "index_lists_on_board_id_and_label_id", unique: true
     t.index ["label_id"], name: "index_lists_on_label_id"
     t.index ["list_type"], name: "index_lists_on_list_type"
@@ -3495,7 +3510,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.index ["id"], name: "index_on_id_partial_with_legacy_storage", where: "((storage_version < 2) OR (storage_version IS NULL))"
     t.index ["id"], name: "index_projects_on_id_partial_for_visibility", unique: true, where: "(visibility_level = ANY (ARRAY[10, 20]))"
     t.index ["id"], name: "index_projects_on_id_service_desk_enabled", where: "(service_desk_enabled = true)"
-    t.index ["id"], name: "index_projects_on_mirror_and_mirror_trigger_builds_both_true", where: "((mirror IS TRUE) AND (mirror_trigger_builds IS TRUE))"
+    t.index ["id"], name: "index_projects_on_mirror_id_where_mirror_and_trigger_builds", where: "((mirror = true) AND (mirror_trigger_builds = true))"
     t.index ["last_activity_at", "id"], name: "index_projects_api_last_activity_at_id_desc", order: { id: :desc }
     t.index ["last_activity_at", "id"], name: "index_projects_api_vis20_last_activity_at", where: "(visibility_level = 20)"
     t.index ["last_activity_at", "id"], name: "index_projects_on_last_activity_at_and_id"
@@ -3907,6 +3922,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.string "note_type"
     t.text "position"
     t.string "in_reply_to_discussion_id"
+    t.index ["noteable_id"], name: "index_sent_notifications_on_noteable_type_noteable_id", where: "((noteable_type)::text = 'Issue'::text)"
     t.index ["reply_key"], name: "index_sent_notifications_on_reply_key", unique: true
   end
 
@@ -3965,6 +3981,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.boolean "instance", default: false, null: false
     t.index ["project_id", "type"], name: "index_services_on_project_id_and_type"
     t.index ["template"], name: "index_services_on_template"
+    t.index ["type", "id", "template"], name: "index_services_on_type_and_id_and_template_when_active", where: "(active = true)"
     t.index ["type", "instance"], name: "index_services_on_type_and_instance", unique: true, where: "(instance IS TRUE)"
     t.index ["type", "template"], name: "index_services_on_type_and_template", unique: true, where: "(template IS TRUE)"
     t.index ["type"], name: "index_services_on_type"
@@ -4419,9 +4436,8 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.index ["name"], name: "index_users_on_name_trigram", opclass: :gin_trgm_ops, using: :gin
     t.index ["public_email"], name: "index_users_on_public_email", where: "((public_email)::text <> ''::text)"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["state", "user_type"], name: "index_users_on_state_and_user_type_internal", where: "(ghost IS NOT TRUE)"
     t.index ["state"], name: "index_users_on_state"
-    t.index ["state"], name: "index_users_on_state_and_internal", where: "(ghost IS NOT TRUE)"
-    t.index ["state"], name: "index_users_on_state_and_internal_ee", where: "((ghost IS NOT TRUE) AND (bot_type IS NULL))"
     t.index ["static_object_token"], name: "index_users_on_static_object_token", unique: true
     t.index ["unconfirmed_email"], name: "index_users_on_unconfirmed_email", where: "(unconfirmed_email IS NOT NULL)"
     t.index ["user_type"], name: "index_users_on_user_type"
@@ -4654,6 +4670,25 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
     t.index ["type"], name: "index_web_hooks_on_type"
   end
 
+  create_table "wiki_page_meta", id: :serial, force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.datetime_with_timezone "created_at", null: false
+    t.datetime_with_timezone "updated_at", null: false
+    t.string "title", limit: 255, null: false
+    t.index ["project_id"], name: "index_wiki_page_meta_on_project_id"
+  end
+
+  create_table "wiki_page_slugs", id: :serial, force: :cascade do |t|
+    t.boolean "canonical", default: false, null: false
+    t.bigint "wiki_page_meta_id", null: false
+    t.datetime_with_timezone "created_at", null: false
+    t.datetime_with_timezone "updated_at", null: false
+    t.string "slug", limit: 2048, null: false
+    t.index ["slug", "wiki_page_meta_id"], name: "index_wiki_page_slugs_on_slug_and_wiki_page_meta_id", unique: true
+    t.index ["wiki_page_meta_id"], name: "index_wiki_page_slugs_on_wiki_page_meta_id"
+    t.index ["wiki_page_meta_id"], name: "one_canonical_wiki_page_slug_per_metadata", unique: true, where: "(canonical = true)"
+  end
+
   create_table "x509_certificates", force: :cascade do |t|
     t.datetime_with_timezone "created_at", null: false
     t.datetime_with_timezone "updated_at", null: false
@@ -4765,6 +4800,8 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
   add_foreign_key "ci_builds_metadata", "ci_builds", column: "build_id", on_delete: :cascade
   add_foreign_key "ci_builds_metadata", "projects", on_delete: :cascade
   add_foreign_key "ci_builds_runner_session", "ci_builds", column: "build_id", on_delete: :cascade
+  add_foreign_key "ci_daily_report_results", "ci_pipelines", column: "last_pipeline_id", on_delete: :cascade
+  add_foreign_key "ci_daily_report_results", "projects", on_delete: :cascade
   add_foreign_key "ci_group_variables", "namespaces", column: "group_id", name: "fk_33ae4d58d8", on_delete: :cascade
   add_foreign_key "ci_job_artifacts", "ci_builds", column: "job_id", on_delete: :cascade
   add_foreign_key "ci_job_artifacts", "projects", on_delete: :cascade
@@ -5196,6 +5233,8 @@ ActiveRecord::Schema.define(version: 2020_03_13_123934) do
   add_foreign_key "vulnerability_scanners", "projects", on_delete: :cascade
   add_foreign_key "web_hook_logs", "web_hooks", on_delete: :cascade
   add_foreign_key "web_hooks", "projects", name: "fk_0c8ca6d9d1", on_delete: :cascade
+  add_foreign_key "wiki_page_meta", "projects", on_delete: :cascade
+  add_foreign_key "wiki_page_slugs", "wiki_page_meta", column: "wiki_page_meta_id", on_delete: :cascade
   add_foreign_key "x509_certificates", "x509_issuers", on_delete: :cascade
   add_foreign_key "x509_commit_signatures", "projects", on_delete: :cascade
   add_foreign_key "x509_commit_signatures", "x509_certificates", on_delete: :cascade
