@@ -12652,6 +12652,9 @@ msgstr ""
 msgid "Metrics for environment"
 msgstr ""
 
+msgid "Metrics::Dashboard::Annotation|Annotation must belong to a cluster or an environment"
+msgstr ""
+
 msgid "Metrics|Add metric"
 msgstr ""
 
