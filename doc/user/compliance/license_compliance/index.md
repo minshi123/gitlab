@@ -191,8 +191,9 @@ If you still need to run tests during `mvn install`, add `-DskipTests=false` to
 
 #### Using private Maven repos
 
-If you have a private Maven repository which requires login credentials, you can use the `MAVEN_CLI_OPTS` variable
-to specify a custom [settings.xml](http://maven.apache.org/settings.html) file.
+If you have a private Maven repository that requires login credentials, you can use the
+`MAVEN_CLI_OPTS` variable to specify a custom [`settings.xml`](http://maven.apache.org/settings.html)
+file.
 
 If you have a settings file in your project source that looks like the following:
 
