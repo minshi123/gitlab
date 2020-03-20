@@ -14,7 +14,7 @@ Everything you need to build, test, deploy, and run your app at scale.
 
 [Kubernetes](https://kubernetes.io) logs can be viewed directly within GitLab.
 
-![Pod logs](img/kubernetes_pod_logs_v12_9.png)
+![Pod logs](img/kubernetes_pod_logs_v12_10.png)
 
 ## Requirements
 
