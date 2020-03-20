@@ -1684,17 +1684,6 @@ class User < ApplicationRecord
     callouts.any?
   end
 
-  def update_canonical_email
-    canonical_email = canonicalize_email
-
-    if canonical_email
-      build_user_canonical_email(canonical_email: canonical_email) unless user_canonical_email
-      self.user_canonical_email.canonical_email = canonical_email
-    else
-      self.user_canonical_email&.delete
-    end
-  end
-
   def gitlab_employee?
     strong_memoize(:gitlab_employee) do
       if Gitlab.com?

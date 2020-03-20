@@ -30,7 +30,7 @@ module Users
 
       build_identity(user)
 
-      user.update_canonical_email
+      Users::UpdateCanonicalEmailService.new(user: user).execute
 
       user
     end

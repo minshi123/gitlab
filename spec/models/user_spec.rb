@@ -16,7 +16,6 @@ describe User, :do_not_mock_admin_mode do
     it { is_expected.to include_module(Sortable) }
     it { is_expected.to include_module(TokenAuthenticatable) }
     it { is_expected.to include_module(BlocksJsonSerialization) }
-    it { is_expected.to include_module(CanonicalEmail) }
   end
 
   describe 'delegations' do
@@ -4336,70 +4335,6 @@ describe User, :do_not_mock_admin_mode do
       let(:user) { create(:user, job_title: 'Engineer') }
 
       it { expect(user.user_detail).to be_persisted }
-    end
-  end
-
-  describe '#update_canonical_email' do
-    let(:raw_email) { 'us.er+123@example.com' }
-    let(:canonical_email) { 'user@example.com' }
-    let(:user) { build(:user, email: raw_email) }
-
-    context 'when the email is canonicalized' do
-      before do
-        expect(user).to receive(:canonicalize_email).and_return(canonical_email)
-      end
-
-      context 'when there is an existing canonical record' do
-        before do
-          user.user_canonical_email = build(:user_canonical_email, canonical_email: 'differentaddress@example.com')
-        end
-
-        it 'updates the record' do
-          user.update_canonical_email
-
-          expect(user.user_canonical_email.canonical_email).to eq canonical_email
-        end
-      end
-
-      context 'when there is no existing canonical record' do
-        before do
-          user.user_canonical_email = nil
-        end
-
-        it 'creates a record' do
-          expect { user.update_canonical_email }.to change { user.user_canonical_email&.canonical_email }.from(nil).to(canonical_email)
-        end
-      end
-    end
-
-    context 'when the email is not canonicalized (example: outside the included domains)' do
-      before do
-        expect(user).to receive(:canonicalize_email).and_return(nil)
-      end
-
-      context 'when there is no existing canonical record' do
-        it 'does not create a record' do
-          expect { user.update_canonical_email }.not_to change { user.user_canonical_email }
-        end
-
-        it 'is nil' do
-          user.update_canonical_email
-
-          expect(user.user_canonical_email).to be_nil
-        end
-      end
-
-      context 'when there is an existing canonical record (for an outdated email)' do
-        before do
-          user.user_canonical_email = build(:user_canonical_email, canonical_email: canonical_email)
-        end
-
-        it 'removes the record' do
-          expect(user.user_canonical_email).to receive(:delete)
-
-          user.update_canonical_email
-        end
-      end
     end
   end
 

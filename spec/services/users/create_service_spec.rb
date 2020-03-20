@@ -32,20 +32,6 @@ describe Users::CreateService do
           )
         end
 
-        context 'generates a canonicalized email record if needed' do
-          before do
-            expect_any_instance_of(User).to receive(:canonicalize_email).and_return(email)
-          end
-
-          it 'creates a new record' do
-            user = service.execute
-            user.reload
-
-            expect(user.user_canonical_email).not_to be_nil
-            expect(user.user_canonical_email.canonical_email).to eq email
-          end
-        end
-
         context 'when the current_user is not persisted' do
           let(:admin_user) { build(:admin) }
 

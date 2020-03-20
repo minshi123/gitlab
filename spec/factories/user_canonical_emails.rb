@@ -3,6 +3,6 @@
 FactoryBot.define do
   factory :user_canonical_email do
     user
-    canonical_email { user.canonicalize_email || user.email }
+    canonical_email { user.email }
   end
 end

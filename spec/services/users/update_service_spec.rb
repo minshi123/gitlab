@@ -78,7 +78,9 @@ describe Users::UpdateService do
         end
 
         it 'calls canonicalize_email' do
-          expect(user).to receive(:update_canonical_email)
+          expect_next_instance_of(Users::UpdateCanonicalEmailService) do |service|
+            expect(service).to receive(:execute)
+          end
 
           subject
         end
@@ -89,10 +91,8 @@ describe Users::UpdateService do
           update_user(user, job_title: 'supreme leader of the universe')
         end
 
-        it 'skips canonicalize_email call' do
-          expect(user).not_to receive(:update_canonical_email)
-
-          subject
+        it 'skips update canonicalize email service call' do
+          expect { subject }.not_to change { user.user_canonical_email }
         end
       end
     end
