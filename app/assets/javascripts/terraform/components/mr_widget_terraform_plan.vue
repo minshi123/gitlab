@@ -3,14 +3,12 @@ import { GlIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { __, sprintf } from '~/locale';
 import ciIcon from '../../vue_shared/components/ci_icon.vue';
-import MrWidgetIcon from '../../vue_merge_request_widget/components/mr_widget_icon.vue';
 
 export default {
   name: 'MRWidgetTerraformPlan',
   components: {
     ciIcon,
     GlIcon,
-    MrWidgetIcon,
   },
   data() {
     return {
