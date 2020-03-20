@@ -195,7 +195,7 @@ If you have a private Maven repository that requires login credentials, you can 
 `MAVEN_CLI_OPTS` variable to specify a custom [`settings.xml`](http://maven.apache.org/settings.html)
 file.
 
-If you have a settings file in your project source that looks like the following:
+For example, you may have a settings file like this in your project source:
 
 ```xml
 <settings>
