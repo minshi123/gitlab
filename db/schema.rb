@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_19_203901) do
+ActiveRecord::Schema.define(version: 2020_03_20_112455) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
@@ -958,6 +958,8 @@ ActiveRecord::Schema.define(version: 2020_03_19_203901) do
     t.integer "maximum_timeout"
     t.integer "runner_type", limit: 2, null: false
     t.string "token_encrypted"
+    t.float "public_projects_minutes_cost_factor", default: 0.0, null: false
+    t.float "internal_or_private_projects_minutes_cost_factor", default: 1.0, null: false
     t.index ["contacted_at"], name: "index_ci_runners_on_contacted_at"
     t.index ["is_shared"], name: "index_ci_runners_on_is_shared"
     t.index ["locked"], name: "index_ci_runners_on_locked"
