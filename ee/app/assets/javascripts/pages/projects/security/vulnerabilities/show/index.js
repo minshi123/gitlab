@@ -40,9 +40,8 @@ function createHeaderApp() {
   const el = document.getElementById('js-vulnerability-management-app');
   const vulnerability = JSON.parse(el.dataset.vulnerabilityJson);
   const pipeline = JSON.parse(el.dataset.pipelineJson);
-  const finding = JSON.parse(el.dataset.findingJson);
 
-  const { projectFingerprint, createIssueUrl } = el.dataset;
+  const { createIssueUrl } = el.dataset;
 
   return new Vue({
     el,
@@ -50,10 +49,8 @@ function createHeaderApp() {
     render: h =>
       h(HeaderApp, {
         props: {
-          finding,
           vulnerability,
           pipeline,
-          projectFingerprint,
           createIssueUrl,
         },
       }),

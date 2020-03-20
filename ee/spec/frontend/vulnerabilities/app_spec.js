@@ -21,9 +21,6 @@ describe('Vulnerability management app', () => {
     id: 1,
     created_at: new Date().toISOString(),
     report_type: 'sast',
-  };
-
-  const finding = {
     description: 'This is the description of the occurrence',
     identifiers: [
       {
@@ -39,11 +36,11 @@ describe('Vulnerability management app', () => {
       operating_system: 'debian:9',
     },
     name: 'THE occurrence',
+    projectFingerprint: 'abc123',
   };
 
   const dataset = {
     createIssueUrl: 'create_issue_url',
-    projectFingerprint: 'abc123',
     pipeline: {
       id: 2,
       created_at: new Date().toISOString(),
@@ -58,7 +55,6 @@ describe('Vulnerability management app', () => {
       propsData: {
         vulnerability: Object.assign({ state }, vulnerability),
         ...dataset,
-        finding: Object.assign({ state }, finding),
       },
     });
   };
@@ -118,20 +114,14 @@ describe('Vulnerability management app', () => {
         expect(mockAxios.history.post).toHaveLength(1);
         const [postRequest] = mockAxios.history.post;
         expect(postRequest.url).toBe(dataset.createIssueUrl);
-        const { description, identifiers, links, location, name } = finding;
         expect(JSON.parse(postRequest.data)).toMatchObject({
           vulnerability_feedback: {
             feedback_type: 'issue',
             category: vulnerability.report_type,
-            project_fingerprint: dataset.projectFingerprint,
+            project_fingerprint: vulnerability.projectFingerprint,
             vulnerability_data: {
               ...vulnerability,
               category: vulnerability.report_type,
-              description,
-              identifiers,
-              links,
-              location,
-              name,
             },
           },
         });

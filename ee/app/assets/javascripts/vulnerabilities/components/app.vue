@@ -23,10 +23,6 @@ export default {
   },
 
   props: {
-    finding: {
-      type: Object,
-      required: true,
-    },
     vulnerability: {
       type: Object,
       required: true,
@@ -37,10 +33,6 @@ export default {
       default: undefined,
     },
     createIssueUrl: {
-      type: String,
-      required: true,
-    },
-    projectFingerprint: {
       type: String,
       required: true,
     },
@@ -82,21 +74,15 @@ export default {
     },
     createIssue() {
       this.isCreatingIssue = true;
-      const { description, identifiers, links, location, name } = this.finding;
       axios
         .post(this.createIssueUrl, {
           vulnerability_feedback: {
             feedback_type: 'issue',
             category: this.vulnerability.report_type,
-            project_fingerprint: this.projectFingerprint,
+            project_fingerprint: this.vulnerability.projectFingerprint,
             vulnerability_data: {
               ...this.vulnerability,
               category: this.vulnerability.report_type,
-              description,
-              identifiers,
-              links,
-              location,
-              name,
             },
           },
         })
