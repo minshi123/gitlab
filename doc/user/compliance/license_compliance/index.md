@@ -209,7 +209,7 @@ For example, you may have a settings file like this in your project source:
 </settings>
 ```
 
-Then you can use the following declaration in your `gitlab-ci.yml` file:
+You can use this file through the following declaration in your `gitlab-ci.yml` file:
 
 ```yaml
 license_scanning:
