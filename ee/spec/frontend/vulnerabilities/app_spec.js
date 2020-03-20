@@ -23,7 +23,7 @@ describe('Vulnerability management app', () => {
     report_type: 'sast',
   };
 
-  const occurrence = {
+  const finding = {
     description: 'This is the description of the occurrence',
     identifiers: [
       {
@@ -58,7 +58,7 @@ describe('Vulnerability management app', () => {
       propsData: {
         vulnerability: Object.assign({ state }, vulnerability),
         ...dataset,
-        occurrence: Object.assign({ state }, occurrence),
+        finding: Object.assign({ state }, finding),
       },
     });
   };
@@ -118,7 +118,7 @@ describe('Vulnerability management app', () => {
         expect(mockAxios.history.post).toHaveLength(1);
         const [postRequest] = mockAxios.history.post;
         expect(postRequest.url).toBe(dataset.createIssueUrl);
-        const { description, identifiers, links, location, name } = occurrence;
+        const { description, identifiers, links, location, name } = finding;
         expect(JSON.parse(postRequest.data)).toMatchObject({
           vulnerability_feedback: {
             feedback_type: 'issue',

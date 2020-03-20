@@ -9,7 +9,7 @@ module VulnerabilitiesHelper
       project_fingerprint: vulnerability.finding.project_fingerprint,
       create_issue_url: create_vulnerability_feedback_issue_path(vulnerability.finding.project),
       pipeline_json: vulnerability_pipeline_data(pipeline).to_json,
-      occurrence_json: Vulnerabilities::OccurrenceSerializer.new({}).represent(vulnerability.finding).to_json
+      finding_json: Vulnerabilities::OccurrenceSerializer.new({}).represent(vulnerability.finding).to_json
     }
   end
 

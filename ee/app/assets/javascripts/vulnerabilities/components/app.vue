@@ -23,7 +23,7 @@ export default {
   },
 
   props: {
-    occurrence: {
+    finding: {
       type: Object,
       required: true,
     },
@@ -82,7 +82,7 @@ export default {
     },
     createIssue() {
       this.isCreatingIssue = true;
-      const { description, identifiers, links, location, name } = this.occurrence;
+      const { description, identifiers, links, location, name } = this.finding;
       axios
         .post(this.createIssueUrl, {
           vulnerability_feedback: {
