@@ -6,7 +6,7 @@ import { convertToFixedRange } from '~/lib/utils/datetime_range';
 import logsPageState from '~/logs/stores/state';
 import {
   setInitData,
-  setSearch,
+  // setSearch,
   showPodLogs,
   fetchEnvironments,
   fetchLogs,
@@ -90,17 +90,6 @@ describe('Logs Store actions', () => {
           { type: types.SET_PROJECT_ENVIRONMENT, payload: mockEnvName },
           { type: types.SET_CURRENT_POD_NAME, payload: mockPodName },
         ],
-      ));
-  });
-
-  describe('setSearch', () => {
-    it('should commit search mutation', () =>
-      testAction(
-        setSearch,
-        mockSearch,
-        state,
-        [{ type: types.SET_SEARCH, payload: mockSearch }],
-        [{ type: 'fetchLogs' }],
       ));
   });
 

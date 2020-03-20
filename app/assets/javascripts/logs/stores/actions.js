@@ -59,19 +59,43 @@ const requestLogsUntilData = state => {
   return requestUntilData(logs_api_path, params);
 };
 
+const filterParams = filters => {
+  const res = {
+    searchQuery: '',
+    podName: null,
+  };
+
+  filters.forEach(filter => {
+    if (typeof filter === 'string') {
+      res.searchQuery += `${filter} `;
+    } else if (typeof filter === 'object') {
+      const { type, value } = filter;
+      if (type === 'pod') {
+        res.podName = value.data;
+      }
+    }
+  });
+  res.searchQuery = res.searchQuery.trim();
+  return res;
+};
+
 export const setInitData = ({ commit }, { timeRange, environmentName, podName }) => {
   commit(types.SET_TIME_RANGE, timeRange);
   commit(types.SET_PROJECT_ENVIRONMENT, environmentName);
   commit(types.SET_CURRENT_POD_NAME, podName);
 };
 
-export const showPodLogs = ({ dispatch, commit }, podName) => {
+export const showFilteredLogs = ({ dispatch, commit }, filters) => {
+  const { podName, searchQuery } = filterParams(filters);
+
   commit(types.SET_CURRENT_POD_NAME, podName);
+  commit(types.SET_SEARCH, searchQuery);
+
   dispatch('fetchLogs');
 };
 
-export const setSearch = ({ dispatch, commit }, searchQuery) => {
-  commit(types.SET_SEARCH, searchQuery);
+export const showPodLogs = ({ dispatch, commit }, podName) => {
+  commit(types.SET_CURRENT_POD_NAME, podName);
   dispatch('fetchLogs');
 };
 

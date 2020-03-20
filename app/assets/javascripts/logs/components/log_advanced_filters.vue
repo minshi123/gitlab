@@ -1,25 +1,14 @@
 <script>
+import { mapActions, mapState } from 'vuex';
+import { GlFilteredSearch } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import DateTimePicker from '~/vue_shared/components/date_time_picker/date_time_picker.vue';
-import { mapActions, mapState } from 'vuex';
-import {
-  GlIcon,
-  GlDropdown,
-  GlDropdownHeader,
-  GlDropdownDivider,
-  GlDropdownItem,
-  GlSearchBoxByClick,
-} from '@gitlab/ui';
 import { timeRanges } from '~/vue_shared/constants';
+import PodSearchToken from './pod_search_token.vue';
 
 export default {
   components: {
-    GlIcon,
-    GlDropdown,
-    GlDropdownHeader,
-    GlDropdownDivider,
-    GlDropdownItem,
-    GlSearchBoxByClick,
+    GlFilteredSearch,
     DateTimePicker,
   },
   props: {
@@ -32,7 +21,7 @@ export default {
   data() {
     return {
       timeRanges,
-      searchQuery: '',
+      searchQuery: [], // TODO Connect this to the store?
     };
   },
   computed: {
@@ -47,73 +36,40 @@ export default {
       },
     },
 
-    podDropdownText() {
-      return this.pods.current || s__('Environments|All pods');
+    tokens() {
+      const options = this.pods.options.map(podName => {
+        return { value: podName, title: podName };
+      });
+
+      return [
+        {
+          icon: 'pod',
+          type: 'pod',
+          title: s__('Environments|Pod'),
+          token: PodSearchToken,
+          options,
+          unique: true,
+        },
+      ];
     },
   },
   methods: {
-    ...mapActions('environmentLogs', ['setSearch', 'showPodLogs', 'setTimeRange']),
-    isCurrentPod(podName) {
-      return podName === this.pods.current;
+    ...mapActions('environmentLogs', ['showFilteredLogs', 'setTimeRange']),
+
+    applyFilters(filters) {
+      this.showFilteredLogs(filters);
     },
   },
 };
 </script>
 <template>
   <div>
-    <gl-dropdown
-      ref="podsDropdown"
-      :text="podDropdownText"
+    <gl-filtered-search
+      v-model="searchQuery"
+      class="mb-2 gl-h-32 pr-2"
       :disabled="disabled"
-      class="mb-2 gl-h-32 pr-2 d-flex d-md-block flex-grow-0 qa-pods-dropdown"
-    >
-      <gl-dropdown-header class="text-center">
-        {{ s__('Environments|Filter by pod') }}
-      </gl-dropdown-header>
-
-      <gl-dropdown-item v-if="!pods.options.length" :disabled="true">
-        <span ref="noPodsMsg" class="text-muted">
-          {{ s__('Environments|No pods to display') }}
-        </span>
-      </gl-dropdown-item>
-
-      <template v-else>
-        <gl-dropdown-item ref="allPodsOption" key="all-pods" @click="showPodLogs(null)">
-          <div class="d-flex">
-            <gl-icon
-              :class="{ invisible: pods.current !== null }"
-              name="status_success_borderless"
-            />
-            <div class="flex-grow-1">{{ s__('Environments|All pods') }}</div>
-          </div>
-        </gl-dropdown-item>
-        <gl-dropdown-divider />
-        <gl-dropdown-item
-          v-for="podName in pods.options"
-          :key="podName"
-          class="text-nowrap"
-          @click="showPodLogs(podName)"
-        >
-          <div class="d-flex">
-            <gl-icon
-              :class="{ invisible: !isCurrentPod(podName) }"
-              name="status_success_borderless"
-            />
-            <div class="flex-grow-1">{{ podName }}</div>
-          </div>
-        </gl-dropdown-item>
-      </template>
-    </gl-dropdown>
-
-    <gl-search-box-by-click
-      ref="searchBox"
-      v-model.trim="searchQuery"
-      :disabled="disabled"
-      :placeholder="s__('Environments|Search')"
-      class="mb-2 pr-2 flex-grow-1 js-logs-search"
-      type="search"
-      autofocus
-      @submit="setSearch(searchQuery)"
+      :available-tokens="tokens"
+      @submit="applyFilters"
     />
 
     <date-time-picker

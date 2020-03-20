@@ -89,10 +89,9 @@ export default {
   methods: {
     ...mapActions('environmentLogs', [
       'setInitData',
-      'setSearch',
-      'showPodLogs',
       'showEnvironment',
       'fetchEnvironments',
+      'fetchLogs',
       'fetchMoreLogsPrepend',
     ]),
 
@@ -176,7 +175,7 @@ export default {
         ref="scrollButtons"
         class="flex-grow-0 pr-2 mb-2 controllers"
         :scroll-down-button-disabled="scrollDownButtonDisabled"
-        @refresh="showPodLogs(pods.current)"
+        @refresh="fetchLogs()"
         @scrollDown="scrollDown"
       />
     </div>
