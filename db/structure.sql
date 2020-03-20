@@ -1309,7 +1309,9 @@ CREATE TABLE public.ci_runners (
     ip_address character varying,
     maximum_timeout integer,
     runner_type smallint NOT NULL,
-    token_encrypted character varying
+    token_encrypted character varying,
+    public_projects_minutes_cost_factor double precision DEFAULT 0.0 NOT NULL,
+    private_projects_minutes_cost_factor double precision DEFAULT 1.0 NOT NULL
 );
 
 CREATE SEQUENCE public.ci_runners_id_seq
@@ -12708,5 +12710,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200318163148'),
 ('20200318164448'),
 ('20200318165448'),
-('20200319203901');
+('20200319203901'),
+('20200320112455');
 
