@@ -1,0 +1,5 @@
+---
+title: Bypass errors for missing tags
+merge_request: 27716
+author:
+type: fixed

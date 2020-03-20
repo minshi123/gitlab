@@ -14,7 +14,7 @@ class ReleasePresenter < Gitlab::View::Presenter::Delegated
   end
 
   def tag_path
-    return unless can_download_code?
+    return unless can_download_code? && !release.tag_missing?
 
     project_tag_path(project, release.tag)
   end
