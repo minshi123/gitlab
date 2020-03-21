@@ -6,6 +6,7 @@ import Rules from '../rules.vue';
 import RuleControls from '../rule_controls.vue';
 import EmptyRule from './empty_rule.vue';
 import RuleInput from './rule_input.vue';
+import $ from 'jquery';
 
 let targetBranchMutationObserver;
 
@@ -27,6 +28,7 @@ export default {
     ...mapState({
       rules: state => state.approvals.rules,
     }),
+    ...mapState('targetBranchAlertHi', ['ghost', 'showAlert']),
     hasNamedRule() {
       if (this.settings.allowMultiRule) {
         return this.rules.some(rule => rule.ruleType !== RULE_TYPE_ANY_APPROVER);
@@ -90,6 +92,14 @@ export default {
 
       if (this.targetBranch !== selectedTargetBranchValue) {
         this.targetBranch = selectedTargetBranchValue;
+        // document.querySelector('#merge_request_target_branch').value = 'WTF';
+        // document.querySelector('#select2-chosen-1').textContent = 'WTF';
+
+        // $('#s2id_merge_request_target_branch').on('change', function(e) {
+        //   console.log('ho');
+        // });
+
+        console.log('wtf');
         this.fetchRules(this.targetBranch);
       }
     },
