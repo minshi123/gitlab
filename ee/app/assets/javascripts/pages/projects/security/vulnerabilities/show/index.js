@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card.vue';
 import HeaderApp from 'ee/vulnerabilities/components/app.vue';
+import FooterApp from 'ee/vulnerabilities/components/footer.vue';
 
-function createSolutionCardApp() {
+function createFooterApp() {
   const el = document.getElementById('js-vulnerability-solution');
 
   if (!el) {
@@ -13,24 +13,32 @@ function createSolutionCardApp() {
   const { solution, vulnerabilityFeedbackHelpPath, vulnerabilityState } = el.dataset;
   const hasMr = parseBoolean(el.dataset.hasMr);
   const remediation = JSON.parse(el.dataset.remediation);
+  const finding = JSON.parse(el.dataset.finding);
   const hasDownload = Boolean(
     vulnerabilityState !== 'resolved' && remediation?.diff?.length && !hasMr,
   );
 
   const props = {
-    solution,
-    remediation,
-    hasDownload,
-    hasMr,
-    hasRemediation: Boolean(remediation),
-    vulnerabilityFeedbackHelpPath,
-    isStandaloneVulnerability: true,
+    solutionCard: {
+      solution,
+      remediation,
+      hasDownload,
+      hasMr,
+      hasRemediation: Boolean(remediation),
+      vulnerabilityFeedbackHelpPath,
+      isStandaloneVulnerability: true,
+    },
+    feedback: finding.issue_feedback,
+    project: {
+      url: finding.project.full_path,
+      value: finding.project.full_name,
+    },
   };
 
   return new Vue({
     el,
     render: h =>
-      h(SolutionCard, {
+      h(FooterApp, {
         props,
       }),
   });
@@ -59,5 +67,5 @@ function createHeaderApp() {
 
 window.addEventListener('DOMContentLoaded', () => {
   createHeaderApp();
-  createSolutionCardApp();
+  createFooterApp();
 });
