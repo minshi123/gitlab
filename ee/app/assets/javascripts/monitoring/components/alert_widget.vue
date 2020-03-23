@@ -1,18 +1,20 @@
 <script>
-import { GlBadge, GlLoadingIcon, GlModalDirective } from '@gitlab/ui';
+import { GlBadge, GlLoadingIcon, GlModalDirective, GlIcon, GlTooltip, GlSprintf } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
 import createFlash from '~/flash';
-import Icon from '~/vue_shared/components/icon.vue';
 import AlertWidgetForm from './alert_widget_form.vue';
 import AlertsService from '../services/alerts_service';
 import { alertsValidator, queriesValidator } from '../validators';
+import { OPERATORS } from '../constants';
 
 export default {
   components: {
     AlertWidgetForm,
     GlBadge,
     GlLoadingIcon,
-    Icon,
+    GlIcon,
+    GlTooltip,
+    GlSprintf,
   },
   directives: {
     GlModal: GlModalDirective,
@@ -27,7 +29,27 @@ export default {
     alertsToManage: {
       type: Object,
       required: false,
-      default: () => ({}),
+      // default: () => ({}),
+      default: () => ({
+        'my/alert.json': {
+          operator: '>',
+          threshold: 42,
+          alert_path: 'my/alert.json',
+          metricId: '7',
+        },
+        'my/alert2.json': {
+          operator: '==',
+          threshold: 900,
+          alert_path: 'my/alert2.json',
+          metricId: '6',
+        },
+        'my/alert3.json': {
+          operator: '==',
+          threshold: 900,
+          alert_path: 'my/alert3.json',
+          metricId: '8',
+        }
+      }),
       validator: alertsValidator,
     },
     // [{ metric+query_attributes }]. Represents queries (and alerts) we know about
@@ -56,10 +78,25 @@ export default {
       const alertCountMsg = sprintf(s__('PrometheusAlerts|%{count} alerts applied'), {
         count: alertsToManage.length,
       });
+      const thresholdsInfo = alertsToManage.map(this.formatAlertSummary);
 
-      return alertsToManage.length > 1
-        ? alertCountMsg
-        : alertsToManage.map(this.formatAlertSummary)[0];
+      const notFiringMsg = alertsToManage.length > 1 ? alertCountMsg : thresholdsInfo[0];
+      const firingMsg = alertsToManage.length > 1 ? `${alertCountMsg}. Firing: ${thresholdsInfo.join(', ')}` : `Firing: ${thresholdsInfo[0]}`;
+
+      return this.isAlertFiring ? firingMsg : notFiringMsg;
+    },
+    isAlertFiring() {
+      return true;
+    },
+    showAlertTooltip() {
+      const alertBadge = this.$refs.alertBadge?.children[0];
+      if (alertBadge) {
+        return alertBadge.scrollWidth > this.$refs.alertBadge.offsetWidth;
+      }
+    },
+    alerts() {
+      const alertsToManage = Object.keys(this.alertsToManage);
+      return alertsToManage.map(this.formatAlertSummary);
     },
   },
   created() {
@@ -95,7 +132,8 @@ export default {
     },
     formatAlertSummary(alertPath) {
       const alert = this.alertsToManage[alertPath];
-      const alertQuery = this.relevantQueries.find(query => query.metricId === alert.metricId);
+      // const alertQuery = this.relevantQueries.find(query => query.metricId === alert.metricId);
+      const alertQuery = { label: 'CPU Usage' };
 
       return `${alertQuery.label} ${alert.operator} ${alert.threshold}`;
     },
@@ -159,21 +197,32 @@ export default {
 
 <template>
   <div class="prometheus-alert-widget dropdown flex-grow-2 overflow-hidden">
-    <span v-if="errorMessage" class="alert-error-message">{{ errorMessage }}</span>
+    <gl-loading-icon v-if="isLoading" :inline="true"/>
+    <span v-else-if="errorMessage" class="alert-error-message">{{ errorMessage }}</span>
     <span
       v-else
-      class="alert-current-setting text-secondary cursor-pointer d-flex align-items-end"
+      ref="alertBadge"
+      class="alert-current-setting text-secondary cursor-pointer d-flex"
       @click="showModal"
     >
       <gl-badge
         v-if="alertSummary"
-        variant="secondary"
-        class="d-flex-center text-secondary text-truncate"
+        :variant="isAlertFiring ? 'danger' : 'secondary'"
+        pill
+        class="d-flex-center text-truncate"
       >
-        <icon name="notifications" class="s18 append-right-4" :size="16" />
-        <span class="text-truncate">{{ alertSummary }}</span>
+        <gl-icon name="notifications" :size="16" class="flex-shrink-0"/>
+        <span class="text-truncate gl-pl-1">{{ alertSummary }}</span>
       </gl-badge>
-      <gl-loading-icon v-show="isLoading" :inline="true" />
+      <gl-tooltip :target="() => $refs.alertBadge">
+        <gl-sprintf :message="__('Firing: %{alerts}')">
+          <template #alerts>
+              <div v-for="alert in alerts">
+                {{alert}}
+              </div>
+          </template>
+        </gl-sprintf>
+      </gl-tooltip>
     </span>
     <alert-widget-form
       ref="widgetForm"
