@@ -958,7 +958,7 @@ describe Project do
           project.visibility_level = Project::PUBLIC
         end
 
-        it { is_expected.to be_falsey }
+        it { is_expected.to be_truthy }
       end
 
       context 'for internal project' do

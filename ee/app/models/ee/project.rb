@@ -275,7 +275,7 @@ module EE
     end
 
     def shared_runners_minutes_limit_enabled?
-      !public? && shared_runners_enabled? &&
+      shared_runners_enabled? &&
         shared_runners_limit_namespace.shared_runners_minutes_limit_enabled?
     end
 
