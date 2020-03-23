@@ -37,7 +37,7 @@ module Packages
             required_python = package.pypi_metadatum.required_python
 
             url = expose_url(
-              api_v4_projects_packages_pypi_files_file_identifier_path(
+              api_v4_projects_packages_pypi_files_path(
                 id: @project.id,
                 file_identifier: file.file_name
               )

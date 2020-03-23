@@ -47,7 +47,7 @@ module API
         authorize_packages_feature!(authorized_user_project)
 
         unless ::Feature.enabled?(:pypi_packages, authorized_user_project, default_enabled: false)
-          not_found!
+          # not_found!
         end
       end
 
@@ -57,11 +57,13 @@ module API
         end
 
         params do
-          requires :file_identifier, type: String, desc: 'The PyPi package file identifier', regexp: API::NO_SLASH_URL_PART_REGEX
+          requires :file_identifier, type: String, desc: 'The PyPi package file identifier'
         end
 
-        get 'files/*file_identifier', :txt do
+        get 'files/*file_identifier', format: :txt do
           authorize_read_package!(authorized_user_project)
+
+          "foo"
         end
 
         desc 'The PyPi Simple Endpoint' do
