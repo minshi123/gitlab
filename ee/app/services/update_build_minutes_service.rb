@@ -5,6 +5,7 @@ class UpdateBuildMinutesService < BaseService
     return unless build.shared_runners_minutes_limit_enabled?
     return unless build.complete?
     return unless build.duration
+    return unless build.duration > 0
 
     duration_with_cost_factors = accumulated_seconds(build)
 
@@ -21,9 +22,9 @@ class UpdateBuildMinutesService < BaseService
     return build.duration unless Gitlab.com? # cost factors are related to gitlab.com only
 
     runner = build.runner
-    cost_factor = private_project? ? runner.private_projects_minutes_cost_factor : runner.public_projects_minutes_cost_factor
+    cost_factor = project.private? ? runner.private_projects_minutes_cost_factor : runner.public_projects_minutes_cost_factor
 
-    build.duration * cost_factor # TODO: int X float, but we need seconds
+    (build.duration * cost_factor).truncate
   end
 
   def namespace_statistics
