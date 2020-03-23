@@ -12,8 +12,6 @@ module API
         detail 'This feature was introduced in GitLab 12.10'
       end
       delete 'dependency_proxy/cache' do
-        authorize!(:destroy_dependency_proxy_cache, user_group)
-
         user_group.dependency_proxy_blobs.delete_all
       end
     end
