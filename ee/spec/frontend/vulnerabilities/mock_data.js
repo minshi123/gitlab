@@ -1,16 +1,16 @@
-export const vulnerabilities = [
+export const generateVulnerabilities = () => [
   {
     id: 'id_0',
-    title: 'Vuln1',
+    title: 'Vulnerability 1',
     severity: 'critical',
     state: 'dismissed',
   },
   {
     id: 'id_1',
-    title: 'Vuln2',
+    title: 'Vulnerability 2',
     severity: 'high',
     state: 'opened',
   },
 ];
 
-export const generateVulnerabilities = () => vulnerabilities;
+export const vulnerabilities = generateVulnerabilities();
