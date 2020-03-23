@@ -217,6 +217,10 @@ license_scanning:
     MAVEN_CLI_OPTS: --settings settings.xml -Dprivate.username=foo -Dprivate.password=bar
 ```
 
+NOTE: **Note:**
+If you don't want to expose the credentials in your `.gitlab-ci.yml` file, then
+you can [set the variable in your project's settings](../../../ci/variables/README.md#via-the-ui).
+
 ### Selecting the version of Python
 
 > - [Introduced](https://gitlab.com/gitlab-org/security-products/license-management/-/merge_requests/36) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.0.
