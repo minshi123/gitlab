@@ -18,11 +18,12 @@ class UpdateBuildMinutesService < BaseService
   private
 
   def accumulated_seconds(build)
-    if Gitlab.com? # cost factors are related to gitlab.com only
-      build.duration
-    else
-      build.duration
-    end
+    return build.duration unless Gitlab.com? # cost factors are related to gitlab.com only
+
+    runner = build.runner
+    cost_factor = private_project? ? runner.private_projects_minutes_cost_factor : runner.public_projects_minutes_cost_factor
+
+    build.duration * cost_factor # TODO: int X float, but we need seconds
   end
 
   def namespace_statistics
