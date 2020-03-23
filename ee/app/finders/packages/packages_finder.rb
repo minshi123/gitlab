@@ -16,6 +16,7 @@ module Packages
       packages = project.packages.processed
       packages = filter_by_package_type(packages)
       packages = filter_by_package_name(packages)
+      packages = with_version(packages)
       packages = order_packages(packages)
       packages
     end
@@ -32,6 +33,10 @@ module Packages
       return packages unless params[:package_name]
 
       packages.search_by_name(params[:package_name])
+    end
+
+    def with_version(packages)
+      packages.has_version
     end
 
     def order_packages(packages)
