@@ -351,3 +351,10 @@ Style/FloatDivision:
 
 Cop/BanCatchThrow:
   Enabled: true
+
+Performance/ChainArrayAllocation:
+  Enabled: true
+  Include:
+    - 'lib/gitlab/import_export/**/*'
+    - 'ee/lib/gitlab/import_export/**/*'
+    - 'ee/lib/ee/gitlab/import_export/**/*'
