@@ -9602,6 +9602,10 @@ CREATE UNIQUE INDEX index_project_tracing_settings_on_project_id ON public.proje
 
 CREATE INDEX index_projects_api_created_at_id_desc ON public.projects USING btree (created_at, id DESC);
 
+CREATE INDEX index_projects_api_created_at_id_for_archived ON public.projects USING btree (created_at, id) WHERE (archived = true);
+
+CREATE INDEX index_projects_api_created_at_id_for_archived_vis20 ON public.projects USING btree (created_at, id) WHERE ((archived = true) AND (visibility_level = 20));
+
 CREATE INDEX index_projects_api_last_activity_at_id_desc ON public.projects USING btree (last_activity_at, id DESC);
 
 CREATE INDEX index_projects_api_name_id_desc ON public.projects USING btree (name, id DESC);
@@ -12708,5 +12712,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200318163148'),
 ('20200318164448'),
 ('20200318165448'),
-('20200319203901');
+('20200319203901'),
+('20200323134519');
 
