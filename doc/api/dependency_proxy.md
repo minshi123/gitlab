@@ -1,4 +1,4 @@
-# Dependency Proxy API
+# Dependency Proxy API **(ULTIMATE)**
 
 ## Purge the dependency proxy for a group
 
