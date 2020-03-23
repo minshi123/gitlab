@@ -643,6 +643,19 @@ describe API::Runner, :clean_gitlab_redis_shared_state do
             end
           end
 
+          context 'when job is for a release' do
+            let!(:job) { create(:ci_build, :release_options, pipeline: pipeline) }
+
+            it 'exposes release info' do
+              request_job info: { platform: :darwin }
+
+              expect(response).to have_gitlab_http_status(:created)
+              expect(response.headers).not_to have_key('X-GitLab-Last-Update')
+              
+              expect(json_response['steps']).to eq(expected_steps)
+            end
+          end
+
           context 'when job is made for merge request' do
             let(:pipeline) { create(:ci_pipeline, source: :merge_request_event, project: project, ref: 'feature', merge_request: merge_request) }
             let!(:job) { create(:ci_build, pipeline: pipeline, name: 'spinach', ref: 'feature', stage: 'test', stage_idx: 0) }

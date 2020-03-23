@@ -357,6 +357,20 @@ FactoryBot.define do
       end
     end
 
+    trait :release_options do
+      options do
+        {
+          release: {
+            script: ["make changelog | tee release_changelog.txt"],
+            release: {
+              tag_name: "v0.06",
+              description: "./release_changelog.txt"
+            }
+          }
+        }
+      end
+    end
+
     trait :no_options do
       options { {} }
     end
