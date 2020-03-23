@@ -6,14 +6,20 @@ class UpdateBuildMinutesService < BaseService
     return unless build.complete?
     return unless build.duration
 
+    duration_with_cost_factors = accumulated_seconds(build)
+
     ProjectStatistics.update_counters(project_statistics,
-      shared_runners_seconds: build.duration)
+      shared_runners_seconds: duration_with_cost_factors)
 
     NamespaceStatistics.update_counters(namespace_statistics,
-      shared_runners_seconds: build.duration)
+      shared_runners_seconds: duration_with_cost_factors)
   end
 
   private
+
+  def accumulated_seconds(build)
+    build.duration
+  end
 
   def namespace_statistics
     namespace.namespace_statistics || namespace.create_namespace_statistics
