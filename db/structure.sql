@@ -4,6 +4,26 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 
+CREATE FUNCTION public.sync_users_bio_to_user_details() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  INSERT INTO
+      user_details (
+        user_id,
+        bio
+      )
+      VALUES (
+        new.id,
+        substring(COALESCE(new.bio, '') from 1 for 255)
+      )
+  ON CONFLICT (user_id)
+    DO UPDATE SET
+      "bio" = EXCLUDED."bio";
+  RETURN new;
+END;
+$$;
+
 CREATE TABLE public.abuse_reports (
     id integer NOT NULL,
     reporter_id integer,
@@ -6129,7 +6149,8 @@ ALTER SEQUENCE public.user_custom_attributes_id_seq OWNED BY public.user_custom_
 
 CREATE TABLE public.user_details (
     user_id bigint NOT NULL,
-    job_title character varying(200) DEFAULT ''::character varying NOT NULL
+    job_title character varying(200) DEFAULT ''::character varying NOT NULL,
+    bio character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 CREATE SEQUENCE public.user_details_user_id_seq
@@ -10172,6 +10193,8 @@ CREATE UNIQUE INDEX term_agreements_unique_index ON public.term_agreements USING
 
 CREATE INDEX tmp_build_stage_position_index ON public.ci_builds USING btree (stage_id, stage_idx) WHERE (stage_idx IS NOT NULL);
 
+CREATE INDEX tmp_idx_on_user_id_where_bio_is_filled ON public.users USING btree (id) WHERE ((COALESCE(bio, ''::character varying))::text IS DISTINCT FROM ''::text);
+
 CREATE INDEX undefined_vulnerabilities ON public.vulnerability_occurrences USING btree (id) WHERE (severity = 0);
 
 CREATE INDEX undefined_vulnerability ON public.vulnerabilities USING btree (id) WHERE (severity = 0);
@@ -10181,6 +10204,10 @@ CREATE UNIQUE INDEX users_security_dashboard_projects_unique_index ON public.use
 CREATE UNIQUE INDEX vulnerability_feedback_unique_idx ON public.vulnerability_feedback USING btree (project_id, category, feedback_type, project_fingerprint);
 
 CREATE UNIQUE INDEX vulnerability_occurrence_pipelines_on_unique_keys ON public.vulnerability_occurrence_pipelines USING btree (occurrence_id, pipeline_id);
+
+CREATE TRIGGER trigger_user_details_bio_sync_on_insert AFTER INSERT ON public.users FOR EACH ROW WHEN (((COALESCE(new.bio, ''::character varying))::text IS DISTINCT FROM ''::text)) EXECUTE PROCEDURE public.sync_users_bio_to_user_details();
+
+CREATE TRIGGER trigger_user_details_bio_sync_on_update AFTER UPDATE ON public.users FOR EACH ROW WHEN (((old.bio)::text IS DISTINCT FROM (new.bio)::text)) EXECUTE PROCEDURE public.sync_users_bio_to_user_details();
 
 ALTER TABLE ONLY public.epics
     ADD CONSTRAINT fk_013c9f36ca FOREIGN KEY (due_date_sourcing_epic_id) REFERENCES public.epics(id) ON DELETE SET NULL;
@@ -12708,5 +12735,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200318163148'),
 ('20200318164448'),
 ('20200318165448'),
-('20200319203901');
+('20200319203901'),
+('20200323071918'),
+('20200323072857'),
+('20200323074147'),
+('20200323080714');
 

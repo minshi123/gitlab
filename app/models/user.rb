@@ -1639,6 +1639,10 @@ class User < ApplicationRecord
     super.presence || build_user_detail
   end
 
+  def bio
+    user_detail.bio.presence || super
+  end
+
   def todos_limited_to(ids)
     todos.where(id: ids)
   end
