@@ -19,6 +19,21 @@ module API
       render_api_error!(e.message, 400)
     end
 
+    helpers do
+      def find_package_versions
+        @packages = authorized_user_project
+          .packages
+          .pypi
+          .has_version
+          .processed
+          .with_name(params[:package_name])
+
+        not_found!('Package') if @packages.empty?
+
+        @packages
+      end
+    end
+
     before do
       require_packages_enabled!
     end
@@ -59,6 +74,13 @@ module API
 
         get 'simple/*package_name', format: :txt do
           authorize_read_package!(authorized_user_project)
+
+          packages = find_package_versions
+          presenter = ::Packages::Pypi::PackagePresenter.new(packages, authorized_user_project)
+
+          content_type "text/html; charset=utf-8"
+          env['api.format'] = :binary
+          body presenter.body
         end
 
         desc 'The PyPi Package upload endpoint' do
