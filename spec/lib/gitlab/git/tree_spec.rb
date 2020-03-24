@@ -39,7 +39,7 @@ describe Gitlab::Git::Tree, :seed_helper do
       it { expect(dir.flat_path).to eq('encoding') }
 
       context :subdir do
-        let(:subdir) { Gitlab::Git::Tree.where(repository, SeedRepo::Commit::ID, 'files').first }
+        let(:subdir) { Gitlab::Git::Tree.find_by(repository, SeedRepo::Commit::ID, 'files') }
 
         it { expect(subdir).to be_kind_of Gitlab::Git::Tree }
         it { expect(subdir.id).to eq('a1e8f8d745cc87e3a9248358d9352bb7f9a0aeba') }
@@ -50,7 +50,7 @@ describe Gitlab::Git::Tree, :seed_helper do
       end
 
       context :subdir_file do
-        let(:subdir_file) { Gitlab::Git::Tree.where(repository, SeedRepo::Commit::ID, 'files/ruby').first }
+        let(:subdir_file) { Gitlab::Git::Tree.find_by(repository, SeedRepo::Commit::ID, 'files/ruby') }
 
         it { expect(subdir_file).to be_kind_of Gitlab::Git::Tree }
         it { expect(subdir_file.id).to eq('7e3e39ebb9b2bf433b4ad17313770fbe4051649c') }
@@ -63,7 +63,7 @@ describe Gitlab::Git::Tree, :seed_helper do
       context :flat_path do
         let(:filename) { 'files/flat/path/correct/content.txt' }
         let(:oid) { create_file(filename) }
-        let(:subdir_file) { Gitlab::Git::Tree.where(repository, oid, 'files/flat').first }
+        let(:subdir_file) { Gitlab::Git::Tree.find_by(repository, oid, 'files/flat') }
         let(:repository_rugged) { Rugged::Repository.new(File.join(SEED_STORAGE_PATH, TEST_REPO_PATH)) }
 
         it { expect(subdir_file.flat_path).to eq('files/flat/path/correct') }

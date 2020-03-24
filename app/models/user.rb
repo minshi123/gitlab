@@ -1311,7 +1311,7 @@ class User < ApplicationRecord
   def toggle_star(project)
     UsersStarProject.transaction do
       user_star_project = users_star_projects
-          .where(project: project, user: self).lock(true).first
+          .find_by(project: project, user: self).lock(true)
 
       if user_star_project
         user_star_project.destroy

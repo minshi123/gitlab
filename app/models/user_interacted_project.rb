@@ -26,7 +26,7 @@ class UserInteractedProject < ApplicationRecord
 
       cached_exists?(attributes) do
         transaction(requires_new: true) do
-          where(attributes).select(1).first || create!(attributes)
+          find_by(attributes).select(1) || create!(attributes)
           true # not caching the whole record here for now
         rescue ActiveRecord::RecordNotUnique
           # Note, above queries are not atomic and prone
