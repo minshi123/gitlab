@@ -49,7 +49,6 @@ review-gcp-cleanup:
   image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
   allow_failure: true
   before_script:
-    - source scripts/utils.sh
     - source scripts/review_apps/gcp_cleanup.sh
   script:
     - gcp_cleanup
