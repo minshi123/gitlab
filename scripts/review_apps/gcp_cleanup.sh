@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. scripts/utils.sh
+source scripts/utils.sh
 
 # These scripts require the following environment variables:
 # - GCP_REGION - e.g `us-central1`
