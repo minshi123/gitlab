@@ -22,7 +22,7 @@ describe OptionallySearch do
       it 'delegates to the search method' do
         expect(model)
           .to receive(:search)
-          .with('foo', {})
+          .with('foo')
 
         model.optionally_search('foo')
       end
