@@ -28,7 +28,6 @@ function delete_forwarding_rules() {
     return
   fi
 
-
   echoinfo "Deleting forwarding rules:" true
   echo "${@}"
 
