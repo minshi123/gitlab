@@ -2,6 +2,10 @@
 
 . scripts/utils.sh
 
+# These scripts require the following environment variables:
+# - GCP_REGION - e.g `us-central1`
+# - KUBE_NAMESPACE - e.g `review-apps-ee`
+
 function delete_firewall_rules() {
   echoinfo "Deleting firewall rules:" true
   echo "${@}"
@@ -18,9 +22,9 @@ function delete_forwarding_rules() {
   echo "${@}"
 
   if [[ ${DRY_RUN} = 1 ]]; then
-    echo "[DRY RUN] gcloud compute forwarding-rules delete -q" "${@}" "--region us-central1"
+    echo "[DRY RUN] gcloud compute forwarding-rules delete -q" "${@}" "--region ${GCP_REGION}"
   else
-    gcloud compute forwarding-rules delete -q "${@}" --region us-central1
+    gcloud compute forwarding-rules delete -q "${@}" --region "${GCP_REGION}"
   fi
 }
 
@@ -29,9 +33,9 @@ function delete_target_pools() {
   echo "${@}"
 
   if [[ ${DRY_RUN} = 1 ]]; then
-    echo "[DRY RUN] gcloud compute target-pools delete -q" "${@}" "--region us-central1"
+    echo "[DRY RUN] gcloud compute target-pools delete -q" "${@}" "--region ${GCP_REGION}"
   else
-    gcloud compute target-pools delete -q "${@}" --region us-central1
+    gcloud compute target-pools delete -q "${@}" --region "${GCP_REGION}"
   fi
 }
 
@@ -55,7 +59,7 @@ function get_related_firewall_rules() {
 function get_service_name_in_forwarding_rule() {
   local forwarding_rule=${1}
 
-  gcloud compute forwarding-rules describe "${forwarding_rule}" --region us-central1 --format "value(description)" | jq -r '.["kubernetes.io/service-name"]'
+  gcloud compute forwarding-rules describe "${forwarding_rule}" --region "${GCP_REGION}" --format "value(description)" | jq -r '.["kubernetes.io/service-name"]'
 }
 
 function forwarding_rule_k8s_service_exists() {
@@ -80,7 +84,7 @@ function gcp_cleanup() {
   local forwarding_rules_to_delete=()
   local http_health_checks_to_delete=()
 
-  for forwarding_rule in $(gcloud compute forwarding-rules list --filter="region:(us-central1)" --format "value(name)"); do
+  for forwarding_rule in $(gcloud compute forwarding-rules list --filter="region:(${GCP_REGION})" --format "value(name)"); do
     echoinfo "Inspecting forwarding rule ${forwarding_rule}" true
 
     if forwarding_rule_k8s_service_exists "${forwarding_rule}"; then
