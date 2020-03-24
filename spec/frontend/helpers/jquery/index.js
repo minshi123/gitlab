@@ -1,6 +1,5 @@
-/* eslint-disable import/no-commonjs */
-
-const $ = jest.requireActual('jquery');
+import $ from './expose';
+import '~/commons/jquery';
 
 // Fail tests for unmocked requests
 $.ajax = () => {
@@ -11,5 +10,4 @@ $.ajax = () => {
   throw err;
 };
 
-// jquery is not an ES6 module
-module.exports = $;
+export default $;
