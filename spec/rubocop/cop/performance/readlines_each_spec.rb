@@ -63,6 +63,12 @@ describe RuboCop::Cop::Performance::ReadlinesEach do
         expect(cop.offenses).not_to be_empty
       end
     end
+
+    it 'autocorrects `readlines.each` to `each_line`' do
+      expect(autocorrect_source('obj.readlines.each { |line| line }')).to(
+        eq('obj.each_line { |line| line }')
+      )
+    end
   end
 
   context 'when just using readlines without each' do

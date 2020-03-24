@@ -20,6 +20,12 @@ module RuboCop
           full_file_read_via_class?(node) { add_offense(node, location: :selector, message: MESSAGE) }
           full_file_read_via_instance?(node) { add_offense(node, location: :selector, message: MESSAGE) }
         end
+
+        def autocorrect(node)
+          lambda do |corrector|
+            corrector.replace(node.loc.expression, node.source.gsub('readlines.each', 'each_line'))
+          end
+        end
       end
     end
   end
