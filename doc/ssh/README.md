@@ -4,57 +4,35 @@ type: howto, reference
 
 # GitLab and SSH keys
 
-Git is a distributed version control system, which means you can work locally
-but you can also share or "push" your changes to other servers.
-Before you can push your changes to a GitLab server
-you need a secure communication channel for sharing information.
+Git is a distributed version control system, which means you can work locally.
+In addition, you can also share or "push" your changes to other servers.
+GitLab supports secure communication between Git and its servers using SSH keys.
 
 The SSH protocol provides this security and allows you to authenticate to the
 GitLab remote server without supplying your username or password each time.
 
-For a more detailed explanation of how the SSH protocol works, read
-[this nice tutorial by DigitalOcean](https://www.digitalocean.com/community/tutorials/understanding-the-ssh-encryption-and-connection-process).
-
 ## Requirements
 
-The only requirement is to have the OpenSSH client installed on your system. This
-comes pre-installed on GNU/Linux and macOS, but not on Windows.
+To support SSH, GitLab requires the installation of the OpenSSH client, which
+comes pre-installed on GNU/Linux and MacOS, but not on Windows.
 
-Depending on your Windows version, there are different methods to work with
-SSH keys.
+Make sure that your system includes SSH version 6.5 or newer, as that excludes the now insecure MD5 signature scheme. To check, run the following command:
 
-### Windows 10: Windows Subsystem for Linux
+```shell
+ssh -V
+```
 
-Starting with Windows 10, you can
-[install the Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-where you can run Linux distributions directly on Windows, without the overhead
-of a virtual machine. Once installed and set up, you'll have the Git and SSH
-clients at your disposal.
+While GitLab does [not support Microsoft Windows](../install/requirements.md#microsoft-windows), you can set up SSH keys on [that operating system](#options-for-microsoft-windows).
 
-### Windows 10, 8.1, and 7: Git for Windows
+## Options for SSH keys
 
-The easiest way to install Git and the SSH client on Windows 8.1 and Windows 7
-is [Git for Windows](https://gitforwindows.org). It provides a Bash
-emulation (Git Bash) used for running Git from the command line and the
-`ssh-keygen` command that is useful to create SSH keys as you'll learn below.
+GitLab supports the use of RSA, DSA, ECDSA, and ED25519 keys. DSA has fallen into disuse,
+as DSA keys are limited to 1024 bits. For a discussion of the differences, see the Red Hat documentation on
+[Making OpenSSH more secure](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_basic_system_settings/using-secure-communications-between-two-systems-with-openssh_configuring-basic-system-settings#making-openssh-more-secure_using-secure-communications-between-two-systems-with-openssh).
 
-NOTE: **Alternative tools:**
-Although not explored in this page, you can use some alternative tools.
-[Cygwin](https://www.cygwin.com) is a large collection of GNU and open source
-tools which provide functionality similar to a Unix distribution.
-[PuttyGen](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
-provides a graphical user interface to [create SSH keys](https://tartarus.org/~simon/putty-snapshots/htmldoc/Chapter8.html#pubkey-puttygen).
+Our documentation focuses on the use of ED25519 and RSA keys.
 
-## Types of SSH keys and which to choose
-
-GitLab supports RSA, DSA, ECDSA, and ED25519 keys. Their difference lies on
-the signing algorithm, and some of them have advantages over the others. For
-more information, you can read this
-[nice article on ArchWiki](https://wiki.archlinux.org/index.php/SSH_keys#Choosing_the_authentication_key_type).
-We'll focus on ED25519 and RSA here.
-
-NOTE: **Note:**
-As an admin, you can [restrict which keys should be permitted and their minimum length](../security/ssh_keys_restrictions.md).
+Administrators can [restrict which keys should be permitted and their minimum length](../security/ssh_keys_restrictions.md).
 By default, all keys are permitted, which is also the case for
 [GitLab.com](../user/gitlab_com/index.md#ssh-host-keys-fingerprints).
 
@@ -86,7 +64,7 @@ default.
 ## Generating a new SSH key pair
 
 Before creating an SSH key pair, make sure to understand the
-[different types of keys](#types-of-ssh-keys-and-which-to-choose).
+[different types of keys](#options-for-ssh-keys).
 
 To create a new SSH key pair:
 
@@ -454,6 +432,19 @@ Git user has default SSH configuration? ... no
 
 Remove the custom configuration as soon as you're able to. These customizations
 are *explicitly not supported* and may stop working at any time.
+
+### Options for Microsoft Windows
+
+If you're running Windows 10, the [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+supports the installation of different Linux distributions, which include the Git and SSH clients.
+
+For current versions of Windows, you can also install the Git and SSH clients with
+[Git for Windows](https://gitforwindows.org).
+
+Alternative tools include:
+
+- [Cygwin](https://www.cygwin.com)
+- [PuttyGen](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
 
 ## Troubleshooting
 
