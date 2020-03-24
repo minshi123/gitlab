@@ -104,7 +104,11 @@ describe('Vulnerability management app', () => {
             feedback_type: 'issue',
             category: vulnerability.report_type,
             project_fingerprint: dataset.projectFingerprint,
-            vulnerability_data: { ...vulnerability, category: vulnerability.report_type, vulnerability_id: vulnerability.id },
+            vulnerability_data: {
+              ...vulnerability,
+              category: vulnerability.report_type,
+              vulnerability_id: vulnerability.id,
+            },
           },
         });
         expect(spy).toHaveBeenCalledWith(issueUrl);
