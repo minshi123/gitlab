@@ -25,9 +25,14 @@ module ApprovalRules
 
       return params unless params.key?(:approval_rules_attributes)
 
+      source_rule_ids = []
+
       params[:approval_rules_attributes].each do |rule_attributes|
+        source_rule_ids << rule_attributes[:approval_project_rule_id].presence
         handle_rule(rule_attributes)
       end
+
+      append_user_defined_inapplicable_rules(source_rule_ids.compact)
 
       params
     end
@@ -112,6 +117,30 @@ module ApprovalRules
         source = updating? ? target : project
         source.approval_rules.includes(:groups).index_by(&:id) # rubocop: disable CodeReuse/ActiveRecord
       end
+    end
+
+    # Append inapplicable rules on create so they're still associated to the MR
+    # and will be available when the MR's target branch changes.
+    def append_user_defined_inapplicable_rules(source_rule_ids)
+      return if updating?
+      return unless project.scoped_approval_rules_enabled? && project.multiple_approval_rules_available?
+
+      project
+        .visible_user_defined_inapplicable_rules(params[:target_branch])
+        .each do |rule|
+          # Check if rule is already set as a source rule in one of the rules
+          # from params to prevent duplicates
+          next if source_rule_ids.include?(rule.id)
+
+          params[:approval_rules_attributes] << {
+            name: rule.name,
+            approval_project_rule_id: rule.id,
+            user_ids: rule.user_ids,
+            group_ids: rule.group_ids,
+            approvals_required: rule.approvals_required,
+            rule_type: rule.rule_type
+          }
+        end
     end
   end
 end
