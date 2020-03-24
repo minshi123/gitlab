@@ -39,8 +39,12 @@ module EE
 
           def geo_proxy_git_push_ssh_route?
             routes = ::Gitlab::Middleware::ReadOnly::API_VERSIONS.map do |version|
-              %W(/api/v#{version}/geo/proxy_git_push_ssh/info_refs
-                 /api/v#{version}/geo/proxy_git_push_ssh/push)
+              %W(
+                /api/v#{version}/geo/proxy_git_push_ssh/receive_pack
+                /api/v#{version}/geo/proxy_git_push_ssh/push
+                /api/v#{version}/geo/proxy_git_clone_ssh/info_refs_upload_pack
+                /api/v#{version}/geo/proxy_git_clone_ssh/upload_pack
+              )
             end
 
             routes.flatten.include?(request.path)

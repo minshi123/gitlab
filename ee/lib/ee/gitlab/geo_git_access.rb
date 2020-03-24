@@ -19,7 +19,7 @@ module EE
       private
 
       def custom_action_for?(cmd)
-        return unless receive_pack?(cmd) # git push
+        # return unless receive_pack?(cmd) # git push
         return unless ::Gitlab::Database.read_only?
 
         ::Gitlab::Geo.secondary_with_primary?
@@ -87,9 +87,13 @@ module EE
 
       def custom_action_api_endpoints
         [
-          api_v4_geo_proxy_git_push_ssh_info_refs_path,
-          api_v4_geo_proxy_git_push_ssh_push_path
+         api_v4_geo_proxy_git_clone_ssh_info_refs_upload_pack_path,
+         api_v4_geo_proxy_git_clone_ssh_upload_pack_path
         ]
+        # [
+        #   api_v4_geo_proxy_git_push_ssh_receive_pack_path,
+        #   api_v4_geo_proxy_git_push_ssh_push_path
+        # ]
       end
     end
   end

@@ -56,6 +56,52 @@ module API
         end
       end
 
+      # git clone over SSH secondary -> primary related proxying logic
+      #
+      resource 'proxy_git_clone_ssh' do
+        format :json
+
+        # FIXME:
+        #
+        params do
+          requires :secret_token, type: String
+          requires :data, type: Hash do
+            requires :gl_id, type: String
+            requires :primary_repo, type: String
+          end
+        end
+        post 'info_refs_upload_pack' do
+          authenticate_by_gitlab_shell_token!
+          params.delete(:secret_token)
+
+          response = Gitlab::Geo::GitPushSSHProxy.new(params['data']).info_refs_upload_pack
+          Rails.logger.error("ASH: info_refs_upload_pack - params=[#{params}] code=[#{response.code}] body=[#{response.body}]")
+          Rails.logger.error("ASH:")
+          status(response.code)
+          response.body
+        end
+
+        # FIXME:
+        #
+        params do
+          requires :secret_token, type: String
+          requires :data, type: Hash do
+            requires :gl_id, type: String
+            requires :primary_repo, type: String
+          end
+          requires :output, type: String, desc: 'Output from git-upload-pack'
+        end
+        post 'upload_pack' do
+          authenticate_by_gitlab_shell_token!
+          params.delete(:secret_token)
+
+          response = Gitlab::Geo::GitPushSSHProxy.new(params['data']).upload_pack(params['output'])
+          Rails.logger.error("ASH: upload_pack - params=[#{params}] code=[#{response.code}] body=[#{response.body}]")
+          status(response.code)
+          response.body
+        end
+      end
+
       # git push over SSH secondary -> primary related proxying logic
       #
       resource 'proxy_git_push_ssh' do
@@ -71,11 +117,11 @@ module API
             requires :primary_repo, type: String
           end
         end
-        post 'info_refs' do
+        post 'receive_pack' do
           authenticate_by_gitlab_shell_token!
           params.delete(:secret_token)
 
-          response = Gitlab::Geo::GitPushSSHProxy.new(params['data']).info_refs
+          response = Gitlab::Geo::GitPushSSHProxy.new(params['data']).receive_pack
           status(response.code)
           response.body
         end
