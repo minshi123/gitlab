@@ -9,29 +9,29 @@ module Snippets
     def execute
       filter_spam_check_params
 
-      snippet = if project
-                  project.snippets.build(params)
-                else
-                  PersonalSnippet.new(params)
-                end
+      @snippet = if project
+                   project.snippets.build(params)
+                 else
+                   PersonalSnippet.new(params)
+                 end
 
-      unless Gitlab::VisibilityLevel.allowed_for?(current_user, snippet.visibility_level)
-        deny_visibility_level(snippet)
+      unless Gitlab::VisibilityLevel.allowed_for?(current_user, @snippet.visibility_level)
+        deny_visibility_level(@snippet)
 
-        return snippet_error_response(snippet, 403)
+        return snippet_error_response(@snippet, 403)
       end
 
-      snippet.author = current_user
+      @snippet.author = current_user
 
-      spam_check(snippet, current_user)
+      spam_check(@snippet, current_user)
 
-      if save_and_commit(snippet)
-        UserAgentDetailService.new(snippet, @request).create
+      if save_and_commit(@snippet)
+        UserAgentDetailService.new(@snippet, @request).create
         Gitlab::UsageDataCounters::SnippetCounter.count(:create)
 
-        ServiceResponse.success(payload: { snippet: snippet } )
+        ServiceResponse.success(payload: { snippet: @snippet } )
       else
-        snippet_error_response(snippet, 400)
+        snippet_error_response(@snippet, 400)
       end
     end
 
@@ -49,7 +49,10 @@ module Snippets
 
       snippet_saved
     rescue => e # Rescuing all because we can receive Creation exceptions, GRPC exceptions, Git exceptions, ...
-      snippet.errors.add(:base, e.message)
+      # Reassign a dupe so we don't return the deleted snippet to the controller
+      @snippet = snippet.dup
+      @snippet.errors.add(:base, e.message)
+
       log_error(e.message)
 
       # If the commit action failed we need to remove the repository if exists
