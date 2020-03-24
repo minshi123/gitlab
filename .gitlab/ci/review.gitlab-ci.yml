@@ -47,7 +47,7 @@ review-build-cng:
     - .default-retry
     - .review:rules:mr-and-schedule-auto-if-frontend-manual-otherwise
   image: ruby:2.6-alpine
-  stage: review-prepare
+  stage: review
   before_script:
     - source scripts/utils.sh
     - install_api_client_dependencies_with_apk
@@ -59,7 +59,7 @@ review-build-cng:
     - BUILD_TRIGGER_TOKEN=$REVIEW_APPS_BUILD_TRIGGER_TOKEN ./scripts/trigger-build cng
     # When the job is manual, review-deploy is also manual and we don't want people
     # to have to manually start the jobs in sequence, so we do it for them.
-    - '[ -z $CI_JOB_MANUAL ] || play_job "review-deploy"'
+    - play_job "review-deploy"
 
 .review-workflow-base:
   extends:
@@ -79,7 +79,7 @@ review-build-cng:
 review-deploy:
   extends:
     - .review-workflow-base
-    - .review:rules:mr-and-schedule-auto-if-frontend-manual-otherwise
+    - .review:rules:review-deploy-manual
   stage: review
   dependencies: []
   resource_group: "review/${CI_COMMIT_REF_NAME}"
