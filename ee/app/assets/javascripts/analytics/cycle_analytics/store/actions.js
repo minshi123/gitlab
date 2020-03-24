@@ -84,7 +84,7 @@ const fetchStageMedian = (currentGroupPath, stageId, params) =>
 export const fetchStageMedianValues = ({ state, dispatch, getters }) => {
   const {
     currentGroupPath,
-    cycleAnalyticsRequestParams: { created_after, created_before },
+    cycleAnalyticsRequestParams: { created_after, created_before, project_ids },
   } = getters;
 
   const { stages } = state;
@@ -92,6 +92,7 @@ export const fetchStageMedianValues = ({ state, dispatch, getters }) => {
     group_id: currentGroupPath,
     created_after,
     created_before,
+    project_ids,
   };
 
   dispatch('requestStageMedianValues');
@@ -183,7 +184,7 @@ export const receiveSummaryDataSuccess = ({ commit }, data) =>
 
 export const fetchSummaryData = ({ state, dispatch, getters }) => {
   const {
-    cycleAnalyticsRequestParams: { created_after, created_before },
+    cycleAnalyticsRequestParams: { created_after, created_before, project_ids },
   } = getters;
   dispatch('requestSummaryData');
 
@@ -191,7 +192,7 @@ export const fetchSummaryData = ({ state, dispatch, getters }) => {
     selectedGroup: { fullPath },
   } = state;
 
-  return Api.cycleAnalyticsSummaryData({ group_id: fullPath, created_after, created_before })
+  return Api.cycleAnalyticsSummaryData({ group_id: fullPath, created_after, created_before, project_ids })
     .then(({ data }) => dispatch('receiveSummaryDataSuccess', data))
     .catch(error =>
       handleErrorOrRethrow({ error, action: () => dispatch('receiveSummaryDataError', error) }),
@@ -526,7 +527,7 @@ export const fetchDurationMedianData = ({ state, dispatch }) => {
     selectedGroup: { fullPath },
     startDate,
     endDate,
-    selectedProjectIds,
+    selectedProjects,
   } = state;
 
   const offsetValue = getDayDifference(new Date(startDate), new Date(endDate));
@@ -541,7 +542,7 @@ export const fetchDurationMedianData = ({ state, dispatch }) => {
         group_id: fullPath,
         created_after: dateFormat(offsetCreatedAfter, dateFormats.isoDate),
         created_before: dateFormat(offsetCreatedBefore, dateFormats.isoDate),
-        project_ids: selectedProjectIds,
+        project_ids: selectedProjects.map(project => project.id),
       }).then(({ data }) => ({
         slug,
         selected: true,
