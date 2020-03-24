@@ -3207,20 +3207,31 @@ describe MergeRequest do
             expect(notification_service).to receive(:merge_request_unmergeable).with(subject).once
             expect(todo_service).to receive(:merge_request_became_unmergeable).with(subject).once
 
-            subject.mark_as_unmergeable
-            subject.mark_as_unchecked
-            subject.mark_as_unmergeable
+            subject.mark_as_unmergeable!
+            subject.mark_as_unchecked!
+            subject.mark_as_unmergeable!
           end
 
           it 'notifies conflict, whenever newly unmergeable' do
             expect(notification_service).to receive(:merge_request_unmergeable).with(subject).twice
             expect(todo_service).to receive(:merge_request_became_unmergeable).with(subject).twice
 
-            subject.mark_as_unmergeable
-            subject.mark_as_unchecked
-            subject.mark_as_mergeable
-            subject.mark_as_unchecked
-            subject.mark_as_unmergeable
+            subject.mark_as_unmergeable!
+            subject.mark_as_unchecked!
+            subject.mark_as_mergeable!
+            subject.mark_as_unchecked!
+            subject.mark_as_unmergeable!
+          end
+
+          it 'notifies conflict, whenever newly unmergeable with enabled async mergability check' do
+            expect(notification_service).to receive(:merge_request_unmergeable).with(subject).once
+            expect(todo_service).to receive(:merge_request_became_unmergeable).with(subject).once
+
+            subject.mark_as_checking!
+            subject.mark_as_unmergeable!
+            subject.mark_as_unchecked!
+            subject.mark_as_checking!
+            subject.mark_as_unmergeable!
           end
 
           it 'does not notify whenever merge request is newly unmergeable due to other reasons' do
@@ -3229,7 +3240,7 @@ describe MergeRequest do
             expect(notification_service).not_to receive(:merge_request_unmergeable)
             expect(todo_service).not_to receive(:merge_request_became_unmergeable)
 
-            subject.mark_as_unmergeable
+            subject.mark_as_unmergeable!
           end
         end
       end
@@ -3242,7 +3253,7 @@ describe MergeRequest do
             expect(notification_service).not_to receive(:merge_request_unmergeable)
             expect(todo_service).not_to receive(:merge_request_became_unmergeable)
 
-            subject.mark_as_unmergeable
+            subject.mark_as_unmergeable!
           end
         end
       end

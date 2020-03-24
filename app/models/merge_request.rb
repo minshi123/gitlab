@@ -167,20 +167,22 @@ class MergeRequest < ApplicationRecord
     end
 
     event :mark_as_checking do
-      transition [:unchecked, :cannot_be_merged_recheck] => :checking
+      transition :unchecked => :checking
+      transition :cannot_be_merged_recheck => :rechecking
     end
 
     event :mark_as_mergeable do
-      transition [:unchecked, :cannot_be_merged_recheck, :checking] => :can_be_merged
+      transition [:unchecked, :cannot_be_merged_recheck, :checking, :rechecking] => :can_be_merged
     end
 
     event :mark_as_unmergeable do
-      transition [:unchecked, :cannot_be_merged_recheck, :checking] => :cannot_be_merged
+      transition [:unchecked, :cannot_be_merged_recheck, :checking, :rechecking] => :cannot_be_merged
     end
 
     state :unchecked
     state :cannot_be_merged_recheck
     state :checking
+    state :rechecking
     state :can_be_merged
     state :cannot_be_merged
 
@@ -189,7 +191,7 @@ class MergeRequest < ApplicationRecord
     end
 
     # rubocop: disable CodeReuse/ServiceClass
-    after_transition unchecked: :cannot_be_merged do |merge_request, transition|
+    after_transition [:unchecked, :checking] => :cannot_be_merged do |merge_request, transition|
       if merge_request.notify_conflict?
         NotificationService.new.merge_request_unmergeable(merge_request)
         TodoService.new.merge_request_became_unmergeable(merge_request)
