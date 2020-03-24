@@ -523,7 +523,7 @@ For ordered lists, use three spaces for each level of indentation:
 You can nest full lists inside other lists using the same rules as above. If you wish
 to mix types, that is also possible, as long as you don't mix items at the same level:
 
-```
+```markdown
 1. Ordered list item one.
 1. Ordered list item two.
    - Nested unordered list item one.
@@ -1361,7 +1361,7 @@ on this document. Further explanation is given below.
 
 - Every method must have the REST API request. For example:
 
-  ```
+  ```plaintext
   GET /projects/:id/repository/branches
   ```
 
