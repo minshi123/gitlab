@@ -84,7 +84,7 @@ export default {
             feedback_type: 'issue',
             category: this.vulnerability.report_type,
             project_fingerprint: this.projectFingerprint,
-            vulnerability_data: { ...this.vulnerability, category: this.vulnerability.report_type },
+            vulnerability_data: { ...this.vulnerability, category: this.vulnerability.report_type, vulnerability_id: this.vulnerability.id },
           },
         })
         .then(({ data: { issue_url } }) => {
