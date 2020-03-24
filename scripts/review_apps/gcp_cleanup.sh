@@ -7,6 +7,11 @@
 # - KUBE_NAMESPACE - e.g `review-apps-ee`
 
 function delete_firewall_rules() {
+  if [[ ${#@} -eq 0 ]]; then
+    echoinfo "No firewall rules to be deleted" true
+    return
+  fi
+
   echoinfo "Deleting firewall rules:" true
   echo "${@}"
 
@@ -18,6 +23,12 @@ function delete_firewall_rules() {
 }
 
 function delete_forwarding_rules() {
+  if [[ ${#@} -eq 0 ]]; then
+    echoinfo "No forwarding rules to be deleted" true
+    return
+  fi
+
+
   echoinfo "Deleting forwarding rules:" true
   echo "${@}"
 
@@ -29,6 +40,11 @@ function delete_forwarding_rules() {
 }
 
 function delete_target_pools() {
+  if [[ ${#@} -eq 0 ]]; then
+    echoinfo "No target pools to be deleted" true
+    return
+  fi
+
   echoinfo "Deleting target pools:" true
   echo "${@}"
 
@@ -40,6 +56,11 @@ function delete_target_pools() {
 }
 
 function delete_http_health_checks() {
+  if [[ ${#@} -eq 0 ]]; then
+    echoinfo "No http health checks to be deleted" true
+    return
+  fi
+
   echoinfo "Deleting http health checks:" true
   echo "${@}"
 
@@ -70,7 +91,7 @@ function forwarding_rule_k8s_service_exists() {
     return 0 # this prevents `review-apps-ee` pipeline from deleting `review-apps-ce` resources and vice versa
   fi
 
-  local service_name=$(service_name | sed -e "s/${namespace}\///g")
+  local service_name=$(echo "${namespaced_service_name}" | sed -e "s/${namespace}\///g")
 
   kubectl get svc "${service_name}" -n "${namespace}" >/dev/null 2>&1
   local status=$?
