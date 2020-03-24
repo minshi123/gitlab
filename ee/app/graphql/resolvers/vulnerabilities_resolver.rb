@@ -39,12 +39,22 @@ module Resolvers
       # make sure it's loaded and not `nil` before continuing.
 
       strong_memoize(:vuln) do
-        object.respond_to?(:sync) ? object.sync : object
+        if instance_security_dashboard_request?
+          InstanceSecurityDashboard.new(current_user)
+        elsif object.respond_to?(:sync)
+          object.sync
+        else
+          object
+        end
       end
     end
 
     def vulnerabilities(filters)
       Security::VulnerabilitiesFinder.new(vulnerable, filters).execute
+    end
+
+    def instance_security_dashboard_request?
+      object.nil? && current_user.present?
     end
   end
 end
