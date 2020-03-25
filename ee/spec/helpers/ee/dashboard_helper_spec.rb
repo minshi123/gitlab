@@ -10,23 +10,9 @@ describe DashboardHelper, type: :helper do
   describe '#dashboard_nav_links' do
     before do
       allow(helper).to receive(:current_user).and_return(user)
-
-      stub_feature_flags(group_level_cycle_analytics: false)
     end
 
     describe 'analytics' do
-      context 'when at least one analytics feature is enabled' do
-        before do
-          enable_only_one_analytics_feature_flag
-
-          stub_user_permissions_for(:analytics, false)
-        end
-
-        it 'includes analytics' do
-          expect(helper.dashboard_nav_links).to include(:analytics)
-        end
-      end
-
       context 'when all analytics features are disabled' do
         before do
           disable_all_analytics_feature_flags
@@ -239,15 +225,7 @@ describe DashboardHelper, type: :helper do
 
   describe 'analytics_nav_url' do
     before do
-      stub_feature_flags(group_level_cycle_analytics: false)
-
       allow(helper).to receive(:current_user).and_return(user)
-    end
-
-    context 'when any analytics features are enabled' do
-      it 'returns the analytics root path' do
-        expect(helper.analytics_nav_url).to match(analytics_root_path)
-      end
     end
 
     context 'when analytics features are disabled' do
