@@ -68,7 +68,7 @@ Please take care that you only let Prettier format the same file types as the gl
   "prettier.disableLanguages": [
       "json",
       "markdown"
-  ],
+  ]
 ```
 
 ### Yarn Script
