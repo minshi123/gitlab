@@ -47,6 +47,7 @@ class Service < ApplicationRecord
   scope :without_defaults, -> { where(default: false) }
   scope :by_type, -> (type) { where(type: type) }
   scope :templates, -> { where(template: true, type: available_services_types) }
+  scope :instances, -> { where(instance: true, type: available_services_types) }
 
   scope :push_hooks, -> { where(push_events: true, active: true) }
   scope :tag_push_hooks, -> { where(tag_push_events: true, active: true) }
@@ -263,17 +264,24 @@ class Service < ApplicationRecord
   # Find all service templates; if some of them do not exist, create them
   # within a transaction to perform the lowest possible SQL queries.
   def self.find_or_create_templates
-    create_nonexistent_templates
+    create_nonexistent('template')
     templates
   end
 
-  private_class_method def self.create_nonexistent_templates
-    nonexistent_services = available_services_types - templates.map(&:type)
+  # Find all instance-level services; if some of them do not exist, create
+  # them within a transaction to perform the lowest possible SQL queries.
+  def self.find_or_create_instances
+    create_nonexistent('instance')
+    instances
+  end
+
+  private_class_method def self.create_nonexistent(attribute)
+    nonexistent_services = available_services_types - public_send("#{attribute}s").map(&:type) # rubocop:disable GitlabSecurity/PublicSend
     return if nonexistent_services.empty?
 
     transaction do
       nonexistent_services.each do |service_type|
-        service_type.constantize.create(template: true)
+        service_type.constantize.create(attribute => true)
       end
     end
   end

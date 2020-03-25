@@ -12,7 +12,7 @@
       %th{ role: 'columnheader', scope: 'col', 'aria-colindex': 4 }= _('Last updated')
 
   %tbody{ role: 'rowgroup' }
-    - @integrations&.each do |integration|
+    - @integrations.each do |integration|
       %tr{ role: 'row' }
         %td{ role: 'cell', 'aria-colindex': 1 }
           = boolean_to_icon integration.activated?
@@ -22,5 +22,4 @@
         %td.d-none.d-sm-block{ role: 'cell', 'aria-colindex': 3 }
           = integration.description
         %td{ role: 'cell', 'aria-colindex': 4 }
-          - if integration.updated_at.present?
-            = time_ago_with_tooltip integration.updated_at
+          = time_ago_with_tooltip integration.updated_at

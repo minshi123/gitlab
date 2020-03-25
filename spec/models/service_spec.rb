@@ -149,6 +149,55 @@ describe Service do
     end
   end
 
+  describe '.find_or_create_instances' do
+    shared_examples 'retrieves service instances' do
+      it 'returns the available service instances' do
+        expect(Service.find_or_create_instances.pluck(:type)).to match_array(Service.available_services_types)
+      end
+    end
+
+    it 'creates service instances' do
+      expect { Service.find_or_create_instances }.to change { Service.count }.from(0).to(Service.available_services_names.size)
+    end
+
+    it_behaves_like 'retrieves service instances'
+
+    context 'with all existing instances' do
+      before do
+        Service.insert_all(
+          Service.available_services_types.map { |type| { instance: true, type: type } }
+        )
+      end
+
+      it 'does not create service instances' do
+        expect { Service.find_or_create_instances }.to change { Service.count }.by(0)
+      end
+
+      it_behaves_like 'retrieves service instances'
+
+      context 'with a previous existing service (Previous) and a new service (Asana)' do
+        before do
+          Service.insert(type: 'PreviousService', instance: true)
+          Service.delete_by(type: 'AsanaService', instance: true)
+        end
+
+        it_behaves_like 'retrieves service instances'
+      end
+    end
+
+    context 'with a few existing instances' do
+      before do
+        create(:jira_service, :instance)
+      end
+
+      it 'creates the rest of the service instances' do
+        expect { Service.find_or_create_instances }.to change { Service.count }.from(1).to(Service.available_services_names.size)
+      end
+
+      it_behaves_like 'retrieves service instances'
+    end
+  end
+
   describe 'template' do
     let(:project) { create(:project) }
 
