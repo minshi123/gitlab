@@ -56,6 +56,7 @@ export default {
       },
       filesToBeSaved: [],
       selectedDesigns: [],
+      event: null,
     };
   },
   computed: {
@@ -214,16 +215,44 @@ export default {
 
       this.onUploadDesign(files);
     },
+    getFilename(e) {
+      let value;
+      if (window.clipboardData && window.clipboardData.getData) {
+        value = window.clipboardData.getData('Text');
+      } else if (e.clipboardData && e.clipboardData.getData) {
+        value = e.clipboardData.getData('text/plain');
+      }
+      value = value.split('\r');
+      return value[0];
+    },
+    onDesignPaste(event) {
+      const { clipboardData } = event;
+      if (clipboardData && clipboardData.items) {
+        event.preventDefault();
+        const image = clipboardData.items[0];
+        const filename = this.getFilename(event) || 'image.png';
+        const file = clipboardData.files[0];
+        const newFile = new File([file], filename);
+        this.onUploadDesign([newFile]);
+      }
+    },
   },
   beforeRouteUpdate(to, from, next) {
     this.selectedDesigns = [];
     next();
+  },
+  mounted() {
+    document.addEventListener('paste', this.onDesignPaste);
+  },
+  beforeDestroy() {
+    document.removeEventListener('paste', this.onDesignPaste);
   },
 };
 </script>
 
 <template>
   <div>
+    <input type="text" />
     <header v-if="showToolbar" class="row-content-block border-top-0 p-2 d-flex">
       <div class="d-flex justify-content-between align-items-center w-100">
         <design-version-dropdown />
