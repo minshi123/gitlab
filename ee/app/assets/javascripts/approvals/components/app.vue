@@ -29,9 +29,19 @@ export default {
     removeModalId() {
       return `${this.settings.prefix}-approvals-remove-modal`;
     },
+    isMrCreatePath() {
+      return this.settings.prefix === 'mr-edit' && !this.settings.mrSettingsPath;
+    },
   },
-  created() {
-    this.fetchRules();
+  mounted() {
+    if (this.isMrCreatePath) {
+      const targetBranchEl = document.querySelector('#js-target-branch-title');
+
+      if (targetBranchEl?.textContent) {
+        return this.fetchRules(targetBranchEl.textContent);
+      }
+    }
+    return this.fetchRules();
   },
   methods: {
     ...mapActions(['fetchRules']),
