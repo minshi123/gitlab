@@ -113,6 +113,12 @@ Support for private projects is currently not available for GitLab.com;
 follow the epic [&2201](https://gitlab.com/groups/gitlab-org/-/epics/2201)
 for updates.
 
+## Troubleshooting
+
+### Sourcegraph isn't working
+
+If you enabled Sourcegraph for your project but still it doesn't looklike it's working, it might be because Sourcegraph has not indexed theproject yet. You can check for Sourcegraph's availability of your project by visiting `https://sourcegraph.com/gitlab.com/<project-path>`replacing `<project-path>` with the path to your GitLab project.
+
 ## Sourcegraph and Privacy
 
 From Sourcegraph's [extension documentation](https://docs.sourcegraph.com/integration/browser_extension#privacy) which is the
