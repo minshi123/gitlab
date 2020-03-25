@@ -249,6 +249,7 @@ Seat Link is mandatory because we need the user count data to enable prorated bi
 
 - Date
 - Historical maximum user count
+- Active users count
 - License key
 
 Here is an example of the POST request:
@@ -290,11 +291,36 @@ TjJ4eVlVUkdkWEJtDQpkSHByYWpreVJrcG9UVlo0Y0hKSU9URndiV2RzVFdO
 VlhHNXRhVmszTkV0SVEzcEpNMWRyZEVoRU4ydHINCmRIRnFRVTlCVUVVM1pV
 SlRORE4xUjFaYVJGb3JlWGM5UFZ4dUlpd2lhWFlpt2lKV00yRnNVbk5RTjJk
 Sg0KU1hNMGExaE9SVGR2V2pKQlBUMWNiaUo5DQo=',
-  max_historical_user_count: 10
+  max_historical_user_count: 10,
+  active_users: 6
 }
 ```
 
 For air-gapped or closed network customers, the existing [true-up model](#users-over-license) will be used. Prorated charges are not possible without user count data.
+
+#### Deactivate Seat Link
+
+Seat Link is opt-out. If you want to deactivate this feature, go to
+the "Metrics and profiling" Settings page of your administration panel and
+uncheck the Seat Link checkbox.
+
+To disable the Seat Link and prevent it from being configured in future through
+the administration panel, Omnibus installs can set the following in
+[`gitlab.rb`](https://docs.gitlab.com/omnibus/settings/configuration.html#configuration-options):
+
+```ruby
+gitlab_rails['seat_link_enabled'] = false
+```
+
+And source installs can set the following in `gitlab.yml`:
+
+```yaml
+production: &base
+  # ...
+  gitlab:
+    # ...
+    seat_link_enabled: false
+```
 
 ### Renew or change a GitLab.com subscription
 
