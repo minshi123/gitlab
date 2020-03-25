@@ -9,12 +9,22 @@ describe Gitlab::ImportExport::Project::LegacyTreeSaver do
     let(:export_path) { "#{Dir.tmpdir}/project_tree_saver_spec" }
     let(:user) { create(:user) }
     let!(:project) { setup_project }
+    let(:serializer) { instance_double('Gitlab::ImportExport::FastHashSerializer') }
+    let(:reader) { instance_double('Gitlab::ImportExport::Reader') }
+    let(:project_tree) do
+      {
+        include: [{ issues: { include: [] } }],
+        preload: { issues: nil }
+      }
+    end
 
     before do
       project.add_maintainer(user)
       allow_any_instance_of(Gitlab::ImportExport).to receive(:storage_path).and_return(export_path)
       allow_any_instance_of(MergeRequest).to receive(:source_branch_sha).and_return('ABCD')
       allow_any_instance_of(MergeRequest).to receive(:target_branch_sha).and_return('DCBA')
+      expect(Gitlab::ImportExport::Reader).to receive(:new).with(shared: shared).and_return(reader)
+      expect(reader).to receive(:project_tree).and_return(project_tree)
     end
 
     after do
@@ -25,49 +35,15 @@ describe Gitlab::ImportExport::Project::LegacyTreeSaver do
       expect(project_tree_saver.save).to be true
     end
 
-    context ':export_fast_serialize feature flag checks' do
-      before do
-        expect(Gitlab::ImportExport::Reader).to receive(:new).with(shared: shared).and_return(reader)
-        expect(reader).to receive(:project_tree).and_return(project_tree)
-      end
+    it 'uses FastHashSerializer' do
+      expect(Gitlab::ImportExport::FastHashSerializer)
+        .to receive(:new)
+        .with(project, project_tree)
+        .and_return(serializer)
 
-      let(:serializer) { instance_double('Gitlab::ImportExport::FastHashSerializer') }
-      let(:reader) { instance_double('Gitlab::ImportExport::Reader') }
-      let(:project_tree) do
-        {
-          include: [{ issues: { include: [] } }],
-          preload: { issues: nil }
-        }
-      end
+      expect(serializer).to receive(:execute)
 
-      context 'when :export_fast_serialize feature is enabled' do
-        before do
-          stub_feature_flags(export_fast_serialize: true)
-        end
-
-        it 'uses FastHashSerializer' do
-          expect(Gitlab::ImportExport::FastHashSerializer)
-            .to receive(:new)
-            .with(project, project_tree)
-            .and_return(serializer)
-
-          expect(serializer).to receive(:execute)
-
-          project_tree_saver.save
-        end
-      end
-
-      context 'when :export_fast_serialize feature is disabled' do
-        before do
-          stub_feature_flags(export_fast_serialize: false)
-        end
-
-        it 'is serialized via built-in `as_json`' do
-          expect(project).to receive(:as_json).with(project_tree)
-
-          project_tree_saver.save
-        end
-      end
+      project_tree_saver.save
     end
 
     # It is mostly duplicated in
