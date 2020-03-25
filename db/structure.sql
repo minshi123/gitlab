@@ -8602,6 +8602,8 @@ CREATE INDEX index_ci_builds_on_commit_id_and_type_and_name_and_ref ON public.ci
 
 CREATE INDEX index_ci_builds_on_commit_id_and_type_and_ref ON public.ci_builds USING btree (commit_id, type, ref);
 
+CREATE INDEX index_ci_builds_on_name_and_type_eq_ci_build ON public.ci_builds USING btree (name) WHERE ((type)::text = 'Ci::Build'::text);
+
 CREATE INDEX index_ci_builds_on_name_for_security_reports_values ON public.ci_builds USING btree (name) WHERE ((name)::text = ANY (ARRAY[('container_scanning'::character varying)::text, ('dast'::character varying)::text, ('dependency_scanning'::character varying)::text, ('license_management'::character varying)::text, ('sast'::character varying)::text, ('license_scanning'::character varying)::text]));
 
 CREATE INDEX index_ci_builds_on_project_id_and_id ON public.ci_builds USING btree (project_id, id);
@@ -12793,5 +12795,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200320123839'),
 ('20200323075043'),
 ('20200323122201'),
-('20200324115359');
+('20200324115359'),
+('20200325160952');
 
