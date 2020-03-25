@@ -2281,6 +2281,7 @@ describe Ci::Build do
           { key: 'CI_REGISTRY_USER', value: 'gitlab-ci-token', public: true, masked: false },
           { key: 'CI_REGISTRY_PASSWORD', value: 'my-token', public: false, masked: true },
           { key: 'CI_REPOSITORY_URL', value: build.repo_url, public: false, masked: false },
+          { key: 'CI_JWT_AUTH', value: 'ci.jwt.auth', public: false, masked: false },
           { key: 'CI_JOB_NAME', value: 'test', public: true, masked: false },
           { key: 'CI_JOB_STAGE', value: 'test', public: true, masked: false },
           { key: 'CI_NODE_TOTAL', value: '1', public: true, masked: false },
@@ -2333,6 +2334,7 @@ describe Ci::Build do
       end
 
       before do
+        allow(Gitlab::Ci::JwtAuth).to receive(:jwt_for_build).with(build).and_return('ci.jwt.auth')
         build.set_token('my-token')
         build.yaml_variables = []
       end

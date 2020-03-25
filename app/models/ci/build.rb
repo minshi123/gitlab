@@ -552,6 +552,7 @@ module Ci
           .append(key: 'CI_REGISTRY_USER', value: CI_REGISTRY_USER)
           .append(key: 'CI_REGISTRY_PASSWORD', value: token.to_s, public: false, masked: true)
           .append(key: 'CI_REPOSITORY_URL', value: repo_url.to_s, public: false)
+          .append(key: 'CI_JWT_AUTH', value: jwt_auth, public: false)
           .concat(deploy_token_variables)
       end
     end
@@ -982,6 +983,10 @@ module Ci
 
     def has_expiring_artifacts?
       artifacts_expire_at.present? && artifacts_expire_at > Time.now
+    end
+
+    def jwt_auth
+      Gitlab::Ci::JwtAuth.jwt_for_build(self)
     end
   end
 end
