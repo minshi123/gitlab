@@ -27,9 +27,9 @@ export default {
      * @param {String} resetStoreKey Store key for the visible pipeline that will need to be reset
      * @param {Object} pipeline The clicked pipeline
      */
-    clickPipeline(parentPipeline, pipeline, openMethod, closeMethod) {
+    clickPipeline(pipeline, openMethod, closeMethod) {
       if (!pipeline.isExpanded) {
-        this.mediator.store[openMethod](parentPipeline, pipeline);
+        this.mediator.store[openMethod](pipeline);
         this.mediator.store.toggleLoading(pipeline);
         this.mediator.poll.stop();
 
@@ -41,20 +41,18 @@ export default {
         this.mediator.poll.enable({ data: this.mediator.getExpandedParameters() });
       }
     },
-    clickTriggeredByPipeline(parentPipeline, pipeline) {
+    clickTriggeredByPipeline(pipeline) {
       this.clickPipeline(
-        parentPipeline,
         pipeline,
-        'openTriggeredByPipeline',
-        'closeTriggeredByPipeline',
+        'openPipeline',
+        'closePipeline',
       );
     },
-    clickTriggeredPipeline(parentPipeline, pipeline) {
+    clickTriggeredPipeline(pipeline) {
       this.clickPipeline(
-        parentPipeline,
         pipeline,
-        'openTriggeredPipeline',
-        'closeTriggeredPipeline',
+        'openPipeline',
+        'closePipeline',
       );
     },
     requestRefreshPipelineGraph() {

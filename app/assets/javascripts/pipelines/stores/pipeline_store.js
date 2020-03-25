@@ -54,16 +54,26 @@ export default class PipelineStore {
    */
   parseTriggeredByPipelines(oldPipeline = {}, newPipeline) {
     // keep old value in case it's opened because we're polling
-
     Vue.set(newPipeline, 'isExpanded', oldPipeline.isExpanded || false);
     // add isLoading property
     Vue.set(newPipeline, 'isLoading', false);
 
+    // Because there can only ever be one `triggered_by` for any given pipeline,
+    // the API returns an object for the value instead of an Array. However,
+    // it's easier to deal with an array in the FE so we convert it.
     if (newPipeline.triggered_by) {
       if (!Array.isArray(newPipeline.triggered_by)) {
         Object.assign(newPipeline, { triggered_by: [newPipeline.triggered_by] });
       }
-      this.parseTriggeredByPipelines(oldPipeline, newPipeline.triggered_by[0]);
+
+      if (newPipeline.triggered_by && newPipeline.triggered_by.length > 0) {
+        newPipeline.triggered_by.forEach(el => {
+          const oldTriggeredBy =
+            oldPipeline.triggered_by &&
+            oldPipeline.triggered_by.find(element => element.id === el.id);
+          this.parseTriggeredPipelines(oldTriggeredBy, el);
+        });
+      }
     }
   }
 
@@ -176,6 +186,7 @@ export default class PipelineStore {
    * @param {Object} pipeline
    */
   openPipeline(pipeline) {
+    console.log(pipeline.id)
     Vue.set(pipeline, 'isExpanded', true);
     // add the pipeline to the parameters
     this.addExpandedPipelineToRequestData(pipeline.id);

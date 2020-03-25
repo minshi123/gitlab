@@ -99,7 +99,7 @@ export default {
         downstreamNode.classList.contains('child-pipeline') ? 15 : 30,
       );
 
-      this.$emit('onClickTriggered', this.pipeline, pipeline);
+      this.$emit('onClickTriggered', pipeline);
     },
     calculateMarginTop(downstreamNode, pixelDiff) {
       return `${downstreamNode.offsetTop - downstreamNode.offsetParent.offsetTop - pixelDiff}px`;
@@ -149,7 +149,7 @@ export default {
           :project-id="pipelineProjectId"
           graph-position="left"
           @linkedPipelineClick="
-            linkedPipeline => $emit('onClickTriggeredBy', pipeline, linkedPipeline)
+            linkedPipeline => $emit('onClickTriggeredBy', linkedPipeline)
           "
         />
 
