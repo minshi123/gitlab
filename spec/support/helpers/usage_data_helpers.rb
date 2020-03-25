@@ -97,6 +97,7 @@ module UsageDataHelpers
       releases
       remote_mirrors
       snippets
+      status_page_projects
       suggestions
       todos
       uploads
