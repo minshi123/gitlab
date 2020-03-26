@@ -167,7 +167,7 @@ export default {
           <icon name="search" class="dropdown-input-search" data-hidden="true" />
         </div>
         <div class="dropdown-content"></div>
-        <gl-loading-icon class="dropdown-loading" />
+        <gl-loading-icon size="lg" class="dropdown-loading mt-8" />
       </div>
     </div>
   </div>
