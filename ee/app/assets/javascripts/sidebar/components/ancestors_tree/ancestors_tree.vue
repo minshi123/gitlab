@@ -1,6 +1,6 @@
 <script>
 import { GlLoadingIcon, GlLink, GlTooltip } from '@gitlab/ui';
-import { escape } from 'underscore';
+import { escape as esc } from 'lodash';
 
 import { __ } from '~/locale';
 import Icon from '~/vue_shared/components/icon.vue';
