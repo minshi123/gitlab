@@ -23,6 +23,7 @@ describe('EE Approvals App', () => {
       localVue,
       slots,
       store: new Vuex.Store(store),
+      attachToDocument: true,
     });
   };
   const findAddButton = () => wrapper.find(GlButton);
@@ -40,6 +41,57 @@ describe('EE Approvals App', () => {
     });
     spyOn(store.modules.approvals.actions, 'fetchRules');
     spyOn(store.modules.createModal.actions, 'open');
+  });
+
+  describe('targetBranch', () => {
+    const targetBranchName = 'development';
+    let targetBranchElement;
+
+    beforeEach(() => {
+      targetBranchElement = document.createElement('code');
+      targetBranchElement.id = 'js-target-branch-title';
+      targetBranchElement.textContent = targetBranchName;
+      document.body.appendChild(targetBranchElement);
+    });
+
+    afterEach(() => {
+      targetBranchElement.parentNode.removeChild(targetBranchElement);
+    });
+
+    it('passes the target branch name in fetchRules for MR create path', () => {
+      store.state.settings.prefix = 'mr-edit';
+      store.state.settings.mrSettingsPath = null;
+      factory();
+
+      expect(store.modules.approvals.actions.fetchRules).toHaveBeenCalledWith(
+        jasmine.anything(),
+        targetBranchName,
+        undefined,
+      );
+    });
+
+    it('does not pass the target branch name in fetchRules for MR edit path', () => {
+      store.state.settings.prefix = 'mr-edit';
+      store.state.settings.mrSettingsPath = 'some/path';
+      factory();
+
+      expect(store.modules.approvals.actions.fetchRules).toHaveBeenCalledWith(
+        jasmine.anything(),
+        undefined,
+        undefined,
+      );
+    });
+
+    it('does not pass the target branch name in fetchRules for project settings path', () => {
+      store.state.settings.prefix = 'project-settings';
+      factory();
+
+      expect(store.modules.approvals.actions.fetchRules).toHaveBeenCalledWith(
+        jasmine.anything(),
+        undefined,
+        undefined,
+      );
+    });
   });
 
   describe('when allow multi rule', () => {
