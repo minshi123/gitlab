@@ -169,7 +169,8 @@ export default {
     const { id, name, username } = state.userData;
 
     const hasEmojiAwardedByCurrentUser = note.award_emoji.filter(
-      emoji => emoji.name === data.awardName && emoji.user.id === id,
+      // eslint-disable-next-line eqeqeq
+      emoji => emoji.name == data.awardName && emoji.user.id === id, // intentional ==, awardName is an int in certain cases, but need to compare to string
     );
 
     if (hasEmojiAwardedByCurrentUser.length) {
