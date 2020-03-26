@@ -52,18 +52,21 @@ describe GitlabSchema.types['Query'] do
     end
 
     context 'when first_class_vulnerabilities is enabled' do
+      let_it_be(:project2) { create(:project) }
+      let_it_be(:vulnerability2) { create(:vulnerability, project: project2) }
+
       before do
         stub_feature_flags(first_class_vulnerabilities: true)
         stub_licensed_features(security_dashboard: true)
+
+        project2.add_developer(user)
+        user.security_dashboard_projects << project2
       end
 
       it "returns vulnerabilities for projects on the current user's instance security dashboard" do
         vulnerabilities = subject.dig('data', 'vulnerabilities', 'nodes')
 
-        expect(vulnerabilities.count).to be(1)
-        expect(vulnerabilities.first['title']).to eq('A terrible one!')
-        expect(vulnerabilities.first['state']).to eq('DETECTED')
-        expect(vulnerabilities.first['severity']).to eq('CRITICAL')
+        expect(vulnerabilities.count).to be(2)
       end
     end
   end
