@@ -171,7 +171,7 @@ module Gitlab
 
           if valid_oauth_token?(token)
             user = User.find_by(id: token.resource_owner_id)
-            return unless user.can?(:log_in)
+            return unless user && user.can?(:log_in)
 
             Gitlab::Auth::Result.new(user, nil, :oauth, full_authentication_abilities)
           end
