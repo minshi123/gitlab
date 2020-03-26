@@ -42,6 +42,77 @@ describe('IDE services', () => {
     });
   });
 
+  describe('getFileRawData', () => {
+    it("resolves with a file's content if its a tempfile and it isn't renamed", () => {
+      const file = {
+        path: 'file',
+        tempFile: true,
+        content: 'content',
+        raw: 'raw content',
+      };
+
+      return services.getFileRawData(file).then(raw => {
+        expect(raw).toBe('content');
+      });
+    });
+
+    it('resolves with file.raw if the file is renamed', () => {
+      const file = {
+        path: 'file',
+        tempFile: true,
+        content: 'content',
+        prevPath: 'old_path',
+        raw: 'raw content',
+      };
+
+      return services.getFileRawData(file).then(raw => {
+        expect(raw).toBe('raw content');
+      });
+    });
+
+    it('returns file.raw if it exists', () => {
+      const file = {
+        path: 'file',
+        content: 'content',
+        raw: 'raw content',
+      };
+
+      return services.getFileRawData(file).then(raw => {
+        expect(raw).toBe('raw content');
+      });
+    });
+
+    it("returns file.raw if file.raw is empty but file.rawPath doesn't exist", () => {
+      const file = {
+        path: 'file',
+        content: 'content',
+        raw: '',
+      };
+
+      return services.getFileRawData(file).then(raw => {
+        expect(raw).toBe('');
+      });
+    });
+
+    it("sends a request to file.rawPath if file.raw exists but file.raw doesn't exist", () => {
+      const file = {
+        path: 'file',
+        content: 'content',
+        raw: '',
+        rawPath: 'some_raw_path',
+      };
+
+      jest.spyOn(axios, 'get');
+      const mock = new MockAdapter(axios);
+      mock.onGet('some_raw_path').reply(200, 'raw content');
+
+      return services.getBaseRawFileData(file).then(raw => {
+        expect(raw).toEqual('raw content');
+      });
+    });
+  });
+
+
   describe('getBaseRawFileData', () => {
     let file;
     let mock;
