@@ -317,6 +317,26 @@ Rails/CreateTableWithTimestamps:
 Rails/FilePath:
   Enabled: false
 
+# Offense count: 14
+# Cop supports --auto-correct.
+# Configuration parameters: Include.
+# Include: app/models/**/*.rb
+Rails/FindBy:
+  Exclude:
+    - 'app/finders/keys_finder.rb'
+    - 'ee/app/controllers/unsubscribes_controller.rb'
+    - 'ee/app/models/design_management/design_at_version.rb'
+    - 'ee/app/models/geo/event_log.rb'
+    - 'ee/app/models/geo_node.rb'
+    - 'ee/app/models/merge_train.rb'
+    - 'ee/lib/ee/gitlab/auth/ldap/access.rb'
+    - 'lib/gitlab/database/rename_reserved_paths_migration/v1/rename_namespaces.rb'
+    - 'lib/gitlab/database/rename_reserved_paths_migration/v1/rename_projects.rb'
+    - 'lib/gitlab/git/commit.rb'
+    - 'lib/gitlab/import_export/base/object_builder.rb'
+    - 'lib/gitlab/import_export/members_mapper.rb'
+    - 'lib/gitlab/legacy_github_import/user_formatter.rb'
+
 # Offense count: 211
 # Configuration parameters: Include.
 # Include: app/models/**/*.rb
