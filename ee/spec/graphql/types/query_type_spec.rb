@@ -44,7 +44,7 @@ describe GitlabSchema.types['Query'] do
         stub_feature_flags(first_class_vulnerabilities: false)
       end
 
-      it 'is null' do
+      it 'does not allow the user to access vulnerability data' do
         vulnerabilities = subject.dig('data', 'vulnerabilities')
 
         expect(vulnerabilities).to be_nil
