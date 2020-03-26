@@ -5,6 +5,9 @@ class Shard < ApplicationRecord
   # list of active shards - we just want to assign an immutable, unique ID to
   # every shard name for easy indexing / referencing.
   def self.populate!
+    # The `table_exists?` check is needed because during our migration rollback testing,
+    # `connected?` could be cached and return true even though the table doesn't exist
+    return unless connected?
     return unless table_exists?
 
     # The GitLab config does not change for the lifecycle of the process

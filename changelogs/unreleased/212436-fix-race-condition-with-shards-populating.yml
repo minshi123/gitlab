@@ -1,0 +1,5 @@
+---
+title: Populate the shards table in seed file instead of in an initializer
+merge_request: 28084
+author:
+type: fixed
