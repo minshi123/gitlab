@@ -236,23 +236,31 @@ export default {
         this.onUploadDesign([newFile]);
       }
     },
+    addOnPasteListener(route) {
+      if (route === DESIGNS_ROUTE_NAME) {
+        document.addEventListener('paste', this.onDesignPaste);
+      } else {
+        document.removeEventListener('paste', this.onDesignPaste);
+      }
+    },
+  },
+  mounted() {
+    this.addOnPasteListener(this.$route.name);
   },
   beforeRouteUpdate(to, from, next) {
+    this.addOnPasteListener(to.name);
     this.selectedDesigns = [];
     next();
   },
-  mounted() {
-    document.addEventListener('paste', this.onDesignPaste);
-  },
-  beforeDestroy() {
-    document.removeEventListener('paste', this.onDesignPaste);
+  beforeRouteLeave(to, from, next) {
+    this.addOnPasteListener(to.name);
+    next();
   },
 };
 </script>
 
 <template>
   <div>
-    <input type="text" />
     <header v-if="showToolbar" class="row-content-block border-top-0 p-2 d-flex">
       <div class="d-flex justify-content-between align-items-center w-100">
         <design-version-dropdown />
