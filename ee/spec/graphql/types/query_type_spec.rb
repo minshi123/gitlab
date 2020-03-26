@@ -14,6 +14,7 @@ describe GitlabSchema.types['Query'] do
   describe 'vulnerabilities' do
     let_it_be(:project) { create(:project) }
     let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }
+
     let_it_be(:vulnerability) do
       create(:vulnerability, :detected, :critical, project: project, title: 'A terrible one!')
     end
