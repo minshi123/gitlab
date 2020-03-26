@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe GitlabSchema.types['Query'] do
-  it do
+  specify do
     expect(described_class).to have_graphql_fields(
       :design_management,
       :geo_node,
