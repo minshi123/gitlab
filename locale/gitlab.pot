@@ -12652,7 +12652,22 @@ msgstr ""
 msgid "Metrics for environment"
 msgstr ""
 
+msgid "Metrics::Dashboard::Annotation|Annotation has not been deleted"
+msgstr ""
+
 msgid "Metrics::Dashboard::Annotation|Annotation must belong to a cluster or an environment"
+msgstr ""
+
+msgid "Metrics::Dashboard::Annotation|Dashboard with requested id can not be found"
+msgstr ""
+
+msgid "Metrics::Dashboard::Annotation|You are not authorized to create annotation for selected cluster"
+msgstr ""
+
+msgid "Metrics::Dashboard::Annotation|You are not authorized to create annotation for selected environment"
+msgstr ""
+
+msgid "Metrics::Dashboard::Annotation|You are not authorized to delete this annotation"
 msgstr ""
 
 msgid "Metrics|Add metric"
