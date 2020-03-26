@@ -270,6 +270,9 @@ module EE
         # Omitted because too expensive: `epics_deepest_relationship_level`
         # Omitted because of encrypted properties: `projects_jira_cloud_active`, `projects_jira_server_active`
         def usage_activity_by_stage_plan(time_period)
+          project_creator_id_start = ::Project.service_desk_enabled.minimum(:creator_id)
+          project_creator_id_finish = ::Project.service_desk_enabled.maximum(:creator_id)
+
           {
             assignee_lists: distinct_count(::List.assignee.where(time_period), :user_id),
             epics: distinct_count(::Epic.where(time_period), :author_id),
@@ -281,7 +284,7 @@ module EE
             projects_jira_active: distinct_count(::Project.with_active_jira_services.where(time_period), :creator_id),
             projects_jira_dvcs_cloud_active: distinct_count(::Project.with_active_jira_services.with_jira_dvcs_cloud.where(time_period), :creator_id),
             projects_jira_dvcs_server_active: distinct_count(::Project.with_active_jira_services.with_jira_dvcs_server.where(time_period), :creator_id),
-            service_desk_enabled_projects: distinct_count(::Project.with_active_services.service_desk_enabled.where(time_period), :creator_id),
+            service_desk_enabled_projects: distinct_count(::Project.with_active_services.service_desk_enabled.where(time_period), :creator_id, start: project_creator_id_start, finish: project_creator_id_finish),
             service_desk_issues: count(::Issue.service_desk.where(time_period)),
             todos: distinct_count(::Todo.where(time_period), :author_id)
           }
