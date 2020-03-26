@@ -3,6 +3,7 @@
 exports[`Snippet Blob Edit component rendering matches the snapshot 1`] = `
 <div
   class="form-group file-editor"
+  value="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 >
   <label>
     File

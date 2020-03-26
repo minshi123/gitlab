@@ -9,11 +9,6 @@ export default {
     MarkdownField,
   },
   props: {
-    description: {
-      type: String,
-      default: '',
-      required: false,
-    },
     markdownPreviewPath: {
       type: String,
       required: true,
@@ -22,14 +17,24 @@ export default {
       type: String,
       required: true,
     },
+    value: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
-      text: this.description,
+      text: this.value,
     };
   },
   mounted() {
     setupCollapsibleInputs();
+  },
+  methods: {
+    emitText() {
+      this.$emit('input', this.text);
+    },
   },
 };
 </script>
@@ -56,14 +61,15 @@ export default {
       >
         <textarea
           id="snippet-description"
-          slot="textarea"
           v-model="text"
+          slot="textarea"
           class="note-textarea js-gfm-input js-autosize markdown-area
             qa-description-textarea"
           dir="auto"
           data-supports-quick-actions="false"
           :aria-label="__('Description')"
           :placeholder="__('Write a comment or drag your files here…')"
+          @input="emitText"
         >
         </textarea>
       </markdown-field>

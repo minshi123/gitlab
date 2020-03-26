@@ -7,18 +7,15 @@ describe('Snippet Visibility Edit component', () => {
   let wrapper;
   let radios;
   const defaultHelpLink = '/foo/bar';
-  const defaultVisibilityLevel = '0';
+  const defaultVisibilityLevel = 0;
+  const getWrapperAt = (wrapers, value) => wrapers.at(parseInt(value.at(0), 10));
 
   function findElements(sel) {
     return wrapper.findAll(sel);
   }
 
   function createComponent(
-    {
-      helpLink = defaultHelpLink,
-      isProjectSnippet = false,
-      visibilityLevel = defaultVisibilityLevel,
-    } = {},
+    { helpLink = defaultHelpLink, isProjectSnippet = false, value = defaultVisibilityLevel } = {},
     deep = false,
   ) {
     const method = deep ? mount : shallowMount;
@@ -26,7 +23,7 @@ describe('Snippet Visibility Edit component', () => {
       propsData: {
         helpLink,
         isProjectSnippet,
-        visibilityLevel,
+        value,
       },
     });
     radios = findElements(GlFormRadio);
@@ -45,11 +42,11 @@ describe('Snippet Visibility Edit component', () => {
     it.each`
       label                                | value
       ${SNIPPET_VISIBILITY.private.label}  | ${`0`}
-      ${SNIPPET_VISIBILITY.internal.label} | ${`1`}
-      ${SNIPPET_VISIBILITY.public.label}   | ${`2`}
+      ${SNIPPET_VISIBILITY.internal.label} | ${`10`}
+      ${SNIPPET_VISIBILITY.public.label}   | ${`20`}
     `('should render correct $label label', ({ label, value }) => {
       createComponent();
-      const radio = radios.at(parseInt(value, 10));
+      const radio = getWrapperAt(radios, value);
 
       expect(radio.attributes('value')).toBe(value);
       expect(radio.text()).toContain(label);
@@ -57,14 +54,14 @@ describe('Snippet Visibility Edit component', () => {
 
     describe('rendered help-text', () => {
       it.each`
-        description                                | value  | label
-        ${SNIPPET_VISIBILITY.private.description}  | ${`0`} | ${SNIPPET_VISIBILITY.private.label}
-        ${SNIPPET_VISIBILITY.internal.description} | ${`1`} | ${SNIPPET_VISIBILITY.internal.label}
-        ${SNIPPET_VISIBILITY.public.description}   | ${`2`} | ${SNIPPET_VISIBILITY.public.label}
+        description                                | value   | label
+        ${SNIPPET_VISIBILITY.private.description}  | ${`0`}  | ${SNIPPET_VISIBILITY.private.label}
+        ${SNIPPET_VISIBILITY.internal.description} | ${`10`} | ${SNIPPET_VISIBILITY.internal.label}
+        ${SNIPPET_VISIBILITY.public.description}   | ${`20`} | ${SNIPPET_VISIBILITY.public.label}
       `('should render correct $label description', ({ description, value }) => {
         createComponent({}, true);
 
-        const help = findElements('.help-text').at(parseInt(value, 10));
+        const help = getWrapperAt(findElements('.help-text'), value);
 
         expect(help.text()).toBe(description);
       });
@@ -84,10 +81,11 @@ describe('Snippet Visibility Edit component', () => {
 
   describe('functionality', () => {
     it('pre-selects correct option in the list', () => {
-      const pos = 1;
+      const value = 10;
+      const valueAsString = value.toString();
 
-      createComponent({ visibilityLevel: `${pos}` }, true);
-      const radio = radios.at(pos);
+      createComponent({ value }, true);
+      const radio = getWrapperAt(radios, valueAsString);
       expect(radio.find('input[type="radio"]').element.checked).toBe(true);
     });
   });

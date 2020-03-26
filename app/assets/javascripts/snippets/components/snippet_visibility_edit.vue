@@ -21,22 +21,16 @@ export default {
       required: false,
       default: false,
     },
-    visibilityLevel: {
-      type: String,
-      default: '0',
-      required: false,
+    value: {
+      type: Number,
+      required: true,
     },
-  },
-  data() {
-    return {
-      selected: this.visibilityLevel,
-    };
   },
   computed: {
     visibilityOptions() {
       return [
         {
-          value: '0',
+          value: 0,
           icon: 'lock',
           text: SNIPPET_VISIBILITY.private.label,
           description: this.isProjectSnippet
@@ -44,25 +38,18 @@ export default {
             : SNIPPET_VISIBILITY.private.description,
         },
         {
-          value: '1',
+          value: 10,
           icon: 'shield',
           text: SNIPPET_VISIBILITY.internal.label,
           description: SNIPPET_VISIBILITY.internal.description,
         },
         {
-          value: '2',
+          value: 20,
           icon: 'earth',
           text: SNIPPET_VISIBILITY.public.label,
           description: SNIPPET_VISIBILITY.public.description,
         },
       ];
-    },
-  },
-  methods: {
-    updateSelectedOption(newVal) {
-      if (newVal !== this.selected) {
-        this.selected = newVal;
-      }
     },
   },
 };
@@ -76,7 +63,7 @@ export default {
       /></gl-link>
     </label>
     <gl-form-group id="visibility-level-setting">
-      <gl-form-radio-group :checked="selected" stacked @change="updateSelectedOption">
+      <gl-form-radio-group v-bind="$attrs" :checked="value" stacked v-on="$listeners">
         <gl-form-radio
           v-for="option in visibilityOptions"
           :key="option.icon"
