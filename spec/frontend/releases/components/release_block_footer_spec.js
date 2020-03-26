@@ -5,11 +5,20 @@ import ReleaseBlockFooter from '~/releases/components/release_block_footer.vue';
 import Icon from '~/vue_shared/components/icon.vue';
 import { release } from '../mock_data';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { getTimeago } from '~/lib/utils/datetime_utility';
+
+const randomDate = (start, end) =>
+  new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+
+const futureDate = randomDate(new Date(), new Date(9090, 0, 0)).toISOString();
+const { format: mockFormat } = getTimeago();
+const mockReleasedAt = mockFormat(release.released_at);
+const mockFutureReleaseDate = mockFormat(futureDate);
 
 jest.mock('~/vue_shared/mixins/timeago', () => ({
   methods: {
-    timeFormatted() {
-      return '7 fortnights ago';
+    timeFormatted(time) {
+      return mockFormat(time);
     },
     tooltipTitle() {
       return 'February 30, 2401';
@@ -81,8 +90,18 @@ describe('Release block footer', () => {
 
     it('renders the author and creation time info', () => {
       expect(trimText(authorDateInfoSection().text())).toBe(
-        `Created 7 fortnights ago by ${releaseClone.author.username}`,
+        `Created ${mockReleasedAt} by ${releaseClone.author.username}`,
       );
+    });
+
+    describe('renders the author and creation time info with future release date', () => {
+      beforeEach(() => factory({ releasedAt: futureDate }));
+
+      it('renders the release date without the author name', () => {
+        expect(trimText(authorDateInfoSection().text())).toBe(
+          `Will be created ${mockFutureReleaseDate} by ${releaseClone.author.username}`,
+        );
+      });
     });
 
     it("renders the author's avatar image", () => {
@@ -138,7 +157,17 @@ describe('Release block footer', () => {
     beforeEach(() => factory({ author: undefined }));
 
     it('renders the release date without the author name', () => {
-      expect(trimText(authorDateInfoSection().text())).toBe('Created 7 fortnights ago');
+      expect(trimText(authorDateInfoSection().text())).toBe(`Created ${mockReleasedAt}`);
+    });
+  });
+
+  describe('future release without any author info', () => {
+    beforeEach(() => factory({ author: undefined, releasedAt: futureDate }));
+
+    it('renders the release date without the author name', () => {
+      expect(trimText(authorDateInfoSection().text())).toBe(
+        `Will be created ${mockFutureReleaseDate}`,
+      );
     });
   });
 

@@ -38,7 +38,10 @@ export default {
       return Boolean(this.author);
     },
     releasedTimeAgo() {
-      return sprintf(__('released %{time}'), {
+      const now = new Date();
+      const isFuture = now < new Date(this.release.releasedAt);
+      return sprintf(__('%{released} %{time}'), {
+        released: isFuture ? 'will be released' : 'released',
         time: this.timeFormatted(this.release.releasedAt),
       });
     },
