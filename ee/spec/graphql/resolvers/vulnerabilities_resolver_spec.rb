@@ -87,7 +87,7 @@ describe Resolvers::VulnerabilitiesResolver do
 
       let(:vulnerable) { nil }
 
-      context 'and there is a current user' do
+      context 'when there is a current user' do
         it "returns vulnerabilities for all projects on the current user's instance security dashboard" do
           is_expected.to contain_exactly(critical_vulnerability, high_vulnerability, low_vulnerability)
         end
