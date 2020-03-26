@@ -82,7 +82,7 @@ module API
         authorize!(:destroy_deploy_token, user_project)
 
         deploy_token = user_project.project_deploy_tokens
-          .find_by_deploy_token_id(params[:token_id])
+          .find_by_deploy_token_id(params[:token_id]).deploy_token
 
         not_found!('Deploy Token') unless deploy_token
 
@@ -140,7 +140,7 @@ module API
         authorize!(:destroy_deploy_token, user_group)
 
         deploy_token = user_group.group_deploy_tokens
-          .find_by_deploy_token_id!(params[:token_id])
+          .find_by_deploy_token_id!(params[:token_id]).deploy_token
 
         destroy_conditionally!(deploy_token)
       end

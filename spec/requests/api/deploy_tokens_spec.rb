@@ -176,7 +176,7 @@ describe API::DeployTokens do
       it { is_expected.to have_gitlab_http_status(:no_content) }
 
       it 'deletes the deploy token' do
-        expect { subject }.to change { project.deploy_tokens.count }.by(-1)
+        expect { subject }.to change { DeployToken.count }.by(-1)
       end
 
       context 'invalid request' do
@@ -308,7 +308,7 @@ describe API::DeployTokens do
       end
 
       it 'deletes the deploy token' do
-        expect { subject }.to change { group.deploy_tokens.count }.by(-1)
+        expect { subject }.to change { DeployToken.count }.by(-1)
 
         expect(group.deploy_tokens).to be_empty
       end
