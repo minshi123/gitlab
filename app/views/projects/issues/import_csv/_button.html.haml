@@ -1,11 +1,18 @@
 - type = local_assigns.fetch(:type, :icon)
 
-%button.csv-import-button.btn{ title: _('Import CSV'), class: ('has-tooltip' if type == :icon),
-  data: { toggle: 'modal', target: '.issues-import-modal' } }
-  - if type == :icon
-    = sprite_icon('import')
-  - else
-    = _('Import CSV')
-
 - if Feature.enabled?(:jira_issue_import, @project)
-  = link_to _("Import Jira issues"), project_import_jira_path(@project), class: "btn btn-default"
+  .dropdown
+    %a.btn.dropdown-toggle.has-tooltip.issues-import{ title: _('Import'), href: '#', data: { toggle: 'dropdown' }, 'aria-label' => _('Import'), 'aria-haspopup' => 'true', 'aria-expanded' => 'false' }
+      = sprite_icon('import')
+    %ul.dropdown-menu.dropdown-menu-right
+      %li
+        %button.btn{ data: { toggle: 'modal', target: '.issues-import-modal' } }
+          = _('Import CSV')
+      %li= link_to _('Import from Jira'), project_import_jira_path(@project)
+- else
+  %button.csv-import-button.btn{ title: _('Import CSV'), class: ('has-tooltip' if type == :icon),
+    data: { toggle: 'modal', target: '.issues-import-modal' } }
+    - if type == :icon
+      = sprite_icon('import')
+    - else
+      = _('Import CSV')

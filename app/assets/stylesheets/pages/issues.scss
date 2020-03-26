@@ -1,3 +1,9 @@
+.issues-import {
+  border-radius: 0 $border-radius-default $border-radius-default 0;
+  margin-left: -1px;
+  padding: $gl-vert-padding $gl-btn-padding;
+}
+
 .issues-list {
   &.manual-ordering {
     background-color: $gray-light;
