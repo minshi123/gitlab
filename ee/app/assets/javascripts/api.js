@@ -26,6 +26,7 @@ export default {
   codeReviewAnalyticsPath: '/api/:version/analytics/code_review',
   groupActivityIssuesPath: '/api/:version/analytics/group_activity/issues_count',
   groupActivityMergeRequestsPath: '/api/:version/analytics/group_activity/merge_requests_count',
+  groupActivityNewMembersPath: '/api/:version/analytics/group_activity/new_members_count',
   countriesPath: '/-/countries',
   countryStatesPath: '/-/country_states',
   paymentFormPath: '/-/subscriptions/payment_form',
@@ -226,6 +227,21 @@ export default {
   groupActivityIssuesCount(groupPath) {
     const url = Api.buildUrl(this.groupActivityIssuesPath);
     return axios.get(url, { params: { group_path: groupPath } });
+  },
+
+  groupActivityNewMembersCount(groupPath) {
+    // TODO: replace mocked promise with API call below
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const data = { data: { new_members_count: 30 } };
+        resolve(data);
+      });
+    });
+
+    /*
+    const url = Api.buildUrl(this.groupActivityNewMembersPath);
+    return axios.get(url, { params: { gorup_path: groupPath } });
+    */
   },
 
   getGeoReplicableItems(replicable, params = {}) {
