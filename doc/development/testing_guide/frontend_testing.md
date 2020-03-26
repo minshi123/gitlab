@@ -582,7 +582,7 @@ If you ever need to import the original module in your tests, use [`jest.require
 
 ### Keep mocks light
 
-Global mocks introduce magic and can affect how modules are imported in your tests. Try to keep them as light as possible and dependency-free. A global mock should be useful for any unit test. For example, the `axios_utils` and `jquery` module mocks throw an error when an HTTP request is attempted, since this is useful behaviour in &gt;99% of tests.
+Global mocks introduce magic and can affect how modules are imported in your tests. Try to keep them as light as possible and dependency-free. A global mock should be useful for any unit test. For example, the `axios_utils` and `jquery` module mocks throw an error when an HTTP request is attempted, since this is useful behavior in &gt;99% of tests.
 
 When in doubt, construct mocks in your test file using [`jest.mock()`](https://jestjs.io/docs/en/jest-object#jestmockmodulename-factory-options), [`jest.spyOn()`](https://jestjs.io/docs/en/jest-object#jestspyonobject-methodname), etc.
 

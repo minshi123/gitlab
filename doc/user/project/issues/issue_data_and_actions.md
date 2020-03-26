@@ -46,7 +46,7 @@ You can add issues to and remove issues from your [GitLab To-Do List](../../todo
 The button to do this has a different label depending on whether the issue is already on your To-Do List or not. If the issue is:
 
 - Already on your To-Do List: The button is labeled **Mark as done**. Click the button to remove the issue from your To-Do List.
-- Not on your To-Do List: The button is labelled **Add a To Do**. Click the button to add the issue to your To-Do List.
+- Not on your To-Do List: The button is labeled **Add a To Do**. Click the button to add the issue to your To-Do List.
 
 #### 3. Assignee
 

@@ -1037,7 +1037,7 @@ include:
 ```
 
 Then add any extra changes you want. Your additions will be merged with the
-[Auto DevOps template] using the behaviour described for
+[Auto DevOps template] using the behavior described for
 [`include`](../../ci/yaml/README.md#include).
 
 It is also possible to copy and paste the contents of the [Auto DevOps
