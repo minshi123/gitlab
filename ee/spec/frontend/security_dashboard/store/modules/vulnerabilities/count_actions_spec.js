@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import MockAdapter from 'axios-mock-adapter';
-import testAction from 'spec/helpers/vuex_action_helper';
+import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import { DAYS } from 'ee/security_dashboard/store/modules/vulnerabilities/constants';
 
@@ -437,9 +437,9 @@ describe('openModal', () => {
 
 describe('downloadPatch', () => {
   it('creates a download link and clicks on it to download the file', () => {
-    spyOn(document, 'createElement').and.callThrough();
-    spyOn(document.body, 'appendChild').and.callThrough();
-    spyOn(document.body, 'removeChild').and.callThrough();
+    jest.spyOn(document, 'createElement');
+    jest.spyOn(document.body, 'appendChild');
+    jest.spyOn(document.body, 'removeChild');
 
     actions.downloadPatch({
       state: {
@@ -739,7 +739,7 @@ describe('vulnerability dismissal', () => {
       });
 
       it('should show the dismissal toast message', done => {
-        spyOn(Vue.toasted, 'show').and.callThrough();
+        jest.spyOn(Vue.toasted, 'show');
 
         const checkToastMessage = () => {
           expect(Vue.toasted.show).toHaveBeenCalledTimes(1);
@@ -800,10 +800,10 @@ describe('vulnerability dismissal', () => {
       });
 
       it('should show the dismissal toast message and refresh vulnerabilities', done => {
-        spyOn(Vue.toasted, 'show').and.callThrough();
+        jest.spyOn(Vue.toasted, 'show');
 
         const checkToastMessage = () => {
-          const [message, options] = Vue.toasted.show.calls.argsFor(0);
+          const [message, options] = Vue.toasted.show.mock.calls[0];
 
           expect(Vue.toasted.show).toHaveBeenCalledTimes(1);
           expect(message).toContain('Turn off the hide dismissed toggle to view');
@@ -921,7 +921,7 @@ describe('add vulnerability dismissal comment', () => {
       mock.restore();
     });
 
-    describe('on success', () => {
+    describe.only('on success', () => {
       beforeEach(() => {
         mock.onPatch(url).replyOnce(200, data);
       });
@@ -950,7 +950,7 @@ describe('add vulnerability dismissal comment', () => {
       });
 
       it('should show the add dismissal toast message', done => {
-        spyOn(Vue.toasted, 'show').and.callThrough();
+        jest.spyOn(Vue.toasted, 'show');
 
         const checkPassedData = () => {
           const { project_id, id } = vulnerability.dismissal_feedback;
@@ -1080,7 +1080,7 @@ describe('add vulnerability dismissal comment', () => {
       });
 
       it('should show the delete dismissal comment toast message', done => {
-        spyOn(Vue.toasted, 'show').and.callThrough();
+        jest.spyOn(Vue.toasted, 'show');
 
         const checkPassedData = () => {
           const { project_id } = vulnerability.dismissal_feedback;
