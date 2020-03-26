@@ -255,8 +255,8 @@ describe Projects::DeployKeysController do
                                                       project_id: project)
     end
 
-    def deploy_key_params(title, can_push)
-      deploy_keys_projects_attributes = { '0' => { id: deploy_keys_project, can_push: can_push } }
+    def deploy_key_params(title, can_push, deploy_keys_project_arg: deploy_keys_project)
+      deploy_keys_projects_attributes = { '0' => { id: deploy_keys_project_arg, can_push: can_push } }
       { deploy_key: { title: title, deploy_keys_projects_attributes: deploy_keys_projects_attributes } }
     end
 
@@ -298,6 +298,21 @@ describe Projects::DeployKeysController do
 
         it 'updates can_push of deploy_keys_project' do
           expect { subject }.to change { deploy_keys_project.reload.can_push }.from(false).to(true)
+        end
+      end
+
+      context 'when a deploy key is shared between two projects' do
+        let(:project_2) { create(:project) }
+        let!(:deploy_keys_project_2) do
+          create(:deploy_keys_project, project: project_2, deploy_key: deploy_key)
+        end
+
+        context 'and changing deploy_keys_project id with deploy_keys_project_2 id' do
+          let(:extra_params) { deploy_key_params('updated title', '1', deploy_keys_project_arg: deploy_keys_project_2) }
+
+          it 'does not update can_push for deploy_keys_project_2' do
+            expect { subject }.not_to change { deploy_keys_project_2.reload.can_push }
+          end
         end
       end
     end

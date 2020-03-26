@@ -6,6 +6,7 @@ class Projects::DeployKeysController < Projects::ApplicationController
   # Authorize
   before_action :authorize_admin_project!
   before_action :authorize_update_deploy_key!, only: [:edit, :update]
+  before_action :check_deploy_keys_project, only: :update
 
   layout 'project_settings'
 
@@ -96,6 +97,17 @@ class Projects::DeployKeysController < Projects::ApplicationController
       access_denied!
     end
   end
+
+  # rubocop: disable CodeReuse/ActiveRecord
+  def check_deploy_keys_project
+    id = update_params[:deploy_keys_projects_attributes]['0'][:id].to_i
+    deploy_keys_project = DeployKeysProject.find_by(id: id)
+
+    if deploy_keys_project.nil? || deploy_keys_project.project_id != @project.id
+      access_denied!
+    end
+  end
+  # rubocop: enable CodeReuse/ActiveRecord
 
   def redirect_to_ci_cd_settings
     redirect_to project_settings_ci_cd_path(@project, anchor: 'js-deploy-keys-settings')
