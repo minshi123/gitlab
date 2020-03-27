@@ -39,8 +39,8 @@ RSpec.shared_examples 'a read-only GitLab instance' do
       end
       let(:console_messages) do
         [
-          "You're pushing to a Geo secondary! We'll help you by proxying this",
-          "request to the primary:",
+          "You're interacting with a Geo secondary! We'll help you by sending",
+          "this request to the primary:",
           "",
           "  #{primary_repo_ssh_url}"
         ]
