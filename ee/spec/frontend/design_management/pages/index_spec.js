@@ -96,6 +96,7 @@ describe('Design management index page', () => {
       localVue,
       router,
       stubs: { DesignDestroyer, ApolloMutation, ...stubs },
+      attachToDocument: true,
     });
 
     wrapper.setData({
@@ -467,6 +468,39 @@ describe('Design management index page', () => {
 
     it('does not render Select All button', () => {
       expect(findSelectAllButton().exists()).toBe(false);
+    });
+  });
+
+  describe('pasting a design', () => {
+    beforeEach(() => {
+      createComponent({ designs: mockDesigns, allVersions: [mockVersion] });
+
+      router.replace({
+        name: DESIGNS_ROUTE_NAME,
+        query: {
+          version: '2',
+        },
+      });
+    });
+
+    it('calls onUploadDesign with valid upload', () => {
+      wrapper.setMethods({
+        onUploadDesign: jest.fn(),
+      });
+
+      const event = new Event('paste');
+      event.clipboardData = {
+        items: [{ type: 'text/plain' }, { type: 'image/png' }],
+        files: [{ name: 'image.png' }],
+        getData: () => 'test.png',
+      };
+
+      document.dispatchEvent(event);
+
+      expect(wrapper.vm.onUploadDesign).toHaveBeenCalledTimes(1);
+      expect(wrapper.vm.onUploadDesign).toHaveBeenCalledWith([
+        new File([{ name: 'image.png' }], 'test.png'),
+      ]);
     });
   });
 });
