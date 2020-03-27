@@ -2,6 +2,7 @@ import $ from 'jquery';
 import axios from '../lib/utils/axios_utils';
 import flash from '../flash';
 import { __ } from '~/locale';
+import initForm from './edit';
 
 export default class IntegrationSettingsForm {
   constructor(formSelector) {
@@ -19,6 +20,9 @@ export default class IntegrationSettingsForm {
   }
 
   init() {
+    // Init Vue component
+    initForm(document.querySelector('.js-vue-integration-settings'));
+
     // Initialize View
     this.toggleServiceState(this.$serviceToggle.is(':checked'));
 
@@ -31,9 +35,9 @@ export default class IntegrationSettingsForm {
     // Check if Service is marked active, as if not marked active,
     // We can skip testing it and directly go ahead to allow form to
     // be submitted
-    if (!this.$serviceToggle.is(':checked')) {
-      return;
-    }
+    // if (!this.$serviceToggle.is(':checked')) {
+    //   return;
+    // }
 
     // Service was marked active so now we check;
     // 1) If form contents are valid
