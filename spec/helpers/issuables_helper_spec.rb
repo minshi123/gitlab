@@ -303,4 +303,30 @@ describe IssuablesHelper do
       end
     end
   end
+
+  describe '#employee_badge' do
+    let(:issue) { build(:issue, author: user) }
+
+    context 'when issue author is not a GitLab employee' do
+      let(:user) { build(:user, email: 'test@example.com') }
+
+      it 'returns nil' do
+        expect(helper.employee_badge(issue.author)).to be_nil
+      end
+    end
+
+    context 'when issue author is a GitLab employee' do
+      let(:user) { build(:user, email: 'test@gitlab.com') }
+
+      it 'returns span with svg icon' do
+        expect(helper.employee_badge(issue.author)).to have_selector('span > svg')
+      end
+
+      context 'when `css_class` parameter is passed' do
+        it 'adds CSS classes' do
+          expect(helper.employee_badge(issue.author, css_class: 'foo bar baz')).to have_selector('span.foo.bar.baz')
+        end
+      end
+    end
+  end
 end

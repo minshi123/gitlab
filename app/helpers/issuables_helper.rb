@@ -196,6 +196,8 @@ module IssuablesHelper
       author_output = link_to_member(project, issuable.author, size: 24, mobile_classes: "d-none d-sm-inline")
       author_output << link_to_member(project, issuable.author, size: 24, by_username: true, avatar: false, mobile_classes: "d-inline d-sm-none")
 
+      author_output << employee_badge(issuable.author, css_class: 'gl-employee-badge-margin js-employee-badge')
+
       if status = user_status(issuable.author)
         author_output << "#{status}".html_safe
       end
@@ -238,6 +240,20 @@ module IssuablesHelper
     end
 
     html.html_safe
+  end
+
+  def employee_badge(author, css_class: nil)
+    return unless author.gitlab_employee?
+
+    default_css_class = 'd-inline-block align-middle'
+
+    content_tag(:span, class: css_class ? "#{default_css_class} #{css_class}" : default_css_class, data: { toggle: 'tooltip', title: _('GitLab Employee'), container: 'body' }) do
+      sprite_icon(
+        'tanuki-verified',
+        size: 16,
+        css_class: 'gl-text-purple d-block'
+      )
+    end
   end
 
   def issuable_first_contribution_icon
