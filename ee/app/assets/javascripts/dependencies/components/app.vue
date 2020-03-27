@@ -11,6 +11,7 @@ import {
 } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
 import Icon from '~/vue_shared/components/icon.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import DependenciesActions from './dependencies_actions.vue';
 import DependencyListIncompleteAlert from './dependency_list_incomplete_alert.vue';
 import DependencyListJobFailedAlert from './dependency_list_job_failed_alert.vue';
@@ -34,6 +35,7 @@ export default {
     Icon,
     PaginatedDependenciesTable,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     endpoint: {
       type: String,
@@ -167,27 +169,38 @@ export default {
       @dismiss="dismissJobFailedAlert"
     />
 
-    <header class="my-3">
-      <h2 class="h4 mb-1">
-        {{ __('Dependencies') }}
-        <gl-link
-          target="_blank"
-          :href="documentationPath"
-          :aria-label="__('Dependencies help page link')"
-        >
-          <icon name="question" />
-        </gl-link>
-      </h2>
-      <p class="mb-0">
-        <span v-html="subHeadingText"></span>
-        <span v-if="generatedAtTimeAgo">
-          <span aria-hidden="true">&bull;</span>
-          <span class="text-secondary">{{ generatedAtTimeAgo }}</span>
-        </span>
-      </p>
+    <header class="d-md-flex align-items-end my-3">
+      <div class="mr-auto">
+        <h2 class="h4 mb-1">
+          {{ __('Dependencies') }}
+          <gl-link
+            target="_blank"
+            :href="documentationPath"
+            :aria-label="__('Dependencies help page link')"
+          >
+            <icon name="question" />
+          </gl-link>
+        </h2>
+        <p class="mb-0">
+          <span v-html="subHeadingText"></span>
+          <span v-if="generatedAtTimeAgo">
+            <span aria-hidden="true">&bull;</span>
+            <span class="text-secondary">{{ generatedAtTimeAgo }}</span>
+          </span>
+        </p>
+      </div>
+      <dependencies-actions
+        v-if="glFeatures.dependencyListUi"
+        class="mt-2"
+        :namespace="currentList"
+      />
     </header>
 
-    <gl-tabs v-model="currentListIndex" content-class="pt-0">
+    <article v-if="glFeatures.dependencyListUi">
+      <paginated-dependencies-table :namespace="currentList" />
+    </article>
+
+    <gl-tabs v-else v-model="currentListIndex" content-class="pt-0">
       <gl-tab
         v-for="listType in listTypes"
         :key="listType.namespace"
