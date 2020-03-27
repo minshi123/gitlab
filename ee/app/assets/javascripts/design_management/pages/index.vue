@@ -24,7 +24,6 @@ import {
   designUploadOptimisticResponse,
   isImage,
   getFilename,
-  getImageFile,
 } from '../utils/design_management_utils';
 import { DESIGNS_ROUTE_NAME } from '../router/constants';
 
@@ -226,10 +225,10 @@ export default {
     onDesignPaste(event) {
       const { clipboardData } = event;
       if (clipboardData && clipboardData.items) {
-        event.preventDefault();
         if (!isImage(clipboardData)) {
           return;
         }
+        event.preventDefault();
         const filename = getFilename(event) || 'image.png';
         const newFile = new File([clipboardData.files[0]], filename);
         this.onUploadDesign([newFile]);
