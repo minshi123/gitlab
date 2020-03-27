@@ -2,6 +2,7 @@
 class Packages::Package < ApplicationRecord
   include Sortable
   include Gitlab::SQL::Pattern
+  include UsageStatistics
 
   belongs_to :project
   # package_files must be destroyed by ruby code in order to properly remove carrierwave uploads and update project statistics
@@ -29,8 +30,9 @@ class Packages::Package < ApplicationRecord
   validate :valid_conan_package_recipe, if: :conan?
   validate :valid_npm_package_name, if: :npm?
   validate :package_already_taken, if: :npm?
+  validates :version, format: { with: Gitlab::Regex.semver_regex }, if: :npm?
 
-  enum package_type: { maven: 1, npm: 2, conan: 3, nuget: 4 }
+  enum package_type: { maven: 1, npm: 2, conan: 3, nuget: 4, pypi: 5 }
 
   scope :with_name, ->(name) { where(name: name) }
   scope :with_name_like, ->(name) { where(arel_table[:name].matches(name)) }

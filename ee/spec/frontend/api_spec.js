@@ -2,6 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import Api from 'ee/api';
 import * as cycleAnalyticsConstants from 'ee/analytics/cycle_analytics/constants';
 import axios from '~/lib/utils/axios_utils';
+import httpStatus from '~/lib/utils/http_status';
 import * as analyticsMockData from 'ee_jest/analytics/cycle_analytics/mock_data';
 
 describe('Api', () => {
@@ -537,7 +538,7 @@ describe('Api', () => {
       it('fetches group level labels', done => {
         const response = [];
         const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${groupId}/labels`;
-        mock.onGet(expectedUrl).reply(200, response);
+        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
 
         Api.cycleAnalyticsGroupLabels(groupId)
           .then(({ data, config: { url } }) => {
@@ -546,6 +547,42 @@ describe('Api', () => {
           })
           .then(done)
           .catch(done.fail);
+      });
+    });
+  });
+
+  describe('GroupActivityAnalytics', () => {
+    const groupId = 'gitlab-org';
+
+    describe('groupActivityMergeRequestsCount', () => {
+      it('fetches the number of MRs created for a given group', () => {
+        const response = { merge_requests_count: 10 };
+        const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/analytics/group_activity/merge_requests_count`;
+
+        jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
+        jest.spyOn(axios, 'get');
+        mock.onGet(expectedUrl).reply(200, response);
+
+        return Api.groupActivityMergeRequestsCount(groupId).then(({ data }) => {
+          expect(data).toEqual(response);
+          expect(axios.get).toHaveBeenCalledWith(expectedUrl, { params: { group_path: groupId } });
+        });
+      });
+    });
+
+    describe('groupActivityIssuesCount', () => {
+      it('fetches the number of issues created for a given group', () => {
+        const response = { issues_count: 20 };
+        const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/analytics/group_activity/issues_count`;
+
+        jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
+        jest.spyOn(axios, 'get');
+        mock.onGet(expectedUrl).replyOnce(200, response);
+
+        return Api.groupActivityIssuesCount(groupId).then(({ data }) => {
+          expect(data).toEqual(response);
+          expect(axios.get).toHaveBeenCalledWith(expectedUrl, { params: { group_path: groupId } });
+        });
       });
     });
   });

@@ -70,6 +70,7 @@ describe Project do
     it { is_expected.to have_one(:auto_devops).class_name('ProjectAutoDevops') }
     it { is_expected.to have_one(:error_tracking_setting).class_name('ErrorTracking::ProjectErrorTrackingSetting') }
     it { is_expected.to have_one(:project_setting) }
+    it { is_expected.to have_one(:alerting_setting).class_name('Alerting::ProjectAlertingSetting') }
     it { is_expected.to have_many(:commit_statuses) }
     it { is_expected.to have_many(:ci_pipelines) }
     it { is_expected.to have_many(:ci_refs) }
@@ -107,6 +108,8 @@ describe Project do
     it { is_expected.to have_many(:external_pull_requests) }
     it { is_expected.to have_many(:sourced_pipelines) }
     it { is_expected.to have_many(:source_pipelines) }
+    it { is_expected.to have_many(:prometheus_alert_events) }
+    it { is_expected.to have_many(:self_managed_prometheus_alert_events) }
 
     it_behaves_like 'model with repository' do
       let_it_be(:container) { create(:project, :repository, path: 'somewhere') }
@@ -1388,34 +1391,13 @@ describe Project do
   context 'repository storage by default' do
     let(:project) { build(:project) }
 
-    before do
-      storages = {
-        'default' => Gitlab::GitalyClient::StorageSettings.new('path' => 'tmp/tests/repositories'),
-        'picked'  => Gitlab::GitalyClient::StorageSettings.new('path' => 'tmp/tests/repositories')
-      }
-      allow(Gitlab.config.repositories).to receive(:storages).and_return(storages)
-    end
-
     it 'picks storage from ApplicationSetting' do
-      expect_any_instance_of(ApplicationSetting).to receive(:pick_repository_storage).and_return('picked')
+      expect_next_instance_of(ApplicationSetting) do |instance|
+        expect(instance).to receive(:pick_repository_storage).and_return('picked')
+      end
+      expect(described_class).to receive(:pick_repository_storage).and_call_original
 
       expect(project.repository_storage).to eq('picked')
-    end
-
-    it 'picks from the latest available storage', :request_store do
-      stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
-      Gitlab::CurrentSettings.current_application_settings
-
-      settings = ApplicationSetting.last
-      settings.repository_storages = %w(picked)
-      settings.save!
-
-      expect(Gitlab::CurrentSettings.repository_storages).to eq(%w(default))
-
-      project
-
-      expect(project.repository.storage).to eq('picked')
-      expect(Gitlab::CurrentSettings.repository_storages).to eq(%w(picked))
     end
   end
 
@@ -1756,7 +1738,7 @@ describe Project do
       expect(described_class.search(project.path.upcase)).to eq([project])
     end
 
-    context 'by full path' do
+    context 'when include_namespace is true' do
       let_it_be(:group) { create(:group) }
       let_it_be(:project) { create(:project, group: group) }
 
@@ -1766,11 +1748,11 @@ describe Project do
         end
 
         it 'returns projects that match the group path' do
-          expect(described_class.search(group.path)).to eq([project])
+          expect(described_class.search(group.path, include_namespace: true)).to eq([project])
         end
 
         it 'returns projects that match the full path' do
-          expect(described_class.search(project.full_path)).to eq([project])
+          expect(described_class.search(project.full_path, include_namespace: true)).to eq([project])
         end
       end
 
@@ -1780,11 +1762,11 @@ describe Project do
         end
 
         it 'returns no results when searching by group path' do
-          expect(described_class.search(group.path)).to be_empty
+          expect(described_class.search(group.path, include_namespace: true)).to be_empty
         end
 
         it 'returns no results when searching by full path' do
-          expect(described_class.search(project.full_path)).to be_empty
+          expect(described_class.search(project.full_path, include_namespace: true)).to be_empty
         end
       end
     end
@@ -2296,6 +2278,44 @@ describe Project do
         project = create(:project)
 
         expect(project.import_status).to eq('none')
+      end
+    end
+  end
+
+  describe '#jira_import_status' do
+    let(:project) { create(:project, :import_started, import_type: 'jira') }
+
+    context 'when import_data is nil' do
+      it 'returns none' do
+        expect(project.import_data).to be nil
+        expect(project.jira_import_status).to eq('none')
+      end
+    end
+
+    context 'when import_data is set' do
+      let(:jira_import_data) { JiraImportData.new }
+      let(:project) { create(:project, :import_started, import_data: jira_import_data, import_type: 'jira') }
+
+      it 'returns none' do
+        expect(project.import_data.becomes(JiraImportData).force_import?).to be false
+        expect(project.jira_import_status).to eq('none')
+      end
+
+      context 'when jira_force_import is true' do
+        let(:imported_jira_project) do
+          JiraImportData::JiraProjectDetails.new('xx', Time.now.strftime('%Y-%m-%d %H:%M:%S'), { user_id: 1, name: 'root' })
+        end
+
+        before do
+          jira_import_data = project.import_data.becomes(JiraImportData)
+          jira_import_data << imported_jira_project
+          jira_import_data.force_import!
+        end
+
+        it 'returns started' do
+          expect(project.import_data.becomes(JiraImportData).force_import?).to be true
+          expect(project.jira_import_status).to eq('started')
+        end
       end
     end
   end
@@ -5736,7 +5756,7 @@ describe Project do
     subject { project.limited_protected_branches(1) }
 
     it 'returns limited number of protected branches based on specified limit' do
-      expect(subject).to eq([another_protected_branch])
+      expect(subject.count).to eq(1)
     end
   end
 
@@ -5932,6 +5952,24 @@ describe Project do
       end
 
       it { expect(project.export_status).to eq :regeneration_in_progress }
+    end
+  end
+
+  describe '#environments_for_scope' do
+    let_it_be(:project, reload: true) { create(:project) }
+
+    before do
+      create_list(:environment, 2, project: project)
+    end
+
+    it 'retrieves all project environments when using the * wildcard' do
+      expect(project.environments_for_scope("*")).to eq(project.environments)
+    end
+
+    it 'retrieves a specific project environment when using the name of that environment' do
+      environment = project.environments.first
+
+      expect(project.environments_for_scope(environment.name)).to eq([environment])
     end
   end
 

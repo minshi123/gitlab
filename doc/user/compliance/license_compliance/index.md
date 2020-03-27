@@ -18,9 +18,9 @@ that is provided by [Auto DevOps](../../../topics/autodevops/index.md).
 
 GitLab checks the License Compliance report, compares the licenses between the
 source and target branches, and shows the information right on the merge request.
-Blacklisted licenses will be clearly visible with an `x` red icon next to them
+Denied licenses will be clearly visible with an `x` red icon next to them
 as well as new licenses which need a decision from you. In addition, you can
-[manually approve or blacklist](#project-policies-for-license-compliance)
+[manually allow or deny](#project-policies-for-license-compliance)
 licenses in your project's settings.
 
 NOTE: **Note:**
@@ -33,7 +33,7 @@ compliance report will be shown properly.
 ![License Compliance Widget](img/license_compliance.png)
 
 If you are a project or group Maintainer, you can click on a license to be given
-the choice to approve it or blacklist it.
+the choice to allow it or deny it.
 
 ![License approval decision](img/license_compliance_decision.png)
 
@@ -53,7 +53,7 @@ The following languages and package managers are supported.
 | Go         | [Godep](https://github.com/tools/godep), go get ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types)), gvt ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types)), glide ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types)), dep ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types)), trash ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types)) and govendor ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types)), [go mod](https://github.com/golang/go/wiki/Modules) ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types))   |[License Finder](https://github.com/pivotal/LicenseFinder)|
 | Java       | [Gradle](https://gradle.org/), [Maven](https://maven.apache.org/) |[License Finder](https://github.com/pivotal/LicenseFinder)|
 | .NET      | [Nuget](https://www.nuget.org/) (.NET Framework is supported via the [mono project](https://www.mono-project.com/). Windows specific dependencies are not supported at this time.)  |[License Finder](https://github.com/pivotal/LicenseFinder)|
-| Python     | [pip](https://pip.pypa.io/en/stable/)                             |[License Finder](https://github.com/pivotal/LicenseFinder)|
+| Python     | [pip](https://pip.pypa.io/en/stable/) (Python is supported through [requirements.txt](https://pip.readthedocs.io/en/1.1/requirements.html) and [Pipfile.lock](https://github.com/pypa/pipfile#pipfilelock).) |[License Finder](https://github.com/pivotal/LicenseFinder)|
 | Ruby       | [gem](https://rubygems.org/)                                      |[License Finder](https://github.com/pivotal/LicenseFinder)|
 | Erlang     | [rebar](https://www.rebar3.org/) ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types))|[License Finder](https://github.com/pivotal/LicenseFinder)|
 | Objective-C, Swift | [Carthage](https://github.com/Carthage/Carthage) , [CocoaPods v0.39 and below](https://cocoapods.org/) ([experimental support](https://github.com/pivotal/LicenseFinder#experimental-project-types))  |[License Finder](https://github.com/pivotal/LicenseFinder)|
@@ -189,6 +189,38 @@ to explicitly add `-DskipTests` to your options.
 If you still need to run tests during `mvn install`, add `-DskipTests=false` to
 `MAVEN_CLI_OPTS`.
 
+#### Using private Maven repos
+
+If you have a private Maven repository that requires login credentials, you can use the
+`MAVEN_CLI_OPTS` variable to specify a custom [`settings.xml`](http://maven.apache.org/settings.html)
+file.
+
+For example, you may have a settings file like this in your project source:
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>my-server</id>
+      <username>${private.username}</username>
+      <username>${private.password}</username>
+    </server>
+  </servers>
+</settings>
+```
+
+You can use this file through the following declaration in your `gitlab-ci.yml` file:
+
+```yaml
+license_scanning:
+  variables:
+    MAVEN_CLI_OPTS: --settings settings.xml -Dprivate.username=foo -Dprivate.password=bar
+```
+
+NOTE: **Note:**
+If you don't want to expose the credentials in your `.gitlab-ci.yml` file, then
+you can [set the variable in your project's settings](../../../ci/variables/README.md#via-the-ui).
+
 ### Selecting the version of Python
 
 > - [Introduced](https://gitlab.com/gitlab-org/security-products/license-management/-/merge_requests/36) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.0.
@@ -250,9 +282,9 @@ license_scanning:
 From the project's settings:
 
 - The list of licenses and their status can be managed.
-- Licenses can be manually approved or blacklisted.
+- Licenses can be manually allowed or denied.
 
-To approve or blacklist a license:
+To allow or deny a license:
 
 1. Either use the **Manage licenses** button in the merge request widget, or
    navigate to the project's **Settings > CI/CD** and expand the
@@ -266,12 +298,12 @@ To approve or blacklist a license:
      at the top of the list.
    - Enter arbitrary text in the field at the top of the list. This will cause the text to be
      added as a license name to the list.
-1. Select the **Approve** or **Blacklist** radio button to approve or blacklist respectively
+1. Select the **Allow** or **Deny** radio button to allow or deny respectively
    the selected license.
 
 To modify an existing license:
 
-1. In the **License Compliance** list, click the **Approved/Declined** dropdown to change it to the desired status.
+1. In the **License Compliance** list, click the **Allow/Deny** dropdown to change it to the desired status.
 
    ![License Compliance Settings](img/license_compliance_settings_v12_3.png)
 

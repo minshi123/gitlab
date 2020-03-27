@@ -5,7 +5,7 @@ It is **not** valid for the [GitLab documentation website](https://docs.gitlab.c
 or [GitLab's main website](https://about.gitlab.com), as they both use
 [Kramdown](https://kramdown.gettalong.org) as their Markdown engine. The documentation
 website uses an extended Kramdown gem, [GitLab Kramdown](https://gitlab.com/gitlab-org/gitlab_kramdown).
-Consult the [GitLab Kramdown Guide](https://about.gitlab.com/handbook/product/technical-writing/markdown-guide/)
+Consult the [GitLab Kramdown Guide](https://about.gitlab.com/handbook/engineering/ux/technical-writing/markdown-guide/)
 for a complete Kramdown reference.
 
 NOTE: **Note:** We encourage you to view this document as [rendered by GitLab itself](https://gitlab.com/gitlab-org/gitlab/blob/master/doc/user/markdown.md).
@@ -154,12 +154,11 @@ Color written inside backticks will be followed by a color "chip":
 
 ### Diagrams and flowcharts
 
-It's possible to generate diagrams and flowcharts from text in GitLab using [Mermaid](https://mermaidjs.github.io/) or [PlantUML](http://plantuml.com).
+It's possible to generate diagrams and flowcharts from text in GitLab using [Mermaid](https://mermaidjs.github.io/) or [PlantUML](https://plantuml.com).
 
 #### Mermaid
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/15107) in
-GitLab 10.3.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/15107) in GitLab 10.3.
 
 Visit the [official page](https://mermaidjs.github.io/) for more details. If you're new to using Mermaid or need help identifying issues in your Mermaid code, the [Mermaid Live Editor](https://mermaid-js.github.io/mermaid-live-editor/) is a helpful tool for creating and resolving issues within Mermaid diagrams.
 

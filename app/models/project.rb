@@ -67,10 +67,7 @@ class Project < ApplicationRecord
   default_value_for :resolve_outdated_diff_discussions, false
   default_value_for :container_registry_enabled, gitlab_config_features.container_registry
   default_value_for(:repository_storage) do
-    # We need to ensure application settings are fresh when we pick
-    # a repository storage to use.
-    Gitlab::CurrentSettings.expire_current_application_settings
-    Gitlab::CurrentSettings.pick_repository_storage
+    pick_repository_storage
   end
 
   default_value_for(:shared_runners_enabled) { Gitlab::CurrentSettings.shared_runners_enabled }
@@ -199,6 +196,7 @@ class Project < ApplicationRecord
   has_one :metrics_setting, inverse_of: :project, class_name: 'ProjectMetricsSetting'
   has_one :grafana_integration, inverse_of: :project
   has_one :project_setting, ->(project) { where_or_create_by(project: project) }, inverse_of: :project
+  has_one :alerting_setting, inverse_of: :project, class_name: 'Alerting::ProjectAlertingSetting'
 
   # Merge Requests for target project should be removed with it
   has_many :merge_requests, foreign_key: 'target_project_id', inverse_of: :target_project
@@ -254,6 +252,8 @@ class Project < ApplicationRecord
 
   has_many :prometheus_metrics
   has_many :prometheus_alerts, inverse_of: :project
+  has_many :prometheus_alert_events, inverse_of: :project
+  has_many :self_managed_prometheus_alert_events, inverse_of: :project
 
   # Container repositories need to remove data from the container registry,
   # which is not managed by the DB. Hence we're still using dependent: :destroy
@@ -332,6 +332,7 @@ class Project < ApplicationRecord
   accepts_nested_attributes_for :metrics_setting, update_only: true, allow_destroy: true
   accepts_nested_attributes_for :grafana_integration, update_only: true, allow_destroy: true
   accepts_nested_attributes_for :prometheus_service, update_only: true
+  accepts_nested_attributes_for :alerting_setting, update_only: true
 
   delegate :feature_available?, :builds_enabled?, :wiki_enabled?,
     :merge_requests_enabled?, :forking_enabled?, :issues_enabled?,
@@ -347,7 +348,6 @@ class Project < ApplicationRecord
   delegate :members, to: :team, prefix: true
   delegate :add_user, :add_users, to: :team
   delegate :add_guest, :add_reporter, :add_developer, :add_maintainer, :add_role, to: :team
-  delegate :add_master, to: :team # @deprecated
   delegate :group_runners_enabled, :group_runners_enabled=, :group_runners_enabled?, to: :ci_cd_settings
   delegate :root_ancestor, to: :namespace, allow_nil: true
   delegate :last_pipeline, to: :commit, allow_nil: true
@@ -589,9 +589,9 @@ class Project < ApplicationRecord
     # case-insensitive.
     #
     # query - The search query as a String.
-    def search(query)
-      if Feature.enabled?(:project_search_by_full_path, default_enabled: true)
-        joins(:route).fuzzy_search(query, [Route.arel_table[:path], :name, :description])
+    def search(query, include_namespace: false)
+      if include_namespace && Feature.enabled?(:project_search_by_full_path, default_enabled: true)
+        joins(:route).fuzzy_search(query, [Route.arel_table[:path], Route.arel_table[:name], :description])
       else
         fuzzy_search(query, [:path, :name, :description])
       end
@@ -855,6 +855,12 @@ class Project < ApplicationRecord
 
   def import_status
     import_state&.status || 'none'
+  end
+
+  def jira_import_status
+    return import_status if jira_force_import?
+
+    import_data&.becomes(JiraImportData)&.projects.blank? ? 'none' : 'finished'
   end
 
   def human_import_status_name
@@ -1292,10 +1298,6 @@ class Project < ApplicationRecord
     @monitoring_service ||= monitoring_services.reorder(nil).find_by(active: true)
   end
 
-  def jira_tracker?
-    issues_tracker.to_param == 'jira'
-  end
-
   def avatar_in_git
     repository.avatar
   end
@@ -1602,10 +1604,6 @@ class Project < ApplicationRecord
     strong_memoize(:wiki) do
       ProjectWiki.new(self, self.owner)
     end
-  end
-
-  def jira_tracker_active?
-    jira_tracker? && jira_service.active
   end
 
   def allowed_to_share_with_group?
@@ -2414,6 +2412,12 @@ class Project < ApplicationRecord
     branch_protection = Gitlab::Access::BranchProtection.new(self.namespace.default_branch_protection)
 
     branch_protection.fully_protected? || branch_protection.developer_can_merge?
+  end
+
+  def environments_for_scope(scope)
+    quoted_scope = ::Gitlab::SQL::Glob.q(scope)
+
+    environments.where("name LIKE (#{::Gitlab::SQL::Glob.to_like(quoted_scope)})") # rubocop:disable GitlabSecurity/SqlInjection
   end
 
   private

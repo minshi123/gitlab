@@ -90,10 +90,6 @@ module EE
         @subject.feature_available?(:security_dashboard)
       end
 
-      condition(:prometheus_alerts_enabled) do
-        @subject.feature_available?(:prometheus_alerts, @user)
-      end
-
       with_scope :subject
       condition(:license_scanning_enabled) do
         @subject.feature_available?(:license_scanning) || @subject.feature_available?(:license_management)
@@ -174,6 +170,7 @@ module EE
 
       rule { can?(:developer_access) }.policy do
         enable :admin_board
+        enable :read_vulnerability_feedback
         enable :create_vulnerability_feedback
         enable :destroy_vulnerability_feedback
         enable :update_vulnerability_feedback
@@ -189,8 +186,6 @@ module EE
 
       rule { can?(:public_access) }.enable :read_package
 
-      rule { can?(:read_build) & can?(:download_code) }.enable :read_security_findings
-
       rule { security_dashboard_enabled & can?(:developer_access) }.enable :read_vulnerability
 
       rule { can?(:read_merge_request) & can?(:read_pipeline) }.enable :read_merge_train
@@ -204,8 +199,6 @@ module EE
       end
 
       rule { threat_monitoring_enabled & (auditor | can?(:developer_access)) }.enable :read_threat_monitoring
-
-      rule { can?(:read_security_findings) }.enable :read_vulnerability_feedback
 
       rule { dependency_scanning_enabled & can?(:download_code) }.enable :read_dependencies
 
@@ -238,8 +231,6 @@ module EE
       end
 
       rule { license_scanning_enabled & can?(:maintainer_access) }.enable :admin_software_license_policy
-
-      rule { prometheus_alerts_enabled & can?(:maintainer_access) }.enable :read_prometheus_alerts
 
       rule { auditor }.policy do
         enable :public_user_access

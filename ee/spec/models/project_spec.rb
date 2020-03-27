@@ -22,7 +22,6 @@ describe Project do
 
     it { is_expected.to have_one(:import_state).class_name('ProjectImportState') }
     it { is_expected.to have_one(:repository_state).class_name('ProjectRepositoryState').inverse_of(:project) }
-    it { is_expected.to have_one(:alerting_setting).class_name('Alerting::ProjectAlertingSetting') }
     it { is_expected.to have_one(:status_page_setting).class_name('StatusPageSetting') }
 
     it { is_expected.to have_many(:reviews).inverse_of(:project) }
@@ -431,24 +430,6 @@ describe Project do
           end
         end
       end
-    end
-  end
-
-  describe '#environments_for_scope' do
-    let_it_be(:project, reload: true) { create(:project) }
-
-    before do
-      create_list(:environment, 2, project: project)
-    end
-
-    it 'retrieves all project environments when using the * wildcard' do
-      expect(project.environments_for_scope("*")).to eq(project.environments)
-    end
-
-    it 'retrieves a specific project environment when using the name of that environment' do
-      environment = project.environments.first
-
-      expect(project.environments_for_scope(environment.name)).to eq([environment])
     end
   end
 

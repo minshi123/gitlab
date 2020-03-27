@@ -63,6 +63,11 @@ input AdminSidekiqQueuesDeleteJobsInput {
   queueName: String!
 
   """
+  Delete jobs matching related_class in the context metadata
+  """
+  relatedClass: String
+
+  """
   Delete jobs matching root_namespace in the context metadata
   """
   rootNamespace: String
@@ -1864,6 +1869,11 @@ type Environment {
   Human-readable name of the environment
   """
   name: String!
+
+  """
+  State of the environment, for example: available/stopped
+  """
+  state: String!
 }
 
 """
@@ -2548,7 +2558,7 @@ type EpicIssue implements Noteable {
   epicIssueId: ID!
 
   """
-  Current health status. Available only when feature flag `save_issuable_health_status` is enabled
+  Current health status. Returns null if `save_issuable_health_status` feature flag is disabled.
   """
   healthStatus: HealthStatus
 
@@ -3220,6 +3230,106 @@ type Group {
   id: ID!
 
   """
+  Issues of the group
+  """
+  issues(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    ID of a user assigned to the issues, "none" and "any" values supported
+    """
+    assigneeId: String
+
+    """
+    Username of a user assigned to the issues
+    """
+    assigneeUsername: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Issues closed after this date
+    """
+    closedAfter: Time
+
+    """
+    Issues closed before this date
+    """
+    closedBefore: Time
+
+    """
+    Issues created after this date
+    """
+    createdAfter: Time
+
+    """
+    Issues created before this date
+    """
+    createdBefore: Time
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    IID of the issue. For example, "1"
+    """
+    iid: String
+
+    """
+    List of IIDs of issues. For example, [1, 2]
+    """
+    iids: [String!]
+
+    """
+    Labels applied to this issue
+    """
+    labelName: [String]
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+
+    """
+    Milestones applied to this issue
+    """
+    milestoneTitle: [String]
+
+    """
+    Search query for finding issues by title or description
+    """
+    search: String
+
+    """
+    Sort issues by this criteria
+    """
+    sort: IssueSort = created_desc
+
+    """
+    Current state of this issue
+    """
+    state: IssuableState
+
+    """
+    Issues updated after this date
+    """
+    updatedAfter: Time
+
+    """
+    Issues updated before this date
+    """
+    updatedBefore: Time
+  ): IssueConnection
+
+  """
   Indicates if Large File Storage (LFS) is enabled for namespace
   """
   lfsEnabled: Boolean
@@ -3539,7 +3649,7 @@ type Issue implements Noteable {
   epic: Epic
 
   """
-  Current health status. Available only when feature flag `save_issuable_health_status` is enabled
+  Current health status. Returns null if `save_issuable_health_status` feature flag is disabled.
   """
   healthStatus: HealthStatus
 
@@ -3992,6 +4102,58 @@ enum IssueState {
 Represents untyped JSON
 """
 scalar JSON
+
+type JiraImport {
+  """
+  Project key for the imported Jira project
+  """
+  jiraProjectKey: String!
+
+  """
+  Timestamp of when the Jira import was created/started
+  """
+  scheduledAt: Time
+
+  """
+  User that started the Jira import
+  """
+  scheduledBy: User
+}
+
+"""
+The connection type for JiraImport.
+"""
+type JiraImportConnection {
+  """
+  A list of edges.
+  """
+  edges: [JiraImportEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [JiraImport]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type JiraImportEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: JiraImport
+}
 
 type Label {
   """
@@ -5046,6 +5208,7 @@ type Mutation {
   will be destroyed during the update, and no Note will be returned
   """
   updateNote(input: UpdateNoteInput!): UpdateNotePayload
+  updateRequirement(input: UpdateRequirementInput!): UpdateRequirementPayload
   updateSnippet(input: UpdateSnippetInput!): UpdateSnippetPayload
 }
 
@@ -5648,7 +5811,7 @@ type Project {
   id: ID!
 
   """
-  Status of project import background job of the project
+  Status of import background job of the project
   """
   importStatus: String
 
@@ -5836,6 +5999,36 @@ type Project {
   (deprecated) Does this project have issues enabled?. Use `issues_access_level` instead
   """
   issuesEnabled: Boolean
+
+  """
+  Status of Jira import background job of the project
+  """
+  jiraImportStatus: String
+
+  """
+  Jira imports into the project
+  """
+  jiraImports(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+  ): JiraImportConnection
 
   """
   (deprecated) Enable jobs for this project. Use `builds_access_level` instead
@@ -6041,6 +6234,11 @@ type Project {
   ): Requirement
 
   """
+  Number of requirements for the project by their state
+  """
+  requirementStatesCount: RequirementStatesCount
+
+  """
   Find requirements. Available only when feature flag `requirements_management` is enabled.
   """
   requirements(
@@ -6213,6 +6411,26 @@ type Project {
     Returns the last _n_ elements from the list.
     """
     last: Int
+
+    """
+    Filter vulnerabilities by project
+    """
+    projectId: [ID!]
+
+    """
+    Filter vulnerabilities by report type
+    """
+    reportType: [VulnerabilityReportType!]
+
+    """
+    Filter vulnerabilities by severity
+    """
+    severity: [VulnerabilitySeverity!]
+
+    """
+    Filter vulnerabilities by state
+    """
+    state: [VulnerabilityState!]
   ): VulnerabilityConnection
 
   """
@@ -6820,6 +7038,21 @@ State of a requirement
 enum RequirementState {
   ARCHIVED
   OPENED
+}
+
+"""
+Counts of requirements by their state.
+"""
+type RequirementStatesCount {
+  """
+  Number of archived requirements
+  """
+  archived: Int
+
+  """
+  Number of opened requirements
+  """
+  opened: Int
 }
 
 type RootStorageStatistics {
@@ -8496,6 +8729,56 @@ type UpdateNotePayload {
   The note after mutation
   """
   note: Note
+}
+
+"""
+Autogenerated input type of UpdateRequirement
+"""
+input UpdateRequirementInput {
+  """
+  A unique identifier for the client performing the mutation.
+  """
+  clientMutationId: String
+
+  """
+  The iid of the requirement to update
+  """
+  iid: String!
+
+  """
+  The project full path the requirement is associated with
+  """
+  projectPath: ID!
+
+  """
+  State of the requirement
+  """
+  state: RequirementState
+
+  """
+  Title of the requirement
+  """
+  title: String
+}
+
+"""
+Autogenerated return type of UpdateRequirement
+"""
+type UpdateRequirementPayload {
+  """
+  A unique identifier for the client performing the mutation.
+  """
+  clientMutationId: String
+
+  """
+  Reasons why the mutation failed.
+  """
+  errors: [String!]!
+
+  """
+  The requirement after mutation
+  """
+  requirement: Requirement
 }
 
 """

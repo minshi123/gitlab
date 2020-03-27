@@ -6,6 +6,7 @@ describe API::Releases do
   let(:project) { create(:project, :repository, :private) }
   let(:maintainer) { create(:user) }
   let(:reporter) { create(:user) }
+  let(:developer) { create(:user) }
   let(:guest) { create(:user) }
   let(:non_project_member) { create(:user) }
   let(:commit) { create(:commit, project: project) }
@@ -15,6 +16,7 @@ describe API::Releases do
     project.add_maintainer(maintainer)
     project.add_reporter(reporter)
     project.add_guest(guest)
+    project.add_developer(developer)
 
     project.repository.add_tag(maintainer, 'v0.1', commit.id)
     project.repository.add_tag(maintainer, 'v0.2', commit.id)
@@ -102,6 +104,21 @@ describe API::Releases do
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response.first['upcoming_release']).to eq(false)
+    end
+
+    it 'avoids N+1 queries' do
+      create(:release, :with_evidence, project: project, tag: 'v0.1', author: maintainer)
+
+      control_count = ActiveRecord::QueryRecorder.new do
+        get api("/projects/#{project.id}/releases", maintainer)
+      end.count
+
+      create(:release, :with_evidence, project: project, tag: 'v0.1', author: maintainer)
+      create(:release, :with_evidence, project: project, tag: 'v0.1', author: maintainer)
+
+      expect do
+        get api("/projects/#{project.id}/releases", maintainer)
+      end.not_to exceed_query_limit(control_count)
     end
 
     context 'when tag does not exist in git repository' do
@@ -231,6 +248,24 @@ describe API::Releases do
           .to match_array(release.sources.map(&:format))
         expect(json_response['assets']['sources'].map { |h| h['url'] })
           .to match_array(release.sources.map(&:url))
+      end
+
+      context 'with evidence' do
+        let!(:evidence) { create(:evidence, release: release) }
+
+        it 'returns the evidence' do
+          get api("/projects/#{project.id}/releases/v0.1", maintainer)
+
+          expect(json_response['evidences'].count).to eq(1)
+        end
+
+        it '#collected_at' do
+          Timecop.freeze(Time.now.round) do
+            get api("/projects/#{project.id}/releases/v0.1", maintainer)
+
+            expect(json_response['evidences'].first['collected_at'].to_datetime.to_i).to be_within(1.minute).of(release.evidences.first.created_at.to_i)
+          end
+        end
       end
 
       context 'when release has link asset' do
@@ -725,7 +760,7 @@ describe API::Releases do
         end
 
         it 'does not create an Evidence object', :sidekiq_inline do
-          expect { subject }.not_to change(Evidence, :count)
+          expect { subject }.not_to change(Releases::Evidence, :count)
         end
 
         it 'is a historical release' do
@@ -755,7 +790,7 @@ describe API::Releases do
         end
 
         it 'creates Evidence', :sidekiq_inline do
-          expect { subject }.to change(Evidence, :count).by(1)
+          expect { subject }.to change(Releases::Evidence, :count).by(1)
         end
 
         it 'is not a historical release' do
@@ -785,7 +820,7 @@ describe API::Releases do
         end
 
         it 'creates Evidence', :sidekiq_inline do
-          expect { subject }.to change(Evidence, :count).by(1)
+          expect { subject }.to change(Releases::Evidence, :count).by(1)
         end
 
         it 'is not a historical release' do

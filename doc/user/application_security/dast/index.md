@@ -4,8 +4,7 @@ type: reference, howto
 
 # Dynamic Application Security Testing (DAST) **(ULTIMATE)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/4348)
-in [GitLab Ultimate](https://about.gitlab.com/pricing/) 10.4.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/4348) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 10.4.
 
 NOTE: **4 of the top 6 attacks were application based.**
 Download our whitepaper,
@@ -87,7 +86,7 @@ There are two ways to define the URL to be scanned by DAST:
 
 1. Add it in an `environment_url.txt` file at the root of your project.
     This is great for testing in dynamic environments. In order to run DAST against
-    an app that is dynamically created during a GitLab CI pipeline, have the app
+    an app that is dynamically created during a GitLab CI/CD pipeline, have the app
     persist its domain in an `environment_url.txt` file, and DAST will
     automatically parse that file to find its scan target.
     You can see an [example](https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Deploy.gitlab-ci.yml)
@@ -218,7 +217,7 @@ It's also possible to add the `Gitlab-DAST-Permission` header via a proxy.
 
 The following config allows NGINX to act as a reverse proxy and add the `Gitlab-DAST-Permission` [header](http://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header):
 
-```
+```nginx
 # default.conf
 server {
     listen 80;
@@ -238,7 +237,7 @@ to add the `Gitlab-DAST-Permission` [header](https://httpd.apache.org/docs/curre
 
 To do so, add the following lines to `httpd.conf`:
 
-```
+```plaintext
 # httpd.conf
 LoadModule proxy_module modules/mod_proxy.so
 LoadModule proxy_connect_module modules/mod_proxy_connect.so
@@ -473,7 +472,7 @@ Since it keeps most of its information in memory during a scan,
 it is possible for DAST to run out of memory while scanning large applications.
 This results in the following error:
 
-```
+```plaintext
 [zap.out] java.lang.OutOfMemoryError: Java heap space
 ```
 

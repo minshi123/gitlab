@@ -19,8 +19,6 @@ class Snippet < ApplicationRecord
 
   MAX_FILE_COUNT = 1
 
-  ignore_column :repository_storage, remove_with: '12.10', remove_after: '2020-03-22'
-
   cache_markdown_field :title, pipeline: :single_line
   cache_markdown_field :description
   cache_markdown_field :content
@@ -288,20 +286,19 @@ class Snippet < ApplicationRecord
   end
 
   def repository_storage
-    snippet_repository&.shard_name ||
-      Gitlab::CurrentSettings.pick_repository_storage
+    snippet_repository&.shard_name || self.class.pick_repository_storage
   end
 
   def create_repository
     return if repository_exists? && snippet_repository
 
     repository.create_if_not_exists
-    track_snippet_repository
+    track_snippet_repository(repository.storage)
   end
 
-  def track_snippet_repository
-    repository = snippet_repository || build_snippet_repository
-    repository.update!(shard_name: repository_storage, disk_path: disk_path)
+  def track_snippet_repository(shard)
+    snippet_repo = snippet_repository || build_snippet_repository
+    snippet_repo.update!(shard_name: shard, disk_path: disk_path)
   end
 
   def can_cache_field?(field)

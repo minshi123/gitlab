@@ -22,7 +22,7 @@ You can specify one or more coverage reports to collect, including wildcard path
 GitLab will then take the coverage information in all the files and combine it
 together.
 
-For the coverage analysis to work, you have to provide a properly formated
+For the coverage analysis to work, you have to provide a properly formatted
 [Cobertura XML](https://cobertura.github.io/cobertura/) report to
 [`artifacts:reports:cobertura`](../../../ci/yaml/README.md#artifactsreportscobertura).
 This format was originally developed for Java, but most coverage analysis frameworks
@@ -67,7 +67,7 @@ test:
 
 This feature comes with the `:coverage_report_view` feature flag disabled by
 default. This feature is disabled due to some performance issues with very large
-data sets. When [the performance issue](https://gitlab.com/gitlab-org/gitlab/issues/37725)
+data sets. When [the performance issue](https://gitlab.com/gitlab-org/gitlab/issues/211410)
 is resolved, the feature will be enabled by default.
 
 To enable this feature, ask a GitLab administrator with Rails console access to

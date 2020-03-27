@@ -170,6 +170,9 @@ back up the volume where the configuration files are stored. If you have created
 the GitLab container according to the documentation, it should be under
 `/srv/gitlab/config`.
 
+For [GitLab Helm chart Installations](https://gitlab.com/gitlab-org/charts/gitlab) on a
+Kubernetes cluster, you must follow the [Backup the secrets](https://docs.gitlab.com/charts/backup-restore/backup.html#backup-the-secrets) instructions.  
+
 You may also want to back up any TLS keys and certificates, and your
 [SSH host keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
 
@@ -850,7 +853,7 @@ Example: Amazon EBS
 > A GitLab server using Omnibus GitLab hosted on Amazon AWS.
 > An EBS drive containing an ext4 filesystem is mounted at `/var/opt/gitlab`.
 > In this case you could make an application backup by taking an EBS snapshot.
-> The backup includes all repositories, uploads and Postgres data.
+> The backup includes all repositories, uploads and PostgreSQL data.
 
 Example: LVM snapshots + rsync
 
@@ -858,7 +861,7 @@ Example: LVM snapshots + rsync
 > Replicating the `/var/opt/gitlab` directory using rsync would not be reliable because too many files would change while rsync is running.
 > Instead of rsync-ing `/var/opt/gitlab`, we create a temporary LVM snapshot, which we mount as a read-only filesystem at `/mnt/gitlab_backup`.
 > Now we can have a longer running rsync job which will create a consistent replica on the remote server.
-> The replica includes all repositories, uploads and Postgres data.
+> The replica includes all repositories, uploads and PostgreSQL data.
 
 If you are running GitLab on a virtualized server you can possibly also create VM snapshots of the entire GitLab server.
 It is not uncommon however for a VM snapshot to require you to power down the server, so this approach is probably of limited practical use.

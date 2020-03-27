@@ -589,7 +589,7 @@ When viewing a custom dashboard of a project, you can view the original
 
 From each of the panels in the dashboard, you can access the context menu by clicking the **{ellipsis_v}** **More actions** dropdown box above the upper right corner of the panel to take actions related to the chart's data.
 
-![Context Menu](img/panel_context_menu_v12_8.png)
+![Context Menu](img/panel_context_menu_v12_10.png)
 
 The options are:
 
@@ -836,6 +836,11 @@ Prerequisites for embedding from a Grafana instance:
    ![GitLab Rendered Grafana Panel](img/rendered_grafana_embed_v12_5.png)
 
 ## Troubleshooting
+
+When troubleshooting issues with a managed Prometheus app, it is often useful to
+[view the Prometheus UI](../../../development/prometheus.md#access-the-ui-of-a-prometheus-managed-application-in-kubernetes).
+
+### "No data found" error on Metrics dashboard page
 
 If the "No data found" screen continues to appear, it could be due to:
 

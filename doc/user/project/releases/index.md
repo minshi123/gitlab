@@ -161,8 +161,7 @@ Release tag. Once the `released_at` date and time has passed, the badge is autom
 
 ## Creating a Release
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32812) in GitLab
-  12.9, Releases can be created directly through the GitLab Releases UI.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32812) in GitLab 12.9, Releases can be created directly through the GitLab Releases UI.
 
 NOTE: **Note:**
 Only users with Developer permissions or higher can create Releases.
@@ -332,6 +331,19 @@ case, the Evidence is scheduled to be collected at the `released_at` date and ti
 background job.
 
 If a past `released_at` is used, no Evidence is collected for the Release.
+
+## GitLab Releaser
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-releaser/-/merge_requests/6) in GitLab 12.10.
+
+GitLab Releaser is a CLI tool for managing GitLab Releases from the command line or from
+GitLab CI/CD's configuration file, `.gitlab-ci.yml`.
+
+With it, you can create, update, modify, and delete Releases right through the
+terminal.
+
+Read the [GitLab Releaser documentation](https://gitlab.com/gitlab-org/gitlab-releaser/-/tree/master/docs/index.md)
+for details.
 
 <!-- ## Troubleshooting
 

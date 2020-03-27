@@ -74,16 +74,14 @@ module Types
 
     field :children, ::Types::EpicType.connection_type, null: true,
           description: 'Children (sub-epics) of the epic',
-          resolver: ::Resolvers::EpicResolver
+          resolver: ::Resolvers::EpicsResolver
     field :labels, Types::LabelType.connection_type, null: true,
           description: 'Labels assigned to the epic'
 
     field :has_children, GraphQL::BOOLEAN_TYPE, null: false,
-          description: 'Indicates if the epic has children',
-          method: :has_children?
+          description: 'Indicates if the epic has children'
     field :has_issues, GraphQL::BOOLEAN_TYPE, null: false,
-          description: 'Indicates if the epic has direct issues',
-          method: :has_issues?
+          description: 'Indicates if the epic has direct issues'
 
     field :web_path, GraphQL::STRING_TYPE, null: false,
           description: 'Web path of the epic',
@@ -122,22 +120,16 @@ module Types
           description: 'A list of issues associated with the epic',
           resolver: Resolvers::EpicIssuesResolver
 
-    field :descendant_counts, Types::EpicDescendantCountType, null: true, complexity: 10,
+    field :descendant_counts, Types::EpicDescendantCountType, null: true,
       description: 'Number of open and closed descendant epics and issues',
       resolve: -> (epic, args, ctx) do
-        if Feature.enabled?(:unfiltered_epic_aggregates, epic.group, default_enabled: true)
-          Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(ctx, epic.id, COUNT)
-        else
-          Epics::DescendantCountService.new(epic, ctx[:current_user])
-        end
+        Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(ctx, epic.id, COUNT)
       end
 
-    field :descendant_weight_sum, Types::EpicDescendantWeightSumType, null: true, complexity: 10,
+    field :descendant_weight_sum, Types::EpicDescendantWeightSumType, null: true,
       description: "Total weight of open and closed issues in the epic and its descendants",
       resolve: -> (epic, args, ctx) do
-        if Feature.enabled?(:unfiltered_epic_aggregates, epic.group, default_enabled: true)
-          Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(ctx, epic.id, WEIGHT_SUM)
-        end
+        Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(ctx, epic.id, WEIGHT_SUM)
       end
 
     field :health_status, Types::EpicHealthStatusType, null: true, complexity: 10,
@@ -145,5 +137,20 @@ module Types
       resolve: -> (epic, args, ctx) do
         Epics::DescendantCountService.new(epic, ctx[:current_user])
       end
+
+    def has_children?
+      Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(context, object.id, COUNT) do |node, _aggregate_object|
+        node.children.any?
+      end
+    end
+
+    def has_issues?
+      Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(context, object.id, COUNT) do |node, _aggregate_object|
+        node.has_issues?
+      end
+    end
+
+    alias_method :has_children, :has_children?
+    alias_method :has_issues, :has_issues?
   end
 end

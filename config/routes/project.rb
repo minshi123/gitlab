@@ -75,7 +75,12 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
             put :reset_registration_token
           end
 
-          resource :operations, only: [:show, :update]
+          resource :operations, only: [:show, :update] do
+            member do
+              post :reset_alerting_token
+            end
+          end
+
           resource :integrations, only: [:show]
 
           resource :repository, only: [:show], controller: :repository do
@@ -170,8 +175,10 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :releases, only: [:index, :show, :edit], param: :tag, constraints: { tag: %r{[^/]+} } do
           member do
-            get :evidence
             get :downloads, path: 'downloads/*filepath', format: false
+            scope module: :releases do
+              resources :evidences, only: [:show]
+            end
           end
         end
 
@@ -339,6 +346,13 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
       end
 
       namespace :prometheus do
+        resources :alerts, constraints: { id: /\d+/ }, only: [:index, :create, :show, :update, :destroy] do
+          post :notify, on: :collection
+          member do
+            get :metrics_dashboard
+          end
+        end
+
         resources :metrics, constraints: { id: %r{[^\/]+} }, only: [:index, :new, :create, :edit, :update, :destroy] do
           get :active_common, on: :collection
         end

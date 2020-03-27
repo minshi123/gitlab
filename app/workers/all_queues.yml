@@ -325,6 +325,13 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: 
+- :name: gcp_cluster:cluster_update_app
+  :feature_category: :kubernetes_management
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
 - :name: gcp_cluster:cluster_upgrade_app
   :feature_category: :kubernetes_management
   :has_external_dependencies: true
@@ -337,6 +344,13 @@
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :cpu
+  :weight: 1
+  :idempotent: 
+- :name: gcp_cluster:cluster_wait_for_app_update
+  :feature_category: :kubernetes_management
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
   :weight: 1
   :idempotent: 
 - :name: gcp_cluster:cluster_wait_for_ingress_ip_address
@@ -528,7 +542,21 @@
   :resource_boundary: :unknown
   :weight: 2
   :idempotent: 
+- :name: incident_management:incident_management_process_prometheus_alert
+  :feature_category: :incident_management
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :cpu
+  :weight: 2
+  :idempotent: 
 - :name: jira_importer:jira_import_advance_stage
+  :feature_category: :importers
+  :has_external_dependencies: 
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: 
+- :name: jira_importer:jira_import_import_issue
   :feature_category: :importers
   :has_external_dependencies: 
   :urgency: :low
@@ -884,7 +912,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent: 
+  :idempotent: true
 - :name: update_namespace_statistics:namespaces_schedule_aggregation
   :feature_category: :source_code_management
   :has_external_dependencies: 
@@ -907,7 +935,7 @@
   :weight: 2
   :idempotent: true
 - :name: background_migration
-  :feature_category: :not_owned
+  :feature_category: :database
   :has_external_dependencies: 
   :urgency: :low
   :resource_boundary: :unknown
@@ -1203,7 +1231,7 @@
 - :name: project_export
   :feature_category: :importers
   :has_external_dependencies: 
-  :urgency: :low
+  :urgency: :throttled
   :resource_boundary: :memory
   :weight: 1
   :idempotent: 
@@ -1312,6 +1340,13 @@
   :resource_boundary: :unknown
   :weight: 3
   :idempotent: 
+- :name: update_highest_role
+  :feature_category: :authentication_and_authorization
+  :has_external_dependencies: 
+  :urgency: :high
+  :resource_boundary: :unknown
+  :weight: 2
+  :idempotent: true
 - :name: update_merge_requests
   :feature_category: :source_code_management
   :has_external_dependencies: 

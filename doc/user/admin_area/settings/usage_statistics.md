@@ -10,9 +10,12 @@ to perform various actions.
 All statistics are opt-out. You can enable/disable them in the
 **Admin Area > Settings > Metrics and profiling** section **Usage statistics**.
 
-NOTE: **Note:**
+## Network configuration
+
 Allow network traffic from your GitLab instance to IP address `104.196.17.203:443`, to send
 usage statistics to GitLab Inc.
+
+If your GitLab instance is behind a proxy, set the appropriate [proxy configuration variables](https://docs.gitlab.com/omnibus/settings/environment-variables.html).
 
 ## Version Check **(CORE ONLY)**
 
@@ -55,10 +58,10 @@ sequenceDiagram
 
 ## Usage Ping **(CORE ONLY)**
 
-> [Introduced][ee-557] in GitLab Enterprise Edition 8.10. More statistics
-[were added][ee-735] in GitLab Enterprise Edition
-8.12. [Moved to GitLab Core][ce-23361] in 9.1. More statistics
-[were added][ee-6602] in GitLab Ultimate 11.2.
+> - [Introduced][ee-557] in GitLab Enterprise Edition 8.10.
+> - More statistics [were added][ee-735] in GitLab Enterprise Edition 8.12.
+> - [Moved to GitLab Core][ce-23361] in 9.1.
+> - More statistics [were added][ee-6602] in GitLab Ultimate 11.2.
 
 GitLab sends a weekly payload containing usage data to GitLab Inc. The usage
 ping uses high-level data to help our product, support, and sales teams. It does

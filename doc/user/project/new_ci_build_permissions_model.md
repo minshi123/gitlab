@@ -186,7 +186,7 @@ echo -e "machine gitlab.com\nlogin gitlab-ci-token\npassword ${CI_JOB_TOKEN}" > 
 
 ### Git submodules
 
-To properly configure submodules with GitLab CI, read the
+To properly configure submodules with GitLab CI/CD, read the
 [Git submodules documentation][gitsub].
 
 ### Container Registry
@@ -213,7 +213,7 @@ project for which the job is triggered.
 
 This is how an example usage can look like:
 
-```
+```yaml
 test:
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY

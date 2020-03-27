@@ -373,7 +373,7 @@ Either way, the resulting Docker image is automatically pushed to the
 
 #### Auto Build using a Dockerfile
 
-If a project's repository contains a `Dockerfile`, Auto Build will use
+If a project's repository contains a `Dockerfile` at its root, Auto Build will use
 `docker build` to create a Docker image.
 
 If you are also using Auto Review Apps and Auto Deploy and choose to provide
@@ -535,18 +535,14 @@ in the first place, and thus not realize that it needs to re-apply the old confi
 
 > Introduced in [GitLab Ultimate][ee] 10.4.
 
-This is an optional step, since it requires a [review app](#auto-review-apps).
-If that requirement is not met, the job will be silently skipped.
-
 Dynamic Application Security Testing (DAST) uses the
 popular open source tool [OWASP ZAProxy](https://github.com/zaproxy/zaproxy)
 to perform an analysis on the current code and checks for potential security
 issues. The Auto DAST stage will be skipped on licenses other than Ultimate.
 
-Once the report is created, it's uploaded as an artifact which you can
-later download and check out.
-
-Any security warnings are also shown in the merge request widget. Read how
+Once the DAST scan is complete, any security warnings are shown
+on the [Security Dashboard](../../user/application_security/security_dashboard/index.md)
+and the Merge Request Widget. Read how
 [DAST works](../../user/application_security/dast/index.md).
 
 On your default branch, DAST scans an app deployed specifically for that purpose.
@@ -763,7 +759,7 @@ You must use a Kubernetes network plugin that implements support for
 `NetworkPolicy`. The default network plugin for Kubernetes (`kubenet`)
 [does not implement](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#kubenet)
 support for it. The [Cilium](https://cilium.io/) network plugin can be
-installed as a [cluster application](../../user/clusters/applications.md#install-cilium-using-gitlab-ci)
+installed as a [cluster application](../../user/clusters/applications.md#install-cilium-using-gitlab-cicd)
 to enable support for network policies.
 
 You can enable deployment of a network policy by setting the following
@@ -799,7 +795,7 @@ networkPolicy:
 ```
 
 For more information on how to install Network Policies, see
-[Install Cilium using GitLab CI](../../user/clusters/applications.md#install-cilium-using-gitlab-ci).
+[Install Cilium using GitLab CI/CD](../../user/clusters/applications.md#install-cilium-using-gitlab-cicd).
 
 #### Web Application Firewall (ModSecurity) customization
 
@@ -1351,8 +1347,7 @@ service:
 
 #### Deploy policy for staging and production environments
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-ci-yml/-/merge_requests/160)
-in GitLab 10.8.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-ci-yml/-/merge_requests/160) in GitLab 10.8.
 
 TIP: **Tip:**
 You can also set this inside your [project's settings](#deployment-strategy).
@@ -1370,8 +1365,7 @@ you when you're ready to manually deploy to production.
 
 #### Deploy policy for canary environments **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-ci-yml/-/merge_requests/171)
-in GitLab 11.0.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-ci-yml/-/merge_requests/171) in GitLab 11.0.
 
 A [canary environment](../../user/project/canary_deployments.md) can be used
 before any changes are deployed to production.

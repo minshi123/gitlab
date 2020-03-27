@@ -62,7 +62,7 @@ responsible for:
 - Liaising with their Product Manager to understand what documentation must be delivered, and when.
 - Requesting technical reviews from other developers within their group.
 - Requesting documentation reviews from the Technical Writer
-  [assigned to the DevOps stage group](https://about.gitlab.com/handbook/product/technical-writing/index.html#assignments)
+  [assigned to the DevOps stage group](https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments)
   that is delivering the new feature or feature enhancements.
 
 TIP: **Tip:**
@@ -91,8 +91,8 @@ the Product Manager and Technical Writer for a given issue:
   including:
   - Documentation [Structure and template](structure.md) page.
   - [Style Guide](styleguide.md).
-  - [Markdown Guide](https://about.gitlab.com/handbook/product/technical-writing/markdown-guide/).
-- Contact the Technical Writer for the relevant [DevOps stage](https://about.gitlab.com/handbook/product/technical-writing/index.html#assignments)
+  - [Markdown Guide](https://about.gitlab.com/handbook/engineering/ux/technical-writing/markdown-guide/).
+- Contact the Technical Writer for the relevant [DevOps stage](https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments)
   in your issue or merge request, or within `#docs` on GitLab Slack, if you:
   - Need any help to choose the correct place for documentation.
   - Want to discuss a documentation idea or outline.
@@ -408,7 +408,7 @@ To update GitLab documentation:
 1. Follow the described standards and processes listed on the page, including:
    - The [Structure and template](structure.md) page.
    - The [Style Guide](styleguide.md).
-   - The [Markdown Guide](https://about.gitlab.com/handbook/product/technical-writing/markdown-guide/).
+   - The [Markdown Guide](https://about.gitlab.com/handbook/engineering/ux/technical-writing/markdown-guide/).
 1. Follow GitLab's [Merge Request Guidelines](../contributing/merge_request_workflow.md#merge-request-guidelines).
 
 TIP: **Tip:**
@@ -423,7 +423,7 @@ Request help from the Technical Writing team if you:
 To request help:
 
 1. Locate the the Technical Writer for the relevant
-   [DevOps stage group](https://about.gitlab.com/handbook/product/technical-writing/index.html#assignments).
+   [DevOps stage group](https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments).
 1. Either:
    - If urgent help is required, directly assign the Technical Writer in the issue or in the merge request.
    - If non-urgent help is required, ping the Technical Writer in the issue or merge request.
@@ -439,7 +439,7 @@ Maintainers must make a good-faith effort to ensure that the content:
 - Meets the [Documentation Guidelines](index.md) and [Style Guide](styleguide.md).
 
 If the author or reviewer has any questions, they can mention the writer who is assigned to the relevant
-[DevOps stage group](https://about.gitlab.com/handbook/product/technical-writing/index.html#assignments).
+[DevOps stage group](https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments).
 
 The process involves the following:
 
@@ -449,7 +449,7 @@ The process involves the following:
 - Technical Writer (Optional). If not completed for a merge request prior to merging, must be scheduled
   post-merge. Schedule post-merge reviews only if an urgent merge is required. To request a:
   - Pre-merge review, assign the Technical Writer listed for the applicable
-    [DevOps stage group](https://about.gitlab.com/handbook/product/technical-writing/index.html#assignments).
+    [DevOps stage group](https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments).
   - Post-merge review, see [Post-merge reviews](#post-merge-reviews).
 - Maintainer. For merge requests, Maintainers:
   - Can always request any of the above reviews.

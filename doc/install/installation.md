@@ -47,7 +47,7 @@ If the highest number stable branch is unclear, check the [GitLab blog](https://
 This is the main directory structure you will end up with following the instructions
 of this page:
 
-```
+```plaintext
 |-- home
 |   |-- git
 |       |-- .ssh
@@ -147,7 +147,7 @@ ldd /usr/local/bin/git | grep pcre2
 
 The output should be similar to:
 
-```
+```plaintext
 libpcre2-8.so.0 => /usr/lib/libpcre2-8.so.0 (0x00007f08461c3000)
 ```
 
@@ -329,7 +329,7 @@ use of extensions and concurrent index removal, you need at least PostgreSQL 9.2
 
 1. Check if the `pg_trgm` extension is enabled:
 
-   ```shell
+   ```sql
    SELECT true AS enabled
    FROM pg_available_extensions
    WHERE name = 'pg_trgm'
@@ -338,7 +338,7 @@ use of extensions and concurrent index removal, you need at least PostgreSQL 9.2
 
    If the extension is enabled this will produce the following output:
 
-   ```
+   ```plaintext
    enabled
    ---------
     t
@@ -888,7 +888,7 @@ See the [OmniAuth integration documentation](../integration/omniauth.md).
 ### Build your projects
 
 GitLab can build your projects. To enable that feature, you need GitLab Runners to do that for you.
-See the [GitLab Runner section](https://about.gitlab.com/product/continuous-integration/#gitlab-runner) to install it.
+See the [GitLab Runner section](https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/#gitlab-runner) to install it.
 
 ### Adding your Trusted Proxies
 
@@ -904,7 +904,7 @@ for the changes to take effect.
 
 If you'd like to connect to a Redis server on a non-standard port or a different host, you can configure its connection string via the `config/resque.yml` file.
 
-```
+```yaml
 # example
 production:
   url: redis://redis.example.tld:6379
@@ -912,7 +912,7 @@ production:
 
 If you want to connect the Redis server via socket, use the "unix:" URL scheme and the path to the Redis socket file in the `config/resque.yml` file.
 
-```
+```yaml
 # example
 production:
   url: unix:/path/to/redis/socket
@@ -920,7 +920,7 @@ production:
 
 Also, you can use environment variables in the `config/resque.yml` file:
 
-```
+```yaml
 # example
 production:
   url: <%= ENV.fetch('GITLAB_REDIS_URL') %>
@@ -930,7 +930,7 @@ production:
 
 If you are running SSH on a non-standard port, you must change the GitLab user's SSH config.
 
-```
+```plaintext
 # Add to /home/git/.ssh/config
 host localhost          # Give your setup a name (here: override localhost)
     user git            # Your remote git user

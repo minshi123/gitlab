@@ -13,6 +13,7 @@ module Gitlab
           include Gitlab::Utils::StrongMemoize
 
           SERVICES = [
+            ::Metrics::Dashboard::GitlabAlertEmbedService,
             ::Metrics::Dashboard::CustomMetricEmbedService,
             ::Metrics::Dashboard::GrafanaMetricEmbedService,
             ::Metrics::Dashboard::DynamicEmbedService,
@@ -20,7 +21,7 @@ module Gitlab
             ::Metrics::Dashboard::SystemDashboardService,
             ::Metrics::Dashboard::PodDashboardService,
             ::Metrics::Dashboard::SelfMonitoringDashboardService,
-            ::Metrics::Dashboard::ProjectDashboardService
+            ::Metrics::Dashboard::CustomDashboardService
           ].freeze
 
           # Returns a class which inherits from the BaseService

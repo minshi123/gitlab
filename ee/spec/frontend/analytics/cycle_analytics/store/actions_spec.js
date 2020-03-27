@@ -1188,6 +1188,7 @@ describe('Cycle analytics actions', () => {
         .fetchDurationMedianData({
           dispatch,
           state: stateWithStages,
+          getters,
         })
         .then(() => {
           expect(dispatch).toHaveBeenNthCalledWith(1, 'requestDurationMedianData');
@@ -1208,6 +1209,7 @@ describe('Cycle analytics actions', () => {
         .fetchDurationMedianData({
           dispatch,
           state: stateWithStages,
+          getters,
         })
         .then(() => {
           expect(dispatch).toHaveBeenCalledWith(
@@ -1235,6 +1237,7 @@ describe('Cycle analytics actions', () => {
         .fetchDurationMedianData({
           dispatch,
           state: brokenState,
+          getters,
         })
         .then(() => {
           expect(dispatch).toHaveBeenCalledWith('receiveDurationMedianDataError');
@@ -1618,6 +1621,88 @@ describe('Cycle analytics actions', () => {
           .then(() => {
             shouldFlashAMessage('There was a problem refreshing the data, please try again');
           }));
+    });
+  });
+
+  describe('reorderStage', () => {
+    const stageId = 'cool-stage';
+    const payload = { id: stageId, move_after_id: '2', move_before_id: '8' };
+
+    beforeEach(() => {
+      state = { selectedGroup };
+    });
+
+    describe('with no errors', () => {
+      beforeEach(() => {
+        mock.onPut(stageEndpoint({ stageId })).replyOnce(httpStatusCodes.OK);
+      });
+
+      it(`dispatches the ${types.REQUEST_REORDER_STAGE} and ${types.RECEIVE_REORDER_STAGE_SUCCESS} actions`, done => {
+        testAction(
+          actions.reorderStage,
+          payload,
+          state,
+          [],
+          [{ type: 'requestReorderStage' }, { type: 'receiveReorderStageSuccess' }],
+          done,
+        );
+      });
+    });
+
+    describe('with errors', () => {
+      beforeEach(() => {
+        mock.onPut(stageEndpoint({ stageId })).replyOnce(httpStatusCodes.NOT_FOUND);
+      });
+
+      it(`dispatches the ${types.REQUEST_REORDER_STAGE} and ${types.RECEIVE_REORDER_STAGE_ERROR} actions `, done => {
+        testAction(
+          actions.reorderStage,
+          payload,
+          state,
+          [],
+          [
+            { type: 'requestReorderStage' },
+            { type: 'receiveReorderStageError', payload: { status: httpStatusCodes.NOT_FOUND } },
+          ],
+          done,
+        );
+      });
+    });
+  });
+
+  describe('receiveReorderStageError', () => {
+    beforeEach(() => {
+      setFixtures('<div class="flash-container"></div>');
+    });
+    it(`commits the ${types.RECEIVE_REORDER_STAGE_ERROR} mutation and flashes an error`, () => {
+      testAction(
+        actions.receiveReorderStageError,
+        null,
+        state,
+        [
+          {
+            type: types.RECEIVE_REORDER_STAGE_ERROR,
+          },
+        ],
+        [],
+      );
+
+      shouldFlashAMessage(
+        'There was an error updating the stage order. Please try reloading the page.',
+      );
+    });
+  });
+
+  describe('receiveReorderStageSuccess', () => {
+    it(`commits the ${types.RECEIVE_REORDER_STAGE_SUCCESS} mutation`, done => {
+      testAction(
+        actions.receiveReorderStageSuccess,
+        null,
+        state,
+        [{ type: types.RECEIVE_REORDER_STAGE_SUCCESS }],
+        [],
+        done,
+      );
     });
   });
 });

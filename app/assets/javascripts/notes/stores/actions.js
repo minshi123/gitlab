@@ -46,6 +46,10 @@ export const setNotesFetchedState = ({ commit }, state) =>
 
 export const toggleDiscussion = ({ commit }, data) => commit(types.TOGGLE_DISCUSSION, data);
 
+export const setExpandDiscussions = ({ commit }, { discussionIds, expanded }) => {
+  commit(types.SET_EXPAND_DISCUSSIONS, { discussionIds, expanded });
+};
+
 export const fetchDiscussions = ({ commit, dispatch }, { path, filter, persistFilter }) => {
   const config =
     filter !== undefined
@@ -54,6 +58,7 @@ export const fetchDiscussions = ({ commit, dispatch }, { path, filter, persistFi
 
   return axios.get(path, config).then(({ data }) => {
     commit(types.SET_INITIAL_DISCUSSIONS, data);
+
     dispatch('updateResolvableDiscussionsCounts');
   });
 };
@@ -62,6 +67,10 @@ export const updateDiscussion = ({ commit, state }, discussion) => {
   commit(types.UPDATE_DISCUSSION, discussion);
 
   return utils.findNoteObjectById(state.discussions, discussion.id);
+};
+
+export const setDiscussionSortDirection = ({ commit }, direction) => {
+  commit(types.SET_DISCUSSIONS_SORT, direction);
 };
 
 export const removeNote = ({ commit, dispatch, state }, note) => {

@@ -1,8 +1,7 @@
 # Elasticsearch integration **(STARTER ONLY)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/109 "Elasticsearch Merge Request") in GitLab [Starter](https://about.gitlab.com/pricing/) 8.4. Support
-> for [Amazon Elasticsearch](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-gsg.html) was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/1305) in GitLab
-> [Starter](https://about.gitlab.com/pricing/) 9.0.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/109 "Elasticsearch Merge Request") in GitLab [Starter](https://about.gitlab.com/pricing/) 8.4.
+> - Support for [Amazon Elasticsearch](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-gsg.html) was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/1305) in GitLab [Starter](https://about.gitlab.com/pricing/) 9.0.
 
 This document describes how to set up Elasticsearch with GitLab. Once enabled,
 you'll have the benefit of fast search response times and the advantage of two
@@ -427,6 +426,15 @@ There are several rake tasks available to you via the command line:
   - Performs an Elasticsearch import that indexes the snippets data.
 - [`sudo gitlab-rake gitlab:elastic:projects_not_indexed`](https://gitlab.com/gitlab-org/gitlab/blob/master/ee/lib/tasks/gitlab/elastic.rake)
   - Displays which projects are not indexed.
+- [`sudo gitlab-rake gitlab:elastic:reindex_to_another_cluster[<SOURCE_CLUSTER_URL>,<DESTINATION_CLUSTER_URL>]`](https://gitlab.com/gitlab-org/gitlab/blob/master/ee/lib/tasks/gitlab/elastic.rake)
+  - Creates a new index in the destination cluster and triggers a [reindex from
+   remote](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html#reindex-from-remote)
+   such that the index is fully copied from the source index. This can be
+   useful when you wish to perform a migration to a new cluster as this
+   reindexing should be quicker than reindexing via GitLab. Note that remote
+   reindex requires your source cluster to be whitelisted in your destination
+   cluster in Elasticsearch settings as per [the
+   documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html#reindex-from-remote).
 
 ### Environment Variables
 
@@ -563,7 +571,7 @@ Here are some common pitfalls and how to overcome them:
   If you enabled Elasticsearch before GitLab 8.12 and have not rebuilt indexes you will get
   exception in lots of different cases:
 
-  ```text
+  ```plaintext
   Elasticsearch::Transport::Transport::Errors::BadRequest([400] {
       "error": {
           "root_cause": [{
@@ -587,7 +595,7 @@ Here are some common pitfalls and how to overcome them:
 
 - Exception `Elasticsearch::Transport::Transport::Errors::RequestEntityTooLarge`
 
-  ```text
+  ```plaintext
   [413] {"Message":"Request size exceeded 10485760 bytes"}
   ```
 
@@ -619,11 +627,11 @@ Here are some common pitfalls and how to overcome them:
 
 - **I'm getting a `health check timeout: no Elasticsearch node available` error in Sidekiq during the indexing process**
 
-   ```
+   ```plaintext
    Gitlab::Elastic::Indexer::Error: time="2020-01-23T09:13:00Z" level=fatal msg="health check timeout: no Elasticsearch node available"
    ```
 
-   You probably have not used either `http://` or `https://` as part of your value in the **"URL"** field of the Elasticseach Integration Menu. Please make sure you are using either `http://` or `https://` in this field as the [Elasticsearch client for Go](https://github.com/olivere/elastic) that we are using [needs the prefix for the URL to be acceped as valid](https://github.com/olivere/elastic/commit/a80af35aa41856dc2c986204e2b64eab81ccac3a).
+   You probably have not used either `http://` or `https://` as part of your value in the **"URL"** field of the Elasticseach Integration Menu. Please make sure you are using either `http://` or `https://` in this field as the [Elasticsearch client for Go](https://github.com/olivere/elastic) that we are using [needs the prefix for the URL to be accepted as valid](https://github.com/olivere/elastic/commit/a80af35aa41856dc2c986204e2b64eab81ccac3a).
    Once you have corrected the formatting of the URL, delete the index (via the [dedicated rake task](#gitlab-elasticsearch-rake-tasks)) and [reindex the content of your instance](#adding-gitlabs-data-to-the-elasticsearch-index).
 
 ### Reverting to basic search
@@ -632,5 +640,5 @@ Sometimes there may be issues with your Elasticsearch index data and as such
 GitLab will allow you to revert to "basic search" when there are no search
 results and assuming that basic search is supported in that scope. This "basic
 search" will behave as though you don't have Elasticsearch enabled at all for
-your instance and search using other data sources (ie. Postgres data and Git
+your instance and search using other data sources (ie. PostgreSQL data and Git
 data).

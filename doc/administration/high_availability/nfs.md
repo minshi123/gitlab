@@ -132,7 +132,7 @@ across NFS. The GitLab support team will not be able to assist on performance is
 this configuration.
 
 Additionally, this configuration is specifically warned against in the
-[Postgres Documentation](https://www.postgresql.org/docs/current/creating-cluster.html#CREATING-CLUSTER-NFS):
+[PostgreSQL Documentation](https://www.postgresql.org/docs/current/creating-cluster.html#CREATING-CLUSTER-NFS):
 
 >PostgreSQL does nothing special for NFS file systems, meaning it assumes NFS behaves exactly like
 >locally-connected drives. If the client or server NFS implementation does not provide standard file
@@ -224,7 +224,7 @@ following are the 4 locations need to be shared:
 | `/var/opt/gitlab/git-data` | Git repository data. This will account for a large portion of your data | `git_data_dirs({"default" => { "path" => "/var/opt/gitlab/git-data"} })`
 | `/var/opt/gitlab/gitlab-rails/uploads` | User uploaded attachments | `gitlab_rails['uploads_directory'] = '/var/opt/gitlab/gitlab-rails/uploads'`
 | `/var/opt/gitlab/gitlab-rails/shared` | Build artifacts, GitLab Pages, LFS objects, temp files, etc. If you're using LFS this may also account for a large portion of your data | `gitlab_rails['shared_path'] = '/var/opt/gitlab/gitlab-rails/shared'`
-| `/var/opt/gitlab/gitlab-ci/builds` | GitLab CI build traces | `gitlab_ci['builds_directory'] = '/var/opt/gitlab/gitlab-ci/builds'`
+| `/var/opt/gitlab/gitlab-ci/builds` | GitLab CI/CD build traces | `gitlab_ci['builds_directory'] = '/var/opt/gitlab/gitlab-ci/builds'`
 
 Other GitLab directories should not be shared between nodes. They contain
 node-specific files and GitLab code that does not need to be shared. To ship

@@ -189,7 +189,7 @@ class MergeRequest < ApplicationRecord
     end
 
     # rubocop: disable CodeReuse/ServiceClass
-    after_transition unchecked: :cannot_be_merged do |merge_request, transition|
+    after_transition [:unchecked, :checking] => :cannot_be_merged do |merge_request, transition|
       if merge_request.notify_conflict?
         NotificationService.new.merge_request_unmergeable(merge_request)
         TodoService.new.merge_request_became_unmergeable(merge_request)
@@ -260,8 +260,6 @@ class MergeRequest < ApplicationRecord
   scope :including_metrics, -> do
     includes(:metrics)
   end
-
-  ignore_column :state, remove_with: '12.10', remove_after: '2020-03-22'
 
   after_save :keep_around_commit, unless: :importing?
 
@@ -410,8 +408,16 @@ class MergeRequest < ApplicationRecord
     "#{project.to_reference_base(from, full: full)}#{reference}"
   end
 
-  def context_commits
-    @context_commits ||= merge_request_context_commits.map(&:to_commit)
+  def context_commits(limit: nil)
+    @context_commits ||= merge_request_context_commits.limit(limit).map(&:to_commit)
+  end
+
+  def recent_context_commits
+    context_commits(limit: MergeRequestDiff::COMMITS_SAFE_SIZE)
+  end
+
+  def context_commits_count
+    context_commits.count
   end
 
   def commits(limit: nil)

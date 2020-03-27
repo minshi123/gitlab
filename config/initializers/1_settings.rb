@@ -74,15 +74,6 @@ if Settings.ldap['enabled'] || Rails.env.test?
   end
 end
 
-Gitlab.ee do
-  Settings['smartcard'] ||= Settingslogic.new({})
-  Settings.smartcard['enabled'] = false if Settings.smartcard['enabled'].nil?
-  Settings.smartcard['client_certificate_required_host'] = Settings.gitlab['host'] if Settings.smartcard['client_certificate_required_host'].nil?
-  Settings.smartcard['client_certificate_required_port'] = 3444 if Settings.smartcard['client_certificate_required_port'].nil?
-  Settings.smartcard['required_for_git_access'] = false if Settings.smartcard['required_for_git_access'].nil?
-  Settings.smartcard['san_extensions'] = false if Settings.smartcard['san_extensions'].nil?
-end
-
 Settings['omniauth'] ||= Settingslogic.new({})
 Settings.omniauth['enabled'] = true if Settings.omniauth['enabled'].nil?
 Settings.omniauth['auto_sign_in_with_provider'] = false if Settings.omniauth['auto_sign_in_with_provider'].nil?
@@ -379,6 +370,14 @@ Gitlab.ee do
 end
 
 #
+# Terraform state
+#
+Settings['terraform_state'] ||= Settingslogic.new({})
+Settings.terraform_state['enabled']      = true if Settings.terraform_state['enabled'].nil?
+Settings.terraform_state['storage_path'] = Settings.absolute(Settings.terraform_state['storage_path'] || File.join(Settings.shared['path'], "terraform_state"))
+Settings.terraform_state['object_store'] = ObjectStoreSettings.parse(Settings.terraform_state['object_store'])
+
+#
 # Mattermost
 #
 Settings['mattermost'] ||= Settingslogic.new({})
@@ -669,6 +668,18 @@ Gitlab.ee do
   if Settings.kerberos['enabled'] && !Settings.omniauth.providers.map(&:name).include?('kerberos_spnego')
     Settings.omniauth.providers << Settingslogic.new({ 'name' => 'kerberos_spnego' })
   end
+end
+
+#
+# Smartcard
+#
+Gitlab.ee do
+  Settings['smartcard'] ||= Settingslogic.new({})
+  Settings.smartcard['enabled'] = false if Settings.smartcard['enabled'].nil?
+  Settings.smartcard['client_certificate_required_host'] = Settings.gitlab.host if Settings.smartcard['client_certificate_required_host'].nil?
+  Settings.smartcard['client_certificate_required_port'] = 3444 if Settings.smartcard['client_certificate_required_port'].nil?
+  Settings.smartcard['required_for_git_access'] = false if Settings.smartcard['required_for_git_access'].nil?
+  Settings.smartcard['san_extensions'] = false if Settings.smartcard['san_extensions'].nil?
 end
 
 #

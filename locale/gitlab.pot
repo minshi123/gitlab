@@ -22,6 +22,9 @@ msgstr ""
 msgid " (from %{timeoutSource})"
 msgstr ""
 
+msgid " Collected %{time}"
+msgstr ""
+
 msgid " Please sign in."
 msgstr ""
 
@@ -215,9 +218,6 @@ msgid "%{actionText} & %{openOrClose} %{noteable}"
 msgstr ""
 
 msgid "%{authorsName}'s thread"
-msgstr ""
-
-msgid "%{buy_now_link_start}Buy now!%{link_end}"
 msgstr ""
 
 msgid "%{commit_author_link} authored %{commit_timeago}"
@@ -443,6 +443,9 @@ msgstr ""
 msgid "%{state} epics"
 msgstr ""
 
+msgid "%{strongStart}Note:%{strongEnd} Once a custom stage has been added you can re-order stages by dragging them into the desired position."
+msgstr ""
+
 msgid "%{strong_start}%{branch_count}%{strong_end} Branch"
 msgid_plural "%{strong_start}%{branch_count}%{strong_end} Branches"
 msgstr[0] ""
@@ -454,6 +457,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "%{strong_start}%{human_size}%{strong_end} Files"
+msgstr ""
+
+msgid "%{strong_start}%{human_size}%{strong_end} Storage"
 msgstr ""
 
 msgid "%{strong_start}%{release_count}%{strong_end} Release"
@@ -475,7 +481,7 @@ msgstr ""
 msgid "%{tags} tags per image name"
 msgstr ""
 
-msgid "%{tag}-evidence.json"
+msgid "%{tag}-%{evidence}-%{filename}"
 msgstr ""
 
 msgid "%{template_project_id} is unknown or invalid"
@@ -581,10 +587,12 @@ msgstr ""
 msgid "+ %{numberOfHiddenAssignees} more"
 msgstr ""
 
-msgid "+%{approvers} more approvers"
-msgstr ""
+msgid "+%d more"
+msgid_plural "+%d more"
+msgstr[0] ""
+msgstr[1] ""
 
-msgid "+%{extraOptionCount} more"
+msgid "+%{approvers} more approvers"
 msgstr ""
 
 msgid "+%{tags} more"
@@ -1343,13 +1351,25 @@ msgstr ""
 msgid "AdminProjects|Delete project"
 msgstr ""
 
+msgid "AdminSettings|Apply integration settings to all Projects"
+msgstr ""
+
 msgid "AdminSettings|Auto DevOps domain"
+msgstr ""
+
+msgid "AdminSettings|Elasticsearch, PlantUML, Slack application, Third party offers, Snowplow, Amazon EKS have moved to Settings > General."
 msgstr ""
 
 msgid "AdminSettings|Enable shared runners for new projects"
 msgstr ""
 
 msgid "AdminSettings|Environment variables are protected by default"
+msgstr ""
+
+msgid "AdminSettings|Go to General Settings"
+msgstr ""
+
+msgid "AdminSettings|Integrations configured here will automatically apply to all projects on this instance."
 msgstr ""
 
 msgid "AdminSettings|No required pipeline"
@@ -1365,6 +1385,9 @@ msgid "AdminSettings|Select a template"
 msgstr ""
 
 msgid "AdminSettings|Set an instance-wide auto included %{link_start}pipeline configuration%{link_end}. This pipeline configuration will be run after the project's own configuration."
+msgstr ""
+
+msgid "AdminSettings|Some settings have moved"
 msgstr ""
 
 msgid "AdminSettings|Specify a domain to use by default for every project's Auto Review Apps and Auto Deploy stages."
@@ -2407,12 +2430,6 @@ msgid "AsanaService|User Personal Access Token. User must have access to task, a
 msgstr ""
 
 msgid "Ascending"
-msgstr ""
-
-msgid "Ask an admin to upload a new license to ensure uninterrupted service."
-msgstr ""
-
-msgid "Ask an admin to upload a new license to restore service."
 msgstr ""
 
 msgid "Ask your group maintainer to set up a group Runner."
@@ -5172,7 +5189,7 @@ msgstr ""
 msgid "Configure limits on the number of inbound alerts able to be sent to a project."
 msgstr ""
 
-msgid "Configure paths to be protected by Rack Attack. A web server restart is required after changing these settings."
+msgid "Configure paths to be protected by Rack Attack."
 msgstr ""
 
 msgid "Configure repository mirroring."
@@ -5275,6 +5292,9 @@ msgid "ContainerRegistry|Automatically remove extra images that aren't designed 
 msgstr ""
 
 msgid "ContainerRegistry|Build an image"
+msgstr ""
+
+msgid "ContainerRegistry|Compressed Size"
 msgstr ""
 
 msgid "ContainerRegistry|Container Registry"
@@ -5415,6 +5435,9 @@ msgid "ContainerRegistry|There are no container images available in this group"
 msgstr ""
 
 msgid "ContainerRegistry|There are no container images stored for this project"
+msgstr ""
+
+msgid "ContainerRegistry|This Registry contains deleted image tag data. Remember to run  %{docLinkStart}garbage collection%{docLinkEnd} to remove the stale data from storage."
 msgstr ""
 
 msgid "ContainerRegistry|This image has no active tags"
@@ -5969,6 +5992,9 @@ msgstr ""
 msgid "Current vulnerabilities count"
 msgstr ""
 
+msgid "CurrentUser|Buy CI minutes"
+msgstr ""
+
 msgid "CurrentUser|Profile"
 msgstr ""
 
@@ -6101,12 +6127,6 @@ msgstr ""
 msgid "CycleAnalyticsEvent|Issue last edited"
 msgstr ""
 
-msgid "CycleAnalyticsEvent|Merge Request label was added"
-msgstr ""
-
-msgid "CycleAnalyticsEvent|Merge Request label was removed"
-msgstr ""
-
 msgid "CycleAnalyticsEvent|Merge request closed"
 msgstr ""
 
@@ -6114,6 +6134,12 @@ msgid "CycleAnalyticsEvent|Merge request created"
 msgstr ""
 
 msgid "CycleAnalyticsEvent|Merge request first deployed to production"
+msgstr ""
+
+msgid "CycleAnalyticsEvent|Merge request label was added"
+msgstr ""
+
+msgid "CycleAnalyticsEvent|Merge request label was removed"
 msgstr ""
 
 msgid "CycleAnalyticsEvent|Merge request last build finish time"
@@ -7681,6 +7707,9 @@ msgstr ""
 msgid "Environments|An error occurred while canceling the auto stop, please try again"
 msgstr ""
 
+msgid "Environments|An error occurred while deleting the environment. Check if the environment stopped; if not, stop it and try again."
+msgstr ""
+
 msgid "Environments|An error occurred while fetching the environments."
 msgstr ""
 
@@ -7712,6 +7741,15 @@ msgid "Environments|Currently showing %{fetched} results."
 msgstr ""
 
 msgid "Environments|Currently showing all results."
+msgstr ""
+
+msgid "Environments|Delete"
+msgstr ""
+
+msgid "Environments|Delete environment"
+msgstr ""
+
+msgid "Environments|Deleting the '%{environmentName}' environment cannot be undone. Do you want to delete it anyway?"
 msgstr ""
 
 msgid "Environments|Deploy to..."
@@ -7805,6 +7843,9 @@ msgid "Environments|Search"
 msgstr ""
 
 msgid "Environments|Select environment"
+msgstr ""
+
+msgid "Environments|Select pod"
 msgstr ""
 
 msgid "Environments|Show all"
@@ -8149,6 +8190,9 @@ msgstr ""
 msgid "EventFilterBy|Filter by team"
 msgstr ""
 
+msgid "EventFilterBy|Filter by wiki"
+msgstr ""
+
 msgid "Events"
 msgstr ""
 
@@ -8453,6 +8497,9 @@ msgid "Failed to load error details from Sentry."
 msgstr ""
 
 msgid "Failed to load errors from Sentry. Error message: %{errorMessage}"
+msgstr ""
+
+msgid "Failed to load group activity metrics. Please try again."
 msgstr ""
 
 msgid "Failed to load groups & users."
@@ -8962,9 +9009,6 @@ msgstr ""
 msgid "For public projects, anyone can view pipelines and access job details (output logs and artifacts)"
 msgstr ""
 
-msgid "For renewal instructions %{link_start}view our Licensing FAQ.%{link_end}"
-msgstr ""
-
 msgid "Forgot your password?"
 msgstr ""
 
@@ -9100,6 +9144,9 @@ msgstr ""
 msgid "Geo Nodes"
 msgstr ""
 
+msgid "Geo Nodes|Cannot remove a primary node if there is a secondary node"
+msgstr ""
+
 msgid "Geo Settings"
 msgstr ""
 
@@ -9166,18 +9213,6 @@ msgstr ""
 msgid "GeoNodes|Last event ID seen from primary"
 msgstr ""
 
-msgid "GeoNodes|Learn more about Repository checksum progress"
-msgstr ""
-
-msgid "GeoNodes|Learn more about Repository verification"
-msgstr ""
-
-msgid "GeoNodes|Learn more about Wiki checksum progress"
-msgstr ""
-
-msgid "GeoNodes|Learn more about Wiki verification"
-msgstr ""
-
 msgid "GeoNodes|Loading nodes"
 msgstr ""
 
@@ -9208,6 +9243,9 @@ msgstr ""
 msgid "GeoNodes|Removing a Geo secondary node stops the synchronization to that node. Are you sure?"
 msgstr ""
 
+msgid "GeoNodes|Replicated data is verified with the %{nodeText} using checksums"
+msgstr ""
+
 msgid "GeoNodes|Replication slot WAL"
 msgstr ""
 
@@ -9215,12 +9253,6 @@ msgid "GeoNodes|Replication slots"
 msgstr ""
 
 msgid "GeoNodes|Repositories"
-msgstr ""
-
-msgid "GeoNodes|Repositories checksummed for verification with their counterparts on Secondary nodes"
-msgstr ""
-
-msgid "GeoNodes|Repositories verified with their counterparts on the Primary node"
 msgstr ""
 
 msgid "GeoNodes|Repository checksum progress"
@@ -9274,16 +9306,16 @@ msgstr ""
 msgid "GeoNodes|Wikis"
 msgstr ""
 
-msgid "GeoNodes|Wikis checksummed for verification with their counterparts on Secondary nodes"
-msgstr ""
-
-msgid "GeoNodes|Wikis verified with their counterparts on the Primary node"
-msgstr ""
-
 msgid "GeoNodes|With %{geo} you can install a special read-only and replicated instance anywhere. Before you add nodes, follow the %{instructions} in the exact order they appear."
 msgstr ""
 
 msgid "GeoNodes|You have configured Geo nodes using an insecure HTTP connection. We recommend the use of HTTPS."
+msgstr ""
+
+msgid "GeoNodes|primary node"
+msgstr ""
+
+msgid "GeoNodes|secondary nodes"
 msgstr ""
 
 msgid "Geo|%{name} is scheduled for forced re-download"
@@ -10025,6 +10057,15 @@ msgid "Group: %{group_name}"
 msgstr ""
 
 msgid "Group: %{name}"
+msgstr ""
+
+msgid "GroupActivyMetrics|Issues created"
+msgstr ""
+
+msgid "GroupActivyMetrics|Merge Requests created"
+msgstr ""
+
+msgid "GroupActivyMetrics|Recent activity (last 90 days)"
 msgstr ""
 
 msgid "GroupRoadmap|%{dateWord} – No end date"
@@ -10955,6 +10996,9 @@ msgstr ""
 msgid "Instance license"
 msgstr ""
 
+msgid "Integration"
+msgstr ""
+
 msgid "Integration Settings"
 msgstr ""
 
@@ -11117,6 +11161,9 @@ msgstr ""
 msgid "Issue events"
 msgstr ""
 
+msgid "Issue first depoloyed to production"
+msgstr ""
+
 msgid "Issue or Merge Request ID is required"
 msgstr ""
 
@@ -11244,6 +11291,12 @@ msgid "January"
 msgstr ""
 
 msgid "Jira Issue Import"
+msgstr ""
+
+msgid "Jira import feature is disabled."
+msgstr ""
+
+msgid "Jira integration not configured."
 msgstr ""
 
 msgid "JiraService|Events for %{noteable_model_name} are disabled."
@@ -11731,7 +11784,7 @@ msgstr ""
 msgid "LicenseCompliance|Add a license"
 msgstr ""
 
-msgid "LicenseCompliance|Add licenses manually to approve or blacklist"
+msgid "LicenseCompliance|Add license and related policy"
 msgstr ""
 
 msgid "LicenseCompliance|Allow"
@@ -11749,7 +11802,7 @@ msgstr ""
 msgid "LicenseCompliance|Deny"
 msgstr ""
 
-msgid "LicenseCompliance|Here you can approve or blacklist licenses for this project. Using %{ci} or %{license} will allow you to see if there are any unmanaged licenses and approve or blacklist them in merge request."
+msgid "LicenseCompliance|Here you can allow or deny licenses for this project. Using %{ci} or %{license} will allow you to see if there are any unmanaged licenses and allow or deny them in merge request."
 msgstr ""
 
 msgid "LicenseCompliance|License"
@@ -12813,6 +12866,9 @@ msgstr ""
 msgid "Mirror repository"
 msgstr ""
 
+msgid "Mirror settings are only available to GitLab administrators."
+msgstr ""
+
 msgid "Mirror user"
 msgstr ""
 
@@ -13172,6 +13228,9 @@ msgstr ""
 msgid "New..."
 msgstr ""
 
+msgid "Newest first"
+msgstr ""
+
 msgid "Newly registered users will by default be external"
 msgstr ""
 
@@ -13392,6 +13451,9 @@ msgid "No vulnerabilities present"
 msgstr ""
 
 msgid "No webhooks found, add one in the form above."
+msgstr ""
+
+msgid "No worries, you can still use all the %{strong}%{plan_name}%{strong_close} features for now. You have %{remaining_days} to renew your subscription."
 msgstr ""
 
 msgid "No, directly import the existing email addresses and usernames."
@@ -13649,10 +13711,13 @@ msgstr ""
 msgid "Ok let's go"
 msgstr ""
 
+msgid "Oldest first"
+msgstr ""
+
 msgid "OmniAuth"
 msgstr ""
 
-msgid "Omnibus Protected Paths throttle is active. From 12.4, Omnibus throttle is deprecated and will be removed in a future release. Please read the %{relative_url_link_start}Migrating Protected Paths documentation%{relative_url_link_end}."
+msgid "Omnibus Protected Paths throttle is active, and takes priority over these settings. From 12.4, Omnibus throttle is deprecated and will be removed in a future release. Please read the %{relative_url_link_start}Migrating Protected Paths documentation%{relative_url_link_end}."
 msgstr ""
 
 msgid "On track"
@@ -15535,6 +15600,9 @@ msgstr ""
 msgid "ProjectSettings|Issues"
 msgstr ""
 
+msgid "ProjectSettings|LFS objects from this repository are still available to forks. %{linkStart}How do I remove them?%{linkEnd}"
+msgstr ""
+
 msgid "ProjectSettings|Learn more about badges."
 msgstr ""
 
@@ -15835,6 +15903,9 @@ msgstr ""
 msgid "PrometheusAlerts|%{count} alerts applied"
 msgstr ""
 
+msgid "PrometheusAlerts|%{firingCount} firing"
+msgstr ""
+
 msgid "PrometheusAlerts|Add alert"
 msgstr ""
 
@@ -15851,6 +15922,12 @@ msgid "PrometheusAlerts|Error fetching alert"
 msgstr ""
 
 msgid "PrometheusAlerts|Error saving alert"
+msgstr ""
+
+msgid "PrometheusAlerts|Firing: %{alerts}"
+msgstr ""
+
+msgid "PrometheusAlerts|Firing: %{alert}"
 msgstr ""
 
 msgid "PrometheusAlerts|Operator"
@@ -16192,12 +16269,6 @@ msgstr ""
 msgid "Pushes"
 msgstr ""
 
-msgid "Pushing code and creation of issues and merge requests has been disabled."
-msgstr ""
-
-msgid "Pushing code and creation of issues and merge requests will be disabled on %{disabled_on}."
-msgstr ""
-
 msgid "PushoverService|%{user_name} deleted branch \"%{ref}\"."
 msgstr ""
 
@@ -16446,6 +16517,9 @@ msgid "Release|Something went wrong while getting the release details"
 msgstr ""
 
 msgid "Release|Something went wrong while saving the release details"
+msgstr ""
+
+msgid "Remediated: needs review"
 msgstr ""
 
 msgid "Remember me"
@@ -17901,6 +17975,9 @@ msgstr ""
 msgid "Serverless|Getting started with serverless"
 msgstr ""
 
+msgid "Serverless|Help shape the future of Serverless at GitLab"
+msgstr ""
+
 msgid "Serverless|If you believe none of these apply, please check back later as the function data may be in the process of becoming available."
 msgstr ""
 
@@ -17913,6 +17990,9 @@ msgstr ""
 msgid "Serverless|No functions available"
 msgstr ""
 
+msgid "Serverless|Sign up for First Look"
+msgstr ""
+
 msgid "Serverless|The deploy job has not finished."
 msgstr ""
 
@@ -17920,6 +18000,9 @@ msgid "Serverless|The functions listed in the %{startTag}serverless.yml%{endTag}
 msgstr ""
 
 msgid "Serverless|There is currently no function data available from Knative. This could be for a variety of reasons including:"
+msgstr ""
+
+msgid "Serverless|We are continually striving to improve our Serverless functionality. As a Knative user, we would love to hear how we can make this experience better for you. Sign up for GitLab First Look today and we will be in touch shortly."
 msgstr ""
 
 msgid "Serverless|Your %{startTag}.gitlab-ci.yml%{endTag} file is not properly configured."
@@ -18205,6 +18288,9 @@ msgid "Showing %d event"
 msgid_plural "Showing %d events"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Showing %{limit} of %{total_count} issues. "
+msgstr ""
 
 msgid "Showing %{pageSize} of %{total} issues"
 msgstr ""
@@ -18801,6 +18887,9 @@ msgid "Specific Runners"
 msgstr ""
 
 msgid "Specified URL cannot be used."
+msgstr ""
+
+msgid "Specified URL cannot be used: \"%{reason}\""
 msgstr ""
 
 msgid "Specify an e-mail address regex pattern to identify default internal users."
@@ -19976,6 +20065,12 @@ msgstr ""
 msgid "The value lying at the midpoint of a series of observed values. E.g., between 3, 5, 9, the median is 5. Between 3, 5, 7, 8, the median is (5+7)/2 = 6."
 msgstr ""
 
+msgid "The vulnerability is no longer detected. Verify the vulnerability has been fixed or removed before changing its status."
+msgstr ""
+
+msgid "The vulnerability is no longer detected. Verify the vulnerability has been remediated before changing its status."
+msgstr ""
+
 msgid "There are no GPG keys associated with this account."
 msgstr ""
 
@@ -20151,6 +20246,9 @@ msgid "There was an error updating the dashboard, branch name is invalid."
 msgstr ""
 
 msgid "There was an error updating the dashboard, branch named: %{branch} already exists."
+msgstr ""
+
+msgid "There was an error updating the stage order. Please try reloading the page."
 msgstr ""
 
 msgid "There was an error when reseting email token."
@@ -21015,6 +21113,9 @@ msgstr ""
 msgid "Toggle Sidebar"
 msgstr ""
 
+msgid "Toggle all threads"
+msgstr ""
+
 msgid "Toggle backtrace"
 msgstr ""
 
@@ -21333,6 +21434,9 @@ msgstr ""
 msgid "Unable to fetch vulnerable projects"
 msgstr ""
 
+msgid "Unable to find Jira project to import data from."
+msgstr ""
+
 msgid "Unable to generate new instance ID"
 msgstr ""
 
@@ -21625,12 +21729,6 @@ msgid "Upload New File"
 msgstr ""
 
 msgid "Upload a certificate for your domain with all intermediates"
-msgstr ""
-
-msgid "Upload a new license in the admin area to ensure uninterrupted service."
-msgstr ""
-
-msgid "Upload a new license in the admin area to restore service."
 msgstr ""
 
 msgid "Upload a private key for your certificate"
@@ -22209,6 +22307,9 @@ msgstr ""
 msgid "View Documentation"
 msgstr ""
 
+msgid "View all issues"
+msgstr ""
+
 msgid "View blame prior to this change"
 msgstr ""
 
@@ -22377,6 +22478,15 @@ msgid "Vulnerabilities over time"
 msgstr ""
 
 msgid "Vulnerability List"
+msgstr ""
+
+msgid "Vulnerability remediated. Review before resolving."
+msgstr ""
+
+msgid "Vulnerability resolved in %{branch}"
+msgstr ""
+
+msgid "Vulnerability resolved in the default branch"
 msgstr ""
 
 msgid "Vulnerability-Check"
@@ -22762,9 +22872,6 @@ msgstr ""
 msgid "Wiki|Edit Page"
 msgstr ""
 
-msgid "Wiki|More Pages"
-msgstr ""
-
 msgid "Wiki|New page"
 msgstr ""
 
@@ -22781,6 +22888,9 @@ msgid "Wiki|Pages"
 msgstr ""
 
 msgid "Wiki|Title"
+msgstr ""
+
+msgid "Wiki|View All Pages"
 msgstr ""
 
 msgid "Wiki|Wiki Pages"
@@ -23023,6 +23133,9 @@ msgstr ""
 msgid "You could not create a new trigger."
 msgstr ""
 
+msgid "You didn't renew your %{strong}%{plan_name}%{strong_close} subscription so it was downgraded to the GitLab Core Plan."
+msgstr ""
+
 msgid "You do not have any subscriptions yet"
 msgstr ""
 
@@ -23242,6 +23355,9 @@ msgstr ""
 msgid "YouTube"
 msgstr ""
 
+msgid "Your %{strong}%{plan_name}%{strong_close} subscription will expire on %{strong}%{expires_on}%{strong_close}. After that, you will not to be able to create issues or merge requests as well as many other features."
+msgstr ""
+
 msgid "Your Commit Email will be used for web based operations, such as edits and merges."
 msgstr ""
 
@@ -23362,13 +23478,7 @@ msgstr ""
 msgid "Your issues will be imported in the background. Once finished, you'll get a confirmation email."
 msgstr ""
 
-msgid "Your license expired on %{expires_at}."
-msgstr ""
-
 msgid "Your license is valid from"
-msgstr ""
-
-msgid "Your license will expire in %{remaining_days}."
 msgstr ""
 
 msgid "Your message here"
@@ -23401,10 +23511,13 @@ msgstr ""
 msgid "Your request for access has been queued for review."
 msgstr ""
 
-msgid "Your trial license expired on %{expires_at}."
+msgid "Your subscription expired!"
 msgstr ""
 
-msgid "Your trial license will expire in %{remaining_days}."
+msgid "Your subscription has been downgraded"
+msgstr ""
+
+msgid "Your subscription will expire in %{remaining_days}"
 msgstr ""
 
 msgid "Zoom meeting added"
@@ -23943,9 +24056,6 @@ msgid "is not a descendant of the Group owning the template"
 msgstr ""
 
 msgid "is not a valid X509 certificate."
-msgstr ""
-
-msgid "is not a valid regular expression"
 msgstr ""
 
 msgid "is not allowed for sign-up"
@@ -24662,6 +24772,9 @@ msgid "vulnerability|Undo dismiss"
 msgstr ""
 
 msgid "vulnerability|dismissed"
+msgstr ""
+
+msgid "wiki page"
 msgstr ""
 
 msgid "with %{additions} additions, %{deletions} deletions."

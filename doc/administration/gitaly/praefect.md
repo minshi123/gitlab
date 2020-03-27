@@ -631,7 +631,7 @@ and replication jobs will be created to replicate repository data to `internal_s
 #### Automatic failover
 
 When automatic failover is enabled, Praefect will do automatic detection of the health of internal Gitaly nodes. If the
-primary has a certain amount of healthchecks fail, it will decide to promote one of the secondaries to be primary, and
+primary has a certain amount of health checks fail, it will decide to promote one of the secondaries to be primary, and
 demote the primary to be a secondary.
 
 1. To enable automatic failover, edit `/etc/gitlab/gitlab.rb`:
@@ -681,6 +681,29 @@ NOTE: **Note:**: Currently this feature is supported for setups that only have 1
 for example behind a load balancer, `failover_enabled` should be disabled. The reason is The reason is because there
 is no coordination that currently happens across different Praefect instances, so there could be a situation where
 two Praefect instances think two different Gitaly nodes are the primary.
+
+## Backend Node Recovery
+
+When a Praefect backend node fails and is no longer able to
+replicate changes, the backend node will start to drift from the primary. If
+that node eventually recovers, it will need to be reconciled with the current
+primary. The primary node is considered the single source of truth for the
+state of a shard. The Praefect `reconcile` subcommand allows for the manual
+reconciliation between a backend node and the current primary.
+
+Run the following command on the Praefect server after all placeholders
+(`<virtual-storage>` and `<target-storage>`) have been replaced:
+
+```shell
+sudo /opt/gitlab/embedded/bin/praefect -config /var/opt/gitlab/praefect/config.toml reconcile -virtual <virtual-storage> -target <target-storage>
+```
+
+- Replace the placeholder `<virtual-storage>` with the virtual storage containing the backend node storage to be checked.
+- Replace the placeholder `<target-storage>` with the backend storage name.
+
+The command will return a list of repositories that were found to be
+inconsistent against the current primary. Each of these inconsistencies will
+also be logged with an accompanying replication job ID.
 
 ## Grafana
 
@@ -734,10 +757,7 @@ Repositories may be moved from one storage location using the [Repository
 API](../../api/projects.html#edit-project):
 
 ```shell
-curl --request PUT \
-  --header "PRIVATE-TOKEN: <your_access_token>" \
-  --data "repository_storage=praefect" \
-  https://example.gitlab.com/api/v4/projects/123
+curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" --data "repository_storage=praefect" https://example.gitlab.com/api/v4/projects/123
 ```
 
 ## Debugging Praefect

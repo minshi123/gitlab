@@ -96,7 +96,7 @@ Having a knowledge base in any form that is separate from the documentation woul
 
 All GitLab documentation is written using [Markdown](https://en.wikipedia.org/wiki/Markdown).
 
-The [documentation website](https://docs.gitlab.com) uses GitLab Kramdown as its Markdown rendering engine. For a complete Kramdown reference, see the [GitLab Markdown Kramdown Guide](https://about.gitlab.com/handbook/product/technical-writing/markdown-guide/).
+The [documentation website](https://docs.gitlab.com) uses GitLab Kramdown as its Markdown rendering engine. For a complete Kramdown reference, see the [GitLab Markdown Kramdown Guide](https://about.gitlab.com/handbook/engineering/ux/technical-writing/markdown-guide/).
 
 The [`gitlab-kramdown`](https://gitlab.com/gitlab-org/gitlab_kramdown)
 Ruby gem will support all [GFM markup](../../user/markdown.md) in the future. That is,
@@ -149,8 +149,6 @@ For example:
     it must have a capital G.
 
 ## Structure
-
-### Organize by topic, not by type
 
 Because we want documentation to be a SSOT, we should [organize by topic, not by type](#organize-by-topic-not-by-type).
 
@@ -523,7 +521,7 @@ For ordered lists, use three spaces for each level of indentation:
 You can nest full lists inside other lists using the same rules as above. If you wish
 to mix types, that is also possible, as long as you don't mix items at the same level:
 
-```
+```markdown
 1. Ordered list item one.
 1. Ordered list item two.
    - Nested unordered list item one.
@@ -619,6 +617,22 @@ do not use this option until further notice.
 
 ## Links
 
+Links are important in GitLab documentation. They allow you to [link instead of summarizing](#link-instead-of-summarize)
+to help preserve an [SSoT](#why-a-single-source-of-truth) within GitLab documentation.
+
+We include guidance for links in the following categories:
+
+- How to set up [anchor links](#anchor-links) for headings.
+- How to set up [criteria](#basic-link-criteria) for configuring a link.
+- What to set up when [linking to a `help`](../documentation/index.md#linking-to-help) page.
+- How to set up [links to internal documentation](#links-to-internal-documentation) for cross-references.
+- When to use [links requiring permissions](#links-requiring-permissions).
+- How to set up a [link to a video](#link-to-video).
+- How to [include links with version text](#text-for-documentation-requiring-version-text).
+- How to [link to specific lines of code](#link-to-specific-lines-of-code)
+
+### Basic link criteria
+
 - Use inline link Markdown markup `[Text](https://example.com)`.
   It's easier to read, review, and maintain. **Do not** use `[Text][identifier]`.
 
@@ -687,6 +701,19 @@ Example:
 ```md
 For more information, see the [confidential issue](../../user/project/issues/confidential_issues.md) `https://gitlab.com/gitlab-org/gitlab-foss/issues/<issue_number>`.
 ```
+
+### Link to specific lines of code
+
+When linking to specifics lines within a file, link to a commit instead of to the branch.
+Lines of code change through time, therefore, linking to a line by using the commit link
+ensures the user lands on the line you're referring to.
+
+- **Do:** `[link to line 3](https://gitlab.com/gitlab-org/gitlab/-/blob/11f17c56d8b7f0b752562d78a4298a3a95b5ce66/.gitlab/issue_templates/Feature%20proposal.md#L3)`
+- **Don't:** `[link to line 3](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/issue_templates/Feature%20proposal.md#L3).`
+
+If that linked expression is no longer in that line of the file due to further commits, you
+can still search the file for that query. In this case, update the document to ensure it
+links to the most recent version of the file.
 
 ## Navigation
 
@@ -890,7 +917,7 @@ of language classes available.
 | `xml`                   |                                                                              |
 | `yaml`                  | Alias: `yml`.                                                                |
 
-For a complete reference on code blocks, check the [Kramdown guide](https://about.gitlab.com/handbook/product/technical-writing/markdown-guide/#code-blocks).
+For a complete reference on code blocks, check the [Kramdown guide](https://about.gitlab.com/handbook/engineering/ux/technical-writing/markdown-guide/#code-blocks).
 
 ## GitLab SVG icons
 
@@ -945,6 +972,7 @@ The following are examples of source Markdown for menu items with their publishe
 1. Go to **{book}** **Wiki**
 1. Go to **{snippet}** **Snippets**
 1. Go to **{users}** **Members**
+1. Select the **More actions** **{ellipsis_v}** icon  > **Hide stage**
 ```
 
 1. Go to **{home}** **Project overview > Details**
@@ -959,6 +987,7 @@ The following are examples of source Markdown for menu items with their publishe
 1. Go to **{book}** **Wiki**
 1. Go to **{snippet}** **Snippets**
 1. Go to **{users}** **Members**
+1. Select the **More actions** **{ellipsis_v}** icon > **Hide stage**
 
 ## Alert boxes
 
@@ -1132,25 +1161,27 @@ a helpful link back to how the feature was developed.
 
 - For features that need to declare the GitLab version that the feature was introduced. Text similar
   to the following should be added immediately below the heading as a blockquote:
-
-  ```md
-  > Introduced in GitLab 11.3.
-  ```
+  - `> Introduced in GitLab 11.3.`.
 
 - Whenever possible, version text should have a link to the issue, merge request, or epic that introduced the feature.
   An issue is preferred over a merge request, and a merge request is preferred over an epic. For example:
-
-  ```md
-  > [Introduced](<link-to-issue>) in GitLab 11.3.
-  ```
+  - `> [Introduced](<link-to-issue>) in GitLab 11.3.`.
 
 - If the feature is only available in GitLab Enterprise Edition, mention
   the [paid tier](https://about.gitlab.com/handbook/marketing/product-marketing/#tiers)
   the feature is available in:
+  - `> [Introduced](<link-to-issue>) in [GitLab Starter](https://about.gitlab.com/pricing/) 11.3.`.
+
+- If listing information for multiple version as a feature evolves, add the information to a
+  block-quoted bullet list. For example:
 
   ```md
-  > [Introduced](<link-to-issue>) in [GitLab Starter](https://about.gitlab.com/pricing/) 11.3.
+  > - [Introduced](<link-to-issue>) in GitLab 11.3.
+  > - Enabled by default in GitLab 11.4.
   ```
+
+NOTE: **Note:**
+Version text must be on its own line and surounded by blank lines to render correctly.
 
 ### Importance of referencing GitLab versions and tiers
 
@@ -1160,7 +1191,7 @@ introduced the change for reference. Also, they can easily understand what
 features they have in their GitLab instance and version, given that the note has
 some key information.
 
-`[Introduced](link-to-issue) in [GitLab Premium](https://about.gitlab.com/pricing) 12.7`
+`[Introduced](link-to-issue) in [GitLab Premium](https://about.gitlab.com/pricing/) 12.7`
 links to the issue that introduced the feature, says which GitLab tier it
 belongs to, says the GitLab version that it became available in, and links to
 the pricing page in case the user wants to upgrade to a paid tier
@@ -1335,17 +1366,18 @@ NOTE: **Note:**
 The [Product Manager for the relevant group](https://about.gitlab.com/handbook/product/categories/#devops-stages)
 must review and approve the addition or removal of any mentions of using feature flags before the doc change is merged.
 
-The following is sample text for adding feature flag documentation for a feature:
+The following is sample text for adding feature flag documentation for a feature that is
+off by default:
 
 ````md
-### Disabling the feature
+### Enabling the feature
 
-This feature comes with the `:feature_flag` feature flag enabled by default. However, in some cases
-this feature is incompatible with old configuration. To turn off the feature while configuration is
-migrated, ask a GitLab administrator with Rails console access to run the following command:
+This feature comes with the `:feature_flag` feature flag disabled by default. In some cases,
+this feature is incompatible with an old configuration. To turn on the feature,
+ask a GitLab administrator with Rails console access to run the following command:
 
 ```ruby
-Feature.disable(:feature_flag)
+Feature.enable(:feature_flag)
 ```
 ````
 
@@ -1359,7 +1391,7 @@ on this document. Further explanation is given below.
 
 - Every method must have the REST API request. For example:
 
-  ```
+  ```plaintext
   GET /projects/:id/repository/branches
   ```
 

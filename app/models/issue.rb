@@ -70,15 +70,13 @@ class Issue < ApplicationRecord
   scope :order_closed_date_desc, -> { reorder(closed_at: :desc) }
   scope :order_created_at_desc, -> { reorder(created_at: :desc) }
 
-  scope :preload_associated_models, -> { preload(:labels, project: :namespace) }
+  scope :preload_associated_models, -> { preload(:assignees, :labels, project: :namespace) }
   scope :with_api_entity_associations, -> { preload(:timelogs, :assignees, :author, :notes, :labels, project: [:route, { namespace: :route }] ) }
 
   scope :public_only, -> { where(confidential: false) }
   scope :confidential_only, -> { where(confidential: true) }
 
   scope :counts_by_state, -> { reorder(nil).group(:state_id).count }
-
-  ignore_column :state, remove_with: '12.10', remove_after: '2020-03-22'
 
   after_commit :expire_etag_cache, unless: :importing?
   after_save :ensure_metrics, unless: :importing?
@@ -328,10 +326,8 @@ class Issue < ApplicationRecord
       true
     elsif project.owner == user
       true
-    elsif confidential?
-      author == user ||
-        assignees.include?(user) ||
-        project.team.member?(user, Gitlab::Access::REPORTER)
+    elsif confidential? && !assignee_or_author?(user)
+      project.team.member?(user, Gitlab::Access::REPORTER)
     else
       project.public? ||
         project.internal? && !user.external? ||

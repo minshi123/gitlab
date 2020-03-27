@@ -168,6 +168,7 @@ class User < ApplicationRecord
   has_one :user_preference
   has_one :user_detail
   has_one :user_highest_role
+  has_one :user_canonical_email
 
   #
   # Validations
@@ -216,6 +217,7 @@ class User < ApplicationRecord
   before_save :check_for_verified_email, if: ->(user) { user.email_changed? && !user.new_record? }
   before_validation :ensure_namespace_correct
   before_save :ensure_namespace_correct # in case validation is skipped
+  before_save :ensure_bio_is_assigned_to_user_details, if: :bio_changed?
   after_validation :set_username_errors
   after_update :username_changed_hook, if: :saved_change_to_username?
   after_destroy :post_destroy_hook
@@ -510,7 +512,7 @@ class User < ApplicationRecord
     # query - The search query as a String
     #
     # Returns an ActiveRecord::Relation.
-    def search(query)
+    def search(query, **options)
       query = query&.delete_prefix('@')
       return none if query.blank?
 
@@ -1261,6 +1263,13 @@ class User < ApplicationRecord
     end
   end
 
+  # Temporary, will be removed when bio is fully migrated
+  def ensure_bio_is_assigned_to_user_details
+    return if Feature.disabled?(:migrate_bio_to_user_details, default_enabled: true)
+
+    user_detail.bio = bio.to_s[0...255] # bio can be NULL in users, but cannot be NULL in user_details
+  end
+
   def set_username_errors
     namespace_path_errors = self.errors.delete(:"namespace.path")
     self.errors[:username].concat(namespace_path_errors) if namespace_path_errors
@@ -1693,8 +1702,10 @@ class User < ApplicationRecord
     end
   end
 
-  # @deprecated
-  alias_method :owned_or_masters_groups, :owned_or_maintainers_groups
+  # Load the current highest access by looking directly at the user's memberships
+  def current_highest_access_level
+    members.non_request.maximum(:access_level)
+  end
 
   protected
 
@@ -1710,6 +1721,23 @@ class User < ApplicationRecord
     return false if Feature.disabled?(:soft_email_confirmation)
 
     super
+  end
+
+  # This is copied from Devise::Models::TwoFactorAuthenticatable#consume_otp!
+  #
+  # An OTP cannot be used more than once in a given timestep
+  # Storing timestep of last valid OTP is sufficient to satisfy this requirement
+  #
+  # See:
+  #   <https://github.com/tinfoil/devise-two-factor/blob/master/lib/devise_two_factor/models/two_factor_authenticatable.rb#L66>
+  #
+  def consume_otp!
+    if self.consumed_timestep != current_otp_timestep
+      self.consumed_timestep = current_otp_timestep
+      return Gitlab::Database.read_only? ? true : save(validate: false)
+    end
+
+    false
   end
 
   private

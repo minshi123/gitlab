@@ -38,12 +38,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         end
 
         namespace :settings do
-          resource :operations, only: [] do
-            member do
-              post :reset_alerting_token
-            end
-          end
-
           resource :slack, only: [:destroy, :edit, :update] do
             get :slack_auth
           end
@@ -129,13 +123,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
       end
 
       namespace :prometheus do
-        resources :alerts, constraints: { id: /\d+/ }, only: [:index, :create, :show, :update, :destroy] do
-          post :notify, on: :collection
-          member do
-            get :metrics_dashboard
-          end
-        end
-
         resources :metrics, constraints: { id: %r{[^\/]+} }, only: [] do
           post :validate_query, on: :collection
         end

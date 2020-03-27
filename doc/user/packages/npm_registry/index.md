@@ -224,7 +224,7 @@ it is not possible due to a naming collision. For example:
 
 The regex that is used for naming is validating all package names from all package managers:
 
-```
+```plaintext
 /\A\@?(([\w\-\.\+]*)\/)*([\w\-\.]+)@?(([\w\-\.\+]*)\/)*([\w\-\.]*)\z/
 ```
 
@@ -285,7 +285,7 @@ page.
 
 ## Publishing a package with CI/CD
 
-To work with NPM commands within [GitLab CI](./../../../ci/README.md), you can use
+To work with NPM commands within [GitLab CI/CD](./../../../ci/README.md), you can use
 `CI_JOB_TOKEN` in place of the personal access token in your commands.
 
 A simple example `.gitlab-ci.yml` file for publishing NPM packages:

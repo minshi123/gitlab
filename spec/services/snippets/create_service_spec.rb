@@ -172,6 +172,10 @@ describe Snippets::CreateService do
         it 'returns the error' do
           expect(snippet.errors.full_messages).to include('Repository could not be created')
         end
+
+        it 'does not return a snippet with an id' do
+          expect(snippet.id).to be_nil
+        end
       end
 
       context 'when the commit action fails' do
@@ -189,6 +193,18 @@ describe Snippets::CreateService do
           expect_next_instance_of(Repository) do |instance|
             expect(instance).to receive(:remove).and_call_original
           end
+
+          subject
+        end
+
+        it 'destroys the snippet_repository' do
+          subject
+
+          expect(SnippetRepository.count).to be_zero
+        end
+
+        it 'logs the error' do
+          expect(Gitlab::AppLogger).to receive(:error).with('foobar')
 
           subject
         end

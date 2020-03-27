@@ -239,7 +239,7 @@ The following will be emailed to you:
 
 ### Seat Link
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/208832) in [GitLab Starter](https://about.gitlab.com/pricing) 12.9.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/208832) in [GitLab Starter](https://about.gitlab.com/pricing/) 12.9.
 
 Seat Link allows us to provide our self-managed customers with prorated charges for user growth throughout the year using a quarterly reconciliation process.
 
@@ -248,12 +248,15 @@ Seat Link sends to GitLab daily a count of all users in connected self-managed i
 Seat Link is mandatory because we need the user count data to enable prorated billing. Seat Link provides **only** the following information to GitLab:
 
 - Date
-- Historical maximum user count
 - License key
+- Historical maximum user count
 
-Here is an example of the POST request:
+For air-gapped or closed network customers, the existing [true-up model](#users-over-license) will be used. Prorated charges are not possible without user count data.
 
-```plaintext
+<details>
+<summary>Click here to view example content of a Seat Link POST request.</summary>
+
+<pre><code>
 {
   date: '2020-01-29',
   license_key: 'ZXlKa1lYUmhJam9pWm5WNmVsTjVZekZ2YTJoV2NucDBh
@@ -292,21 +295,21 @@ SlRORE4xUjFaYVJGb3JlWGM5UFZ4dUlpd2lhWFlpt2lKV00yRnNVbk5RTjJk
 Sg0KU1hNMGExaE9SVGR2V2pKQlBUMWNiaUo5DQo=',
   max_historical_user_count: 10
 }
-```
+</code></pre>
 
-For air-gapped or closed network customers, the existing [true-up model](#users-over-license) will be used. Prorated charges are not possible without user count data.
+</details>
 
 ### Renew or change a GitLab.com subscription
 
 To renew for more users than are currently active in your GitLab.com system, contact our sales team via `renewals@gitlab.com` for assistance as this can't be done in the Customers Portal.
 
-To change the [GitLab tier](https://about.gitlab.com/pricing/), select **Upgrade** under your subscription on the [My Account](https://customers.gitlab.com/subscriptions) page.
+For details on upgrading your subscription tier, see [Upgrade your GitLab.com subscription tier](#upgrade-your-gitlabcom-subscription-tier).
 
 #### Automatic renewal
 
 To view or change automatic subscription renewal (at the same tier as the previous period), log in to the [Customers Portal](https://customers.gitlab.com/customers/sign_in), and:
 
-- If you see a **Resume subscription** button, your subscription was cancelled previously. Click it to resume automatic renewal.
+- If you see a **Resume subscription** button, your subscription was canceled previously. Click it to resume automatic renewal.
 - If you see **Cancel subscription**, your subscription is set to automatically renew at the end of the subscription period. Click it to cancel automatic renewal.
 
 With automatic renewal enabled, the subscription will automatically renew on the expiration date and there will be no gap in available service.
@@ -336,6 +339,41 @@ We recommend following these steps during renewal:
 1. [Upload](../user/admin_area/license.md) your new license to your instance.
 
 An invoice will be generated for the renewal and available for viewing or download in the [Payment History](https://customers.gitlab.com/receipts) page. If you have difficulty during the renewal process, contact our [support team](https://support.gitlab.com/hc/en-us/requests/new?ticket_form_id=360000071293) for assistance.
+
+## Upgrade your subscription tier
+
+The process for upgrading differs depending on whether you're a GitLab.com or self-managed customer.
+
+### Upgrade your GitLab.com subscription tier
+
+To upgrade your [GitLab tier](https://about.gitlab.com/pricing/):
+
+1. Log in to the [Customers Portal](https://customers.gitlab.com/customers/sign_in).
+1. Select **Upgrade** under your subscription on the [My Account](https://customers.gitlab.com/subscriptions) page.
+1. Select the desired upgrade.
+1. Confirm the active form of payment, or add a new form of payment.
+1. Check the **I accept the Privacy Policy and Terms of Service** checkbox.
+1. Select **Confirm purchase**.
+
+When the purchase has been processed, you receive confirmation of your new subscription tier.
+
+### Upgrade your self-managed subscription tier
+
+To upgrade your [GitLab tier](https://about.gitlab.com/pricing/), contact our sales team as this
+can't be done in the Customers Portal. You can either send an email to `renewals@gitlab.com`, or
+complete the [**Contact Sales**](https://about.gitlab.com/sales/) form. Include in your message
+details of which subscription you want to upgrade, and the desired tier.
+
+After messaging the sales team, the workflow is as follows:
+
+1. Receive a reply from the sales team, asking for confirmation of the upgrade.
+1. Reply to the sales team, confirming details of the upgrade.
+1. Receive a quote from the sales team.
+1. Sign and return the quote.
+1. Receive the new license.
+1. Upload the new license. For details, see [Uploading your license](../user/admin_area/license.md#uploading-your-license).
+
+The new subscription tier is active when the license file is uploaded.
 
 ## Subscription expiry
 

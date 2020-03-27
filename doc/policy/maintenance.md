@@ -5,7 +5,7 @@ type: concepts
 # GitLab Release and Maintenance Policy
 
 GitLab has strict policies governing version naming, as well as release pace for major, minor,
-patch and security releases. New releases are usually announced on the [GitLab blog](https://about.gitlab.com/blog/categories/releases/).
+patch and security releases. New releases are usually announced on the [GitLab blog](https://about.gitlab.com/releases/categories/releases/).
 
 Our current policy is:
 
@@ -103,13 +103,13 @@ Security releases are a special kind of patch release that only include security
 fixes and patches (see below) for the previous two monthly releases in addition to the current stable release.
 
 For very serious security issues, there is
-[precedent](https://about.gitlab.com/blog/2016/05/02/cve-2016-4340-patches/)
+[precedent](https://about.gitlab.com/releases/2016/05/02/cve-2016-4340-patches/)
 to backport security fixes to even more monthly releases of GitLab.
 This decision is made on a case-by-case basis.
 
 ## Upgrade recommendations
 
-We encourage everyone to run the [latest stable release](https://about.gitlab.com/blog/categories/releases/) to ensure that you can
+We encourage everyone to run the [latest stable release](https://about.gitlab.com/releases/categories/releases/) to ensure that you can
 easily upgrade to the most secure and feature-rich GitLab experience. In order
 to make sure you can easily run the most recent stable release, we are working
 hard to keep the update process simple and reliable.
@@ -167,6 +167,9 @@ Please see the table below for some examples:
 | 11.3.4                | 8.13.4       | `8.13.4` -> `8.17.7` -> `9.5.10` -> `10.8.7` -> `11.3.4` | `8.17.7` is the last version in version `8`, `9.5.10` is the last version in version `9`, `10.8.7` is the last version in version `10` |
 | 12.5.8                | 11.3.4       | `11.3.4` -> `11.11.8` -> `12.0.12` -> `12.5.8`            | `11.11.8` is the last version in version `11`. `12.0.x` [is a required step](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/23211#note_272842444). |
 | 12.8.5                | 9.2.6       | `9.2.6` -> `9.5.10` -> `10.8.7` -> `11.11.8` -> `12.0.12` -> `12.8.5` | Four intermediate versions are required: the final 9.5, 10.8, 11.11 releases, plus 12.0. |
+
+NOTE: **Note:**
+Instructions for installing a specific version of GitLab or downloading the package locally for installation can be found at [GitLab Repositories](https://packages.gitlab.com/gitlab).
 
 ## More information
 

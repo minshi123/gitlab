@@ -198,7 +198,7 @@ describe Ci::Build do
     let(:license_scanning_report) { Gitlab::Ci::Reports::LicenseScanning::Report.new }
 
     before do
-      stub_licensed_features(license_management: true)
+      stub_licensed_features(license_scanning: true)
     end
 
     it { expect(license_scanning_report.licenses.count).to eq(0) }
@@ -243,7 +243,7 @@ describe Ci::Build do
 
       context 'when the license management feature is disabled' do
         before do
-          stub_licensed_features(license_management: false)
+          stub_licensed_features(license_scanning: false)
           create(:ee_ci_job_artifact, :license_management, job: job, project: job.project)
         end
 
@@ -344,7 +344,7 @@ describe Ci::Build do
 
       context 'when license does not have metrics_reports' do
         before do
-          stub_licensed_features(license_management: false)
+          stub_licensed_features(license_scanning: false)
         end
 
         it 'does not parse metrics report' do
@@ -381,211 +381,6 @@ describe Ci::Build do
       build_with_license_scan = create(:ci_build, job_artifacts: [create(:ci_job_artifact, file_type: :license_management, file_format: :raw)])
 
       expect(described_class.license_scan).to contain_exactly(build_with_license_scan)
-    end
-  end
-
-  describe '#cross_dependencies' do
-    let(:user) { create(:user) }
-    let(:dependencies) { }
-
-    let!(:final) do
-      create(:ci_build,
-        pipeline: pipeline, name: 'final',
-        stage_idx: 3, stage: 'deploy', user: user, options: {
-          cross_dependencies: dependencies
-        }
-      )
-    end
-
-    subject { final.cross_dependencies }
-
-    before do
-      project.add_developer(user)
-      pipeline.update!(user: user)
-      stub_licensed_features(cross_project_pipelines: true)
-    end
-
-    context 'when cross_dependencies are not defined' do
-      it { is_expected.to be_empty }
-    end
-
-    context 'with missing dependency' do
-      let(:dependencies) do
-        [
-          {
-            project: 'some/project',
-            job: 'some/job',
-            ref: 'some/ref',
-            artifacts: true
-          }
-        ]
-      end
-
-      it { is_expected.to be_empty }
-    end
-
-    context 'with cross_dependencies to the same pipeline' do
-      let!(:dependency) do
-        create(:ci_build, :success,
-          pipeline: pipeline, name: 'dependency',
-          stage_idx: 1, stage: 'build', user: user
-        )
-      end
-
-      let(:dependencies) do
-        [
-          {
-            project: project.full_path,
-            job: 'dependency',
-            ref: pipeline.ref,
-            artifacts: artifacts
-          }
-        ]
-      end
-
-      context 'with artifacts true' do
-        let(:artifacts) { true }
-
-        it { is_expected.to match(a_collection_containing_exactly(dependency)) }
-      end
-
-      context 'with artifacts false' do
-        let(:artifacts) { false }
-
-        it { is_expected.to be_empty }
-      end
-    end
-
-    context 'with cross_dependencies to other pipeline' do
-      let(:feature_pipeline) do
-        create(:ci_pipeline, project: project,
-                             sha: project.commit.id,
-                             ref: 'feature',
-                             status: 'success')
-      end
-
-      let(:dependencies) do
-        [
-          {
-            project: project.full_path,
-            job: 'dependency',
-            ref: feature_pipeline.ref,
-            artifacts: true
-          }
-        ]
-      end
-
-      let!(:dependency) do
-        create(:ci_build, :success,
-          pipeline: feature_pipeline, ref: feature_pipeline.ref,
-          name: 'dependency', stage_idx: 4, stage: 'deploy', user: user
-        )
-      end
-
-      it { is_expected.to match(a_collection_containing_exactly(dependency)) }
-    end
-
-    context 'with cross_dependencies to two pipelines' do
-      let(:other_project) { create(:project, :repository, group: group) }
-
-      let(:other_pipeline) do
-        create(:ci_pipeline, project: other_project,
-                             sha: other_project.commit.id,
-                             ref: other_project.default_branch,
-                             status: 'success',
-                             user: user)
-      end
-
-      let(:feature_pipeline) do
-        create(:ci_pipeline, project: project,
-                             sha: project.commit.id,
-                             ref: 'feature',
-                             status: 'success')
-      end
-
-      let(:dependencies) do
-        [
-          {
-            project: other_project.full_path,
-            job: 'other_dependency',
-            ref: other_pipeline.ref,
-            artifacts: true
-          },
-          {
-            project: project.full_path,
-            job: 'dependency',
-            ref: feature_pipeline.ref,
-            artifacts: true
-          }
-        ]
-      end
-
-      let!(:other_dependency) do
-        create(:ci_build, :success,
-          pipeline: other_pipeline, ref: other_pipeline.ref,
-          name: 'other_dependency', stage_idx: 4, stage: 'deploy', user: user
-        )
-      end
-
-      let!(:dependency) do
-        create(:ci_build, :success,
-          pipeline: feature_pipeline, ref: feature_pipeline.ref,
-          name: 'dependency', stage_idx: 4, stage: 'deploy', user: user
-        )
-      end
-
-      context 'with permissions to other_project' do
-        before do
-          other_project.add_developer(user)
-        end
-
-        it 'contains both dependencies' do
-          is_expected.to match(
-            a_collection_containing_exactly(dependency, other_dependency))
-        end
-
-        context 'when license does not have cross_project_pipelines' do
-          before do
-            stub_licensed_features(cross_project_pipelines: false)
-          end
-
-          it { is_expected.to be_empty }
-        end
-      end
-
-      context 'without permissions to other_project' do
-        it { is_expected.to match(a_collection_containing_exactly(dependency)) }
-      end
-    end
-
-    context 'with too many cross_dependencies' do
-      let(:cross_dependencies_limit) do
-        ::Gitlab::Ci::Config::Entry::Needs::NEEDS_CROSS_DEPENDENCIES_LIMIT
-      end
-
-      before do
-        cross_dependencies_limit.next.times do |index|
-          create(:ci_build, :success,
-            pipeline: pipeline, name: "dependency-#{index}",
-            stage_idx: 1, stage: 'build', user: user
-          )
-        end
-      end
-
-      let(:dependencies) do
-        Array.new(cross_dependencies_limit.next) do |index|
-          {
-            project: project.full_path,
-            job: "dependency-#{index}",
-            ref: pipeline.ref,
-            artifacts: true
-          }
-        end
-      end
-
-      it 'has a limit' do
-        expect(subject.size).to eq(cross_dependencies_limit)
-      end
     end
   end
 end

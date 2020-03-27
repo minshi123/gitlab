@@ -144,7 +144,7 @@ module Gitlab
     # Use SQL instead of Active Record's schema dumper when creating the database.
     # This is necessary if your schema can't be completely dumped by the schema dumper,
     # like if you have constraints or database-specific column types
-    # config.active_record.schema_format = :sql
+    config.active_record.schema_format = :sql
 
     # Configure webpack
     config.webpack.config_file = "config/webpack.config.js"
@@ -258,18 +258,11 @@ module Gitlab
     # Use caching across all environments
     # Full list of options:
     # https://api.rubyonrails.org/classes/ActiveSupport/Cache/RedisCacheStore.html#method-c-new
-    caching_config_hash = Gitlab::Redis::Cache.params
+    caching_config_hash = {}
+    caching_config_hash[:redis] = Gitlab::Redis::Cache.pool
     caching_config_hash[:compress] = Gitlab::Utils.to_boolean(ENV.fetch('ENABLE_REDIS_CACHE_COMPRESSION', '1'))
     caching_config_hash[:namespace] = Gitlab::Redis::Cache::CACHE_NAMESPACE
     caching_config_hash[:expires_in] = 2.weeks # Cache should not grow forever
-    if Gitlab::Runtime.multi_threaded?
-      caching_config_hash[:pool_size] = Gitlab::Redis::Cache.pool_size
-      caching_config_hash[:pool_timeout] = 1
-    end
-
-    # Overrides RedisCacheStore's default value of 0
-    # This makes the default value the same with Gitlab::Redis::Cache
-    caching_config_hash[:reconnect_attempts] ||= ::Redis::Client::DEFAULTS[:reconnect_attempts]
 
     config.cache_store = :redis_cache_store, caching_config_hash
 

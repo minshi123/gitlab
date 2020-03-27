@@ -39,6 +39,7 @@ module QA
     autoload :MailHog, 'qa/runtime/mail_hog'
     autoload :IPAddress, 'qa/runtime/ip_address'
     autoload :Search, 'qa/runtime/search'
+    autoload :Project, 'qa/runtime/project'
     autoload :ApplicationSettings, 'qa/runtime/application_settings'
 
     module API
@@ -133,7 +134,6 @@ module QA
         autoload :LDAPNoServer, 'qa/scenario/test/integration/ldap_no_server'
         autoload :LDAPTLS, 'qa/scenario/test/integration/ldap_tls'
         autoload :InstanceSAML, 'qa/scenario/test/integration/instance_saml'
-        autoload :OAuth, 'qa/scenario/test/integration/oauth'
         autoload :Kubernetes, 'qa/scenario/test/integration/kubernetes'
         autoload :Mattermost, 'qa/scenario/test/integration/mattermost'
         autoload :ObjectStorage, 'qa/scenario/test/integration/object_storage'
@@ -478,20 +478,9 @@ module QA
         autoload :Configure, 'qa/vendor/jenkins/page/configure'
         autoload :NewCredentials, 'qa/vendor/jenkins/page/new_credentials'
         autoload :NewJob, 'qa/vendor/jenkins/page/new_job'
-        autoload :Job, 'qa/vendor/jenkins/page/job'
+        autoload :LastJobConsole, 'qa/vendor/jenkins/page/last_job_console'
         autoload :ConfigureJob, 'qa/vendor/jenkins/page/configure_job'
       end
-    end
-
-    module Github
-      module Page
-        autoload :Base, 'qa/vendor/github/page/base'
-        autoload :Login, 'qa/vendor/github/page/login'
-      end
-    end
-
-    module OnePassword
-      autoload :CLI, 'qa/vendor/one_password/cli'
     end
   end
 

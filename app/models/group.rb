@@ -70,6 +70,9 @@ class Group < Namespace
   validates :variables, variable_duplicates: true
 
   validates :two_factor_grace_period, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :name,
+    format: { with: Gitlab::Regex.group_name_regex,
+              message: Gitlab::Regex.group_name_regex_message }
 
   add_authentication_token_field :runners_token, encrypted: -> { Feature.enabled?(:groups_tokens_optional_encryption, default_enabled: true) ? :optional : :required }
 
@@ -245,9 +248,6 @@ class Group < Namespace
     add_user(user, :maintainer, current_user: current_user)
   end
 
-  # @deprecated
-  alias_method :add_master, :add_maintainer
-
   def add_owner(user, current_user = nil)
     add_user(user, :owner, current_user: current_user)
   end
@@ -273,9 +273,6 @@ class Group < Namespace
   def has_container_repository_including_subgroups?
     ::ContainerRepository.for_group_and_its_subgroups(self).exists?
   end
-
-  # @deprecated
-  alias_method :has_master?, :has_maintainer?
 
   # Check if user is a last owner of the group.
   def last_owner?(user)
