@@ -140,6 +140,7 @@ describe Gitlab::UsageData, :aggregate_failures do
         subject { described_class.components_usage_data }
 
         it 'gathers components usage data' do
+          expect(subject[:app_server][:type]).to eq(Gitlab::Runtime.identify.to_s)
           expect(subject[:gitlab_pages][:enabled]).to eq(Gitlab.config.pages.enabled)
           expect(subject[:gitlab_pages][:version]).to eq(Gitlab::Pages::VERSION)
           expect(subject[:git][:version]).to eq(Gitlab::Git.version)

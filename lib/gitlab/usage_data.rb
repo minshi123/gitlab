@@ -174,7 +174,8 @@ module Gitlab
           git: { version: Gitlab::Git.version },
           gitaly: { version: Gitaly::Server.all.first.server_version, servers: Gitaly::Server.count, filesystems: Gitaly::Server.filesystems },
           gitlab_pages: { enabled: Gitlab.config.pages.enabled, version: Gitlab::Pages::VERSION },
-          database: { adapter: Gitlab::Database.adapter_name, version: Gitlab::Database.version }
+          database: { adapter: Gitlab::Database.adapter_name, version: Gitlab::Database.version },
+          app_server: { type: Gitlab::Runtime.identify.to_s }
         }
       end
 
