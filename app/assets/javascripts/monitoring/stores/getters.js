@@ -1,3 +1,5 @@
+import { NOT_SAVED_TO_DB_PREFIX } from './utils';
+
 const metricsIdsInPanel = panel =>
   panel.metrics.filter(metric => metric.metricId && metric.result).map(metric => metric.metricId);
 
@@ -56,6 +58,29 @@ export const metricsWithData = state => groupKey => {
   });
 
   return res;
+};
+
+/**
+ * Metrics loaded from project-defined dashboards do not have a metric_id.
+ * This getter loads the metrics that are defined in a dashboard (have a metric id)
+ * This is hopefully a temporary solution until BE processes metrics before passing to FE
+ *
+ * Related:
+ * https://gitlab.com/gitlab-org/gitlab/-/issues/28241
+ * https://gitlab.com/gitlab-org/gitlab/-/merge_requests/27447
+ */
+export const metricsSavedToDb = state => {
+  const metricIds = [];
+  state.dashboard.panelGroups.forEach(({ panels }) => {
+    panels.forEach(({ metrics }) => {
+      const metricIdsInDb = metrics
+        .filter(({ metricId }) => !metricId.startsWith(NOT_SAVED_TO_DB_PREFIX))
+        .map(({ metricId }) => metricId);
+
+      metricIds.push(...metricIdsInDb);
+    });
+  });
+  return metricIds;
 };
 
 /**

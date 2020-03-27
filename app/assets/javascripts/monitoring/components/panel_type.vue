@@ -1,5 +1,5 @@
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import { pickBy } from 'lodash';
 import invalidUrl from '~/lib/utils/invalid_url';
 import {
@@ -75,11 +75,22 @@ export default {
   },
   computed: {
     ...mapState('monitoringDashboard', ['deploymentData', 'projectPath', 'logsPath', 'timeRange']),
+    ...mapGetters('monitoringDashboard', ['metricsSavedToDb']),
     title() {
       return this.graphData.title || '';
     },
+    metricsInDb() {
+      const { metrics = [] } = this.graphData;
+      return metrics.filter(({ metricId }) => this.metricsSavedToDb.includes(metricId));
+    },
     alertWidgetAvailable() {
-      return IS_EE && this.prometheusAlertsAvailable && this.alertsEndpoint && this.graphData;
+      return (
+        IS_EE &&
+        this.prometheusAlertsAvailable &&
+        this.alertsEndpoint &&
+        this.graphData &&
+        this.metricsInDb.length
+      );
     },
     graphDataHasMetrics() {
       return (
@@ -187,7 +198,7 @@ export default {
       >
         <div class="d-flex align-items-center">
           <alert-widget
-            v-if="alertWidgetAvailable && graphData"
+            v-if="alertWidgetAvailable"
             :modal-id="`alert-modal-${index}`"
             :alerts-endpoint="alertsEndpoint"
             :relevant-queries="graphData.metrics"
