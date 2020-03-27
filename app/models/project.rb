@@ -2417,6 +2417,10 @@ class Project < ApplicationRecord
     jira_imports.last
   end
 
+  def bots
+    users.where(user_type: :project_bot)
+  end
+
   private
 
   def find_service(services, name)
