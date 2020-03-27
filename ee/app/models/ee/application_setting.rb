@@ -296,17 +296,15 @@ module EE
     end
 
     def check_elasticsearch_url_scheme
-      begin
-        urls = elasticsearch_url.map(&URI.method(:parse))
+      urls = elasticsearch_url.map(&URI.method(:parse))
 
-        # ElasticSearch only exposes a RESTful API, hence we need
-        # to use the HTTP protocol on all URLs.
-        unless urls.all? { [:http, :https].include? url.scheme&.to_sym }
-          errors.add(:elasticsearch_url, "only supports HTTP(S) URLs.")
-        end
-      rescue URI::InvalidURIError => e
-        errors.add(:elasticsearch_url, e.message)
+      # ElasticSearch only exposes a RESTful API, hence we need
+      # to use the HTTP protocol on all URLs.
+      unless urls.all? { [:http, :https].include? url.scheme&.to_sym }
+        errors.add(:elasticsearch_url, "only supports HTTP(S) URLs.")
       end
+    rescue URI::InvalidURIError => e
+      errors.add(:elasticsearch_url, e.message)
     end
   end
 end
