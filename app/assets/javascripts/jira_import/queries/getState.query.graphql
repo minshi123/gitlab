@@ -1,0 +1,14 @@
+query {
+  project(fullPath: "gitlab-org/gitlab-test") {
+    jiraImportStatus
+    jiraImports {
+      nodes {
+        jiraProjectKey
+        scheduledAt
+        scheduledBy {
+          username
+        }
+      }
+    }
+  }
+}
