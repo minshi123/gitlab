@@ -17,7 +17,7 @@ code_quality:
   allow_failure: true
   variables:
     # emptying DOCKER_HOST so it can be detected properly on kubernetes executor
-    # with the script bellow
+    # with the script below
     DOCKER_HOST: ""
     CODE_QUALITY_IMAGE: "registry.gitlab.com/gitlab-org/ci-cd/codequality:0.85.9"
   script:
@@ -61,7 +61,7 @@ sast:
     expire_in: 1 week  # GitLab-specific
   variables:
     # emptying DOCKER_HOST so it can be detected properly on kubernetes executor
-    # with the script bellow
+    # with the script below
     DOCKER_HOST: ""
     SAST_BRAKEMAN_LEVEL: 2  # GitLab-specific
     SAST_EXCLUDED_PATHS: qa,spec,doc,ee/spec  # GitLab-specific
@@ -92,7 +92,7 @@ dependency_scanning:
   needs: []
   variables:
     # emptying DOCKER_HOST so it can be detected properly on kubernetes executor
-    # with the script bellow
+    # with the script below
     DOCKER_HOST: ""
     DS_EXCLUDED_PATHS: "qa/qa/ee/fixtures/secure_premade_reports,spec,ee/spec"  # GitLab-specific
   allow_failure: true
