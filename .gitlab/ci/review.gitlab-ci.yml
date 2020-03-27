@@ -5,7 +5,6 @@
   services:
     - docker:19.03.0-dind
   tags:
-    - gitlab-org
     - docker
   variables:
     DOCKER_DRIVER: overlay2

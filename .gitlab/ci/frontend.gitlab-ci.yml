@@ -54,7 +54,6 @@
     - scripts/clean-old-cached-assets
     - rm -f /etc/apt/sources.list.d/google*.list  # We don't need to update Chrome here
   tags:
-    - gitlab-org
     - docker
 
 gitlab:assets:compile pull-push-cache:

@@ -12,7 +12,9 @@ stages:
   - post-qa
   - pages
 
-# always use `gitlab-org` runners
+# always use `gitlab-org` runners, however
+# in cases where jobs require Docker-in-Docker, the
+# default must be overridden with `docker` tag
 default:
   tags:
     - gitlab-org

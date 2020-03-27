@@ -16,7 +16,9 @@ code_quality:
   image: docker:stable
   allow_failure: true
   services:
-    - docker:stable-dind
+    - docker:19.03.0-dind
+  tags:
+    - docker
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
@@ -66,7 +68,9 @@ sast:
     SAST_BRAKEMAN_LEVEL: 2  # GitLab-specific
     SAST_EXCLUDED_PATHS: qa,spec,doc,ee/spec  # GitLab-specific
   services:
-    - docker:stable-dind
+    - docker:19.03.0-dind
+  tags:
+    - docker
   script:
     - export SAST_VERSION=${SP_VERSION:-$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')}
     - |
@@ -98,7 +102,9 @@ dependency_scanning:
     DS_EXCLUDED_PATHS: "qa/qa/ee/fixtures/secure_premade_reports,spec,ee/spec"  # GitLab-specific
   allow_failure: true
   services:
-    - docker:stable-dind
+    - docker:19.03.0-dind
+  tags:
+    - docker
   script:
     - export DS_VERSION=${SP_VERSION:-$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')}
     - |
