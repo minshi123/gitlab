@@ -20,7 +20,12 @@ import {
   designDeletionError,
 } from '../utils/error_messages';
 import { updateStoreAfterUploadDesign } from '../utils/cache_update';
-import { designUploadOptimisticResponse } from '../utils/design_management_utils';
+import {
+  designUploadOptimisticResponse,
+  isImage,
+  getFilename,
+  getImageFile,
+} from '../utils/design_management_utils';
 import { DESIGNS_ROUTE_NAME } from '../router/constants';
 
 const MAXIMUM_FILE_UPLOAD_LIMIT = 10;
@@ -92,6 +97,9 @@ export default {
         ? s__('DesignManagement|Deselect all')
         : s__('DesignManagement|Select all');
     },
+  },
+  mounted() {
+    this.addOnPasteListener(this.$route.name);
   },
   methods: {
     resetFilesToBeSaved() {
@@ -215,24 +223,15 @@ export default {
 
       this.onUploadDesign(files);
     },
-    getFilename(e) {
-      let value;
-      if (window.clipboardData && window.clipboardData.getData) {
-        value = window.clipboardData.getData('Text');
-      } else if (e.clipboardData && e.clipboardData.getData) {
-        value = e.clipboardData.getData('text/plain');
-      }
-      value = value.split('\r');
-      return value[0];
-    },
     onDesignPaste(event) {
       const { clipboardData } = event;
       if (clipboardData && clipboardData.items) {
         event.preventDefault();
-        const image = clipboardData.items[0];
-        const filename = this.getFilename(event) || 'image.png';
-        const file = clipboardData.files[0];
-        const newFile = new File([file], filename);
+        if (!isImage(clipboardData)) {
+          return;
+        }
+        const filename = getFilename(event) || 'image.png';
+        const newFile = new File([clipboardData.files[0]], filename);
         this.onUploadDesign([newFile]);
       }
     },
@@ -243,9 +242,6 @@ export default {
         document.removeEventListener('paste', this.onDesignPaste);
       }
     },
-  },
-  mounted() {
-    this.addOnPasteListener(this.$route.name);
   },
   beforeRouteUpdate(to, from, next) {
     this.addOnPasteListener(to.name);
