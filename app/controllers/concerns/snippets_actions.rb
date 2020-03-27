@@ -4,11 +4,17 @@ module SnippetsActions
   extend ActiveSupport::Concern
 
   def edit
-    # We need to load some info from the existing blob
-    snippet.content = blob.data
-    snippet.file_name = blob.path
+    if blob.binary?
+      path = snippet.is_a?(PersonalSnippet) ? snippet_path(snippet) : project_snippet_path(project, snippet)
 
-    render 'edit'
+      redirect_to path
+    else
+      # We need to load some info from the existing blob
+      snippet.content = blob.data
+      snippet.file_name = blob.path
+
+      render 'edit'
+    end
   end
 
   def raw

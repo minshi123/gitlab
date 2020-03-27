@@ -549,4 +549,18 @@ describe Projects::SnippetsController do
       end
     end
   end
+
+  describe 'GET #edit' do
+    it_behaves_like 'editing snippets with binary blob' do
+      let(:snippet) { create(:project_snippet, :private, project: project, author: user) }
+      let(:path) { project_snippet_path(project, snippet) }
+      let(:params) do
+        {
+          namespace_id: project.namespace,
+          project_id: project,
+          id: snippet
+        }
+      end
+    end
+  end
 end

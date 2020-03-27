@@ -779,4 +779,12 @@ describe SnippetsController do
       end
     end
   end
+
+  describe 'GET #edit' do
+    it_behaves_like 'editing snippets with binary blob' do
+      let(:snippet) { create(:personal_snippet, :public, :repository, author: user) }
+      let(:params) { { id: snippet } }
+      let(:path) { snippet_path(snippet) }
+    end
+  end
 end
