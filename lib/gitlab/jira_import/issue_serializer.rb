@@ -36,6 +36,7 @@ module Gitlab
         body << formatter.author_line(jira_issue.reporter.displayName)
         body << formatter.assignee_line(jira_issue.assignee.displayName) if jira_issue.assignee
         body << jira_issue.description
+        body << metadata
 
         body.join
       end
@@ -47,6 +48,56 @@ module Gitlab
         else
           Issuable::STATE_ID_MAP[:opened]
         end
+      end
+
+      def metadata
+        @metadata = []
+
+        add_field_name_value('issuetype', 'Issue type')
+        add_field_name_value('priority', 'Priority')
+        add_labels_value
+        add_simple_field_value('environment', 'Environment')
+        add_simple_field_value('duedate', 'Due date')
+        add_parent_value
+        add_versions_value
+
+        return if @metadata.blank?
+
+        @metadata.prepend("\n\n---\n\n*Issue metadata*\n\n")
+      end
+
+      def add_simple_field_value(field_key, label)
+        return if fields[field_key].blank?
+
+        @metadata << "- #{label}: #{fields[field_key]}\n"
+      end
+
+      def add_field_name_value(field_key, label)
+        return if fields[field_key].blank?
+
+        @metadata << "- #{label}: #{fields[field_key]['name']}\n"
+      end
+
+      def add_labels_value
+        return if fields['labels'].blank?
+
+        @metadata << "- Labels: #{fields['labels'].join(', ')}\n"
+      end
+
+      def add_parent_value
+        return if fields['parent'].blank?
+
+        @metadata << "- Parent issue: #{fields['parent']['key']}: #{fields['parent']['fields']['summary']}\n"
+      end
+
+      def add_versions_value
+        return if fields['fixVersions'].blank?
+
+        @metadata << "- Fix versions: #{fields['fixVersions'].map { |version| version['name'] }.join(', ') }"
+      end
+
+      def fields
+        jira_issue.fields
       end
     end
   end
