@@ -23,8 +23,6 @@ describe Resolvers::VulnerabilitiesResolver do
       create(:vulnerability, :dismissed, :high, :container_scanning, project: project)
     end
 
-    subject { resolve(described_class, obj: vulnerable, ctx: { current_user: current_user }) }
-
     let(:current_user) { user }
     let(:filters) { {} }
     let(:vulnerable) { project }
