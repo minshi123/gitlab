@@ -108,6 +108,8 @@ Rails.application.routes.draw do
     get 'ide' => 'ide#index'
     get 'ide/*vueroute' => 'ide#index', format: false
 
+    get 'static-site-editor' => 'static_site_editor#index'
+
     draw :operations
     draw :instance_statistics
 
