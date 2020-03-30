@@ -42,7 +42,8 @@ GitLab.com uses the SAML NameID to identify users. The NameID element:
 - Is case sensitive. The NameID must match exactly on subsequent login attempts, so should not rely on user input that could change between upper and lower case.
 - Should not be an email address or username. We strongly recommend against these as it is hard to guarantee they will never change, for example when a person's name changes. Email addresses are also case-insensitive, which can result in users being unable to sign in.
 
-The recommended field for supported providers are in the [provider specific notes](#providers).
+Not all providers use the NameID element. Review the [provider specific notes](#providers) for the
+appropriate corresponding field.
 
 CAUTION: **Warning:**
 Once users have signed into GitLab using the SSO SAML setup, changing the `NameID` will break the configuration and potentially lock users out of the GitLab group.
@@ -351,17 +352,17 @@ This error suggests you are signed in as a GitLab user but have already linked y
 
 If you do not wish to use that GitLab user with the SAML login, you can [unlink the GitLab account from the group's SAML](#unlinking-accounts).
 
-### Message: "SAML authentication failed: User has already been taken"
+### Message: "SAML authentication failed: User (Email) has already been taken"
 
-The user you are signed in with already has SAML linked to a different identity. This might mean you've attempted to link multiple SAML identities to the same user for a given Identity Provider. This could also be a symptom of the Identity Provider returning an inconsistent [NameID](#nameid).
+The user that you're signed in with already has SAML linked to a different identity. Here are possible causes and solutions:
 
-To change which identity you sign in with, you can [unlink the previous SAML identity](#unlinking-accounts) from this GitLab account.
+- You've tried to link multiple SAML identities to the same user, for a given Identity Provider.
 
-Alternatively, an admin of your Identity Provider can use the [SCIM API](../../../api/scim.md) to update your `extern_uid` to match the current **NameID**.
+  - Solution: Change the identity that you sign in with. To do so, [unlink the previous SAML identity](#unlinking-accounts) from this GitLab account.
 
-### Message: "SAML authentication failed: Email has already been taken"
+- The Identity Provider might be returning an inconsistent [NameID](#nameid).
 
-Same as ["SAML authentication failed: User has already been taken"](#message-saml-authentication-failed-user-has-already-been-taken).
+  - Solution: ask an admin of your Identity Provider to use the [SCIM API](../../../api/scim.md) to update your `extern_uid` to match the current **NameID**.
 
 ### Message: "SAML authentication failed: Extern uid has already been taken, User has already been taken"
 
@@ -371,13 +372,13 @@ This can be prevented by configuring the [NameID](#nameid) to return a consisten
 
 ### The NameID has changed
 
-As mentioned in the [NameID](#nameid) section, if the NameID changes for any user, the user can be locked out. This is common for setups using an email address as the identifier.
+As mentioned in the [NameID](#nameid) section, if the NameID changes for any user, the user can be locked out. This is a common problem when an email address is used as the identifier.
 
-To fix the issue, follow the steps outlined in the ["SAML authentication failed: User has already been taken"](#message-saml-authentication-failed-user-has-already-been-taken) section. We recommend using the API method if many users are affected so that the changes can be done in a scripted batch.
+- Solution: Follow the steps outlined in the ["SAML authentication failed: User has already been taken"](#message-saml-authentication-failed-user-has-already-been-taken) section. If many users are affected, we recommend that you use an appropriate API.
 
 ### I need to change my SAML app
 
-Users need to [unlink the previous SAML identity](#unlinking-accounts) and [link their identity](#user-access-and-management) using the new SAML app.
+As an admin, you'll need to [unlink the current SAML identity](#unlinking-accounts) and [link their identity](#user-access-and-management) to the new SAML app.
 
 ### My identity provider isn't listed
 

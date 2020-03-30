@@ -175,7 +175,10 @@ As a workaround, try an alternate mapping:
 
 ### Message: "SAML authentication failed: Email has already been taken"
 
-It is expected for the app's logs to show this error for any existing user until they sign in for the first time. GitLab will not allow multiple accounts to have the same email address.
+This message may be caused by the following:
+
+- Existing users have not yet signed into the new app.
+- Multiple accounts share the same email address.
 
 ### How do I diagnose why a user is unable to sign in
 
