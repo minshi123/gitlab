@@ -5,8 +5,8 @@ import {
   designUploadOptimisticResponse,
   updateImageDiffNoteOptimisticResponse,
   isValidDesignFile,
+  getFilename,
 } from 'ee/design_management/utils/design_management_utils';
-import { getFilename } from '../../../../app/assets/javascripts/design_management/utils/design_management_utils';
 
 jest.mock('lodash/uniqueId', () => () => 1);
 
