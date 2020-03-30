@@ -23,6 +23,7 @@ const Api = {
   projectMergeRequestVersionsPath: '/api/:version/projects/:id/merge_requests/:mrid/versions',
   projectRunnersPath: '/api/:version/projects/:id/runners',
   projectProtectedBranchesPath: '/api/:version/projects/:id/protected_branches',
+  projectIssuesPath: '/api/:version/projects/:id/issues',
   mergeRequestsPath: '/api/:version/merge_requests',
   groupLabelsPath: '/groups/:namespace_path/-/labels',
   issuableTemplatePath: '/:namespace_path/:project_path/templates/:type/:key',
@@ -241,6 +242,19 @@ const Api = {
       .get(url, {
         params: {
           search: query,
+          per_page: DEFAULT_PER_PAGE,
+        },
+      })
+      .then(({ data }) => data);
+  },
+
+  projectIssues(id, params = {}) {
+    const url = Api.buildUrl(Api.projectIssuesPath).replace(':id', encodeURIComponent(id));
+
+    return axios
+      .get(url, {
+        params: {
+          ...params,
           per_page: DEFAULT_PER_PAGE,
         },
       })

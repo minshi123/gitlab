@@ -3,6 +3,8 @@ import { shallowMount, createLocalVue } from '@vue/test-utils';
 import { GlEmptyState, GlTab, GlTabs } from '@gitlab/ui';
 import PackageListApp from 'ee/packages/list/components/packages_list_app.vue';
 
+jest.mock('ee/packages/list/coming_soon/helpers.js');
+
 const localVue = createLocalVue();
 localVue.use(Vuex);
 

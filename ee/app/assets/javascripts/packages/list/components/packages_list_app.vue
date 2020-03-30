@@ -6,6 +6,8 @@ import PackageFilter from './packages_filter.vue';
 import PackageList from './packages_list.vue';
 import PackageSort from './packages_sort.vue';
 import { PACKAGE_REGISTRY_TABS } from '../constants';
+import * as comingSoon from '../coming_soon/helpers';
+import ComingSoonWrapper from '../coming_soon/coming_soon_wrapper';
 
 export default {
   components: {
@@ -15,6 +17,7 @@ export default {
     PackageFilter,
     PackageList,
     PackageSort,
+    ComingSoonWrapper,
   },
   computed: {
     ...mapState({
@@ -41,6 +44,9 @@ export default {
     tabsToRender() {
       return PACKAGE_REGISTRY_TABS;
     },
+    comingSoonEnabled() {
+      return comingSoon.isEnabled();
+    },
   },
   mounted() {
     this.requestPackagesList();
@@ -56,8 +62,10 @@ export default {
     tabChanged(e) {
       const selectedType = PACKAGE_REGISTRY_TABS[e];
 
-      this.setSelectedType(selectedType);
-      this.requestPackagesList();
+      if (selectedType) {
+        this.setSelectedType(selectedType);
+        this.requestPackagesList();
+      }
     },
     emptyStateTitle({ title, type }) {
       if (this.filterQuery) {
@@ -95,6 +103,10 @@ export default {
           </gl-empty-state>
         </template>
       </package-list>
+    </gl-tab>
+
+    <gl-tab v-if="comingSoonEnabled" :title="__('Coming Soon')" lazy>
+      <coming-soon-wrapper :illustration="emptyListIllustration" />
     </gl-tab>
   </gl-tabs>
 </template>

@@ -5113,6 +5113,9 @@ msgstr ""
 msgid "ComboSearch is not defined"
 msgstr ""
 
+msgid "Coming Soon"
+msgstr ""
+
 msgid "Command"
 msgstr ""
 
@@ -14288,6 +14291,9 @@ msgstr ""
 msgid "PackageRegistry|NPM"
 msgstr ""
 
+msgid "PackageRegistry|No Coming Soon Issues"
+msgstr ""
+
 msgid "PackageRegistry|NuGet"
 msgstr ""
 
@@ -14313,6 +14319,9 @@ msgid "PackageRegistry|There are no %{packageType} packages yet"
 msgstr ""
 
 msgid "PackageRegistry|There are no packages yet"
+msgstr ""
+
+msgid "PackageRegistry|There are no upcoming issues to display."
 msgstr ""
 
 msgid "PackageRegistry|There was a problem fetching the details for this package."
