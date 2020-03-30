@@ -810,6 +810,7 @@ Represents a milestone.
 | `author` | User! | User who wrote this note |
 | `body` | String! | Content of the note |
 | `bodyHtml` | String | The GitLab Flavored Markdown rendering of `note` |
+| `confidential` | Boolean | Indicates if this note is confidential |
 | `createdAt` | Time! | Timestamp of the note creation |
 | `discussion` | Discussion | The discussion this note is a part of |
 | `id` | ID! | ID of the note |
@@ -925,6 +926,7 @@ Information about pagination in a connection.
 | `tagList` | String | List of project tags |
 | `userPermissions` | ProjectPermissions! | Permissions for the current user on the resource |
 | `visibility` | String | Visibility of the project |
+| `vulnerabilitySeveritiesCount` | VulnerabilitySeveritiesCount | Counts for each severity of vulnerability of the project. Available only when feature flag `first_class_vulnerabilities` is enabled |
 | `webUrl` | String | Web URL of the project |
 | `wikiEnabled` | Boolean | (deprecated) Does this project have wiki enabled?. Use `wiki_access_level` instead |
 
@@ -979,13 +981,13 @@ Information about pagination in a connection.
 
 | Name  | Type  | Description |
 | ---   |  ---- | ----------  |
-| `buildArtifactsSize` | Int! | Build artifacts size of the project |
-| `commitCount` | Int! | Commit count of the project |
-| `lfsObjectsSize` | Int! | Large File Storage (LFS) object size of the project |
-| `packagesSize` | Int! | Packages size of the project |
-| `repositorySize` | Int! | Repository size of the project |
-| `storageSize` | Int! | Storage size of the project |
-| `wikiSize` | Int | Wiki size of the project |
+| `buildArtifactsSize` | Float! | Build artifacts size of the project |
+| `commitCount` | Float! | Commit count of the project |
+| `lfsObjectsSize` | Float! | Large File Storage (LFS) object size of the project |
+| `packagesSize` | Float! | Packages size of the project |
+| `repositorySize` | Float! | Repository size of the project |
+| `storageSize` | Float! | Storage size of the project |
+| `wikiSize` | Float | Wiki size of the project |
 
 ## RemoveAwardEmojiPayload
 
@@ -1047,12 +1049,12 @@ Counts of requirements by their state.
 
 | Name  | Type  | Description |
 | ---   |  ---- | ----------  |
-| `buildArtifactsSize` | Int! | The CI artifacts size in bytes |
-| `lfsObjectsSize` | Int! | The LFS objects size in bytes |
-| `packagesSize` | Int! | The packages size in bytes |
-| `repositorySize` | Int! | The Git repository size in bytes |
-| `storageSize` | Int! | The total storage in bytes |
-| `wikiSize` | Int! | The wiki size in bytes |
+| `buildArtifactsSize` | Float! | The CI artifacts size in bytes |
+| `lfsObjectsSize` | Float! | The LFS objects size in bytes |
+| `packagesSize` | Float! | The packages size in bytes |
+| `repositorySize` | Float! | The Git repository size in bytes |
+| `storageSize` | Float! | The total storage in bytes |
+| `wikiSize` | Float! | The wiki size in bytes |
 
 ## SentryDetailedError
 
@@ -1442,3 +1444,16 @@ Represents a vulnerability.
 | `state` | VulnerabilityState | State of the vulnerability (DETECTED, DISMISSED, RESOLVED, CONFIRMED) |
 | `title` | String | Title of the vulnerability |
 | `vulnerabilityPath` | String | URL to the vulnerability's details page |
+
+## VulnerabilitySeveritiesCount
+
+Represents vulnerability counts by severity
+
+| Name  | Type  | Description |
+| ---   |  ---- | ----------  |
+| `critical` | Int | Number of vulnerabilities of CRITICAL severity of the project |
+| `high` | Int | Number of vulnerabilities of HIGH severity of the project |
+| `info` | Int | Number of vulnerabilities of INFO severity of the project |
+| `low` | Int | Number of vulnerabilities of LOW severity of the project |
+| `medium` | Int | Number of vulnerabilities of MEDIUM severity of the project |
+| `unknown` | Int | Number of vulnerabilities of UNKNOWN severity of the project |
