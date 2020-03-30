@@ -7,16 +7,19 @@ type: reference
 > - Introduced in [GitLab Ultimate](https://about.gitlab.com/pricing/) 10.5.
 > - In [GitLab 12.9](https://gitlab.com/gitlab-org/gitlab/issues/198062), Roadmaps were moved to the Premium tier.
 > - In [GitLab 12.9](https://gitlab.com/gitlab-org/gitlab/issues/5164) and later, the epic bars show their title, progress, and completed weight percentage.
+> - In [Gitlab 12.10](https://gitlab.com/gitlab-org/gitlab/-/issues/6802), Milestones were introduced in Roadmap.
 
-An Epic within a group containing **Start date** and/or **Due date**
-can be visualized in a form of a timeline (e.g. a Gantt chart). The Epics Roadmap page
-shows such a visualization for all the epics which are under a group and/or its subgroups.
+Epics and Milestones within a group containing **Start date** and/or **Due date**
+can be visualized in a form of a timeline (e.g. a Gantt chart). The Roadmap page
+shows such a visualization for all the epics and milestones which are under a group and/or its subgroups.
 
 On the epic bars, you can see their title, progress, and completed weight percentage.
 When you hover over an epic bar, a popover appears with its title, start and due dates, and weight
 completed.
 
-![roadmap view](img/roadmap_view_v12_9.png)
+On top of the milestone bars, you can see their title. When you hover a milestone bar or title, a popover appears with its title, start date and due date.
+
+![roadmap view](img/roadmap_view_v12_10.png)
 
 A dropdown allows you to show only open or closed epics. By default, all epics are shown.
 
@@ -49,7 +52,7 @@ Roadmap supports the following date ranges:
 
 ![roadmap date range in quarters](img/roadmap_timeline_quarters.png)
 
-In _Quarters_ preset, roadmap shows epics which have start or due dates _falling within_ or
+In _Quarters_ preset, roadmap shows epics and milestones which have start or due dates _falling within_ or
 _going through_ **past quarter**, **current quarter** and **next 4 quarters**, where _today_
 is shown by the vertical red line in the timeline. The sub-headers underneath the quarter name on
 the timeline header represent the month of the quarter.
@@ -58,7 +61,7 @@ the timeline header represent the month of the quarter.
 
 ![roadmap date range in months](img/roadmap_timeline_months.png)
 
-In _Months_ preset, roadmap shows epics which have start or due dates _falling within_ or
+In _Months_ preset, roadmap shows epics and milestones which have start or due dates _falling within_ or
 _going through_ **past month**, **current month** and **next 5 months**, where _today_
 is shown by the vertical red line in the timeline. The sub-headers underneath the month name on
 the timeline header represent the date on starting day (Sunday) of the week. This preset is
@@ -68,14 +71,14 @@ selected by default.
 
 ![roadmap date range in weeks](img/roadmap_timeline_weeks.png)
 
-In _Weeks_ preset, roadmap shows epics which have start or due dates _falling within_ or
+In _Weeks_ preset, roadmap shows epics and milestones which have start or due dates _falling within_ or
 _going through_ **past week**, **current week** and **next 4 weeks**, where _today_
 is shown by the vertical red line in the timeline. The sub-headers underneath the week name on
 the timeline header represent the days of the week.
 
-## Timeline bar for an epic
+## Timeline bar for an epic or a milestone
 
-The timeline bar indicates the approximate position of an epic based on its start and due date.
+The timeline bar indicates the approximate position of an epic or milestone based on its start and due date.
 
 <!-- ## Troubleshooting
 
