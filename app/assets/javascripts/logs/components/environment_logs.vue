@@ -56,7 +56,6 @@ export default {
       required: true,
     },
   },
-  traceHeight: 600,
   data() {
     return {
       isElasticStackCalloutDismissed: false,
@@ -114,7 +113,7 @@ export default {
 };
 </script>
 <template>
-  <div class="environment-logs-viewer mt-3">
+  <div class="environment-logs-viewer d-flex flex-column py-3">
     <gl-alert
       v-if="shouldShowElasticStackCallout"
       class="mb-3 js-elasticsearch-alert"
@@ -182,9 +181,7 @@ export default {
 
     <gl-infinite-scroll
       ref="infiniteScroll"
-      class="log-lines"
-      :style="{ height: `${$options.traceHeight}px` }"
-      :max-list-height="$options.traceHeight"
+      class="log-lines overflow-auto flex-grow-1 min-height-0"
       :fetched-items="logs.lines.length"
       @topReached="topReached"
       @scroll="scroll"

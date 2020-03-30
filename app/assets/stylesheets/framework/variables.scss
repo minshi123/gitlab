@@ -608,6 +608,17 @@ $issue-boards-breadcrumbs-height-xs: 63px;
 $issue-board-list-difference-xs: $header-height + $issue-boards-breadcrumbs-height-xs;
 $issue-board-list-difference-sm: $header-height + $breadcrumb-min-height;
 $issue-board-list-difference-md: $issue-board-list-difference-sm + $issue-boards-filter-height;
+/*
+ The following heights are used in environment_logs.scss and are used for calculation of the board height.
+*/
+$environment-logs-breadcrumbs-height-xs: 63px;
+$environment-logs-filter-height-xs: 172px; // TODO Not used, in xs we scroll in the container
+$environment-logs-filter-height-lg: 52px;
+
+$environment-logs-difference-xs: $header-height + $environment-logs-breadcrumbs-height-xs;
+$environment-logs-difference-sm: $header-height + $breadcrumb-min-height;
+$environment-logs-difference-md: $environment-logs-difference-sm;
+$environment-logs-difference-lg: $environment-logs-difference-md + $environment-logs-filter-height-lg;
 
 /*
 * Avatar

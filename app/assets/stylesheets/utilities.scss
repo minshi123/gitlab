@@ -58,6 +58,7 @@
   // By default flex items don't shrink below their minimum content size. To change this, set the item's min-width
   min-width: 0;
 }
+.min-height-0 { min-height: 0; }
 
 .font-size-inherit { font-size: inherit; }
 .gl-w-8 { width: px-to-rem($grid-size); }

@@ -1,0 +1,91 @@
+.environment-logs-page {
+  .content-wrapper {
+    padding-bottom: 0;
+  }
+}
+
+// TODO This does not consider gl-alert or flash which are used in this UI.
+// flash-container or gl-alerts
+
+.environment-logs-viewer {
+  height: calc(100vh - #{$environment-logs-difference-xs});
+  overflow-x: scroll;
+  min-height: 200px;
+
+  @include media-breakpoint-only(sm) {
+    height: calc(100vh - #{$environment-logs-difference-sm});
+  }
+
+  @include media-breakpoint-up(md) {
+    height: calc(100vh - #{$environment-logs-difference-md});
+  }
+
+  @include media-breakpoint-up(lg) {
+    height: calc(100vh - #{$environment-logs-difference-lg});
+  }
+
+  .with-performance-bar & {
+    height: calc(100vh - #{$environment-logs-difference-xs} - #{$performance-bar-height});
+
+    @include media-breakpoint-only(sm) {
+      height: calc(100vh - #{$environment-logs-difference-sm} - #{$performance-bar-height});
+    }
+  
+    @include media-breakpoint-up(md) {
+      height: calc(100vh - #{$environment-logs-difference-md} - #{$performance-bar-height});
+    }
+  
+    @include media-breakpoint-up(lg) {
+      height: calc(100vh - #{$environment-logs-difference-lg - #{$performance-bar-height}});
+    }
+  }
+
+  .build-trace-container {
+    position: relative;
+  }
+
+  .log-lines,
+  .gl-infinite-scroll-container {
+    // makes scrollbar visible by creating contrast
+    background: $black;
+  }
+
+  .gl-infinite-scroll-legend {
+    margin: 0;
+  }
+
+  .build-trace {
+    @include build-trace($black);
+    margin: 0;
+  }
+
+  .top-bar {
+    .date-time-picker-wrapper,
+    .dropdown-toggle {
+      @include media-breakpoint-up(md) {
+        width: 140px;
+      }
+
+      @include media-breakpoint-up(lg) {
+        width: 160px;
+      }
+    }
+
+    .controllers {
+      @include build-controllers(16px, flex-end, false, 2);
+    }
+  }
+
+  .btn-refresh svg {
+    top: 0;
+  }
+
+  .build-loader-animation {
+    @include build-loader-animation;
+  }
+
+  .log-footer {
+    color: $white-normal;
+    background-color: $gray-900;
+  }
+}
