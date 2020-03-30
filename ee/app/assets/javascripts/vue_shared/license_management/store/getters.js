@@ -1,3 +1,4 @@
+import { groupBy } from 'lodash';
 import { n__, s__, sprintf } from '~/locale';
 import { LICENSE_APPROVAL_STATUS } from '../constants';
 
@@ -10,6 +11,8 @@ export const isAddingNewLicense = (_, getters) => getters.isLicenseBeingUpdated(
 export const hasPendingLicenses = state => state.pendingLicenses.length > 0;
 
 export const licenseReport = state => state.newLicenses;
+
+export const licenseReportGroupedByStatus = (_, getters) => groupBy(getters.licenseReport, 'status');
 
 export const licenseSummaryText = (state, getters) => {
   const hasReportItems = getters.licenseReport && getters.licenseReport.length;
@@ -66,7 +69,7 @@ export const licenseSummaryText = (state, getters) => {
   return s__('LicenseCompliance|License Compliance detected no new licenses');
 };
 
-export const reportContainsBlacklistedLicense = (_state, getters) =>
+export const reportContainsBlacklistedLicense = (_, getters) =>
   (getters.licenseReport || []).some(
     license => license.approvalStatus === LICENSE_APPROVAL_STATUS.DENIED,
   );

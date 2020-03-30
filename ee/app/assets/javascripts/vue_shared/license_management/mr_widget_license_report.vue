@@ -2,12 +2,16 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { GlLink } from '@gitlab/ui';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
+import ReportItem from '~/reports/components/report_item.vue';
+import SmartVirtualList from '~/vue_shared/components/smart_virtual_list.vue';
 import SetLicenseApprovalModal from 'ee/vue_shared/license_management/components/set_approval_status_modal.vue';
 import { componentNames } from 'ee/reports/components/issue_body';
 import Icon from '~/vue_shared/components/icon.vue';
 import ReportSection from '~/reports/components/report_section.vue';
 
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_management/store/constants';
+import { REPORT_HEADERS } from 'ee/vue_shared/license_management/constants';
+import { STATUS_FAILED, STATUS_NEUTRAL, STATUS_SUCCESS } from '~/reports/constants';
 
 import createStore from './store';
 
@@ -19,11 +23,18 @@ export default {
   store,
   components: {
     GlLink,
+    ReportItem,
     ReportSection,
     SetLicenseApprovalModal,
+    SmartVirtualList,
     Icon,
   },
   mixins: [reportsMixin],
+  statusHeaders: {
+    [STATUS_FAILED]: REPORT_HEADERS[STATUS_FAILED],
+    [STATUS_NEUTRAL]: REPORT_HEADERS[STATUS_NEUTRAL],
+    [STATUS_SUCCESS]: REPORT_HEADERS[STATUS_SUCCESS],
+  },
   props: {
     fullReportPath: {
       type: String,
@@ -68,6 +79,7 @@ export default {
     ...mapState(LICENSE_MANAGEMENT, ['loadLicenseReportError']),
     ...mapGetters(LICENSE_MANAGEMENT, [
       'licenseReport',
+      'licenseReportGroupedByStatus',
       'isLoading',
       'licenseSummaryText',
       'reportContainsBlacklistedLicense',
@@ -119,6 +131,51 @@ export default {
       class="license-report-widget mr-report"
       data-qa-selector="license_report_widget"
     >
+      <template #body>
+        <!-- smart virtual list of licenses: ul-->
+        <smart-virtual-list
+          :size="32"
+          :length="licenseReport.length"
+          :remain="20"
+          class="report-block-container"
+          wtag="ul"
+          wclass="report-block-list"
+        >
+          <li>
+            <h2>{{ $options.statusHeaders.failed.main }}</h2>
+            <report-item
+              v-for="(issue, index) in licenseReportGroupedByStatus.failed"
+              :key="index"
+              :issue="issue"
+              :status="issue.status"
+              :component="$options.componentNames.LicenseIssueBody"
+              :show-report-section-status-icon="true"
+            />
+          </li>
+          <li>
+            <h2>{{ $options.statusHeaders.neutral.main }}</h2>
+            <report-item
+              v-for="(issue, index) in licenseReportGroupedByStatus.neutral"
+              :key="index"
+              :issue="issue"
+              :status="issue.status"
+              :component="$options.componentNames.LicenseIssueBody"
+              :show-report-section-status-icon="true"
+            />
+          </li>
+          <li>
+            <h2>{{ $options.statusHeaders.success.main }}</h2>
+            <report-item
+              v-for="(issue, index) in licenseReportGroupedByStatus.success"
+              :key="index"
+              :issue="issue"
+              :status="issue.status"
+              :component="$options.componentNames.LicenseIssueBody"
+              :show-report-section-status-icon="true"
+            />
+          </li>
+        </smart-virtual-list>
+      </template>
       <template #success>
         {{ licenseSummaryText }}
         <gl-link
