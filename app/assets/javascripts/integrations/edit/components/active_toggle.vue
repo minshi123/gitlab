@@ -4,6 +4,7 @@ import { __ } from '~/locale';
 import { GlToggle } from '@gitlab/ui';
 
 export default {
+  name: 'ActiveToggle',
   components: {
     GlToggle,
   },
@@ -26,16 +27,31 @@ export default {
       activated: this.initialActivated,
     };
   },
+  mounted() {
+    // Initialize view
+    this.$nextTick(() => {
+      this.$parent.$emit('toggle', this.activated);
+    });
+  },
+  methods: {
+    onToggle(e) {
+      this.$parent.$emit('toggle', e);
+    },
+  },
 };
 </script>
 
 <template>
   <div>
     <div v-if="showActive" class="form-group row" role="group">
-      <label for="service_active" class="col-form-label col-sm-2">{{ __('Active') }}</label>
+      <label for="service[active]" class="col-form-label col-sm-2">{{ __('Active') }}</label>
       <div class="col-sm-10 pt-1">
-        <gl-toggle v-model="activated" :disabled="disabled" />
-        <input id="service_active" type="hidden" name="service[active]" :value="activated" />
+        <gl-toggle
+          v-model="activated"
+          :disabled="disabled"
+          name="service[active]"
+          @change="onToggle"
+        />
       </div>
     </div>
   </div>
