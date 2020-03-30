@@ -472,8 +472,15 @@ describe('Design management index page', () => {
   });
 
   describe('pasting a design', () => {
+    let event;
     beforeEach(() => {
       createComponent({ designs: mockDesigns, allVersions: [mockVersion] });
+
+      wrapper.setMethods({
+        onUploadDesign: jest.fn(),
+      });
+
+      event = new Event('paste');
 
       router.replace({
         name: DESIGNS_ROUTE_NAME,
@@ -483,12 +490,7 @@ describe('Design management index page', () => {
       });
     });
 
-    it('calls onUploadDesign with valid upload', () => {
-      wrapper.setMethods({
-        onUploadDesign: jest.fn(),
-      });
-
-      const event = new Event('paste');
+    it('calls onUploadDesign with valid paste', () => {
       event.clipboardData = {
         items: [{ type: 'text/plain' }, { type: 'image/png' }],
         files: [{ name: 'image.png' }],
@@ -501,6 +503,16 @@ describe('Design management index page', () => {
       expect(wrapper.vm.onUploadDesign).toHaveBeenCalledWith([
         new File([{ name: 'image.png' }], 'test.png'),
       ]);
+    });
+
+    it('does not onUploadDesign with invalid paste', () => {
+      event.clipboardData = {
+        items: [{ type: 'text/plain' }, { type: 'text' }],
+      };
+
+      document.dispatchEvent(event);
+
+      expect(wrapper.vm.onUploadDesign).not.toHaveBeenCalled();
     });
   });
 });

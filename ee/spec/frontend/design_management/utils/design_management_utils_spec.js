@@ -6,6 +6,7 @@ import {
   updateImageDiffNoteOptimisticResponse,
   isValidDesignFile,
 } from 'ee/design_management/utils/design_management_utils';
+import { getFilename } from '../../../../app/assets/javascripts/design_management/utils/design_management_utils';
 
 jest.mock('lodash/uniqueId', () => () => 1);
 
@@ -155,5 +156,17 @@ describe('isValidDesignFile', () => {
     ${'application/octet-stream'} | ${false}
   `('returns $valid for file type $mimetype', ({ mimetype, isValid }) => {
     expect(isValidDesignFile({ type: mimetype })).toBe(isValid);
+  });
+
+  describe('getFilename', () => {
+    it('returns first value correctly', () => {
+      const event = {
+        clipboardData: {
+          getData: () => 'test.png\rtest.txt',
+        },
+      };
+
+      expect(getFilename(event)).toBe('test.png');
+    });
   });
 });
