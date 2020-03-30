@@ -9,6 +9,7 @@ import Icon from '~/vue_shared/components/icon.vue';
 import LoadingButton from '~/vue_shared/components/loading_button.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import EmployeeBadge from '~/vue_shared/components/user_avatar/badges/employee_badge.vue';
 
 import epicUtils from '../utils/epic_utils';
 import { statusType } from '../constants';
@@ -23,6 +24,7 @@ export default {
     LoadingButton,
     UserAvatarLink,
     TimeagoTooltip,
+    EmployeeBadge,
   },
   computed: {
     ...mapState([
@@ -50,6 +52,9 @@ export default {
     },
     actionButtonText() {
       return this.isEpicOpen ? __('Close epic') : __('Reopen epic');
+    },
+    showGitLabEmployeeBadge() {
+      return this.author?.isGitlabEmployee;
     },
   },
   mounted() {
@@ -98,6 +103,7 @@ export default {
             :username="author.name"
             img-css-classes="avatar-inline"
           />
+          <employee-badge v-if="showGitLabEmployeeBadge" ref="gitLabEmployeeBadge" />
         </strong>
       </div>
     </div>

@@ -87,6 +87,21 @@ describe('EpicHeaderComponent', () => {
         expect(vm.actionButtonText).toBe('Reopen epic');
       });
     });
+
+    describe('showGitLabEmployeeBadge', () => {
+      test.each`
+        isGitlabEmployeeValue | expected
+        ${true}               | ${true}
+        ${false}              | ${false}
+      `(
+        'returns $expected when `author.isGitlabEmployee` is $isGitlabEmployeeValue',
+        ({ isGitlabEmployeeValue, expected }) => {
+          vm.$store.state.author.isGitlabEmployee = isGitlabEmployeeValue;
+
+          expect(vm.showGitLabEmployeeBadge).toBe(expected);
+        },
+      );
+    });
   });
 
   describe('template', () => {
@@ -131,6 +146,14 @@ describe('EpicHeaderComponent', () => {
       expect(toggleButtonEl.classList.contains('d-block')).toBe(true);
       expect(toggleButtonEl.classList.contains('d-sm-none')).toBe(true);
       expect(toggleButtonEl.classList.contains('gutter-toggle')).toBe(true);
+    });
+
+    it('renders employee badge when `author.isGitlabEmployee` is `true`', () => {
+      vm.$store.state.author.isGitlabEmployee = true;
+
+      return vm.$nextTick().then(() => {
+        expect(vm.$refs.gitLabEmployeeBadge).not.toBeUndefined();
+      });
     });
   });
 });
