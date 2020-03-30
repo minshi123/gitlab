@@ -37,6 +37,7 @@ import eventHub from './event_hub';
 import notify from '~/lib/utils/notify';
 import SourceBranchRemovalStatus from './components/source_branch_removal_status.vue';
 import GroupedTestReportsApp from '../reports/components/grouped_test_reports_app.vue';
+import TerraformPlan from '../terraform/components/mr_widget_terraform_plan.vue';
 import { setFaviconOverlay } from '../lib/utils/common_utils';
 
 export default {
@@ -74,6 +75,7 @@ export default {
     'mr-widget-rebase': RebaseState,
     SourceBranchRemovalStatus,
     GroupedTestReportsApp,
+    TerraformPlan,
   },
   props: {
     mrData: {
@@ -378,6 +380,8 @@ export default {
         class="js-reports-container"
         :endpoint="mr.testResultsPath"
       />
+
+      <terraform-plan />
 
       <div class="mr-widget-section">
         <component :is="componentName" :mr="mr" :service="service" />
