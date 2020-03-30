@@ -8486,6 +8486,8 @@ CREATE INDEX index_analytics_ca_project_stages_on_relative_position ON public.an
 
 CREATE INDEX index_analytics_ca_project_stages_on_start_event_label_id ON public.analytics_cycle_analytics_project_stages USING btree (start_event_label_id);
 
+CREATE INDEX index_analytics_cycle_analytics_group_stages_custom_only ON public.analytics_cycle_analytics_group_stages USING btree (id) WHERE (custom = true);
+
 CREATE INDEX index_application_settings_on_custom_project_templates_group_id ON public.application_settings USING btree (custom_project_templates_group_id);
 
 CREATE INDEX index_application_settings_on_file_template_project_id ON public.application_settings USING btree (file_template_project_id);
@@ -12848,5 +12850,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200324115359
 20200325160952
 20200325183636
+20200330074719
 \.
 
