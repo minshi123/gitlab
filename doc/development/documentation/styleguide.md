@@ -1439,6 +1439,15 @@ Example response:
 ```
 ````
 
+### Fake user information
+
+You may need to demonstrate an API call or a cURL command that includes the name
+and email address of a user. Don't use real user information in API calls:
+
+- **Email addresses**: Use an email address ending in `example.com`.
+- **Names**: Use strings like `Example Username` or non-gendered names with
+  common surnames, such as `Sidney Jones` or `Dana Doe`.
+
 ### Fake tokens
 
 There may be times where a token is needed to demonstrate an API call using
