@@ -441,14 +441,69 @@ describe Gitlab::UsageData do
           context 'for package' do
             it 'includes accurate usage_activity_by_stage data' do
               for_defined_days_back do
-                create(:project, packages: [create(:package)] )
+                pkg = create(:package)
+
+                # container expiration policies
+                pkg.project.container_expiration_policy.update!(enabled: false)
+
+                base_params = {
+                  keep_n: 10,
+                  cadence: '14d',
+                  older_than: '14d'
+                }
+                %i[keep_n cadence older_than].each do |option|
+                  ::ContainerExpirationPolicy.public_send("#{option}_options").keys.each do |value|
+                    create(:container_expiration_policy, base_params.merge(option => value))
+                  end
+                end
+
+                create(:container_expiration_policy, keep_n: nil)
+                create(:container_expiration_policy, older_than: nil)
               end
 
               expect(described_class.uncached_data[:usage_activity_by_stage][:package]).to eq(
-                projects_with_packages: 2
+                projects_with_packages: 2,
+                projects_with_expiration_policy_disabled: 2,
+                projects_with_expiration_policy_enabled: 34,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_14d: 22,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_1d: 6,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_1month: 2,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_3month: 2,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_7d: 2,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_1: 2,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_10: 20,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_100: 2,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_25: 2,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_5: 2,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_50: 2,
+                projects_with_expiration_policy_enabled_with_keep_n_unset: 4,
+                projects_with_expiration_policy_enabled_with_older_than_set_to_14d: 24,
+                projects_with_expiration_policy_enabled_with_older_than_set_to_30d: 2,
+                projects_with_expiration_policy_enabled_with_older_than_set_to_7d: 2,
+                projects_with_expiration_policy_enabled_with_older_than_set_to_90d: 2,
+                projects_with_expiration_policy_enabled_with_older_than_unset: 4
               )
               expect(described_class.uncached_data[:usage_activity_by_stage_monthly][:package]).to eq(
-                projects_with_packages: 1
+                projects_with_packages: 1,
+                projects_with_expiration_policy_disabled: 1,
+                projects_with_expiration_policy_enabled: 17,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_14d: 11,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_1d: 3,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_1month: 1,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_3month: 1,
+                projects_with_expiration_policy_enabled_with_cadence_set_to_7d: 1,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_1: 1,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_10: 10,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_100: 1,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_25: 1,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_5: 1,
+                projects_with_expiration_policy_enabled_with_keep_n_set_to_50: 1,
+                projects_with_expiration_policy_enabled_with_keep_n_unset: 2,
+                projects_with_expiration_policy_enabled_with_older_than_set_to_14d: 12,
+                projects_with_expiration_policy_enabled_with_older_than_set_to_30d: 1,
+                projects_with_expiration_policy_enabled_with_older_than_set_to_7d: 1,
+                projects_with_expiration_policy_enabled_with_older_than_set_to_90d: 1,
+                projects_with_expiration_policy_enabled_with_older_than_unset: 2
               )
             end
           end
