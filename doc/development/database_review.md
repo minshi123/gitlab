@@ -79,6 +79,10 @@ the following preparations into account.
   - Include either a rollback procedure or describe how to rollback changes.
 - Add the output of the migration(s) to the MR description.
 - Add tests for the migration in `spec/migrations` if necessary. See [Testing Rails migrations at GitLab](testing_guide/testing_migrations_guide.md) for more details.
+- When high-traffic tables are involved in the migration, use the [`with_lock_retries`](migration_style_guide.md#retry-mechanism-when-acquiring-database-locks) helper method
+to avoid database statement timeouts and application stability issues. Use cases:
+  - New foreign keys
+  - Table changes
 
 #### Preparation when adding or modifying queries
 

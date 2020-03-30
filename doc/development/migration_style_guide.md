@@ -225,6 +225,69 @@ def down
 end
 ```
 
+Creating a new table when we have two foreign keys:
+
+For this we'll three migrations:
+
+1. Creating the table without foreign keys (with the indices).
+1. Add foreign key to the first table.
+1. Add foreign key to the second table.
+
+Creating the table doesn't require locks:
+
+```ruby
+def up
+  create_table :imports do |t|
+    t.bigint :project_id, null: false
+    t.bigint :user_id, null: false
+    t.string :jid, limit: 255
+  end
+
+  add_index :imports, :project_id
+  add_index :imports, :user_id
+end
+
+def down
+  drop_table :imports
+end
+```
+
+Adding foreign key to `projects`:
+
+```ruby
+include Gitlab::Database::MigrationHelpers
+
+def up
+  with_lock_retries do
+    add_foreign_key :imports, :projects, column: :project_id, on_delete: :cascade
+  end
+end
+
+def down
+  with_lock_retries do
+    remove_foreign_key :imports, column: :project_id
+  end
+end
+```
+
+Adding foreign key to `users`:
+
+```ruby
+include Gitlab::Database::MigrationHelpers
+
+def up
+  with_lock_retries do
+    add_foreign_key :imports, :users, column: :user_id, on_delete: :cascade
+  end
+end
+
+def down
+  with_lock_retries do
+    remove_foreign_key :imports, column: :user_id
+  end
+end
+```
+
 ### When to use the helper method
 
 The `with_lock_retries` helper method can be used when you normally use
