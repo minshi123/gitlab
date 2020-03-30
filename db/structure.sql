@@ -9474,7 +9474,7 @@ CREATE INDEX index_namespaces_on_type_partial ON public.namespaces USING btree (
 
 CREATE UNIQUE INDEX index_note_diff_files_on_diff_note_id ON public.note_diff_files USING btree (diff_note_id);
 
-CREATE INDEX index_notes_on_author_id_and_created_at ON public.notes USING btree (author_id, created_at);
+CREATE INDEX index_notes_on_author_id_and_created_at_and_id ON public.notes USING btree (author_id, created_at, id);
 
 CREATE INDEX index_notes_on_commit_id ON public.notes USING btree (commit_id);
 
@@ -12848,5 +12848,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200324115359
 20200325160952
 20200325183636
+20200330132913
 \.
 
