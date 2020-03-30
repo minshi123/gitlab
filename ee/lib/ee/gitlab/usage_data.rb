@@ -266,17 +266,19 @@ module EE
           }
 
           # Container expiration policies
-          results[:projects_with_expiration_policy_disabled] = distinct_count(::ContainerExpirationPolicy.where(time_period.merge(enabled: false)), :project_id)
-          results[:projects_with_expiration_policy_enabled] = distinct_count(::ContainerExpirationPolicy.active.where(time_period), :project_id)
+          base = ::ContainerExpirationPolicy.where(time_period)
+          results[:projects_with_expiration_policy_disabled] = distinct_count(base.where(enabled: false), :project_id)
+          base = base.active
+          results[:projects_with_expiration_policy_enabled] = distinct_count(base, :project_id)
 
           %i[keep_n cadence older_than].each do |option|
             ::ContainerExpirationPolicy.public_send("#{option}_options").keys.each do |value| # rubocop: disable GitlabSecurity/PublicSend
-              results["projects_with_expiration_policy_enabled_with_#{option}_set_to_#{value}".to_sym] = distinct_count(::ContainerExpirationPolicy.active.where(time_period.merge(option => value)), :project_id)
+              results["projects_with_expiration_policy_enabled_with_#{option}_set_to_#{value}".to_sym] = distinct_count(base.where(option => value), :project_id)
             end
           end
 
-          results[:projects_with_expiration_policy_enabled_with_keep_n_unset] = distinct_count(::ContainerExpirationPolicy.active.where(time_period.merge(keep_n: nil)), :project_id)
-          results[:projects_with_expiration_policy_enabled_with_older_than_unset] = distinct_count(::ContainerExpirationPolicy.active.where(time_period.merge(older_than: nil)), :project_id)
+          results[:projects_with_expiration_policy_enabled_with_keep_n_unset] = distinct_count(base.where(keep_n: nil), :project_id)
+          results[:projects_with_expiration_policy_enabled_with_older_than_unset] = distinct_count(base.where(older_than: nil), :project_id)
 
           results
         end
