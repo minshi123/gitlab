@@ -2,7 +2,7 @@
 
 module API
   module Entities
-    class UserPath < UserBasic
+    class UserPath < UserGitlabEmployeeStatus
       include RequestAwareEntity
       include UserStatusTooltip
 
