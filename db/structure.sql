@@ -8634,8 +8634,6 @@ CREATE INDEX index_ci_builds_on_commit_id_and_type_and_ref ON public.ci_builds U
 
 CREATE INDEX index_ci_builds_on_name_and_security_type_eq_ci_build ON public.ci_builds USING btree (name, id) WHERE (((name)::text = ANY (ARRAY[('container_scanning'::character varying)::text, ('dast'::character varying)::text, ('dependency_scanning'::character varying)::text, ('license_management'::character varying)::text, ('sast'::character varying)::text, ('license_scanning'::character varying)::text])) AND ((type)::text = 'Ci::Build'::text));
 
-CREATE INDEX index_ci_builds_on_name_for_security_reports_values ON public.ci_builds USING btree (name) WHERE ((name)::text = ANY (ARRAY[('container_scanning'::character varying)::text, ('dast'::character varying)::text, ('dependency_scanning'::character varying)::text, ('license_management'::character varying)::text, ('sast'::character varying)::text, ('license_scanning'::character varying)::text]));
-
 CREATE INDEX index_ci_builds_on_project_id_and_id ON public.ci_builds USING btree (project_id, id);
 
 CREATE INDEX index_ci_builds_on_project_id_and_name_and_ref ON public.ci_builds USING btree (project_id, name, ref) WHERE (((type)::text = 'Ci::Build'::text) AND ((status)::text = 'success'::text) AND ((retried = false) OR (retried IS NULL)));
@@ -12848,5 +12846,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200324115359
 20200325160952
 20200325183636
+20200330123739
 \.
 
