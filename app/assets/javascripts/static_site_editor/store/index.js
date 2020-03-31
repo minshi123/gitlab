@@ -6,7 +6,7 @@ Vue.use(Vuex);
 
 const createStore = ({ initialState } = {}) => {
   return new Vuex.Store({
-    state: Object.assign(createState(), initialState),
+    state: createState(initialState),
   });
 };
 
