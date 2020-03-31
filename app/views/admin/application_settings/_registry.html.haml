@@ -5,5 +5,14 @@
     .form-group
       = f.label :container_registry_token_expire_delay, 'Authorization token duration (minutes)', class: 'label-bold'
       = f.number_field :container_registry_token_expire_delay, class: 'form-control'
+    .form-group
+      .form-check
+        = f.check_box :container_expiration_policies_enable_historic_entries, class: 'form-check-input'
+        = f.label :container_expiration_policies_enable_historic_entries, class: 'form-check-label' do
+          Enable container expiration and retention policies for historic entities
+        .form-text.text-muted
+          Existing projects will be able to use expiration policies, there is a performance
+          risk if many images exist on one project and the GitLab container registry is not
+          being used.
 
   = f.submit 'Save changes', class: "btn btn-success"
