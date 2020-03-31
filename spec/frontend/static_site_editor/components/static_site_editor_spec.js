@@ -15,11 +15,18 @@ localVue.use(Vuex);
 describe('StaticSiteEditor', () => {
   let wrapper;
   let store;
+  let loadContentActionMock;
 
-  const buildStore = (initialState = {}) =>
-    new Vuex.Store({
+  const buildStore = (initialState = {}) => {
+    loadContentActionMock = jest.fn();
+
+    return new Vuex.Store({
       state: createState(initialState),
+      actions: {
+        loadContent: loadContentActionMock,
+      },
     });
+  };
 
   const buildWrapper = () =>
     shallowMount(StaticSiteEditor, {
@@ -65,5 +72,9 @@ describe('StaticSiteEditor', () => {
     wrapper = buildWrapper();
 
     expect(wrapper.find(GlSkeletonLoader).exists()).toBe(true);
+  });
+
+  it('dispatches load content action', () => {
+    expect(loadContentActionMock).toHaveBeenCalled();
   });
 });
