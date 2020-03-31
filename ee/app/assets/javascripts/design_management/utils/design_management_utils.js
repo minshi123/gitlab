@@ -134,12 +134,12 @@ export const isImage = data => {
   return false;
 };
 
-export const getFilename = e => {
+export const getFilename = ({ clipboardData }) => {
   let value;
   if (window.clipboardData && window.clipboardData.getData) {
     value = window.clipboardData.getData('Text');
-  } else if (e.clipboardData && e.clipboardData.getData) {
-    value = e.clipboardData.getData('text/plain');
+  } else if (clipboardData && clipboardData.getData) {
+    value = clipboardData.getData('text/plain');
   }
   value = value.split('\r');
   return value[0];

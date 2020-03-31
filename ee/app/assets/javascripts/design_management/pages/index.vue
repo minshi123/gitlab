@@ -24,6 +24,7 @@ import {
   designUploadOptimisticResponse,
   isImage,
   getFilename,
+  isValidDesignFile,
 } from '../utils/design_management_utils';
 import { DESIGNS_ROUTE_NAME } from '../router/constants';
 
@@ -224,13 +225,14 @@ export default {
     },
     onDesignPaste(event) {
       const { clipboardData } = event;
-      if (clipboardData && clipboardData.items) {
-        if (!isImage(clipboardData)) {
+      const files = Array.from(clipboardData.files);
+      if (clipboardData && files.length > 0) {
+        if (!files.some(isValidDesignFile)) {
           return;
         }
         event.preventDefault();
         const filename = getFilename(event) || 'image.png';
-        const newFile = new File([clipboardData.files[0]], filename);
+        const newFile = new File([files[0]], filename);
         this.onUploadDesign([newFile]);
       }
     },
