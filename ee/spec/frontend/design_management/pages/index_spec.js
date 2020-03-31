@@ -492,8 +492,7 @@ describe('Design management index page', () => {
 
     it('calls onUploadDesign with valid paste', () => {
       event.clipboardData = {
-        items: [{ type: 'text/plain' }, { type: 'image/png' }],
-        files: [{ name: 'image.png' }],
+        files: [{ name: 'image.png', type: 'image/png' }],
         getData: () => 'test.png',
       };
 
@@ -508,6 +507,7 @@ describe('Design management index page', () => {
     it('does not onUploadDesign with invalid paste', () => {
       event.clipboardData = {
         items: [{ type: 'text/plain' }, { type: 'text' }],
+        files: [],
       };
 
       document.dispatchEvent(event);
