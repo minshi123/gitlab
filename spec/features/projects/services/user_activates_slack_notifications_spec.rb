@@ -19,8 +19,7 @@ describe 'User activates Slack notifications' do
       click_link('Slack notifications')
     end
 
-    it 'activates service' do
-      check('Active')
+    it 'activates service', :js do
       fill_in('Webhook', with: 'https://hooks.slack.com/services/SVRWFV0VVAR97N/B02R25XN3/ZBqu7xMupaEEICInN685')
       click_button('Save')
 
