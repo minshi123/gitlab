@@ -56,6 +56,7 @@ export default {
   },
   mounted() {
     window.onbeforeunload = e => this.onBeforeUnload(e);
+    document.querySelector('.navbar-gitlab').className += ' theme-dark'
   },
   methods: {
     ...mapActions(['toggleFileFinder', 'openNewEntryModal']),
@@ -77,7 +78,7 @@ export default {
 </script>
 
 <template>
-  <article class="ide position-relative d-flex flex-column align-items-stretch">
+  <article class="ide theme-dark position-relative d-flex flex-column align-items-stretch">
     <error-message v-if="errorMessage" :message="errorMessage" />
     <div class="ide-view flex-grow d-flex">
       <find-file

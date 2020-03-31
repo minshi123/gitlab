@@ -1,0 +1,102 @@
+.ide.theme-dark {
+  $border-color: #1d1f21;
+  $highlight-accent: #fff;
+  $text-color: #ccc;
+  $background: #333;
+  $highlight-background: #252526;
+  $link-color: #428fdc;
+  $avatar-background: #000;
+
+  a {
+    color: $link-color;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .ide-view,
+  .context-header > a,
+  .text-secondary,
+  .ide-sidebar-link,
+  .multi-file-tab-close {
+    color: $text-color;
+  }
+
+  .multi-file-commit-panel,
+  .multi-file-tabs,
+  .multi-file-tabs li,
+  .file-row:hover,
+  .file-row.is-active {
+    background-color: $background;
+  }
+
+  &,
+  .multi-file-commit-panel-inner-content,
+  .multi-file-commit-form,
+  .multi-file-tabs li.active,
+  .ide-sidebar-link.active,
+  .ide-sidebar-link.active::after,
+  .ide-right-sidebar .multi-file-commit-panel-inner {
+    background-color: $highlight-background;
+  }
+
+  .ide-mode-tabs,
+  .ide-tree-header,
+  .multi-file-commit-panel-inner,
+  .multi-file-commit-panel-inner-content,
+  .multi-file-commit-form,
+  .multi-file-commit-form > form,
+  .multi-file-commit-form > .commit-form-compact,
+  .multi-file-edit-pane,
+  .ide-right-sidebar .ide-activity-bar,
+  .ide-sidebar-link.active,
+  .multi-file-tabs li.active {
+    border-color: $border-color;
+  }
+
+  .multi-file-tabs li.active {
+    border-bottom-color: $highlight-background;
+  }
+
+  .multi-file-tabs {
+    box-shadow: inset 0 -1px $border-color;
+  }
+
+  .ide-sidebar-link.active {
+    color: $highlight-accent;
+    box-shadow: inset 3px 0 $highlight-accent;
+
+    &.is-right {
+      box-shadow: inset -3px 0 $highlight-accent;
+    }
+  }
+
+  .nav-links li.active a {
+    border-color: $highlight-accent;
+    color: $text-color;
+  }
+
+  .avatar-container {
+    &,
+    .avatar {
+      color: $text-color;
+      background-color: $avatar-background;
+      border-width: 0;
+    }
+  }
+
+  .btn {
+    &[disabled] {
+      background: transparent !important;
+      border: 1px solid rgba(223, 223, 223, 0.24) !important;
+      color: rgba(145, 145, 145, 0.48) !important;
+    }
+  }
+}
+
+.navbar.theme-dark {
+  border-bottom-width: 0;
+}
