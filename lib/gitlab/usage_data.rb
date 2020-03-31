@@ -24,17 +24,7 @@ module Gitlab
       end
 
       def license_usage_data
-        usage_data = {
-          uuid: Gitlab::CurrentSettings.uuid,
-          hostname: Gitlab.config.gitlab.host,
-          version: Gitlab::VERSION,
-          installation_type: installation_type,
-          active_user_count: count(User.active),
-          recorded_at: Time.now,
-          edition: 'CE'
-        }
-
-        usage_data
+        Gitlab::UsageDataCounters::LicenseCounter.data(self)
       end
 
       # rubocop: disable Metrics/AbcSize
@@ -249,6 +239,8 @@ module Gitlab
       rescue ActiveRecord::StatementInvalid
         fallback
       end
+
+      private
 
       def installation_type
         if Rails.env.production?
