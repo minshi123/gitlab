@@ -22,7 +22,6 @@ import {
 import { updateStoreAfterUploadDesign } from '../utils/cache_update';
 import {
   designUploadOptimisticResponse,
-  isImage,
   getFilename,
   isValidDesignFile,
 } from '../utils/design_management_utils';

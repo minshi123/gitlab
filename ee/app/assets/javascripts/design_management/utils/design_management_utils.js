@@ -122,18 +122,6 @@ const normalizeAuthor = author => ({
 
 export const extractParticipants = users => users.edges.map(({ node }) => normalizeAuthor(node));
 
-export const isImage = data => {
-  let i = 0;
-  while (i < data.items.length) {
-    const item = data.items[i];
-    if (item.type.indexOf('image') !== -1) {
-      return item;
-    }
-    i += 1;
-  }
-  return false;
-};
-
 export const getFilename = ({ clipboardData }) => {
   let value;
   if (window.clipboardData && window.clipboardData.getData) {
