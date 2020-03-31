@@ -60,7 +60,6 @@ export default {
       },
       filesToBeSaved: [],
       selectedDesigns: [],
-      event: null,
     };
   },
   computed: {
