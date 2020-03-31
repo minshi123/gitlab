@@ -3,11 +3,10 @@
 module Gitlab
   module Prometheus
     class DefaultAlertSetup
-      attr_reader :project, :cluster
+      attr_reader :project
 
-      def initialize(project:, cluster:)
+      def initialize(project:)
         @project = project
-        @cluster = cluster
       end
 
       def execute
@@ -16,8 +15,10 @@ module Gitlab
         return unless environment
 
         default_errors.each do |error|
-          metric = PrometheusMetric.for_project(nil).for_identifier(error[:identifier])
+          metric = PrometheusMetric.for_project(nil).for_identifier(error[:identifier]).first
+
           next if metric.nil?
+          next if PrometheusAlert.for_metric(metric).exists?
 
           alert = PrometheusAlert.new(
             project: project,
@@ -43,13 +44,6 @@ module Gitlab
           identifier: 'response_metrics_nginx_ingress_16_http_error_rate',
           operator: 'gt',
           threshold: 0.1
-        }
-      end
-
-      def alert_nginx_http_error_rate
-        {
-          identifier: 'response_metrics_nginx_http_error_rate_TODO',
-          query: ''
         }
       end
     end
