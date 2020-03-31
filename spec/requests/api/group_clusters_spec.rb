@@ -171,7 +171,8 @@ describe API::GroupClusters do
         name: 'test-cluster',
         domain: 'domain.example.com',
         managed: false,
-        platform_kubernetes_attributes: platform_kubernetes_attributes
+        platform_kubernetes_attributes: platform_kubernetes_attributes,
+        management_project_id: management_project_id
       }
     end
 
