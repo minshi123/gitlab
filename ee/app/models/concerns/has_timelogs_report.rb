@@ -16,6 +16,9 @@ module HasTimelogsReport
   private
 
   def timelogs_for(start_date, end_date)
+    start_date = start_date&.to_time&.beginning_of_day
+    end_date = end_date&.to_time&.end_of_day
+
     Timelog.between_dates(start_date, end_date).for_issues_in_group(self)
   end
 end

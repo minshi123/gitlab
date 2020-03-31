@@ -11,8 +11,10 @@ describe HasTimelogsReport do
     let!(:timelog1) { create_timelog(15.days.ago) }
     let!(:timelog2) { create_timelog(10.days.ago) }
     let!(:timelog3) { create_timelog(5.days.ago) }
-    let(:start_date) { 20.days.ago }
-    let(:end_date) { 8.days.ago }
+    let(:start_date) { 20.days.ago.strftime("%Y-%m-%d") }
+    let(:end_date) { 8.days.ago.strftime("%Y-%m-%d") }
+    # let(:start_date) { "2020-03-11" }
+    # let(:end_date) { "2020-03-23" }
 
     before do
       group.add_developer(user)
@@ -28,6 +30,13 @@ describe HasTimelogsReport do
 
     it 'returns empty collection if date range is invalid' do
       expect(group.timelogs(end_date, start_date)).to be_empty
+    end
+
+    it 'returns timelogs created at the end of the day' do
+      timnelog3 = create_timelog(end_date.to_time + 23.hours)
+
+      expect(group.timelogs(start_date, end_date).to_a)
+        .to match_array([timelog1, timelog2, timnelog3])
     end
   end
 
