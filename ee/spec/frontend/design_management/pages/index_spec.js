@@ -504,7 +504,7 @@ describe('Design management index page', () => {
       ]);
     });
 
-    it('does not onUploadDesign with invalid paste', () => {
+    it('does not call onUploadDesign with invalid paste', () => {
       event.clipboardData = {
         items: [{ type: 'text/plain' }, { type: 'text' }],
         files: [],
