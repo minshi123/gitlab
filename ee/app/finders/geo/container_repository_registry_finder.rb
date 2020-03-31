@@ -2,6 +2,10 @@
 
 module Geo
   class ContainerRepositoryRegistryFinder < RegistryFinder
+    def check_sync_enabled
+      Geo::ContainerRepositoryRegistry.replication_enabled?
+    end
+
     def count_syncable
       container_repositories.count
     end

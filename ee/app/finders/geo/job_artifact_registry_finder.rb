@@ -4,6 +4,10 @@ module Geo
   class JobArtifactRegistryFinder < FileRegistryFinder
     # Counts all existing registries independent
     # of any change on filters / selective sync
+    def check_sync_enabled
+      Geo::JobArtifactRegistry.replication_enabled?
+    end
+
     def count_registry
       Geo::JobArtifactRegistry.count
     end

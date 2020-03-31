@@ -2,6 +2,10 @@
 
 module Geo
   class DesignRegistryFinder < RegistryFinder
+    def check_sync_enabled
+      Geo::DesignRegistry.replication_enabled?
+    end
+
     def count_syncable
       GeoNode.find(current_node_id).projects.with_designs.count
     end
