@@ -72,7 +72,7 @@ module Geo
       class_name: 'Geo::ContainerRepositoryUpdatedEvent',
       foreign_key: :container_repository_updated_event_id
 
-    belongs_to :event,
+    belongs_to :geo_event,
       class_name: 'Geo::Event',
       foreign_key: :geo_event_id
 
