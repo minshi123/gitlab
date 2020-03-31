@@ -24,11 +24,16 @@ module API
       end
 
       post ':dashboard_id/annotations' do
-        binding.pry
         environment = ::Environment.find(params[:environment_id])
         authorize! :maintainer_access, environment
 
-        params
+        result = ::Metrics::Dashboard::Annotation::CreateService.new(current_user, params)
+
+        if result[:status] == :success
+          present result[:annotation], with: Entities::Monitoring::Annotation
+        else
+          result
+        end
       end
     end
   end
