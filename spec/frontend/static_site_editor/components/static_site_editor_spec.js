@@ -16,21 +16,24 @@ describe('StaticSiteEditor', () => {
   let wrapper;
   let store;
 
-  const buildStore = (initialState = {}) =>
-    new Vuex.Store({
+  const buildStore = (initialState = {}) => {
+    store = new Vuex.Store({
       state: createState(initialState),
     });
+  };
 
-  const buildWrapper = () =>
-    shallowMount(StaticSiteEditor, {
+  const buildWrapper = () => {
+    wrapper = shallowMount(StaticSiteEditor, {
       localVue,
       store,
     });
+  };
+
   const findEditArea = () => wrapper.find(EditArea);
 
   beforeEach(() => {
-    store = buildStore();
-    wrapper = buildWrapper();
+    buildStore();
+    buildWrapper();
   });
 
   afterEach(() => {
@@ -47,8 +50,8 @@ describe('StaticSiteEditor', () => {
     const content = 'edit area content';
 
     beforeEach(() => {
-      store = buildStore({ content, isContentLoaded: true });
-      wrapper = buildWrapper();
+      buildStore({ content, isContentLoaded: true });
+      buildWrapper();
     });
 
     it('renders the edit area', () => {
@@ -61,8 +64,8 @@ describe('StaticSiteEditor', () => {
   });
 
   it('displays skeleton loader while loading content', () => {
-    store = buildStore({ isLoadingContent: true });
-    wrapper = buildWrapper();
+    buildStore({ isLoadingContent: true });
+    buildWrapper();
 
     expect(wrapper.find(GlSkeletonLoader).exists()).toBe(true);
   });
