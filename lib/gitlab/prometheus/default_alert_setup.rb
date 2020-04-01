@@ -35,13 +35,22 @@ module Gitlab
 
       def default_errors
         [
-          alert_ingress_http_error_rate
+          alert_ingress_http_error_rate,
+          alert_ingress_16_http_error_rate
         ]
+      end
+
+      def alert_ingress_16_http_error_rate
+        {
+          identifier: 'response_metrics_nginx_ingress_16_http_error_rate',
+          operator: 'gt',
+          threshold: 0.1
+        }
       end
 
       def alert_ingress_http_error_rate
         {
-          identifier: 'response_metrics_nginx_ingress_16_http_error_rate',
+          identifier: 'response_metrics_nginx_ingress_http_error_rate',
           operator: 'gt',
           threshold: 0.1
         }

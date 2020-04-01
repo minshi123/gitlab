@@ -10,21 +10,22 @@ describe Gitlab::Prometheus::DefaultAlertSetup do
   describe '#execute' do
     subject(:execute_setup) { instance.execute }
 
-    context 'no environment' do
+    shared_examples 'no alerts created' do
       it 'does not create alerts' do
         execute_setup
         expect(project.prometheus_alerts.count).to eq(0)
       end
     end
 
+    context 'no environment' do
+      it_behaves_like 'no alerts created'
+    end
+
     context 'environment exists' do
       let_it_be(:environment) { create(:environment, project: project) }
 
       context 'no found metric' do
-        it 'does not create alerts' do
-          execute_setup
-          expect(project.prometheus_alerts.count).to eq(0)
-        end
+        it_behaves_like 'no alerts created'
       end
 
       context 'metric exists' do
@@ -37,10 +38,7 @@ describe Gitlab::Prometheus::DefaultAlertSetup do
             create_pre_existing_alerts!
           end
 
-          it 'does not create alerts' do
-            execute_setup
-            expect(project.prometheus_alerts.count).to eq(0)
-          end
+          it_behaves_like 'no alerts created'
         end
 
         it 'creates alerts' do
