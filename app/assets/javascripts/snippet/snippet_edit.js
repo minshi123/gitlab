@@ -2,6 +2,7 @@ import $ from 'jquery';
 import initSnippet from '~/snippet/snippet_bundle';
 import ZenMode from '~/zen_mode';
 import GLForm from '~/gl_form';
+import { SnippetShowEdit } from '~/snippets';
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.snippet-form');
@@ -17,9 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const projectSnippetOptions = {};
 
   const options =
-    form.dataset.snippetType === 'project' ? projectSnippetOptions : personalSnippetOptions;
+    form.dataset.snippetType === 'project' || form.dataset.projectPath
+      ? projectSnippetOptions
+      : personalSnippetOptions;
 
-  initSnippet();
+  if (!gon.features.snippetsEditVue) {
+    initSnippet();
+    new GLForm($(form), options); // eslint-disable-line no-new
+  } else {
+    SnippetShowEdit();
+  }
   new ZenMode(); // eslint-disable-line no-new
-  new GLForm($(form), options); // eslint-disable-line no-new
 });

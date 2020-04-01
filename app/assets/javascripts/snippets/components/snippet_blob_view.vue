@@ -5,8 +5,9 @@ import BlobHeader from '~/blob/components/blob_header.vue';
 import BlobContent from '~/blob/components/blob_content.vue';
 import { GlLoadingIcon } from '@gitlab/ui';
 
-import GetSnippetBlobQuery from '../queries/snippet.blob.query.graphql';
 import GetBlobContent from '../queries/snippet.blob.content.query.graphql';
+
+import { getSnippetBlob } from '../mixins';
 
 import { SIMPLE_BLOB_VIEWER, RICH_BLOB_VIEWER } from '~/blob/components/constants';
 
@@ -17,22 +18,8 @@ export default {
     BlobContent,
     GlLoadingIcon,
   },
+  mixins: [getSnippetBlob],
   apollo: {
-    blob: {
-      query: GetSnippetBlobQuery,
-      variables() {
-        return {
-          ids: this.snippet.id,
-        };
-      },
-      update: data => data.snippets.edges[0].node.blob,
-      result(res) {
-        const viewer = res.data.snippets.edges[0].node.blob.richViewer
-          ? RICH_BLOB_VIEWER
-          : SIMPLE_BLOB_VIEWER;
-        this.switchViewer(viewer, true);
-      },
-    },
     blobContent: {
       query: GetBlobContent,
       variables() {
@@ -53,7 +40,6 @@ export default {
   },
   data() {
     return {
-      blob: {},
       blobContent: '',
       activeViewerType: window.location.hash ? SIMPLE_BLOB_VIEWER : '',
     };
@@ -62,20 +48,23 @@ export default {
     embeddable() {
       return this.snippet.visibilityLevel === SNIPPET_VISIBILITY_PUBLIC;
     },
-    isBlobLoading() {
-      return this.$apollo.queries.blob.loading;
-    },
-    isContentLoading() {
-      return this.$apollo.queries.blobContent.loading;
-    },
     viewer() {
       const { richViewer, simpleViewer } = this.blob;
       return this.activeViewerType === RICH_BLOB_VIEWER ? richViewer : simpleViewer;
+    },
+    isContentLoading() {
+      return this.$apollo.queries.blobContent.loading;
     },
   },
   methods: {
     switchViewer(newViewer, respectHash = false) {
       this.activeViewerType = respectHash && window.location.hash ? SIMPLE_BLOB_VIEWER : newViewer;
+    },
+    onSnippetBlob(blob) {
+      const viewer = blob.richViewer
+        ? RICH_BLOB_VIEWER
+        : SIMPLE_BLOB_VIEWER;
+      this.switchViewer(viewer, true);
     },
   },
 };
