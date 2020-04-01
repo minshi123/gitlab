@@ -165,6 +165,14 @@ class License < ApplicationRecord
     service_desk
   ].freeze
 
+  # Features added here are available for all namespaces.
+  ANY_PLAN_FEATURES = %i[
+    ci_cd_projects
+    design_management
+    github_project_service_integration
+    repository_mirrors
+  ].freeze
+
   FEATURES_BY_PLAN = {
     STARTER_PLAN       => EES_FEATURES,
     PREMIUM_PLAN       => EEP_FEATURES,
@@ -173,11 +181,13 @@ class License < ApplicationRecord
   }.freeze
 
   PLANS_BY_FEATURE = FEATURES_BY_PLAN.each_with_object({}) do |(plan, features), hash|
-    features.each do |feature|
+    (ANY_PLAN_FEATURES + features).each do |feature|
       hash[feature] ||= []
       hash[feature] << plan
     end
   end.freeze
+
+  ALL_FEATURES = PLANS_BY_FEATURE.keys.map(&:to_sym).freeze
 
   # Add on codes that may occur in legacy licenses that don't have a plan yet.
   FEATURES_FOR_ADD_ONS = {
@@ -187,14 +197,6 @@ class License < ApplicationRecord
     'GitLab_Geo' => :geo,
     'GitLab_ServiceDesk' => :service_desk
   }.freeze
-
-  # Features added here are available for all namespaces.
-  ANY_PLAN_FEATURES = %i[
-    ci_cd_projects
-    design_management
-    github_project_service_integration
-    repository_mirrors
-  ].freeze
 
   # Global features that cannot be restricted to only a subset of projects or namespaces.
   # Use `License.feature_available?(:feature)` to check if these features are available.

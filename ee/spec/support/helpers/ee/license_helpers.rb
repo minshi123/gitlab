@@ -15,8 +15,7 @@ module EE
 
     prepended do
       def stub_licensed_features(features)
-        existing_features = License::FEATURES_BY_PLAN.values.flatten.map(&:to_sym)
-        missing_features = features.keys.map(&:to_sym) - existing_features
+        missing_features = features.keys.map(&:to_sym) - License::ALL_FEATURES
 
         if missing_features.any?
           subject = missing_features.join(', ')
