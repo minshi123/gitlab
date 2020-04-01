@@ -11,32 +11,41 @@ module Gitlab
 
       def execute
         return unless project
-
-        environment = project.environments.for_name('production').first ||
-                        project.environments.first
-
         return unless environment
 
-        default_errors.each do |error|
-          metric = PrometheusMetric.common.for_identifier(error[:identifier]).first
-
+        default_alerts.each do |alert_hash|
+          metric = metric_for_identifer(alert_hash[:identifier])
           next if metric.nil?
-          next if PrometheusAlert.for_metric(metric).exists?
 
-          alert = PrometheusAlert.new(
-            project: project,
-            prometheus_metric: metric,
-            environment: environment,
-            threshold: error[:threshold],
-            operator: error[:operator]
-          )
-          alert.save
+          create_alert(error: alert_hash, metric: metric)
         end
       end
 
       private
 
-      def default_errors
+      def environment
+        project.environments.for_name('production').first ||
+          project.environments.first
+      end
+
+      def metric_for_identifer(id)
+        metric = PrometheusMetric.common.for_identifier(id).first
+        return if PrometheusAlert.for_metric(metric).exists?
+
+        metric
+      end
+
+      def create_alert(error:, metric:)
+        PrometheusAlert.create!(
+          project: project,
+          prometheus_metric: metric,
+          environment: environment,
+          threshold: error[:threshold],
+          operator: error[:operator]
+        )
+      end
+
+      def default_alerts
         [
           alert_ingress_http_error_rate,
           alert_ingress_16_http_error_rate
