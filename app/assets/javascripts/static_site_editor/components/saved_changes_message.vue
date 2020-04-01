@@ -1,13 +1,22 @@
 <script>
 import { GlLink, GlNewButton } from '@gitlab/ui';
 
+const urlAndLabelValidator = value => {
+  return (
+    Object.prototype.hasOwnProperty.call(value, 'label') &&
+    Object.prototype.hasOwnProperty.call(value, 'url')
+  );
+};
+
 export default {
   components: {
     GlLink,
     GlNewButton,
   },
   props: {
-    links: { type: Object, required: true },
+    branch: { type: Object, required: true, validator: urlAndLabelValidator },
+    commit: { type: Object, required: true, validator: urlAndLabelValidator },
+    mergeRequest: { type: Object, required: true, validator: urlAndLabelValidator },
     returnUrl: { type: String, required: true },
   },
 };
@@ -25,10 +34,10 @@ export default {
         }}
       </p>
       <div>
-        <gl-new-button :href="returnUrl">{{
+        <gl-new-button ref="returnToSiteNewButton" :href="returnUrl">{{
           s__('StaticSiteEditor|Return to site')
         }}</gl-new-button>
-        <gl-new-button :href="links.mergeRequest.url" variant="info">{{
+        <gl-new-button ref="mergeRequestNewButton" :href="mergeRequest.url" variant="info">{{
           s__('StaticSiteEditor|View merge request')
         }}</gl-new-button>
       </div>
@@ -41,15 +50,17 @@ export default {
       <ul>
         <li>
           {{ s__('StaticSiteEditor|A new branch was created:') }}
-          <gl-link :href="links.branch.url">{{ links.branch.label }}</gl-link>
+          <gl-link ref="branchLink" :href="branch.url">{{ branch.label }}</gl-link>
         </li>
         <li>
           {{ s__('StaticSiteEditor|Your changes were committed to it:') }}
-          <gl-link :href="links.commit.url">{{ links.commit.label }}</gl-link>
+          <gl-link ref="commitLink" :href="commit.url">{{ commit.label }}</gl-link>
         </li>
         <li>
           {{ s__('StaticSiteEditor|A merge request was created:') }}
-          <gl-link :href="links.mergeRequest.url">{{ links.mergeRequest.label }}</gl-link>
+          <gl-link ref="mergeRequestLink" :href="mergeRequest.url">{{
+            mergeRequest.label
+          }}</gl-link>
         </li>
       </ul>
     </div>
