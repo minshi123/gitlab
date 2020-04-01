@@ -12,6 +12,21 @@ import { s__, sprintf } from '../../locale';
 
 import { PROMETHEUS_TIMEOUT } from '../constants';
 
+function prometheusMetricQueryParams(timeRange) {
+  const { start, end } = convertToFixedRange(timeRange);
+
+  const timeDiff = (new Date(end) - new Date(start)) / 1000;
+  const minStep = 60;
+  const queryDataPoints = 600;
+  const step = Math.max(minStep, Math.ceil(timeDiff / queryDataPoints));
+
+  return {
+    start_time: start,
+    end_time: end,
+    step,
+  };
+}
+
 function backOffRequest(makeRequestCallback) {
   return backOff((next, stop) => {
     makeRequestCallback()
@@ -48,19 +63,19 @@ export const setShowErrorBanner = ({ commit }, enabled) => {
 };
 
 export const requestMetricsDashboard = ({ commit }) => {
-  commit(types.REQUEST_METRICS_DATA);
+  commit(types.REQUEST_METRICS_DASHBOARD);
 };
-export const receiveMetricsDashboardSuccess = ({ commit, dispatch }, { response, params }) => {
+export const receiveMetricsDashboardSuccess = ({ commit, dispatch }, { response }) => {
   const { all_dashboards, dashboard, metrics_data } = response;
 
   commit(types.SET_ALL_DASHBOARDS, all_dashboards);
-  commit(types.RECEIVE_METRICS_DATA_SUCCESS, dashboard);
+  commit(types.RECEIVE_METRICS_DASHBOARD_SUCCESS, dashboard);
   commit(types.SET_ENDPOINTS, convertObjectPropsToCamelCase(metrics_data));
 
-  return dispatch('fetchPrometheusMetrics', params);
+  return dispatch('fetchPrometheusMetrics');
 };
 export const receiveMetricsDashboardFailure = ({ commit }, error) => {
-  commit(types.RECEIVE_METRICS_DATA_FAILURE, error);
+  commit(types.RECEIVE_METRICS_DASHBOARD_FAILURE, error);
 };
 
 export const receiveDeploymentsDataSuccess = ({ commit }, data) =>
@@ -74,29 +89,22 @@ export const receiveEnvironmentsDataFailure = ({ commit }) =>
   commit(types.RECEIVE_ENVIRONMENTS_DATA_FAILURE);
 
 export const fetchData = ({ dispatch }) => {
-  dispatch('fetchDashboard');
-  dispatch('fetchDeploymentsData');
   dispatch('fetchEnvironmentsData');
+  dispatch('fetchDashboard');
 };
 
 export const fetchDashboard = ({ state, commit, dispatch }) => {
   dispatch('requestMetricsDashboard');
 
   const params = {};
-
-  if (state.timeRange) {
-    const { start, end } = convertToFixedRange(state.timeRange);
-    params.start_time = start;
-    params.end_time = end;
-  }
-
   if (state.currentDashboard) {
     params.dashboard = state.currentDashboard;
   }
 
-  return backOffRequest(() => axios.get(state.dashboardEndpoint, { params }))
+  return axios
+    .get(state.dashboardEndpoint, { params })
     .then(resp => resp.data)
-    .then(response => dispatch('receiveMetricsDashboardSuccess', { response, params }))
+    .then(response => dispatch('receiveMetricsDashboardSuccess', { response }))
     .catch(error => {
       Sentry.captureException(error);
 
@@ -138,20 +146,7 @@ function fetchPrometheusResult(prometheusEndpoint, params) {
  *
  * @param {metric} metric
  */
-export const fetchPrometheusMetric = ({ commit }, { metric, params }) => {
-  const { start_time, end_time } = params;
-  const timeDiff = (new Date(end_time) - new Date(start_time)) / 1000;
-
-  const minStep = 60;
-  const queryDataPoints = 600;
-  const step = Math.max(minStep, Math.ceil(timeDiff / queryDataPoints));
-
-  const queryParams = {
-    start_time,
-    end_time,
-    step,
-  };
-
+export const fetchPrometheusMetric = ({ commit }, { metric, queryParams }) => {
   commit(types.REQUEST_METRIC_RESULT, { metricId: metric.metricId });
 
   return fetchPrometheusResult(metric.prometheusEndpointPath, queryParams)
@@ -167,14 +162,25 @@ export const fetchPrometheusMetric = ({ commit }, { metric, params }) => {
     });
 };
 
-export const fetchPrometheusMetrics = ({ state, commit, dispatch, getters }, params) => {
-  commit(types.REQUEST_METRICS_DATA);
+/**
+ * Loads timeseries data: Prometheus data points and deployment data from the project
+ * @param {Object} Vuex store
+ */
+export const fetchPrometheusMetrics = ({ state, dispatch, getters }) => {
+  dispatch('fetchDeploymentsData');
+
+  if (!state.timeRange) {
+    createFlash(s__(`Metrics|There was an error while retrieving metrics`), 'warning');
+    return Promise.reject();
+  }
+
+  const queryParams = prometheusMetricQueryParams(state.timeRange);
 
   const promises = [];
   state.dashboard.panelGroups.forEach(group => {
     group.panels.forEach(panel => {
       panel.metrics.forEach(metric => {
-        promises.push(dispatch('fetchPrometheusMetric', { metric, params }));
+        promises.push(dispatch('fetchPrometheusMetric', { metric, queryParams }));
       });
     });
   });
