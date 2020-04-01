@@ -2626,7 +2626,8 @@ CREATE TABLE public.geo_node_statuses (
     design_repositories_count integer,
     design_repositories_synced_count integer,
     design_repositories_failed_count integer,
-    design_repositories_registry_count integer
+    design_repositories_registry_count integer,
+    status jsonb DEFAULT '{}'::jsonb NOT NULL
 );
 
 CREATE SEQUENCE public.geo_node_statuses_id_seq
@@ -12909,5 +12910,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200326135443
 20200326144443
 20200326145443
+20200401095430
 \.
 
