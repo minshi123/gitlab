@@ -65,7 +65,6 @@ class License < ApplicationRecord
     default_project_deletion_protection
     dependency_proxy
     deploy_board
-    design_management
     disable_name_update_for_users
     email_additional_text
     epics
@@ -192,6 +191,7 @@ class License < ApplicationRecord
   # Features added here are available for all namespaces.
   ANY_PLAN_FEATURES = %i[
     ci_cd_projects
+    design_management
     github_project_service_integration
     repository_mirrors
   ].freeze
