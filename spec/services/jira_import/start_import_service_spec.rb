@@ -49,7 +49,7 @@ describe JiraImport::StartImportService do
           subject { described_class.new(user, project, 'some-key').execute }
 
           context 'when import is already running' do
-            let!(:import_state) { create(:import_state, project: project, status: :started) }
+            let!(:jira_import_state) { create(:jira_import_state, project: project, status: JiraImportState::JIRA_IMPORT_STATUSES[:started]) }
 
             it_behaves_like 'responds with error', 'Jira import is already running.'
           end
@@ -62,17 +62,17 @@ describe JiraImport::StartImportService do
           it 'schedules jira import' do
             subject
 
-            expect(project.import_state.status).to eq('scheduled')
+            expect(project.latest_jira_import.scheduled?).to be true
           end
 
           it 'creates jira import data' do
             subject
 
-            jira_import_data = project.import_data.becomes(JiraImportData)
-            expect(jira_import_data.force_import?).to be true
-            imported_project_data = jira_import_data.projects.last
-            expect(imported_project_data.key).to eq('some-key')
-            expect(imported_project_data.scheduled_by['user_id']).to eq(user.id)
+            jira_import = project.latest_jira_import
+            expect(jira_import.jira_project_xid).to eq(0)
+            expect(jira_import.jira_project_name).to eq('some-key')
+            expect(jira_import.jira_project_key).to eq('some-key')
+            expect(jira_import.user).to eq(user)
           end
         end
       end

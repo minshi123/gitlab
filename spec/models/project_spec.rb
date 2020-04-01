@@ -2385,26 +2385,11 @@ describe Project do
   end
 
   describe '#jira_import?' do
-    subject(:project) { build(:project, import_type: 'jira') }
+    let(:project) { create(:project, import_type: 'jira') }
+    let!(:jira_import) { create(:jira_import_state, project: project) }
 
     it { expect(project.jira_import?).to be true }
     it { expect(project.import?).to be true }
-  end
-
-  describe '#jira_force_import?' do
-    let(:imported_jira_project) do
-      JiraImportData::JiraProjectDetails.new('xx', Time.now.strftime('%Y-%m-%d %H:%M:%S'), { user_id: 1, name: 'root' })
-    end
-    let(:jira_import_data) do
-      data = JiraImportData.new
-      data << imported_jira_project
-      data.force_import!
-      data
-    end
-
-    subject(:project) { build(:project, import_type: 'jira', import_data: jira_import_data) }
-
-    it { expect(project.jira_force_import?).to be true }
   end
 
   describe '#remove_import_data' do

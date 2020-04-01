@@ -20,23 +20,27 @@ module JiraImport
     private
 
     def create_and_schedule_import
-      import_data = project.create_or_update_import_data(data: {}).becomes(JiraImportData)
-      jira_project_details = JiraImportData::JiraProjectDetails.new(
-        jira_project_key,
-        Time.now.strftime('%Y-%m-%d %H:%M:%S'),
-        { user_id: user.id, name: user.name }
+      jira_import = project.jira_imports.build(
+        user: user,
+        jira_project_key: jira_project_key,
+        # we do not have the jira project name yet so set it key,
+        # we will once https://gitlab.com/gitlab-org/gitlab/-/merge_requests/28190
+        jira_project_name: jira_project_key,
+        # we do not have the jira project id yet so set it to 0,
+        # we will once https://gitlab.com/gitlab-org/gitlab/-/merge_requests/28190
+        jira_project_xid: 0
       )
-      import_data << jira_project_details
-      import_data.force_import!
-
       project.import_type = 'jira'
-      project.import_state.schedule if project.save!
+      project.save! && jira_import.schedule!
 
-      ServiceResponse.success(payload: { import_data: import_data } )
+      ServiceResponse.success(payload: { import_data: jira_import } )
     rescue => ex
-      # in case project.save! raises an erorr
+      # in case a last minute error is raised
       Gitlab::ErrorTracking.track_exception(ex, project_id: project.id)
       build_error_response(ex.message)
+      # in case jira_import state did get saved we want t set it to failed,
+      # so that we do not lock further imports if jira import gets somehow in a scheduled state
+      jira_import.do_fail!
     end
 
     def validate
@@ -48,18 +52,14 @@ module JiraImport
     end
 
     def build_error_response(message)
-      import_data = JiraImportData.new(project: project)
-      import_data.errors.add(:base, message)
       ServiceResponse.error(
         message: import_data.errors.full_messages.to_sentence,
         http_status: 400,
-        payload: { import_data: import_data }
       )
     end
 
     def import_in_progress?
-      import_state = project.import_state || project.create_import_state
-      import_state.in_progress?
+      project.latest_jira_import&.in_progress?
     end
   end
 end

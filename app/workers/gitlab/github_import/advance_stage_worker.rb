@@ -26,6 +26,10 @@ module Gitlab
       def next_stage_worker(next_stage)
         STAGES.fetch(next_stage.to_sym)
       end
+
+      def find_import_state(project_id)
+        ProjectImportState.jid_by(project_id: project_id, status: :started)
+      end
     end
   end
 end

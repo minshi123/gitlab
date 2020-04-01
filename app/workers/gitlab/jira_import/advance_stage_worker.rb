@@ -18,6 +18,10 @@ module Gitlab
 
       private
 
+      def find_import_state(project_id)
+        JiraImportState.jid_by(project_id: project_id, status: :started)
+      end
+
       def next_stage_worker(next_stage)
         STAGES.fetch(next_stage.to_sym)
       end
