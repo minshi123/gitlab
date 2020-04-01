@@ -155,6 +155,10 @@ describe API::ProjectClusters do
     let(:management_project) { create(:project, namespace: project.namespace) }
     let(:management_project_id) { management_project.id }
 
+    before do
+      management_project.add_maintainer(current_user)
+    end
+
     let(:platform_kubernetes_attributes) do
       {
         api_url: api_url,
@@ -232,6 +236,18 @@ describe API::ProjectClusters do
           cluster_result = Clusters::Cluster.find(json_response['id'])
 
           expect(cluster_result.platform.abac?).to be_truthy
+        end
+      end
+
+      context 'current user does not have access to management_project_id' do
+        let(:management_project_id) { create(:project).id }
+
+        it 'responds with 400' do
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+
+        it 'returns validation errors' do
+          expect(json_response['message']['management_project_id'].first).to match('don\'t have permission')
         end
       end
 

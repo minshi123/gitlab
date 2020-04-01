@@ -237,6 +237,18 @@ describe API::GroupClusters do
         end
       end
 
+      context 'current user does not have access to management_project_id' do
+        let(:management_project_id) { create(:project).id }
+
+        it 'responds with 400' do
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+
+        it 'returns validation errors' do
+          expect(json_response['message']['management_project_id'].first).to match('don\'t have permission')
+        end
+      end
+
       context 'with invalid params' do
         let(:api_url) { 'invalid_api_url' }
 
