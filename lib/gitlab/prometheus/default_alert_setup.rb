@@ -10,12 +10,13 @@ module Gitlab
       end
 
       def execute
-        environment = project.environments.first
+        environment = project.environments.for_name('production').first ||
+                        project.environments.first
 
         return unless environment
 
         default_errors.each do |error|
-          metric = PrometheusMetric.for_project(nil).for_identifier(error[:identifier]).first
+          metric = PrometheusMetric.common.for_identifier(error[:identifier]).first
 
           next if metric.nil?
           next if PrometheusAlert.for_metric(metric).exists?
