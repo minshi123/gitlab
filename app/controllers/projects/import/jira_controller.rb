@@ -7,12 +7,14 @@ module Projects
       before_action :jira_integration_configured?
 
       def show
-        unless @project.import_state&.in_progress?
-          jira_client = @project.jira_service.client
-          @jira_projects = jira_client.Project.all.map { |p| ["#{p.name} (#{p.key})", p.key] }
-        end
+        if !Feature.enabled?(:jira_issue_import_vue, @project)
+          unless @project.import_state&.in_progress?
+            jira_client = @project.jira_service.client
+            @jira_projects = jira_client.Project.all.map { |p| ["#{p.name} (#{p.key})", p.key] }
+          end
 
-        flash[:notice] = _("Import %{status}") % { status: @project.import_state.status } if @project.import_state.present? && !@project.import_state.none?
+          flash[:notice] = _("Import %{status}") % { status: @project.import_state.status } if @project.import_state.present? && !@project.import_state.none?
+        end
       end
 
       def import
@@ -31,6 +33,7 @@ module Projects
       end
 
       def jira_integration_configured?
+        return if Feature.enabled?(:jira_issue_import_vue, @project)
         return if @project.jira_service
 
         flash[:notice] = _("Configure the Jira integration first on your project's %{strong_start} Settings > Integrations > Jira%{strong_end} page." %
