@@ -111,7 +111,7 @@ module API
       # Keep in alphabetical order
       mount ::API::AccessRequests
       mount ::API::Admin::Sidekiq
-      mount ::API::Annotations
+      mount ::API::Monitoring::Annotations
       mount ::API::Appearance
       mount ::API::Applications
       mount ::API::Avatar
