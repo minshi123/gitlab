@@ -157,6 +157,8 @@ describe API::GroupClusters do
 
     let(:api_url) { 'https://kubernetes.example.com' }
     let(:authorization_type) { 'rbac' }
+    let(:management_project) { create(:project, group: group) }
+    let(:management_project_id) { management_project.id }
 
     let(:platform_kubernetes_attributes) do
       {

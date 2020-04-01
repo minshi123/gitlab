@@ -152,6 +152,8 @@ describe API::ProjectClusters do
     let(:api_url) { 'https://kubernetes.example.com' }
     let(:namespace) { project.path }
     let(:authorization_type) { 'rbac' }
+    let(:management_project) { create(:project, namespace: project.namespace) }
+    let(:management_project_id) { management_project.id }
 
     let(:platform_kubernetes_attributes) do
       {
