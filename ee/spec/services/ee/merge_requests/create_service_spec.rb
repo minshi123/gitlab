@@ -65,6 +65,26 @@ describe MergeRequests::CreateService do
       end
     end
 
+    context 'with blocking merge requests', :clean_gitlab_redis_shared_state do
+      let(:opts) { { title: 'Blocked MR', source_branch: 'feature', target_branch: 'master' } }
+
+      it 'delegates to MergeRequests::UpdateBlocksService' do
+        expect(MergeRequests::UpdateBlocksService)
+          .to receive(:extract_params!)
+          .and_return(:extracted_params)
+
+        expect_next_instance_of(MergeRequests::UpdateBlocksService) do |block_service|
+          expect(block_service.merge_request.title).to eq('Blocked MR')
+          expect(block_service.current_user).to eq(user)
+          expect(block_service.params).to eq(:extracted_params)
+
+          expect(block_service).to receive(:execute)
+        end
+
+        service.execute
+      end
+    end
+
     it_behaves_like 'new issuable with scoped labels' do
       let(:parent) { project }
     end
