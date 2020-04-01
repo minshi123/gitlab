@@ -47,7 +47,21 @@ describe PrometheusService, :use_clean_rails_memory_store_caching do
       end
 
       it 'does not validate presence of api_url' do
+        service.api_url = nil
         expect(service).not_to validate_presence_of(:api_url)
+        expect(service.valid?).to eq(true)
+      end
+
+      context 'local connections allowed' do
+        before do
+          allow(service).to receive(:allow_local_api_url?).and_return(true)
+        end
+
+        it 'does not validate presence of api_url' do
+          service.api_url = nil
+          expect(service).not_to validate_presence_of(:api_url)
+          expect(service.valid?).to eq(true)
+        end
       end
     end
 
