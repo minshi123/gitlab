@@ -10,6 +10,8 @@ module Gitlab
       end
 
       def execute
+        return unless project
+
         environment = project.environments.for_name('production').first ||
                         project.environments.first
 
