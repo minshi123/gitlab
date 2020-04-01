@@ -236,7 +236,7 @@ class License < ApplicationRecord
 
   class << self
     def features_for_plan(plan)
-      FEATURES_BY_PLAN.fetch(plan, [])
+      FEATURES_BY_PLAN.fetch(plan, []) + ANY_PLAN_FEATURES
     end
 
     def plans_with_feature(feature)
