@@ -24,6 +24,8 @@ class PrometheusService < MonitoringService
 
   after_commit :track_events
 
+  after_create :create_default_alerts
+
   def initialize_properties
     if properties.nil?
       self.properties = {}
@@ -146,5 +148,9 @@ class PrometheusService < MonitoringService
 
   def disabled_manual_prometheus?
     manual_configuration_changed? && !manual_configuration?
+  end
+
+  def create_default_alerts
+    Gitlab::Prometheus::DefaultAlertSetup.new(project: project).execute
   end
 end

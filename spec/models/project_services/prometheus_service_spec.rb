@@ -111,6 +111,23 @@ describe PrometheusService, :use_clean_rails_memory_store_caching do
     end
   end
 
+  describe 'callbacks' do
+    context 'after_create' do
+      let(:project) { create(:project) }
+      let(:service) { build(:prometheus_service, project: project) }
+
+      subject(:create_service) { service.save! }
+
+      it 'creates default alerts' do
+        expect_next_instance_of(Gitlab::Prometheus::DefaultAlertSetup, project: project) do |setup|
+          expect(setup).to receive(:execute)
+        end
+
+        create_service
+      end
+    end
+  end
+
   describe '#test' do
     before do
       service.manual_configuration = true
