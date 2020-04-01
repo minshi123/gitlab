@@ -39,6 +39,8 @@ module AwardEmojis
           awardable
         when Snippet
           nil
+        else
+          raise "cannot handle awardable #{awardable.class}"
         end
       end
     end
