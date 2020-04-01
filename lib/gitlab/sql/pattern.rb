@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 module Gitlab
@@ -14,7 +15,24 @@ module Gitlab
             fuzzy_arel_match(col, query, use_minimum_char_limit: use_minimum_char_limit)
           end.compact.reduce(:or)
 
-          where(matches)
+          coverages = columns.map do |col|
+            fuzzy_arel_coverage(col, query)
+          end
+
+          # use the average approach, where the match has to be somewhat
+          # present in all the searched columns to be ranked higher
+
+          # a weighted average would be way better, because short fields
+          # should have higher precedence than longer
+
+          # we could use a non-linear function here to weight-in instead
+          # (such as exp()) so that ~1 → 1 and <1 → 0 with a high ramp.
+          avg_coverage = Arel::Nodes::Division.new(
+            Arel::Nodes::Grouping.new(coverages.reduce(:+)),
+            Arel::Nodes::NamedFunction.new("CAST", [Arel.sql(coverages.count.to_f.to_s).as("FLOAT")])
+          )
+
+          where(matches).order(avg_coverage.desc)
         end
 
         def to_pattern(query, use_minimum_char_limit: true)
@@ -60,6 +78,19 @@ module Gitlab
               arel_column.matches(sanitize_sql_like(query))
             end
           end
+        end
+
+        def fuzzy_arel_coverage(column, query)
+          query = query.squish
+          return unless query.present?
+
+          arel_column = column.is_a?(Arel::Attributes::Attribute) ? column : arel_table[column]
+
+          # coverage = query_len / column_len
+          column_len = Arel::Nodes::NamedFunction.new("LENGTH", [arel_column])
+          query_len = Arel::Nodes::NamedFunction.new("CAST",
+                                                     [Arel.sql(query.length.to_s).as("FLOAT")])
+          Arel::Nodes::Division.new(query_len, column_len)
         end
 
         def select_fuzzy_words(query, use_minimum_char_limit: true)
