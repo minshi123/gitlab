@@ -3,9 +3,9 @@
 module API
   module Monitoring
     class Annotations < Grape::API
-      # desc 'Create a new monitoring dashboard annotation' do
-      #   success Entities::Issue
-      # end
+      desc 'Create a new monitoring dashboard annotation' do
+        success Entities::Monitoring::Annotation
+      end
       resource :environments do
         params do
           requires :from, type: DateTime,
