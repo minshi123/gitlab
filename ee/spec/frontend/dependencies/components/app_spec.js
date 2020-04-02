@@ -1,4 +1,4 @@
-import { GlBadge, GlEmptyState, GlLoadingIcon, GlTab, GlLink } from '@gitlab/ui';
+import { GlBadge, GlEmptyState, GlLoadingIcon, GlSprintf, GlTab, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { TEST_HOST } from 'helpers/test_constants';
 import createStore from 'ee/dependencies/store';
@@ -30,7 +30,7 @@ describe('DependenciesApp component', () => {
     addListType(store, DEPENDENCY_LIST_TYPES.vulnerable);
     jest.spyOn(store, 'dispatch').mockImplementation();
 
-    const canBeStubbed = component => !['GlTab', 'GlTabs'].includes(component);
+    const canBeStubbed = component => !['GlSprintf', 'GlTab', 'GlTabs'].includes(component);
     const stubs = Object.keys(DependenciesApp.components).filter(canBeStubbed);
 
     wrapper = mount(DependenciesApp, {
@@ -107,7 +107,7 @@ describe('DependenciesApp component', () => {
 
   const findHeader = () => wrapper.find('section > header');
   const findHeaderHelpLink = () => findHeader().find(GlLink);
-  const findHeaderJobLink = () => findHeader().find('a');
+  const findHeaderJobLink = () => wrapper.find({ ref: 'jobLink' });
 
   const expectComponentWithProps = (Component, props = {}) => {
     const componentWrapper = wrapper.find(Component);
