@@ -4,10 +4,10 @@
 - page_title @vulnerability.title
 - page_description @vulnerability.description
 
-#js-vulnerability-management-app{ data: vulnerability_data(@vulnerability, @pipeline) }
+#js-vulnerability-header{ data: vulnerability_data(@vulnerability, @pipeline) }
 
 .issue-details.issuable-details
-  .detail-page-description
+  .detail-page-description.p-0.my-3
     %h2.title= @vulnerability.title
     .description
       .md

@@ -28,17 +28,11 @@ export default {
 };
 </script>
 <template>
-  <ul class="notes">
-    <li v-if="hasSolution" class="note">
-      <solution-card v-bind="solutionInfo" />
-    </li>
-    <li>
-      <hr />
-    </li>
-    <li v-if="feedback" class="note card my-4 border-bottom">
-      <div class="card-body">
-        <issue-note :feedback="feedback" :project="project" />
-      </div>
-    </li>
-  </ul>
+  <div>
+    <solution-card v-if="hasSolution" v-bind="solutionInfo" />
+    <div v-if="feedback" class="card">
+      <issue-note :feedback="feedback" :project="project" class="card-body" />
+    </div>
+    <hr />
+  </div>
 </template>
