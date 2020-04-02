@@ -65,6 +65,15 @@ class MergeRequestPollWidgetEntity < Grape::Entity
     presenter(merge_request).cancel_auto_merge_path
   end
 
+  expose :terraform_plans_path do |merge_request|
+    # TODO -----
+    #if merge_request.has_terraform_plans?
+    #  terraform_plans_project_merge_request_path(merge_request.project, merge_request, format: :json)
+    #end
+    # --------
+    '/path/to/terraform/polling.json'
+  end
+
   expose :test_reports_path do |merge_request|
     if merge_request.has_test_reports?
       test_reports_project_merge_request_path(merge_request.project, merge_request, format: :json)
