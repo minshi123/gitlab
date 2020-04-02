@@ -354,7 +354,7 @@ module EE
     def billed_shared_group_members
       return ::GroupMember.none unless ::Feature.enabled?(:share_group_with_group)
 
-      invited_or_shared_group_members(shared_groups)
+      invited_or_shared_group_members(invited_group_in_groups)
     end
 
     def billed_shared_non_guests_group_members
