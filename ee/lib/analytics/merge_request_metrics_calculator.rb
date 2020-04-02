@@ -17,6 +17,15 @@ module Analytics
       }
     end
 
+    def line_counts_data
+      return {} if Feature.disabled?(:store_merge_request_line_metrics, merge_request.target_project)
+
+      {
+        added_lines: merge_request.merge_request_diff.diffs.raw_diff_files.sum(&:added_lines)
+        removed_lines: merge_request.merge_request_diff.diffs.raw_diff_files.sum(&:removed_lines)
+      }
+    end
+
     # rubocop: disable CodeReuse/ActiveRecord
     def first_comment_at
       merge_request.related_notes.by_humans
