@@ -26,9 +26,10 @@ several different ways:
 - [Solution](#solutions-for-vulnerabilities-auto-remediation) - For some vulnerabilities,
   a solution is provided for how to fix the vulnerability.
 
-### Changing vulnerability status
+## Changing vulnerability status
 
-You can switch the status of a vulnerability using the **Status** dropdown to one of the following values:
+You can switch the status of a vulnerability using the **Status** dropdown to one of
+the following values:
 
 ![Vulnerability status switcher](img/status-switcher.png)
 
@@ -37,7 +38,7 @@ You can switch the status of a vulnerability using the **Status** dropdown to on
 | Detected  | The default state for a newly discovered vulnerability            |
 | Confirmed | A user has seen this vulnerability and confirmed it to be real    |
 | Dismissed | A user has seen this vulnerability and dismissed it               |
-| Resolved  | The vulnerability has been fixed and is no-longer in the codebase |
+| Resolved  | The vulnerability has been fixed and is no longer in the codebase |
 
 ### Creating an issue for a vulnerability
 
