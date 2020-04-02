@@ -29,7 +29,7 @@ module Gitlab
           # (such as exp()) so that ~1 → 1 and <1 → 0 with a high ramp.
           avg_coverage = Arel::Nodes::Division.new(
             Arel::Nodes::Grouping.new(coverages.reduce(:+)),
-            Arel::Nodes::NamedFunction.new("CAST", [Arel.sql(coverages.count.to_f.to_s).as("FLOAT")])
+            Arel::Nodes::NamedFunction.new("CAST", [Arel.sql(coverages.count.to_f.to_s).as("FLOAT"))
           )
 
           where(matches).order(avg_coverage.desc)

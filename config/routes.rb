@@ -49,6 +49,7 @@ Rails.application.routes.draw do
   get '/autocomplete/users' => 'autocomplete#users'
   get '/autocomplete/users/:id' => 'autocomplete#user'
   get '/autocomplete/projects' => 'autocomplete#projects'
+  get '/autocomplete/routes' => 'autocomplete#routes'
   get '/autocomplete/award_emojis' => 'autocomplete#award_emojis'
   get '/autocomplete/merge_request_target_branches' => 'autocomplete#merge_request_target_branches'
 

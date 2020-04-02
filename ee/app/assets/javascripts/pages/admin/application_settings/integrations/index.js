@@ -11,26 +11,27 @@ const onLimitCheckboxChange = (checked, $limitByNamespaces, $limitByProjects) =>
   $limitByProjects.toggleClass('hidden', !checked);
 };
 
-const getDropdownConfig = (placeholder, apiPath, textProp) => ({
+const getDropdownConfig = (placeholder, sourceType) => ({
   placeholder,
   multiple: true,
   initSelection($el, callback) {
     callback($el.data('selected'));
   },
   ajax: {
-    url: Api.buildUrl(apiPath),
+    url: '/autocomplete/routes.json',
     dataType: 'JSON',
     quietMillis: 250,
     data(search) {
       return {
         search,
+        source_type: sourceType
       };
     },
     results(data) {
       return {
         results: data.map(entity => ({
-          id: entity.id,
-          text: entity[textProp],
+          id: entity.source_id,
+          text: entity.path,
         })),
       };
     },
@@ -59,8 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .select2(
       getDropdownConfig(
         s__('Elastic|None. Select namespaces to index.'),
-        Api.namespacesPath,
-        'full_path',
+        'namespace',
       ),
     );
 
@@ -69,8 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .select2(
       getDropdownConfig(
         s__('Elastic|None. Select projects to index.'),
-        Api.projectsPath,
-        'name_with_namespace',
+        'project',
       ),
     );
 });

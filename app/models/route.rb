@@ -2,9 +2,9 @@
 
 class Route < ApplicationRecord
   include CaseSensitivity
+  include Gitlab::SQL::Pattern
 
   belongs_to :source, polymorphic: true # rubocop:disable Cop/PolymorphicAssociations
-
   validates :source, presence: true
 
   validates :path,
@@ -18,6 +18,10 @@ class Route < ApplicationRecord
   after_update :create_redirect_for_old_path
   after_update :rename_descendants
 
+  scope :with_source_type, -> (source_type) { where(:source_type => source_type) }
+  scope :for_projects, -> { with_source_type(Project) }
+  scope :for_namespaces, -> { with_source_type(Namespace) }
+  # scope :for_groups, -> { with_source_type(Namespace).joins("INNER JOIN namespaces ns ON routes.source_id = ns.id AND ns.type = 'Group'") }
   scope :inside_path, -> (path) { where('routes.path LIKE ?', "#{sanitize_sql_like(path)}/%") }
 
   def rename_descendants

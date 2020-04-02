@@ -35,6 +35,22 @@ class AutocompleteController < ApplicationController
     render json: MoveToProjectSerializer.new.represent(projects)
   end
 
+  # Search for entity by routes
+  def routes
+    routes = case params[:source_type]&.to_sym
+             when :project
+               Route.for_projects
+             when :namespace
+               Route.for_namespaces
+             else
+               Route.all
+             end
+
+    routes = routes.fuzzy_search(params[:search], [:path])
+
+    render json: routes
+  end
+
   def award_emojis
     render json: AwardEmojis::CollectUserEmojiService.new(current_user).execute
   end
