@@ -12,6 +12,7 @@ resources :merge_requests, concerns: :awardable, except: [:new, :create, :show],
     post :assign_related_issues
     get :discussions, format: :json
     post :rebase
+    get :terraform_plans
     get :test_reports
     get :exposed_artifacts
     get :coverage_reports

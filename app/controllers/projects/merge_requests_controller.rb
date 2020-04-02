@@ -132,6 +132,28 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     render json: CommitEntity.represent(commits, { type: :full, request: merge_request })
   end
 
+  def terraform_plans
+    # TODO: ----
+    # reports_response(@merge_request.terraform_plans)
+    # ----------------
+    # def reports_response(report_comparison)
+    #  case report_comparison[:status]
+    #  when :parsing
+    #    ::Gitlab::PollingInterval.set_header(response, interval: 3000)
+
+    #    render json: '', status: :no_content
+    #  when :parsed
+    #    render json: report_comparison[:data].to_json, status: :ok
+    #  when :error
+    #    render json: { status_reason: report_comparison[:status_reason] }, status: :bad_request
+    #  else
+    #    raise "Failed to build comparison response as comparison yielded unknown status '#{report_comparison[:status]}'"
+    #  end
+    # end
+    # ----------------
+    reports_response({ status: :parsed, data: { create: 1, update: 0, delete: 0 } })
+  end
+
   def test_reports
     reports_response(@merge_request.compare_test_reports)
   end

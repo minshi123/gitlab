@@ -71,7 +71,7 @@ class MergeRequestPollWidgetEntity < Grape::Entity
     #  terraform_plans_project_merge_request_path(merge_request.project, merge_request, format: :json)
     #end
     # --------
-    '/path/to/terraform/polling.json'
+    terraform_plans_project_merge_request_path(merge_request.project, merge_request, format: :json)
   end
 
   expose :test_reports_path do |merge_request|
