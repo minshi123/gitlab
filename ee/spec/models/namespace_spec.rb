@@ -884,11 +884,26 @@ describe Namespace do
               invited_group.add_guest(create(:user))
               invited_group.add_developer(create(:user, :blocked))
               invited_group.add_developer(developer)
-              create(:project_group_link, project: project, group: invited_group)
             end
 
-            it 'includes the only active users except guests of the invited groups' do
-              expect(group.billed_user_ids).to match_array([invited_group_developer.id, project_developer.id, developer.id])
+            context 'when group is invited as non guest' do
+              before do
+                create(:project_group_link, project: project, group: invited_group)
+              end
+
+              it 'includes the only active users except guests of the invited groups' do
+                expect(group.billed_user_ids).to match_array([invited_group_developer.id, project_developer.id, developer.id])
+              end
+            end
+
+            context 'when group is invited as a guest to the project' do
+              before do
+                create(:project_group_link, :guest, project: project, group: invited_group)
+              end
+
+              it 'does not include any members from the invited group' do
+                expect(group.billed_user_ids).to match_array([project_developer.id, developer.id])
+              end
             end
           end
         end

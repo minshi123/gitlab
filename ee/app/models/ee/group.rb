@@ -262,7 +262,7 @@ module EE
           (billed_group_members.non_guests.distinct.pluck(:user_id) +
           billed_project_members.non_guests.distinct.pluck(:user_id) +
           billed_shared_non_guests_group_members.non_guests.distinct.pluck(:user_id) +
-          billed_invited_group_to_project_members.non_guests.distinct.pluck(:user_id)).to_set
+          billed_invited_non_guests_group_to_project_members.non_guests.distinct.pluck(:user_id)).to_set
         end
       else
         strong_memoize(:non_gold_billed_user_ids) do
@@ -318,22 +318,39 @@ module EE
       errors.add(:custom_project_templates_group_id, 'has to be a subgroup of the group')
     end
 
+    # Members belonging directly to Group or its subgroup
     def billed_group_members
       ::GroupMember.active_without_invites_and_requests.where(
         source_id: self_and_descendants
       )
     end
 
+    # Members belonging directly to Projects within Group or Projects within subgroups
     def billed_project_members
       ::ProjectMember.active_without_invites_and_requests.where(
         source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
       )
     end
 
+    # Members belonging to Groups invited to collaborate with Projects
     def billed_invited_group_to_project_members
       invited_or_shared_group_members(invited_groups_in_projects)
     end
 
+    def billed_invited_non_guests_group_to_project_members
+      invited_or_shared_group_members(invited_group_as_non_guests_in_projects)
+    end
+
+    def invited_group_as_non_guests_in_projects
+      invited_groups_in_projects.merge(::ProjectGroupLink.non_guests)
+    end
+
+    def invited_groups_in_projects
+      ::Group.joins(:project_group_links)
+        .where(project_group_links: { project_id: all_projects })
+    end
+
+    # Members belonging to Groups invited to collaborate with Groups and Subgroups
     def billed_shared_group_members
       return ::GroupMember.none unless ::Feature.enabled?(:share_group_with_group)
 
@@ -346,15 +363,6 @@ module EE
       invited_or_shared_group_members(invited_non_guest_group_in_groups)
     end
 
-    def invited_or_shared_group_members(groups)
-      ::GroupMember.active_without_invites_and_requests.where(source_id: ::Gitlab::ObjectHierarchy.new(groups).base_and_ancestors)
-    end
-
-    def invited_groups_in_projects
-      ::Group.joins(:project_group_links)
-        .where(project_group_links: { project_id: all_projects })
-    end
-
     def invited_non_guest_group_in_groups
       invited_group_in_groups.merge(::GroupGroupLink.non_guests)
     end
@@ -362,6 +370,10 @@ module EE
     def invited_group_in_groups
       ::Group.joins(:shared_groups)
         .where(group_group_links: { shared_group_id: ::Group.groups_including_descendants_by([self]) })
+    end
+
+    def invited_or_shared_group_members(groups)
+      ::GroupMember.active_without_invites_and_requests.where(source_id: ::Gitlab::ObjectHierarchy.new(groups).base_and_ancestors)
     end
   end
 end
