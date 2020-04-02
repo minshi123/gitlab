@@ -1,5 +1,5 @@
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import { GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
@@ -15,8 +15,14 @@ export default {
     GlLink,
   },
   i18n: {
-    unavailableFeatureText: s__(
-      'ContainerRegistry|Currently, the Container Registry tag expiration feature is not available for projects created before GitLab version 12.8. For updates and more information, visit Issue %{linkStart}#196124%{linkEnd}',
+    unavailableFeatureIntroText: s__(
+      `ContainerRegistry|Currently, the Container Registry tag expiration feature is disabled for projects created before GitLab version 12.8.`,
+    ),
+    unavailableUserFeatureText: s__(
+      `ContainerRegistry|For updates and more information, visit Issue %{linkStart}#196124%{linkEnd} or ask an admin to enabled it in the instance settings panel`,
+    ),
+    unavailableAdminFeatureText: s__(
+      `ContainerRegistry|Visit the %{linkStart}administration page%{linkEnd} to enable it`,
     ),
     fetchSettingsErrorText: FETCH_SETTINGS_ERROR_MESSAGE,
   },
@@ -26,9 +32,19 @@ export default {
     };
   },
   computed: {
-    ...mapState(['isDisabled']),
+    ...mapState(['isAdmin', 'adminSettingsPath']),
+    ...mapGetters({ isDisabled: 'getIsDisabled' }),
     showSettingForm() {
       return !this.isDisabled && !this.fetchSettingsError;
+    },
+    unavailableFeatureMessage() {
+      const message = this.isAdmin
+        ? this.$options.i18n.unavailableAdminFeatureText
+        : this.$options.i18n.unavailableUserFeatureText;
+      const link = this.isAdmin
+        ? this.adminSettingsPath
+        : 'https://gitlab.com/gitlab-org/gitlab/issues/196124';
+      return { message, link };
     },
   },
   mounted() {
@@ -61,9 +77,10 @@ export default {
     <template v-else>
       <gl-alert v-if="isDisabled" :dismissible="false">
         <p>
-          <gl-sprintf :message="$options.i18n.unavailableFeatureText">
+          {{ $options.i18n.unavailableFeatureIntroText }}
+          <gl-sprintf :message="unavailableFeatureMessage.message">
             <template #link="{content}">
-              <gl-link href="https://gitlab.com/gitlab-org/gitlab/issues/196124" target="_blank">
+              <gl-link :href="unavailableFeatureMessage.link" target="_blank">
                 {{ content }}
               </gl-link>
             </template>
