@@ -343,7 +343,7 @@ module EE
     def billed_shared_non_guests_group_members
       return ::GroupMember.none unless ::Feature.enabled?(:share_group_with_group)
 
-      invited_or_shared_group_members(invited_non_group_in_groups)
+      invited_or_shared_group_members(invited_non_guest_group_in_groups)
     end
 
     def invited_or_shared_group_members(groups)
@@ -355,7 +355,7 @@ module EE
         .where(project_group_links: { project_id: all_projects })
     end
 
-    def invited_non_group_in_groups
+    def invited_non_guest_group_in_groups
       invited_group_in_groups.merge(::GroupGroupLink.non_guests)
     end
 
