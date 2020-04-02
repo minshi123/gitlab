@@ -14,7 +14,7 @@ export default {
     GlLoadingIcon,
   },
   computed: {
-    ...mapState(['loading', 'numberToAdd', 'numberToChange', 'numberToDelete']),
+    ...mapState(['loading', 'logUrl', 'numberToAdd', 'numberToChange', 'numberToDelete']),
     iconStatusObj() {
       return {
         group: 'warning',
@@ -72,7 +72,8 @@ export default {
 
         <div class="terraform-mr-plan-actions">
           <a
-            href="#"
+            v-if="logUrl"
+            :href="logUrl"
             target="_blank"
             data-track-event="click_terraform_mr_plan_button"
             data-track-label="mr_widget_terraform_mr_plan_button"

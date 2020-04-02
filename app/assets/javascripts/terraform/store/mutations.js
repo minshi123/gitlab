@@ -1,8 +1,11 @@
 import * as types from './mutation_types';
 
 export default {
-  [types.SET_ENDPOINT](state, endpoint) {
+  [types.UPDATE_ENDPOINT](state, endpoint) {
     state.endpoint = String(endpoint);
+  },
+  [types.UPDATE_LOG_URL](state, logUrl) {
+    state.logUrl = String(logUrl) || null;
   },
   [types.UPDATE_LOADING](state, loading) {
     state.loading = Boolean(loading);

@@ -5,7 +5,7 @@ import flash from '~/flash';
 import { __ } from '~/locale';
 import * as types from './mutation_types';
 
-export const setEndpoint = ({ commit }, endpoint) => commit(types.SET_ENDPOINT, endpoint);
+export const setEndpoint = ({ commit }, endpoint) => commit(types.UPDATE_ENDPOINT, endpoint);
 
 export const fetchPlans = ({ state, commit }) => {
   const poll = new Poll({
@@ -19,6 +19,7 @@ export const fetchPlans = ({ state, commit }) => {
         commit(types.UPDATE_NUMBER_TO_ADD, data.plans[0].create)
         commit(types.UPDATE_NUMBER_TO_CHANGE, data.plans[0].update)
         commit(types.UPDATE_NUMBER_TO_DELETE, data.plans[0].delete)
+        commit(types.UPDATE_LOG_URL, data.plans[0].log_url)
       }
 
       commit(types.UPDATE_LOADING, false)

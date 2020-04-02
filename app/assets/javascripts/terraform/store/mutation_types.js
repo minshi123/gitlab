@@ -1,6 +1,8 @@
-export const SET_ENDPOINT = 'SET_ENDPOINT';
+export const UPDATE_ENDPOINT = 'UPDATE_ENDPOINT';
 
 export const UPDATE_LOADING = 'UPDATE_LOADING';
+
+export const UPDATE_LOG_URL = 'UPDATE_LOG_URL';
 
 export const UPDATE_NUMBER_TO_ADD = 'UPDATE_NUMBER_TO_ADD';
 
