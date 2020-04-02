@@ -1,23 +1,38 @@
 <script>
 import BlobHeaderEdit from '~/blob/components/blob_edit_header.vue';
 import BlobContentEdit from '~/blob/components/blob_edit_content.vue';
+import { GlLoadingIcon } from '@gitlab/ui';
 
 export default {
   components: {
     BlobHeaderEdit,
     BlobContentEdit,
+    GlLoadingIcon,
   },
   inheritAttrs: false,
   props: {
+    value: {
+      type: String,
+      required: false,
+      default: '',
+    },
     fileName: {
       type: String,
       required: false,
       default: '',
     },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   methods: {
     emitFileNameChange(newFileName) {
       this.$emit('name-change', newFileName);
+    },
+    emitChange(val) {
+      this.$emit('input', val);
     },
   },
 };
@@ -27,7 +42,13 @@ export default {
     <label>{{ s__('Snippets|File') }}</label>
     <div class="file-holder snippet">
       <blob-header-edit :value="fileName" @input="emitFileNameChange" />
-      <blob-content-edit v-bind="$attrs" :file-name="fileName" v-on="$listeners" />
+      <gl-loading-icon
+        v-if="isLoading"
+        :label="__('Loading snippet')"
+        :size="2"
+        class="loading-animation prepend-top-20 append-bottom-20"
+      />
+      <blob-content-edit v-else :value="value" :file-name="fileName" @input="emitChange" />
     </div>
   </div>
 </template>
