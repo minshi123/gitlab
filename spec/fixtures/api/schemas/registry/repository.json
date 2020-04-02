@@ -32,6 +32,12 @@
     "destroy_path": {
       "type": "string"
     },
+    "delete_status": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string" }
+      ]
+    },
     "tags": { "$ref": "tags.json" }
   },
   "additionalProperties": false

@@ -109,7 +109,9 @@ describe Projects::Registry::RepositoriesController do
           expect(DeleteContainerRepositoryWorker).to receive(:perform_async).with(user.id, repository.id)
 
           delete_repository(repository)
+          repository.reload
 
+          expect(repository.delete_status).to eq('processing')  
           expect(response).to have_gitlab_http_status(:no_content)
         end
 
