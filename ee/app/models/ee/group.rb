@@ -262,14 +262,14 @@ module EE
           (billed_group_members.non_guests.distinct.pluck(:user_id) +
           billed_project_members.non_guests.distinct.pluck(:user_id) +
           billed_shared_non_guests_group_members.non_guests.distinct.pluck(:user_id) +
-          billed_invited_group_members.non_guests.distinct.pluck(:user_id)).to_set
+          billed_invited_group_to_project_members.non_guests.distinct.pluck(:user_id)).to_set
         end
       else
         strong_memoize(:non_gold_billed_user_ids) do
           (billed_group_members.distinct.pluck(:user_id) +
           billed_project_members.distinct.pluck(:user_id) +
           billed_shared_group_members.distinct.pluck(:user_id) +
-          billed_invited_group_members.distinct.pluck(:user_id)).to_set
+          billed_invited_group_to_project_members.distinct.pluck(:user_id)).to_set
         end
       end
     end
@@ -330,7 +330,7 @@ module EE
       )
     end
 
-    def billed_invited_group_members
+    def billed_invited_group_to_project_members
       invited_or_shared_group_members(invited_groups_in_projects)
     end
 
