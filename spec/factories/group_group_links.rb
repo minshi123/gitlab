@@ -4,6 +4,6 @@ FactoryBot.define do
   factory :group_group_link do
     shared_group { create(:group) }
     shared_with_group { create(:group) }
-    group_access { GroupMember::DEVELOPER }
+    group_access { Gitlab::Access::DEVELOPER }
   end
 end
