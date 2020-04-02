@@ -1,12 +1,9 @@
 <script>
+import { isString } from 'lodash';
+
 import { GlLink, GlNewButton } from '@gitlab/ui';
 
-const urlAndLabelValidator = value => {
-  return (
-    Object.prototype.hasOwnProperty.call(value, 'label') &&
-    Object.prototype.hasOwnProperty.call(value, 'url')
-  );
-};
+const validateUrlAndLabel = value => isString(value.label) && isString(value.url);
 
 export default {
   components: {
@@ -14,10 +11,25 @@ export default {
     GlNewButton,
   },
   props: {
-    branch: { type: Object, required: true, validator: urlAndLabelValidator },
-    commit: { type: Object, required: true, validator: urlAndLabelValidator },
-    mergeRequest: { type: Object, required: true, validator: urlAndLabelValidator },
-    returnUrl: { type: String, required: true },
+    branch: {
+      type: Object,
+      required: true,
+      validator: validateUrlAndLabel,
+    },
+    commit: {
+      type: Object,
+      required: true,
+      validator: validateUrlAndLabel,
+    },
+    mergeRequest: {
+      type: Object,
+      required: true,
+      validator: validateUrlAndLabel,
+    },
+    returnUrl: {
+      type: String,
+      required: true,
+    },
   },
 };
 </script>
@@ -34,10 +46,10 @@ export default {
         }}
       </p>
       <div>
-        <gl-new-button ref="returnToSiteNewButton" :href="returnUrl">{{
+        <gl-new-button ref="returnToSiteButton" :href="returnUrl">{{
           s__('StaticSiteEditor|Return to site')
         }}</gl-new-button>
-        <gl-new-button ref="mergeRequestNewButton" :href="mergeRequest.url" variant="info">{{
+        <gl-new-button ref="mergeRequestButton" :href="mergeRequest.url" variant="info">{{
           s__('StaticSiteEditor|View merge request')
         }}</gl-new-button>
       </div>

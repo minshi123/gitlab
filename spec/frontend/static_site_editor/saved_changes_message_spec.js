@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlLink, GlNewButton } from '@gitlab/ui';
+
 import SavedChangesMessage from '~/static_site_editor/components/saved_changes_message.vue';
 
 describe('SavedChangesMessage', () => {
@@ -19,11 +19,11 @@ describe('SavedChangesMessage', () => {
     },
     returnUrl: 'https://www.the-static-site.com/post',
   };
-  const findReturnToSiteGlNewButton = () => wrapper.find({ ref: 'returnToSiteNewButton' });
-  const findMergeRequestGlNewButton = () => wrapper.find({ ref: 'mergeRequestNewButton' });
-  const findBranchGlLink = () => wrapper.find({ ref: 'branchLink' });
-  const findCommitGlLink = () => wrapper.find({ ref: 'commitLink' });
-  const findMergeRequestGlLink = () => wrapper.find({ ref: 'mergeRequestLink' });
+  const findReturnToSiteButton = () => wrapper.find({ ref: 'returnToSiteButton' });
+  const findMergeRequestButton = () => wrapper.find({ ref: 'mergeRequestButton' });
+  const findBranchLink = () => wrapper.find({ ref: 'branchLink' });
+  const findCommitLink = () => wrapper.find({ ref: 'commitLink' });
+  const findMergeRequestLink = () => wrapper.find({ ref: 'mergeRequestLink' });
 
   beforeEach(() => {
     wrapper = shallowMount(SavedChangesMessage, {
@@ -35,68 +35,31 @@ describe('SavedChangesMessage', () => {
     wrapper.destroy();
   });
 
-  describe('GlNewButton usage', () => {
-    it('renders exactly two GlNewButton instances', () => {
-      expect(wrapper.findAll(GlNewButton).length).toBe(2);
-    });
-
-    describe('GlNewButton returnToSite', () => {
-      it('renders a GlNewButton for the returnToSite prop', () => {
-        expect(findReturnToSiteGlNewButton().exists()).toBe(true);
-      });
-
-      it('sets the returnToSiteNewButton href to the returnToSite prop', () => {
-        expect(findReturnToSiteGlNewButton().attributes().href).toBe(props.returnUrl);
-      });
-    });
-
-    describe('GlNewButton mergeRequestNewButton', () => {
-      it('renders a GlNewButton for the mergeRequest prop', () => {
-        expect(findMergeRequestGlNewButton().exists()).toBe(true);
-      });
-
-      it('sets the mergeRequestNewButton href to the url of the mergeRequest prop', () => {
-        expect(findMergeRequestGlNewButton().attributes().href).toBe(props.mergeRequest.url);
-      });
-    });
+  it('renders Return to site button link', () => {
+    expect(findReturnToSiteButton().exists()).toBe(true);
+    expect(findReturnToSiteButton().attributes('href')).toBe(props.returnUrl);
   });
 
-  describe('GlLink usage', () => {
-    it('renders exactly three GlLink instances', () => {
-      expect(wrapper.findAll(GlLink).length).toBe(3);
-    });
+  it('renders Merge request button link', () => {
+    expect(findMergeRequestButton().exists()).toBe(true);
+    expect(findMergeRequestButton().attributes('href')).toBe(props.mergeRequest.url);
+  });
 
-    describe('GlLink branchLink', () => {
-      it('renders a GlLink for the branch prop', () => {
-        expect(findBranchGlLink().exists()).toBe(true);
-      });
+  it('renders branch link', () => {
+    expect(findBranchLink().exists()).toBe(true);
+    expect(findBranchLink().attributes().href).toBe(props.branch.url);
+    expect(findBranchLink().text()).toBe(props.branch.label);
+  });
 
-      it('sets the branchLink href and label via the branch prop', () => {
-        expect(findBranchGlLink().attributes().href).toBe(props.branch.url);
-        expect(findBranchGlLink().text()).toBe(props.branch.label);
-      });
-    });
+  it('renders commit link', () => {
+    expect(findCommitLink().exists()).toBe(true);
+    expect(findCommitLink().attributes().href).toBe(props.commit.url);
+    expect(findCommitLink().text()).toBe(props.commit.label);
+  });
 
-    describe('GlLink commitLink', () => {
-      it('renders a GlLink for the commit prop', () => {
-        expect(findCommitGlLink().exists()).toBe(true);
-      });
-
-      it('sets the commitLink href and label via the commit prop', () => {
-        expect(findCommitGlLink().attributes().href).toBe(props.commit.url);
-        expect(findCommitGlLink().text()).toBe(props.commit.label);
-      });
-    });
-
-    describe('GlLink mergeRequestLink', () => {
-      it('renders a GlLink for the mergeRequest prop', () => {
-        expect(findMergeRequestGlLink().exists()).toBe(true);
-      });
-
-      it('sets the mergeRequestLink href and label via the mergeRequest prop', () => {
-        expect(findMergeRequestGlLink().attributes().href).toBe(props.mergeRequest.url);
-        expect(findMergeRequestGlLink().text()).toBe(props.mergeRequest.label);
-      });
-    });
+  it('renders merge request link', () => {
+    expect(findMergeRequestLink().exists()).toBe(true);
+    expect(findMergeRequestLink().attributes().href).toBe(props.mergeRequest.url);
+    expect(findMergeRequestLink().text()).toBe(props.mergeRequest.label);
   });
 });
