@@ -1,4 +1,5 @@
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { slugify } from '~/lib/utils/text_utility';
 import * as types from './mutation_types';
 import { transformRawStages, transformRawTasksByTypeData, toggleSelectedLabel } from '../utils';
 import { TASKS_BY_TYPE_FILTERS } from '../constants';
@@ -123,18 +124,6 @@ export default {
   },
   [types.CLEAR_CUSTOM_STAGE_FORM_ERRORS](state) {
     state.customStageFormErrors = null;
-  },
-  [types.RECEIVE_SUMMARY_DATA_ERROR](state) {
-    state.summary = [];
-  },
-  [types.REQUEST_SUMMARY_DATA](state) {
-    state.summary = [];
-  },
-  [types.RECEIVE_SUMMARY_DATA_SUCCESS](state, data) {
-    state.summary = data.map(item => ({
-      ...item,
-      value: item.value || '-',
-    }));
   },
   [types.REQUEST_GROUP_STAGES_AND_EVENTS](state) {
     state.stages = [];

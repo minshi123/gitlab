@@ -28,7 +28,6 @@ export default () => ({
   currentStageEvents: [],
 
   stages: [],
-  summary: [],
   labels: [],
   topRankedLabels: [],
   medians: {},

@@ -8,7 +8,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import GroupsDropdownFilter from 'ee/analytics/shared/components/groups_dropdown_filter.vue';
 import ProjectsDropdownFilter from 'ee/analytics/shared/components/projects_dropdown_filter.vue';
-import SummaryTable from 'ee/analytics/cycle_analytics/components/summary_table.vue';
+import RecentActivityCard from 'ee/analytics/cycle_analytics/components/recent_activity_card.vue';
 import StageTable from 'ee/analytics/cycle_analytics/components/stage_table.vue';
 import 'bootstrap';
 import '~/gl_dropdown';
@@ -34,7 +34,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 const defaultStubs = {
-  'summary-table': true,
+  'recent-activity-card': true,
   'stage-event-list': true,
   'stage-nav-item': true,
   'tasks-by-type-chart': true,
@@ -118,8 +118,8 @@ describe('Cycle Analytics component', () => {
     expect(wrapper.find(Daterange).exists()).toBe(flag);
   };
 
-  const displaysSummaryTable = flag => {
-    expect(wrapper.find(SummaryTable).exists()).toBe(flag);
+  const displaysRecentActivityCard = flag => {
+    expect(wrapper.find(RecentActivityCard).exists()).toBe(flag);
   };
 
   const displaysStageTable = flag => {
@@ -175,7 +175,7 @@ describe('Cycle Analytics component', () => {
       });
 
       it('does not display the summary table', () => {
-        displaysSummaryTable(false);
+        displaysRecentActivityCard(false);
       });
 
       it('does not display the stage table', () => {
@@ -229,7 +229,7 @@ describe('Cycle Analytics component', () => {
         });
 
         it('displays the summary table', () => {
-          displaysSummaryTable(true);
+          displaysRecentActivityCard(true);
         });
 
         it('displays the stage table', () => {
@@ -340,7 +340,7 @@ describe('Cycle Analytics component', () => {
         });
 
         it('does not display the summary table', () => {
-          displaysSummaryTable(false);
+          displaysRecentActivityCard(false);
         });
 
         it('does not display the stage table', () => {
@@ -436,11 +436,6 @@ describe('Cycle Analytics component', () => {
     }) => {
       const defaultStatus = 200;
       const defaultRequests = {
-        fetchSummaryData: {
-          status: defaultStatus,
-          endpoint: mockData.endpoints.summaryData,
-          response: [...mockData.summaryData],
-        },
         fetchGroupStagesAndEvents: {
           status: defaultStatus,
           endpoint: mockData.endpoints.baseStagesEndpoint,
@@ -505,24 +500,6 @@ describe('Cycle Analytics component', () => {
         expect(findFlashError().innerText.trim()).toEqual(msg);
       });
     };
-
-    it('will display an error if the fetchSummaryData request fails', () => {
-      expect(findFlashError()).toBeNull();
-
-      mockRequestCycleAnalyticsData({
-        overrides: {
-          fetchSummaryData: {
-            status: httpStatusCodes.NOT_FOUND,
-            endpoint: mockData.endpoints.summaryData,
-            response: { response: { status: httpStatusCodes.NOT_FOUND } },
-          },
-        },
-      });
-
-      return selectGroupAndFindError(
-        'There was an error while fetching value stream analytics summary data.',
-      );
-    });
 
     it('will display an error if the fetchGroupLabels request fails', () => {
       expect(findFlashError()).toBeNull();

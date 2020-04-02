@@ -14,8 +14,8 @@ exports[`CustomStageForm Start event with events does not select events with can
   <option value=\\"issue_first_added_to_board\\">Issue first added to a board</option>
   <option value=\\"issue_first_associated_with_milestone\\">Issue first associated with a milestone</option>
   <option value=\\"plan_stage_start\\">Issue first associated with a milestone or issue first added to a board</option>
-  <option value=\\"issue_first_mentioned_in_commit\\">Issue first mentioned in a commit</option>
   <option value=\\"code_stage_start\\">Issue first mentioned in a commit</option>
+  <option value=\\"issue_first_mentioned_in_commit\\">Issue first mentioned in a commit</option>
   <option value=\\"issue_label_added\\">Issue label was added</option>
   <option value=\\"issue_label_removed\\">Issue label was removed</option>
   <option value=\\"merge_request_closed\\">Merge request closed</option>
@@ -37,8 +37,8 @@ exports[`CustomStageForm Start event with events selects events with canBeStartE
   <option value=\\"issue_first_added_to_board\\">Issue first added to a board</option>
   <option value=\\"issue_first_associated_with_milestone\\">Issue first associated with a milestone</option>
   <option value=\\"plan_stage_start\\">Issue first associated with a milestone or issue first added to a board</option>
-  <option value=\\"issue_first_mentioned_in_commit\\">Issue first mentioned in a commit</option>
   <option value=\\"code_stage_start\\">Issue first mentioned in a commit</option>
+  <option value=\\"issue_first_mentioned_in_commit\\">Issue first mentioned in a commit</option>
   <option value=\\"issue_label_added\\">Issue label was added</option>
   <option value=\\"issue_label_removed\\">Issue label was removed</option>
   <option value=\\"merge_request_closed\\">Merge request closed</option>
