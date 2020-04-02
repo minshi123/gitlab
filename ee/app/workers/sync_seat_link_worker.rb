@@ -17,9 +17,9 @@ class SyncSeatLinkWorker # rubocop:disable Scalability/IdempotentWorker
 
     SyncSeatLinkRequestWorker.perform_async(
       report_date.to_s,
-      License.current.data,
-      max_historical_user_count,
-      HistoricalData.at(report_date)&.active_user_count
+      Gitlab::SeatLinkData.license_key,
+      Gitlab::SeatLinkData.max_historical_user_count(date: report_date),
+      Gitlab::SeatLinkData.active_user_count(date: report_date)
     )
   end
 
@@ -34,14 +34,7 @@ class SyncSeatLinkWorker # rubocop:disable Scalability/IdempotentWorker
       report_date.between?(License.current.starts_at, License.current.expires_at + 14.days)
   end
 
-  def max_historical_user_count
-    HistoricalData.max_historical_user_count(
-      from: License.current.starts_at,
-      to: report_date
-    )
-  end
-
   def report_date
-    @report_date ||= Time.now.utc.yesterday.to_date
+    @report_date ||= Gitlab::SeatLinkData.report_date
   end
 end

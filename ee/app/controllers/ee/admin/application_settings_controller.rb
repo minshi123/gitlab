@@ -66,6 +66,17 @@ module EE
                                                     'From GitLab 13.0 on, this will be the only place for Geo settings and <strong>Admin Area > Settings > Geo</strong> will be removed.'.html_safe
       end
 
+      def seat_link_payload
+        respond_to do |format|
+          format.html do
+            seat_link_json = JSON.pretty_generate(::Gitlab::SeatLinkData.data)
+
+            render html: ::Gitlab::Highlight.highlight('payload.json', seat_link_json, language: 'json')
+          end
+          format.json { render json: ::Gitlab::SeatLinkData.data.to_json }
+        end
+      end
+
       private
 
       override :valid_setting_panels

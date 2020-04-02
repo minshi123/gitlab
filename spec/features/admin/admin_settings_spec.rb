@@ -348,12 +348,14 @@ describe 'Admin updates settings', :clean_gitlab_redis_shared_state, :do_not_moc
       it 'loads usage ping payload on click', :js do
         allow(ActiveRecord::Base.connection).to receive(:transaction_open?).and_return(false)
 
-        expect(page).to have_button 'Preview payload'
+        page.within('#js-usage-settings') do
+          expect(page).to have_button 'Preview payload'
 
-        find('.js-usage-ping-payload-trigger').click
+          find('.js-usage-ping-payload-trigger').click
 
-        expect(page).to have_selector '.js-usage-ping-payload'
-        expect(page).to have_button 'Hide payload'
+          expect(page).to have_selector '.js-usage-ping-payload'
+          expect(page).to have_button 'Hide payload'
+        end
       end
     end
 

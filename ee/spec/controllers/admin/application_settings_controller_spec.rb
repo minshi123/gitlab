@@ -205,4 +205,24 @@ describe Admin::ApplicationSettingsController do
       end
     end
   end
+
+  describe 'GET #seat_link_payload' do
+    before do
+      sign_in(admin)
+    end
+
+    it 'returns HTML data' do
+      get :seat_link_payload, format: :html
+
+      expect(response.body).to start_with('<span')
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    it 'returns JSON data' do
+      get :seat_link_payload, format: :json
+
+      expect(json_response.keys).to eq(%w[date license_key max_historical_user_count active_users])
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+  end
 end

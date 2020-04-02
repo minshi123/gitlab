@@ -241,6 +241,23 @@ describe 'Admin updates EE-only settings' do
     end
   end
 
+  context 'Metrics and profiling page' do
+    before do
+      visit metrics_and_profiling_admin_application_settings_path
+    end
+
+    it 'loads seat link payload on click', :js do
+      page.within('#js-seat-link-settings') do
+        expect(page).to have_button 'Preview payload'
+
+        find('.js-seat-link-payload-trigger').click
+
+        expect(page).to have_selector '.js-seat-link-payload'
+        expect(page).to have_button 'Hide payload'
+      end
+    end
+  end
+
   def current_settings
     ApplicationSetting.current_without_cache
   end
