@@ -19139,6 +19139,15 @@ msgstr ""
 msgid "Static Application Security Testing (SAST)"
 msgstr ""
 
+msgid "StaticSiteEditor|Configure your static site"
+msgstr ""
+
+msgid "StaticSiteEditor|Incompatible file content"
+msgstr ""
+
+msgid "StaticSiteEditor|The Static Site Editor is currently configured to only edit Markdown content on pages generated from Middleman. Visit the documentation for the feature to learn more about configuring your site to use the Static Site Editor."
+msgstr ""
+
 msgid "Statistics"
 msgstr ""
 
