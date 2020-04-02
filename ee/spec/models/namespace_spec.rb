@@ -1118,8 +1118,8 @@ describe Namespace do
             shared_group.add_guest(create(:user))
             shared_group.add_developer(create(:user, :blocked))
 
-            create(:group_group_link, { shared_with_group: group,
-              shared_group: shared_group })
+            create(:group_group_link, { shared_with_group: shared_group,
+              shared_group: group })
           end
 
           context 'when feature is not enabled' do
