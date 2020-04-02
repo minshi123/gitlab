@@ -17,10 +17,10 @@ describe GroupGroupLink do
 
   describe 'scopes' do
     describe '.non_guests' do
-      let!(:group_group_link_reporter) { create :group_group_link, group_access: Gitlab::Access::REPORTER }
-      let!(:group_group_link_maintainer) { create :group_group_link, group_access: Gitlab::Access::MAINTAINER }
-      let!(:group_group_link_owner) { create :group_group_link, group_access: Gitlab::Access::OWNER }
-      let!(:group_group_link_guest) { create :group_group_link, group_access: Gitlab::Access::GUEST }
+      let!(:group_group_link_reporter) { create :group_group_link, :reporter }
+      let!(:group_group_link_maintainer) { create :group_group_link, :maintainer }
+      let!(:group_group_link_owner) { create :group_group_link, :owner }
+      let!(:group_group_link_guest) { create :group_group_link, :guest }
 
       it 'returns all records which are greater than Guests access' do
         expect(described_class.non_guests).to match_array([
