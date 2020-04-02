@@ -1,5 +1,5 @@
 <script>
-import { __ } from '~/locale';
+import { mapState } from 'vuex';
 import {
   GlNewDropdown,
   GlNewDropdownHeader,
@@ -25,6 +25,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['commitsPath']),
     filteredAvatars() {
       return this.avatars.filter(item =>
         item.toLowerCase().includes(this.searchTerm.toLowerCase()),

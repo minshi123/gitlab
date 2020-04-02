@@ -13,8 +13,8 @@
 
         %ul.breadcrumb.repo-breadcrumb
           = commits_breadcrumbs
-      .tree-insert-vue-here#sammy{data: {'authors': 'insert_author_list_endpoint_here',
-        'author_search': 'insert_search_author_endpoint'}}
+      .tree-insert-vue-here#js-author-dropdown{data: {'authors': 'insert_author_list_endpoint_here',
+        'commits_path': project_commits_path(@project) }}
       .tree-controls.d-none.d-sm-none.d-md-block<
         - if @merge_request.present?
           .control
