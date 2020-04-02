@@ -51,11 +51,12 @@ issue page so you can edit, assign, or comment on the issue.
 
 ## Automatic remediation solutions for vulnerabilities
 
-Some vulnerabilities can be fixed by applying the solution that GitLab automatically generates.
-The following scanners are supported:
+You can fix some vulnerabilities by applying the solution that GitLab automatically
+generates for you. GitLab supports the following scanners:
 
-- [Dependency Scanning](../dependency_scanning/index.md):  Automatic Patch creation is only available for Node.js projects managed with  `yarn`.
-- [Container Scanning](../container_scanning/index.md)
+- [Dependency Scanning](../dependency_scanning/index.md): Automatic Patch creation
+  is only available for Node.js projects managed with  `yarn`.
+- [Container Scanning](../container_scanning/index.md).
 
 #### Manually applying the suggested patch
 
