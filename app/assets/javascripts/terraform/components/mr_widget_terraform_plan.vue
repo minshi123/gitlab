@@ -1,7 +1,8 @@
 <script>
-import { GlIcon } from '@gitlab/ui';
-import { escape } from 'lodash';
 import { __, sprintf } from '~/locale';
+import { escape } from 'lodash';
+import { GlIcon } from '@gitlab/ui';
+import { mapActions } from 'vuex';
 import ciIcon from '../../vue_shared/components/ci_icon.vue';
 
 export default {
