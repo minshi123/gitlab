@@ -35,31 +35,23 @@ describe('SavedChangesMessage', () => {
     wrapper.destroy();
   });
 
-  it('renders Return to site button link', () => {
-    expect(findReturnToSiteButton().exists()).toBe(true);
-    expect(findReturnToSiteButton().attributes('href')).toBe(props.returnUrl);
+  const buttonLinks = [
+    ['Return to site', findReturnToSiteButton, props.returnUrl],
+    ['Merge request', findMergeRequestButton, props.mergeRequest.url],
+  ];
+  it.each(buttonLinks)('renders %s button link', (_, findEl, url) => {
+    expect(findEl().exists()).toBe(true);
+    expect(findEl().attributes('href')).toBe(url);
   });
 
-  it('renders Merge request button link', () => {
-    expect(findMergeRequestButton().exists()).toBe(true);
-    expect(findMergeRequestButton().attributes('href')).toBe(props.mergeRequest.url);
-  });
-
-  it('renders branch link', () => {
-    expect(findBranchLink().exists()).toBe(true);
-    expect(findBranchLink().attributes().href).toBe(props.branch.url);
-    expect(findBranchLink().text()).toBe(props.branch.label);
-  });
-
-  it('renders commit link', () => {
-    expect(findCommitLink().exists()).toBe(true);
-    expect(findCommitLink().attributes().href).toBe(props.commit.url);
-    expect(findCommitLink().text()).toBe(props.commit.label);
-  });
-
-  it('renders merge request link', () => {
-    expect(findMergeRequestLink().exists()).toBe(true);
-    expect(findMergeRequestLink().attributes().href).toBe(props.mergeRequest.url);
-    expect(findMergeRequestLink().text()).toBe(props.mergeRequest.label);
+  const links = [
+    ['branch', findBranchLink, props.branch],
+    ['commit', findCommitLink, props.commit],
+    ['merge request', findMergeRequestLink, props.mergeRequest],
+  ];
+  it.each(links)('renders %s link', (_, findEl, prop) => {
+    expect(findEl().exists()).toBe(true);
+    expect(findEl().attributes().href).toBe(prop.url);
+    expect(findEl().text()).toBe(prop.label);
   });
 });
