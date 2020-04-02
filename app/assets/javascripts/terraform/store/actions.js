@@ -18,6 +18,7 @@ export const fetchPlans = ({ state, commit }) => {
       console.log('successCallback')
       console.log(data)
       commit(types.UPDATE_NUMBER_TO_ADD, data.create)
+      commit(types.UPDATE_NUMBER_TO_CHANGE, data.update)
     },
     errorCallback: () => flash(__('An error occurred while loading terraform plans')),
   })

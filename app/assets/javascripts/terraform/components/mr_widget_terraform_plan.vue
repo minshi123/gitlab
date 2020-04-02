@@ -14,12 +14,11 @@ export default {
   },
   data() {
     return {
-      changeNum: 0,
       deleteNum: 2,
     };
   },
   computed: {
-    ...mapState(['numberToAdd']),
+    ...mapState(['numberToAdd', 'numberToChange']),
     iconStatusObj() {
       return {
         group: 'warning',
@@ -29,19 +28,12 @@ export default {
     linkText() {
       return __('View full log');
     },
-    numberToAddText() {
-      if (this.numberToAdd) {
-        return escape(this.numberToAdd)
-      } else {
-        return __('unknown');
-      }
-    },
     terraformChangesText() {
       return sprintf(
         __('%{addNum} to add, %{changeNum} to change, %{deleteNum} to delete'),
         {
-          addNum: `<strong>${escape(this.numberToAddText)}</strong>`,
-          changeNum: `<strong>${escape(this.changeNum)}</strong>`,
+          addNum: `<strong>${escape(this.numberToAdd)}</strong>`,
+          changeNum: `<strong>${escape(this.numberToChange)}</strong>`,
           deleteNum: `<strong>${escape(this.deleteNum)}</strong>`,
         },
         false,
@@ -56,7 +48,7 @@ export default {
     this.fetchPlans();
   },
   methods: {
-    ...mapActions(['setEndpoint', 'fetchPlans'])
+    ...mapActions(['setEndpoint', 'fetchPlans']),
   },
   props: {
     endpoint: {

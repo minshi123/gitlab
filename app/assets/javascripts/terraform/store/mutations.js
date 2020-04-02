@@ -5,6 +5,9 @@ export default {
     state.endpoint = endpoint;
   },
   [types.UPDATE_NUMBER_TO_ADD](state, createValue) {
-    state.numberToAdd = Number(createValue) || null;
+    state.numberToAdd = Number(createValue);
+  },
+  [types.UPDATE_NUMBER_TO_CHANGE](state, changeValue) {
+    state.numberToChange = Number(changeValue);
   },
 }
