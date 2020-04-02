@@ -7,6 +7,7 @@ import {
   GlSearchBoxByType,
   GlNewDropdownDivider,
 } from '@gitlab/ui';
+import { redirectTo, getParameterValues } from '~/lib/utils/url_utility';
 
 export default {
   name: 'AuthorSelect',
@@ -19,9 +20,8 @@ export default {
   },
   data() {
     return {
-      username: 'hi',
       searchTerm: '',
-      avatars: ['one', 'two', 'three'],
+      avatars: ['rob', 'lee', 'three'],
     };
   },
   computed: {
@@ -30,6 +30,22 @@ export default {
       return this.avatars.filter(item =>
         item.toLowerCase().includes(this.searchTerm.toLowerCase()),
       );
+    },
+    currentAuthor() {
+      return getParameterValues('author')[0];
+    },
+  },
+  methods: {
+    selectAuthor(user) {
+      const commitListElement = document.getElementById('commits-list');
+      commitListElement.style.opacity = 0.5;
+      commitListElement.style.transition = 'opacity 200ms'; // To match 'fast' in jQuery
+
+      if (user === null) {
+        return redirectTo(this.commitsPath);
+      }
+
+      return redirectTo(`${this.commitsPath}?author=${user}`);
     },
   },
 };
@@ -48,7 +64,7 @@ export default {
         :placeholder="__(`Search authors`)"
         autofocus
       />
-      <gl-new-dropdown-item :is-checked="true">
+      <gl-new-dropdown-item :is-checked="!currentAuthor" @click.prevent="selectAuthor(null)">
         {{ __('Any Author') }}
       </gl-new-dropdown-item>
       <gl-new-dropdown-divider />
@@ -57,7 +73,8 @@ export default {
       <gl-new-dropdown-item
         v-for="avatar in filteredAvatars"
         :key="avatar"
-        :active="avatar === username"
+        :is-checked="avatar === currentAuthor"
+        @click.prevent="selectAuthor(avatar)"
       >
         {{ avatar }}
       </gl-new-dropdown-item>
