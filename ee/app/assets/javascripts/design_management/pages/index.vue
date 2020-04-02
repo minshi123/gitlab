@@ -97,7 +97,7 @@ export default {
     },
   },
   mounted() {
-    this.addOnPasteListener(this.$route.name);
+    this.toggleOnPasteListener(this.$route.name);
   },
   methods: {
     resetFilesToBeSaved() {
@@ -234,7 +234,7 @@ export default {
         this.onUploadDesign([newFile]);
       }
     },
-    addOnPasteListener(route) {
+    toggleOnPasteListener(route) {
       if (route === DESIGNS_ROUTE_NAME) {
         document.addEventListener('paste', this.onDesignPaste);
       } else {
@@ -243,12 +243,12 @@ export default {
     },
   },
   beforeRouteUpdate(to, from, next) {
-    this.addOnPasteListener(to.name);
+    this.toggleOnPasteListener(to.name);
     this.selectedDesigns = [];
     next();
   },
   beforeRouteLeave(to, from, next) {
-    this.addOnPasteListener(to.name);
+    this.toggleOnPasteListener(to.name);
     next();
   },
 };
