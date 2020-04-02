@@ -173,7 +173,7 @@ export default {
           :message="s__('Dependencies|Based on the %{linkStart}latest successful%{linkEnd} scan')"
         >
           <template #link="{ content }">
-            <gl-link v-if="reportInfo.jobPath" :href="reportInfo.jobPath" ref="jobLink">{{
+            <gl-link v-if="reportInfo.jobPath" ref="jobLink" :href="reportInfo.jobPath">{{
               content
             }}</gl-link>
             <template v-else>{{ content }}</template>
