@@ -46,9 +46,10 @@ export default {
   },
   created() {
     this.setEndpoint(this.endpoint)
+    this.fetchPlans();
   },
   methods: {
-    ...mapActions(['setEndpoint'])
+    ...mapActions(['setEndpoint', 'fetchPlans'])
   },
   props: {
     endpoint: {
@@ -61,7 +62,6 @@ export default {
 </script>
 <template>
   <section class="mr-widget-section">
-    <h1>endpoint!! {{ endpoint }}</h1>
     <div class="mr-widget-body media d-flex flex-row">
       <span class="append-right-default align-self-start align-self-lg-center">
         <ci-icon :status="iconStatusObj" :size="24" />
