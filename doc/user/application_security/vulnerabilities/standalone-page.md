@@ -40,12 +40,14 @@ the following values:
 | Dismissed | A user has seen this vulnerability and dismissed it               |
 | Resolved  | The vulnerability has been fixed and is no longer in the codebase |
 
-### Creating an issue for a vulnerability
+## Creating an issue for a vulnerability
 
 You can create an issue for a vulnerability by selecting the **Create issue** button.
 
-This creates a [confidential issue](../project/issues/confidential_issues.md) in the project the vulnerability came from, and prepopulates it with some useful information taken from the vulnerability report.
-After the issue is created, you are redirected to it so you can edit, assign, or comment on it.
+This creates a [confidential issue](../project/issues/confidential_issues.md) in the
+project the vulnerability came from, and prepopulates it with useful information from
+the vulnerability report. After the issue is created, GitLab redirects you to the
+issue page so you can edit, assign, or comment on the issue.
 
 ### Solutions for vulnerabilities (auto-remediation)
 
