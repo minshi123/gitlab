@@ -346,7 +346,10 @@ export default {
         :endpoint="mr.testResultsPath"
       />
 
-      <terraform-plan />
+      <terraform-plan
+        v-if="mr.terraformPlansPath"
+        :endpoint="mr.terraformPlansPath"
+      />
 
       <div class="mr-widget-section">
         <component :is="componentName" :mr="mr" :service="service" />
