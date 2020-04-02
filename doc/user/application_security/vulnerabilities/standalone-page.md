@@ -7,16 +7,24 @@ type: reference, howto
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/13561) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.10.
 
 CAUTION: **Warning:**
-This feature is currently [Alpha](https://about.gitlab.com/handbook/product/#alpha-beta-ga) and while you can start using it, it may receive important changes in the future.
-Each security vulnerability in the [Vulnerability List](index.md) has its own standalone page, as shown in the following example:!
+This feature is currently [Alpha](https://about.gitlab.com/handbook/product/#alpha-beta-ga).
+You can begin using it, but it may receive important changes in the future.
+
+Each security vulnerability in the [Vulnerability List](index.md) has its own standalone
+page, as shown in the following example:
 
 [Standalone vulnerability page](img/standalone-vulnerability-page.png)
 
-On the standalone vulnerability page, you can interact with the vulnerability in several different ways:
+On the standalone vulnerability page, you can interact with the vulnerability in
+several different ways:
 
-- [Change the Vulnerability Status](#changing-vulnerability-status) - You can change the status of a vulnerability to **Detected**, **Confirmed**, **Dismissed**, or **Resolved**.
-- [Create issue](#creating-an-issue-for-a-vulnerability) - Create a new issue with the title and description prepopulated with information from the vulnerability report. By default, such issues are [confidential](../project/issues/confidential_issues.md).
-- [Solution](#solutions-for-vulnerabilities-auto-remediation) - For some vulnerabilities, a solution is provided for how to fix the vulnerability.
+- [Change the Vulnerability Status](#changing-vulnerability-status) - You can change the
+  status of a vulnerability to **Detected**, **Confirmed**, **Dismissed**, or **Resolved**.
+- [Create issue](#creating-an-issue-for-a-vulnerability) - Create a new issue with the
+  title and description prepopulated with information from the vulnerability report.
+  By default, such issues are [confidential](../project/issues/confidential_issues.md).
+- [Solution](#solutions-for-vulnerabilities-auto-remediation) - For some vulnerabilities,
+  a solution is provided for how to fix the vulnerability.
 
 ### Changing vulnerability status
 
