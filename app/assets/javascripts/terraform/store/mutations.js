@@ -10,4 +10,7 @@ export default {
   [types.UPDATE_NUMBER_TO_CHANGE](state, changeValue) {
     state.numberToChange = Number(changeValue);
   },
+  [types.UPDATE_NUMBER_TO_DELETE](state, deleteValue) {
+    state.numberToDelete = Number(deleteValue);
+  },
 }

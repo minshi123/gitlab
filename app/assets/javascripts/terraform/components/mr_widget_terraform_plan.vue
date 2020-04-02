@@ -12,13 +12,8 @@ export default {
     ciIcon,
     GlIcon,
   },
-  data() {
-    return {
-      deleteNum: 2,
-    };
-  },
   computed: {
-    ...mapState(['numberToAdd', 'numberToChange']),
+    ...mapState(['numberToAdd', 'numberToChange', 'numberToDelete']),
     iconStatusObj() {
       return {
         group: 'warning',
@@ -34,7 +29,7 @@ export default {
         {
           addNum: `<strong>${escape(this.numberToAdd)}</strong>`,
           changeNum: `<strong>${escape(this.numberToChange)}</strong>`,
-          deleteNum: `<strong>${escape(this.deleteNum)}</strong>`,
+          deleteNum: `<strong>${escape(this.numberToDelete)}</strong>`,
         },
         false,
       );

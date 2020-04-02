@@ -151,7 +151,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     #  end
     # end
     # ----------------
-    reports_response({ status: :parsed, data: { create: 1, update: 0, delete: 0 } })
+    reports_response({ status: :parsed, data: { create: 10, update: 20, delete: 30 } })
   end
 
   def test_reports
