@@ -1,5 +1,4 @@
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import { slugify } from '~/lib/utils/text_utility';
 import * as types from './mutation_types';
 import { transformRawStages, transformRawTasksByTypeData, toggleSelectedLabel } from '../utils';
 import { TASKS_BY_TYPE_FILTERS } from '../constants';
