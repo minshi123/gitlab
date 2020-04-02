@@ -13,6 +13,8 @@ class ProjectGroupLink < ApplicationRecord
   validates :group_access, inclusion: { in: Gitlab::Access.values }, presence: true
   validate :different_group
 
+  scope :non_guests, -> { where('group_access > ?', Gitlab::Access::GUEST) }
+
   after_commit :refresh_group_members_authorized_projects
 
   alias_method :shared_with_group, :group
