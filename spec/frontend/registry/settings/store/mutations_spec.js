@@ -12,7 +12,7 @@ describe('Mutations Registry Store', () => {
 
   describe('SET_INITIAL_STATE', () => {
     it('should set the initial state', () => {
-      const payload = { projectId: 'foo', enableHistoricEntries: false };
+      const payload = { projectId: 'foo', enableHistoricEntries: false, adminSettingsPath: 'foo', isAdmin: true };
       const expectedState = { ...mockState, ...payload, formOptions };
       mutations[types.SET_INITIAL_STATE](mockState, {
         ...payload,

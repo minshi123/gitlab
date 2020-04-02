@@ -1,10 +1,11 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
 import component from '~/registry/settings/components/registry_settings_app.vue';
 import SettingsForm from '~/registry/settings/components/settings_form.vue';
 import { createStore } from '~/registry/settings/store/';
-import { SET_SETTINGS } from '~/registry/settings/store/mutation_types';
+import { SET_SETTINGS, SET_INITIAL_STATE } from '~/registry/settings/store/mutation_types';
 import { FETCH_SETTINGS_ERROR_MESSAGE } from '~/registry/shared/constants';
+import { stringifiedFormOptions } from '../../shared/mock_data';
 
 describe('Registry Settings App', () => {
   let wrapper;
@@ -13,16 +14,14 @@ describe('Registry Settings App', () => {
   const findSettingsComponent = () => wrapper.find(SettingsForm);
   const findAlert = () => wrapper.find(GlAlert);
 
-  const mountComponent = ({ dispatchMock = 'mockResolvedValue', emptySettings } = {}) => {
-    store = createStore();
+  const mountComponent = ({ dispatchMock = 'mockResolvedValue' } = {}) => {
     const dispatchSpy = jest.spyOn(store, 'dispatch');
     dispatchSpy[dispatchMock]();
 
-    if (emptySettings) {
-      store.commit(SET_SETTINGS, undefined);
-    }
-
     wrapper = shallowMount(component, {
+      stubs: {
+        GlSprintf,
+      },
       mocks: {
         $toast: {
           show: jest.fn(),
@@ -31,6 +30,10 @@ describe('Registry Settings App', () => {
       store,
     });
   };
+
+  beforeEach(() => {
+    store = createStore();
+  });
 
   afterEach(() => {
     wrapper.destroy();
@@ -53,7 +56,8 @@ describe('Registry Settings App', () => {
 
   describe('the form is disabled', () => {
     beforeEach(() => {
-      mountComponent({ emptySettings: true });
+      store.commit(SET_SETTINGS, undefined);
+      mountComponent();
     });
 
     it('the form is hidden', () => {
@@ -61,9 +65,33 @@ describe('Registry Settings App', () => {
     });
 
     it('shows an alert', () => {
-      expect(findAlert().html()).toContain(
-        'Currently, the Container Registry tag expiration feature is disabled',
+      expect(findAlert().text()).toContain(
+        'Currently, the Container Registry tag expiration feature is disabled for projects created before GitLab version 12.8.',
       );
+    });
+
+    it('shows the non admin part of the alert message', () => {
+      const sprintf = findAlert().find(GlSprintf);
+      expect(sprintf.text()).toBe('#196124');
+      expect(sprintf.find(GlLink).attributes('href')).toBe(
+        'https://gitlab.com/gitlab-org/gitlab/issues/196124',
+      );
+    });
+
+    describe('an admin is visiting the page', () => {
+      beforeEach(() => {
+        store.commit(SET_INITIAL_STATE, {
+          ...stringifiedFormOptions,
+          isAdmin: true,
+          adminSettingsPath: 'foo',
+        });
+      });
+
+      it('shows the admin part of the alert message', () => {
+        const sprintf = findAlert().find(GlSprintf);
+        expect(sprintf.text()).toBe('administration page');
+        expect(sprintf.find(GlLink).attributes('href')).toBe('foo');
+      });
     });
   });
 

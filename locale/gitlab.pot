@@ -5344,7 +5344,7 @@ msgstr ""
 msgid "ContainerRegistry|Copy push command"
 msgstr ""
 
-msgid "ContainerRegistry|Currently, the Container Registry tag expiration feature is not available for projects created before GitLab version 12.8. For updates and more information, visit Issue %{linkStart}#196124%{linkEnd}"
+msgid "ContainerRegistry|Currently, the Container Registry tag expiration feature is disabled for projects created before GitLab version 12.8."
 msgstr ""
 
 msgid "ContainerRegistry|Docker connection error"
@@ -5369,6 +5369,9 @@ msgid "ContainerRegistry|Expiration policy:"
 msgstr ""
 
 msgid "ContainerRegistry|Expiration schedule:"
+msgstr ""
+
+msgid "ContainerRegistry|For updates and more information, visit Issue %{linkStart}#196124%{linkEnd} or ask an admin to enabled it in the instance settings panel"
 msgstr ""
 
 msgid "ContainerRegistry|If you are not already logged in, you need to authenticate to the Container Registry by using your GitLab username and password. If you have %{twofaDocLinkStart}Two-Factor Authentication%{twofaDocLinkEnd} enabled, use a %{personalAccessTokensDocLinkStart}Personal Access Token%{personalAccessTokensDocLinkEnd} instead of a password."
@@ -5473,6 +5476,9 @@ msgid "ContainerRegistry|This Registry contains deleted image tag data. Remember
 msgstr ""
 
 msgid "ContainerRegistry|This image has no active tags"
+msgstr ""
+
+msgid "ContainerRegistry|Visit the %{linkStart}administration page%{linkEnd} to enable it"
 msgstr ""
 
 msgid "ContainerRegistry|We are having trouble connecting to Docker, which could be due to an issue with your project name or path. %{docLinkStart}More Information%{docLinkEnd}"
