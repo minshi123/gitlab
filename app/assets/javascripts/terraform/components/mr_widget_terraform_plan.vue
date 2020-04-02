@@ -79,6 +79,7 @@ export default {
             data-track-label="mr_widget_terraform_mr_plan_button"
             data-track-property="terraform_mr_plan_button"
             class="btn btn-sm"
+            rel="noopener"
           >
             {{ linkText }}
             <gl-icon name="external-link" />
