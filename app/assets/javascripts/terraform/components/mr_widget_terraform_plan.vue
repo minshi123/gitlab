@@ -1,7 +1,7 @@
 <script>
 import { __, sprintf } from '~/locale';
 import { escape } from 'lodash';
-import { GlIcon } from '@gitlab/ui';
+import { GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import ciIcon from '../../vue_shared/components/ci_icon.vue';
 import createStore from '../store';
@@ -11,9 +11,10 @@ export default {
   components: {
     ciIcon,
     GlIcon,
+    GlLoadingIcon,
   },
   computed: {
-    ...mapState(['numberToAdd', 'numberToChange', 'numberToDelete']),
+    ...mapState(['loading', 'numberToAdd', 'numberToChange', 'numberToDelete']),
     iconStatusObj() {
       return {
         group: 'warning',
@@ -64,7 +65,9 @@ export default {
       <div class="d-flex flex-fill flex-column flex-md-row">
         <div class="terraform-mr-plan-text normal d-flex flex-column flex-lg-row">
           <p class="m-0 pr-1">{{ terraformPlanText }}</p>
-          <p class="m-0" v-html="terraformChangesText"></p>
+
+          <gl-loading-icon v-if="loading" size="md" />
+          <p class="m-0" v-else v-html="terraformChangesText"></p>
         </div>
 
         <div class="terraform-mr-plan-actions">

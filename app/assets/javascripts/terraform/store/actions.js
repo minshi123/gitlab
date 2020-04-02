@@ -18,8 +18,12 @@ export const fetchPlans = ({ state, commit }) => {
       commit(types.UPDATE_NUMBER_TO_ADD, data.create)
       commit(types.UPDATE_NUMBER_TO_CHANGE, data.update)
       commit(types.UPDATE_NUMBER_TO_DELETE, data.delete)
+      commit(types.UPDATE_LOADING, false)
     },
-    errorCallback: () => flash(__('An error occurred while loading terraform plans')),
+    errorCallback: () => {
+      commit(types.UPDATE_LOADING, false)
+      flash(__('An error occurred while loading terraform plans'))
+    },
   })
 
   if (!Visibility.hidden()) {
