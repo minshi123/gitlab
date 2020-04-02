@@ -84,19 +84,14 @@ describe('GeoReplicableFilterBar', () => {
       createComponent();
       actionSpies.fetchReplicableItems.mockClear(); // Will get called on init
       wrapper.vm.search = 'test search';
+      return wrapper.vm.$nextTick();
     });
 
     it(`should wait ${DEFAULT_SEARCH_DELAY}ms before calling setSearch`, () => {
-      expect(actionSpies.setSearch).not.toHaveBeenCalledWith('test search');
-
-      jest.runAllTimers(); // Debounce
       expect(actionSpies.setSearch).toHaveBeenCalledWith('test search');
     });
 
     it(`should wait ${DEFAULT_SEARCH_DELAY}ms before calling fetchReplicableItems`, () => {
-      expect(actionSpies.fetchReplicableItems).not.toHaveBeenCalled();
-
-      jest.runAllTimers(); // Debounce
       expect(actionSpies.fetchReplicableItems).toHaveBeenCalled();
     });
   });

@@ -88,25 +88,17 @@ describe('GeoNodeFormNamespaces', () => {
         wrapper.setData({
           namespaceSearch,
         });
+        return wrapper.vm.$nextTick();
       });
 
-      it('should wait 500ms before calling fetchSyncNamespaces', () => {
-        expect(actionSpies.fetchSyncNamespaces).not.toHaveBeenCalledWith(namespaceSearch);
-
-        jest.advanceTimersByTime(500); // Debounce
-        expect(actionSpies.fetchSyncNamespaces).toHaveBeenCalledWith(namespaceSearch);
-        expect(actionSpies.fetchSyncNamespaces).toHaveBeenCalledTimes(1);
-      });
-
-      it('should call fetchSyncNamespaces once with the latest search term', () => {
-        expect(actionSpies.fetchSyncNamespaces).not.toHaveBeenCalledWith(namespaceSearch);
+      it('should call fetchSyncNamespaces with the latest search term', () => {
         wrapper.setData({
           namespaceSearch: 'test search2',
         });
 
-        jest.advanceTimersByTime(500); // Debounce
-        expect(actionSpies.fetchSyncNamespaces).toHaveBeenCalledWith('test search2');
-        expect(actionSpies.fetchSyncNamespaces).toHaveBeenCalledTimes(1);
+        return wrapper.vm.$nextTick().then(() => {
+          expect(actionSpies.fetchSyncNamespaces).toHaveBeenCalledWith('test search2');
+        });
       });
     });
   });
