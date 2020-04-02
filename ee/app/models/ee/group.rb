@@ -261,7 +261,7 @@ module EE
         strong_memoize(:gold_billed_user_ids) do
           (billed_group_members.non_guests.distinct.pluck(:user_id) +
           billed_project_members.non_guests.distinct.pluck(:user_id) +
-          billed_shared_group_members.non_guests.distinct.pluck(:user_id) +
+          billed_shared_non_guests_group_members.non_guests.distinct.pluck(:user_id) +
           billed_invited_group_members.non_guests.distinct.pluck(:user_id)).to_set
         end
       else
@@ -340,6 +340,12 @@ module EE
       invited_or_shared_group_members(shared_groups)
     end
 
+    def billed_shared_non_guests_group_members
+      return ::GroupMember.none unless ::Feature.enabled?(:share_group_with_group)
+
+      invited_or_shared_group_members(invited_non_group_in_groups)
+    end
+
     def invited_or_shared_group_members(groups)
       ::GroupMember.active_without_invites_and_requests.where(source_id: ::Gitlab::ObjectHierarchy.new(groups).base_and_ancestors)
     end
@@ -347,6 +353,15 @@ module EE
     def invited_groups_in_projects
       ::Group.joins(:project_group_links)
         .where(project_group_links: { project_id: all_projects })
+    end
+
+    def invited_non_group_in_groups
+      invited_group_in_groups.merge(::GroupGroupLink.non_guests)
+    end
+
+    def invited_group_in_groups
+      ::Group.joins(:shared_groups)
+        .where(group_group_links: { shared_group_id: ::Group.groups_including_descendants_by([self]) })
     end
   end
 end

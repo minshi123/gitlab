@@ -902,8 +902,8 @@ describe Namespace do
             shared_group.add_guest(create(:user))
             shared_group.add_developer(create(:user, :blocked))
 
-            create(:group_group_link, { shared_with_group: group,
-              shared_group: shared_group })
+            create(:group_group_link, { shared_with_group: shared_group,
+              shared_group: group })
           end
 
           context 'when feature is not enabled' do
@@ -921,8 +921,43 @@ describe Namespace do
               stub_feature_flags(share_group_with_group: true)
             end
 
-            it 'includes active users from the shared group to the billed members count' do
+            it 'includes active users from the shared group to the billed members' do
               expect(group.billed_user_ids).to match_array([shared_group_developer.id, developer.id])
+            end
+
+            context 'when subgroup invited another group to collaborate' do
+              let(:another_shared_group) { create(:group) }
+              let(:another_shared_group_developer) { create(:user) }
+
+              before do
+                another_shared_group.add_developer(another_shared_group_developer)
+                another_shared_group.add_guest(create(:user))
+                another_shared_group.add_developer(create(:user, :blocked))
+              end
+
+              context 'when subgroup invites another group as non guest' do
+                before do
+                  subgroup = create(:group, parent: group)
+                  create(:group_group_link, { shared_with_group: another_shared_group,
+                    shared_group: subgroup })
+                end
+
+                it 'includes all the active and non guest users from the shared group' do
+                  expect(group.billed_user_ids).to match_array([shared_group_developer.id, developer.id, another_shared_group_developer.id])
+                end
+              end
+
+              context 'when subgroup invites another group as guest' do
+                before do
+                  subgroup = create(:group, parent: group)
+                  create(:group_group_link, :guest, { shared_with_group: another_shared_group,
+                    shared_group: subgroup })
+                end
+
+                it 'does not includes any user from the shared group from the subgroup' do
+                  expect(group.billed_user_ids).to match_array([shared_group_developer.id, developer.id])
+                end
+              end
             end
           end
         end
