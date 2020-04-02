@@ -4,6 +4,7 @@ import { escape } from 'lodash';
 import { GlIcon } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import ciIcon from '../../vue_shared/components/ci_icon.vue';
+import createStore from '../store';
 
 export default {
   name: 'MRWidgetTerraformPlan',
@@ -43,12 +44,19 @@ export default {
       return __('Terraform plan output the following resources:');
     },
   },
+  created() {
+    this.setEndpoint()
+  },
+  methods: {
+    ...mapActions(['setEndpoint'])
+  },
   props: {
     endpoint: {
       type: String,
       required: true,
     },
   },
+  store: createStore(),
 };
 </script>
 <template>
