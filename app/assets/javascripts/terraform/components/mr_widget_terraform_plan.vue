@@ -45,7 +45,7 @@ export default {
     },
   },
   created() {
-    this.setEndpoint()
+    this.setEndpoint(this.endpoint)
   },
   methods: {
     ...mapActions(['setEndpoint'])

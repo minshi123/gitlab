@@ -1,6 +1,4 @@
-// export const setEndpoint = ({ commit }, endpoint) => commit(types.SET_ENDPOINT, endpoint);
+import Visibility from 'visibilityjs';
+import * as types from './mutation_types';
 
-// export const setEndpoint = ({ state, commit }) => {
-export const setEndpoint = () => {
-  console.log('Endpoint!!')
-};
+export const setEndpoint = ({ commit }, endpoint) => commit(types.SET_ENDPOINT, endpoint);
