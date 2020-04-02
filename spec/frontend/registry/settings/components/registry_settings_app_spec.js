@@ -3,7 +3,7 @@ import { GlAlert } from '@gitlab/ui';
 import component from '~/registry/settings/components/registry_settings_app.vue';
 import SettingsForm from '~/registry/settings/components/settings_form.vue';
 import { createStore } from '~/registry/settings/store/';
-import { SET_IS_DISABLED } from '~/registry/settings/store/mutation_types';
+import { SET_SETTINGS } from '~/registry/settings/store/mutation_types';
 import { FETCH_SETTINGS_ERROR_MESSAGE } from '~/registry/shared/constants';
 
 describe('Registry Settings App', () => {
@@ -13,13 +13,15 @@ describe('Registry Settings App', () => {
   const findSettingsComponent = () => wrapper.find(SettingsForm);
   const findAlert = () => wrapper.find(GlAlert);
 
-  const mountComponent = ({ dispatchMock = 'mockResolvedValue', isDisabled = false } = {}) => {
+  const mountComponent = ({ dispatchMock = 'mockResolvedValue', emptySettings } = {}) => {
     store = createStore();
-    store.commit(SET_IS_DISABLED, isDisabled);
     const dispatchSpy = jest.spyOn(store, 'dispatch');
-    if (dispatchMock) {
-      dispatchSpy[dispatchMock]();
+    dispatchSpy[dispatchMock]();
+
+    if (emptySettings) {
+      store.commit(SET_SETTINGS, undefined);
     }
+
     wrapper = shallowMount(component, {
       mocks: {
         $toast: {
@@ -49,9 +51,9 @@ describe('Registry Settings App', () => {
     expect(findSettingsComponent().exists()).toBe(true);
   });
 
-  describe('isDisabled', () => {
+  describe('the form is disabled', () => {
     beforeEach(() => {
-      mountComponent({ isDisabled: true });
+      mountComponent({ emptySettings: true });
     });
 
     it('the form is hidden', () => {
@@ -60,7 +62,7 @@ describe('Registry Settings App', () => {
 
     it('shows an alert', () => {
       expect(findAlert().html()).toContain(
-        'Currently, the Container Registry tag expiration feature is not available',
+        'Currently, the Container Registry tag expiration feature is disabled',
       );
     });
   });
