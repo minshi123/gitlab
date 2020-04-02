@@ -49,7 +49,7 @@ project the vulnerability came from, and prepopulates it with useful information
 the vulnerability report. After the issue is created, GitLab redirects you to the
 issue page so you can edit, assign, or comment on the issue.
 
-### Solutions for vulnerabilities (auto-remediation)
+## Automatic remediation solutions for vulnerabilities
 
 Some vulnerabilities can be fixed by applying the solution that GitLab automatically generates.
 The following scanners are supported:
