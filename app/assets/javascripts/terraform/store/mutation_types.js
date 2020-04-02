@@ -1,1 +1,3 @@
 export const SET_ENDPOINT = 'SET_ENDPOINT';
+
+export const UPDATE_NUMBER_TO_ADD = 'UPDATE_NUMBER_TO_ADD';

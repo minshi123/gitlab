@@ -1,3 +1,4 @@
 export default () => ({
-  endpoint: null
+  endpoint: null,
+  numberToAdd: null,
 })
