@@ -9779,9 +9779,6 @@ msgstr "转到项目"
 msgid "IDE|Live Preview"
 msgstr "实时预览"
 
-msgid "IDE|Open in file view"
-msgstr "在文件视图中打开"
-
 msgid "IDE|Preview your web application using Web IDE client-side evaluation."
 msgstr "使用Web IDE客户端计算来预览您的web应用。"
 

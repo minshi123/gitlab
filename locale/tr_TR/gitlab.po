@@ -9851,9 +9851,6 @@ msgstr "Projeye git"
 msgid "IDE|Live Preview"
 msgstr "Canlı Önizleme"
 
-msgid "IDE|Open in file view"
-msgstr ""
-
 msgid "IDE|Preview your web application using Web IDE client-side evaluation."
 msgstr ""
 

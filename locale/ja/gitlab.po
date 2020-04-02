@@ -9779,9 +9779,6 @@ msgstr "プロジェクトに移動"
 msgid "IDE|Live Preview"
 msgstr "ライブプレビュー"
 
-msgid "IDE|Open in file view"
-msgstr "ファイルビューで開く"
-
 msgid "IDE|Preview your web application using Web IDE client-side evaluation."
 msgstr "Web IDE クライアントサイド評価を使用して、あなたの Web アプリケーションをプレビューします。"
 

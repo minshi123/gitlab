@@ -9995,9 +9995,6 @@ msgstr ""
 msgid "IDE|Live Preview"
 msgstr ""
 
-msgid "IDE|Open in file view"
-msgstr "Открыть как файл"
-
 msgid "IDE|Preview your web application using Web IDE client-side evaluation."
 msgstr ""
 

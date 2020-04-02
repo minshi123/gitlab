@@ -9851,9 +9851,6 @@ msgstr "Zum Projekt"
 msgid "IDE|Live Preview"
 msgstr "Live-Vorschau"
 
-msgid "IDE|Open in file view"
-msgstr "In Dateiansicht öffnen"
-
 msgid "IDE|Preview your web application using Web IDE client-side evaluation."
 msgstr "Zeig eine Vorschau deiner Webanwendung mit der clientseitigen Auswertung der Web-IDE."
 

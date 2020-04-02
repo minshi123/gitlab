@@ -9779,9 +9779,6 @@ msgstr "프로젝트로 이동"
 msgid "IDE|Live Preview"
 msgstr "실시간 미리보기"
 
-msgid "IDE|Open in file view"
-msgstr "파일 뷰어로 열기"
-
 msgid "IDE|Preview your web application using Web IDE client-side evaluation."
 msgstr "Web IDE client-side evaluation을 통해서 웹 어플리케이션을 미리 봅니다."
 
