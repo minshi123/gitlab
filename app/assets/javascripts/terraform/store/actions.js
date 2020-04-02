@@ -15,9 +15,12 @@ export const fetchPlans = ({ state, commit }) => {
     data: state.endpoint,
     method: 'fetchPlans',
     successCallback: ({ data }) => {
-      commit(types.UPDATE_NUMBER_TO_ADD, data.create)
-      commit(types.UPDATE_NUMBER_TO_CHANGE, data.update)
-      commit(types.UPDATE_NUMBER_TO_DELETE, data.delete)
+      if (data.plans) {
+        commit(types.UPDATE_NUMBER_TO_ADD, data.plans[0].create)
+        commit(types.UPDATE_NUMBER_TO_CHANGE, data.plans[0].update)
+        commit(types.UPDATE_NUMBER_TO_DELETE, data.plans[0].delete)
+      }
+
       commit(types.UPDATE_LOADING, false)
     },
     errorCallback: () => {
