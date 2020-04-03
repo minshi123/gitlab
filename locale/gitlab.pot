@@ -5907,6 +5907,9 @@ msgstr ""
 msgid "Create project label"
 msgstr ""
 
+msgid "Create requirement"
+msgstr ""
+
 msgid "Create wildcard: %{searchTerm}"
 msgstr ""
 
@@ -6817,6 +6820,9 @@ msgid "Descending"
 msgstr ""
 
 msgid "Describe the goal of the changes and what reviewers should be aware of."
+msgstr ""
+
+msgid "Describe the requirement here"
 msgstr ""
 
 msgid "Description"
@@ -17006,6 +17012,9 @@ msgstr ""
 msgid "Require users to prove ownership of custom domains"
 msgstr ""
 
+msgid "Requirement"
+msgstr ""
+
 msgid "Requirements"
 msgstr ""
 
@@ -18663,6 +18672,9 @@ msgid "Something went wrong while applying the suggestion. Please try again."
 msgstr ""
 
 msgid "Something went wrong while closing the %{issuable}. Please try again later"
+msgstr ""
+
+msgid "Something went wrong while creating a requirement."
 msgstr ""
 
 msgid "Something went wrong while deleting description changes. Please try again."
