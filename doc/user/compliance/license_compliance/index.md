@@ -245,8 +245,6 @@ To bypass TLS verification the following approach can be used until
 support for installing root certificates becomes available.
 
 ```yaml
-# .gitlab-ci.yml
-
 include:
   - template: License-Scanning.gitlab-ci.yml
 
@@ -258,9 +256,9 @@ license_scanning:
     - cp pip.conf ~/.config/pip/pip.conf
 ```
 
-```text
-# pip.conf
+[pip.conf](https://pip.pypa.io/en/stable/reference/pip/#cmdoption-trusted-host)
 
+```text
 [global]
 trusted-host = pypi.example.com
 ```
