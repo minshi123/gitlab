@@ -485,4 +485,23 @@ describe('URL utility', () => {
       );
     });
   });
+
+  describe('getBaseProtocol', () => {
+    const httpProtocol = 'http';
+    const httpsProtocol = 'https';
+
+    it('returns correct protocol for HTTP', () => {
+      setWindowLocation({
+        protocol: `${httpProtocol}:`,
+      });
+      expect(urlUtils.getBaseProtocol()).toBe(httpProtocol);
+    });
+
+    it('returns correct protocol for HTTPS', () => {
+      setWindowLocation({
+        protocol: `${httpsProtocol}:`,
+      });
+      expect(urlUtils.getBaseProtocol()).toBe(httpsProtocol);
+    });
+  });
 });

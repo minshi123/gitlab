@@ -172,6 +172,14 @@
   }
 }
 
+// Once the new design (https://gitlab.com/gitlab-org/gitlab-foss/-/issues/63499/designs)
+// for Snippets is introduced and Clone button is relocated, we won't
+// need this style.
+// Issue for the refactoring: https://gitlab.com/gitlab-org/gitlab/-/issues/213327
+.dropdown.gl-new-dropdown button.dropdown-toggle {
+  @include gl-display-inline-flex;
+}
+
 @mixin dropdown-item-hover {
   background-color: $gray-darker;
   color: $gl-text-color;

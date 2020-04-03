@@ -318,3 +318,7 @@ export const setUrlParams = (params, url = window.location.href, clearParams = f
 export function urlIsDifferent(url, compare = String(window.location)) {
   return url !== compare;
 }
+
+export function getBaseProtocol() {
+  return window.location.protocol.slice(0, -1);
+}
