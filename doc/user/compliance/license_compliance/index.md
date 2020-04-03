@@ -241,6 +241,30 @@ license_scanning:
     LM_PYTHON_VERSION: 2
 ```
 
+To bypass TLS verification the following approach can be used until
+support for installing root certificates becomes available.
+
+```yaml
+# .gitlab-ci.yml
+
+include:
+  - template: License-Scanning.gitlab-ci.yml
+
+license_scanning:
+  variables:
+    PIP_INDEX_URL: 'https://pypi.example.com/simple/'
+  before_script:
+    - mkdir -p ~/.config/pip/
+    - cp pip.conf ~/.config/pip/pip.conf
+```
+
+```text
+# pip.conf
+
+[global]
+trusted-host = pypi.example.com
+```
+
 ### Migration from `license_management` to `license_scanning`
 
 In GitLab 12.8 a new name for `license_management` job was introduced. This change was made to improve clarity around the purpose of the scan, which is to scan and collect the types of licenses present in a projects dependencies.
