@@ -49,6 +49,7 @@ exports[`Clone Dropdown Button rendering matches the snapshot 1`] = `
               data-clipboard-target="#clone-snippet-ssh-url"
               icon=""
               size="medium"
+              title="Copy URL"
               variant="default"
             >
               <gl-icon-stub
@@ -100,6 +101,7 @@ exports[`Clone Dropdown Button rendering matches the snapshot 1`] = `
               data-clipboard-target="#clone-snippet-http-url"
               icon=""
               size="medium"
+              title="Copy URL"
               variant="default"
             >
               <gl-icon-stub

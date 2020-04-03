@@ -281,6 +281,9 @@ msgstr ""
 msgid "%{days} days until tags are automatically removed"
 msgstr ""
 
+msgid "%{defaultLabel} with %{protocol}"
+msgstr ""
+
 msgid "%{description}- Sentry event: %{errorUrl}- First seen: %{firstSeen}- Last seen: %{lastSeen} %{countLabel}: %{count}%{userCountLabel}: %{userCount}"
 msgstr ""
 

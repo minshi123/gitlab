@@ -487,21 +487,14 @@ describe('URL utility', () => {
   });
 
   describe('getBaseProtocol', () => {
-    const httpProtocol = 'http';
-    const httpsProtocol = 'https';
+    const httpProtocol = 'http:';
+    const httpsProtocol = 'https:';
 
-    it('returns correct protocol for HTTP', () => {
+    it.each([[httpProtocol], [httpsProtocol]])('returns correct protocol for %i', protocol => {
       setWindowLocation({
-        protocol: `${httpProtocol}:`,
+        protocol,
       });
-      expect(urlUtils.getBaseProtocol()).toBe(httpProtocol);
-    });
-
-    it('returns correct protocol for HTTPS', () => {
-      setWindowLocation({
-        protocol: `${httpsProtocol}:`,
-      });
-      expect(urlUtils.getBaseProtocol()).toBe(httpsProtocol);
+      expect(urlUtils.getBaseProtocol()).toBe(protocol.slice(0, -1));
     });
   });
 });
