@@ -76,7 +76,9 @@ review-build-cng:
     - BUILD_TRIGGER_TOKEN=$REVIEW_APPS_BUILD_TRIGGER_TOKEN ./scripts/trigger-build cng
     # When the job is manual, review-deploy is also manual and we don't want people
     # to have to manually start the jobs in sequence, so we do it for them.
-    - '[ -z $CI_JOB_MANUAL ] || play_job "review-deploy"'
+
+    # FIXME: turn off play_job to avoid premature deployment into `review-apps-ee` using helm 3
+    # - '[ -z $CI_JOB_MANUAL ] || play_job "review-deploy"'
 
 .review-workflow-base:
   extends:
