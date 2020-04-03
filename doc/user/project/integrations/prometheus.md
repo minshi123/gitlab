@@ -76,7 +76,7 @@ The Prometheus server will [automatically detect and monitor](https://prometheus
 - `prometheus.io/port` to define the port of the metrics endpoint.
 - `prometheus.io/path` to define the path of the metrics endpoint. Defaults to `/metrics`.
 
-CPU and Memory consumption is monitored, but requires [naming conventions](prometheus_library/kubernetes.md#specifying-the-environment) in order to determine the environment. If you are using [Auto DevOps](../../../topics/autodevops/), this is handled automatically.
+CPU and Memory consumption is monitored, but requires [naming conventions](prometheus_library/kubernetes.md#specifying-the-environment) in order to determine the environment. If you are using [Auto DevOps](../../../topics/autodevops/index.md), this is handled automatically.
 
 The [NGINX Ingress](../clusters/index.md#installing-applications) that is deployed by GitLab to clusters, is automatically annotated for monitoring providing key response metrics: latency, throughput, and error rates.
 
@@ -896,7 +896,7 @@ If the "No data found" screen continues to appear, it could be due to:
   with the name of your environment.
 - You may need to re-add the GitLab predefined common metrics. This can be done by running the [import common metrics Rake task](../../../administration/raketasks/maintenance.md#import-common-metrics).
 
-[autodeploy]: ../../../topics/autodevops/index.md#auto-deploy
+[autodeploy]: ../../../topics/autodevops/stages.md#auto-deploy
 [kubernetes]: https://kubernetes.io
 [kube]: ./kubernetes.md
 [prometheus-k8s-sd]: https://prometheus.io/docs/operating/configuration/#<kubernetes_sd_config>
