@@ -11,7 +11,7 @@ describe('User onboarding utils', () => {
   beforeEach(() => {
     Cookies.remove(ONBOARDING_DISMISSED_COOKIE_NAME);
     onboardingUtils.resetOnboardingLocalStorage();
-    spyOn(AccessorUtilities, 'isLocalStorageAccessSafe').and.returnValue(true);
+    jest.spyOn(AccessorUtilities, 'isLocalStorageAccessSafe').mockReturnValue(true);
   });
 
   describe('isOnboardingDismissed', () => {
@@ -34,7 +34,7 @@ describe('User onboarding utils', () => {
     });
 
     it('removes onboarding related data from localStorage', () => {
-      spyOn(localStorage, 'removeItem');
+      jest.spyOn(window.localStorage.__proto__, 'removeItem');
 
       onboardingUtils.updateOnboardingDismissed(true);
 
@@ -74,7 +74,7 @@ describe('User onboarding utils', () => {
 
   describe('updateLocalStorage', () => {
     it('updates the onboarding state on the localStorage', () => {
-      spyOn(localStorage, 'setItem');
+      jest.spyOn(window.localStorage.__proto__, 'setItem');
 
       const modified = {
         tourKey: 2,
