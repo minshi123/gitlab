@@ -25,9 +25,7 @@ module Resolvers
     def resolve(**args)
       return Vulnerability.none unless vulnerable
 
-      filters = args.slice(:project_id, :report_type, :severity, :state)
-
-      vulnerabilities(filters).with_findings.ordered
+      vulnerabilities(args).with_findings.ordered
     end
 
     private
