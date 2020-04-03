@@ -8710,6 +8710,8 @@ CREATE INDEX index_ci_daily_report_results_on_last_pipeline_id ON public.ci_dail
 
 CREATE UNIQUE INDEX index_ci_group_variables_on_group_id_and_key ON public.ci_group_variables USING btree (group_id, key);
 
+CREATE INDEX index_ci_job_artifacts_file_store_is_null ON public.ci_job_artifacts USING btree (id) WHERE (file_store IS NULL);
+
 CREATE INDEX index_ci_job_artifacts_on_expire_at_and_job_id ON public.ci_job_artifacts USING btree (expire_at, job_id);
 
 CREATE INDEX index_ci_job_artifacts_on_file_store ON public.ci_job_artifacts USING btree (file_store);
@@ -12929,5 +12931,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200330121000
 20200330132913
 20200331220930
+20200403184110
 \.
 
