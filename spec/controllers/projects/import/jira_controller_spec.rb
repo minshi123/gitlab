@@ -86,7 +86,7 @@ describe Projects::Import::JiraController do
               end
             end
 
-            context 'when everything is ok' do
+            context 'when all params are present' do
               it 'creates import state' do
                 expect(project.import_state).to be_nil
 
