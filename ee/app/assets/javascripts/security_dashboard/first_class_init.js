@@ -3,6 +3,7 @@ import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import FirstClassProjectDashboard from './components/first_class_project_dashboard.vue';
+import FirstClassGroupDashboard from './components/first_class_group_dashboard.vue';
 
 const isRequired = message => {
   throw new Error(message);
@@ -30,6 +31,9 @@ export default (
   if (dashboardType === DASHBOARD_TYPES.PROJECT) {
     element = FirstClassProjectDashboard;
     props.projectFullPath = el.dataset.projectFullPath;
+  } else if (dashboardType === DASHBOARD_TYPES.GROUP) {
+    element = FirstClassGroupDashboard;
+    props.groupFullPath = el.dataset.groupFullPath;
   }
 
   return new Vue({
