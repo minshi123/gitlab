@@ -9332,6 +9332,8 @@ CREATE UNIQUE INDEX index_lfs_file_locks_on_project_id_and_path ON public.lfs_fi
 
 CREATE INDEX index_lfs_file_locks_on_user_id ON public.lfs_file_locks USING btree (user_id);
 
+CREATE INDEX index_lfs_objects_file_store_is_null ON public.lfs_objects USING btree (id) WHERE (file_store IS NULL);
+
 CREATE INDEX index_lfs_objects_on_file_store ON public.lfs_objects USING btree (file_store);
 
 CREATE UNIQUE INDEX index_lfs_objects_on_oid ON public.lfs_objects USING btree (oid);
@@ -12932,5 +12934,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200330132913
 20200331220930
 20200403184110
+20200403185127
 \.
 
