@@ -22,7 +22,6 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   mergeUrlParams,
   redirectTo,
-  refreshCurrentPage,
   updateHistory,
 } from '~/lib/utils/url_utility';
 import invalidUrl from '~/lib/utils/invalid_url';
@@ -273,6 +272,7 @@ export default {
     ...mapActions('monitoringDashboard', [
       'setTimeRange',
       'fetchData',
+      'fetchDashboardData',
       'setGettingStartedEmptyState',
       'setInitialState',
       'setPanelGroupMetrics',
@@ -360,7 +360,7 @@ export default {
     },
 
     refreshDashboard() {
-      refreshCurrentPage();
+      this.fetchDashboardData();
     },
 
     onTimeRangeZoom({ start, end }) {

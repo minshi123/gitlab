@@ -68,7 +68,7 @@ export const receiveMetricsDashboardSuccess = ({ commit, dispatch }, { response 
   commit(types.RECEIVE_METRICS_DASHBOARD_SUCCESS, dashboard);
   commit(types.SET_ENDPOINTS, convertObjectPropsToCamelCase(metrics_data));
 
-  return dispatch('fetchPrometheusMetrics');
+  return dispatch('fetchDashboardData');
 };
 
 export const fetchData = ({ dispatch }) => {
@@ -129,6 +129,10 @@ function fetchPrometheusResult(prometheusEndpoint, params) {
  * @param {metric} metric
  */
 export const fetchPrometheusMetric = ({ commit }, { metric, defaultQueryParams }) => {
+  if (metric.loading) {
+    return Promise.resolve([]);
+  }
+
   const queryParams = { ...defaultQueryParams };
   if (metric.step) {
     queryParams.step = metric.step;
@@ -153,7 +157,7 @@ export const fetchPrometheusMetric = ({ commit }, { metric, defaultQueryParams }
  * Loads timeseries data: Prometheus data points and deployment data from the project
  * @param {Object} Vuex store
  */
-export const fetchPrometheusMetrics = ({ state, dispatch, getters }) => {
+export const fetchDashboardData = ({ state, dispatch, getters }) => {
   dispatch('fetchDeploymentsData');
 
   if (!state.timeRange) {
