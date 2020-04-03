@@ -10100,6 +10100,8 @@ CREATE INDEX index_uploads_on_store ON public.uploads USING btree (store);
 
 CREATE INDEX index_uploads_on_uploader_and_path ON public.uploads USING btree (uploader, path);
 
+CREATE INDEX index_uploads_store_is_null ON public.uploads USING btree (id) WHERE (store IS NULL);
+
 CREATE INDEX index_user_agent_details_on_subject_id_and_subject_type ON public.user_agent_details USING btree (subject_id, subject_type);
 
 CREATE INDEX index_user_callouts_on_user_id ON public.user_callouts USING btree (user_id);
@@ -12935,5 +12937,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200331220930
 20200403184110
 20200403185127
+20200403185422
 \.
 
