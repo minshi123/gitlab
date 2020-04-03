@@ -25,7 +25,9 @@ class InstanceSecurityDashboard
   end
 
   def vulnerabilities
-    Vulnerability.where(project: projects)
+    return Vulnerability.none if projects.empty?
+
+    Vulnerability.for_projects(projects)
   end
 
   private
