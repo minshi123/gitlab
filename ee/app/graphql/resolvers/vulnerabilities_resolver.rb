@@ -38,7 +38,7 @@ module Resolvers
       # At this point we need the `id` of the project or group to query for vulnerabilities, so
       # make sure it's loaded and not `nil` before continuing.
 
-      strong_memoize(:vuln) do
+      strong_memoize(:vulnerable) do
         if instance_security_dashboard_request?
           InstanceSecurityDashboard.new(current_user)
         elsif object.respond_to?(:sync)
