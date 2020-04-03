@@ -121,6 +121,7 @@ License Compliance can be configured using environment variables.
 | `LM_JAVA_VERSION`      | no | Version of Java. If set to `11`, Maven and Gradle use Java 11 instead of Java 8. |
 | `LM_PYTHON_VERSION`    | no | Version of Python. If set to `3`, dependencies are installed using Python 3 instead of Python 2.7. |
 | `SETUP_CMD`            | no | Custom setup for the dependency installation. (experimental) |
+| `PIP_INDEX_URL` | no | Base URL of Python Package Index. (default: `https://pypi.org/simple/`) |
 
 ### Installing custom dependencies
 
