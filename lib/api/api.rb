@@ -151,6 +151,7 @@ module API
       mount ::API::Members
       mount ::API::MergeRequestDiffs
       mount ::API::MergeRequests
+      mount ::API::Monitoring::Annotations
       mount ::API::Namespaces
       mount ::API::Notes
       mount ::API::Discussions
