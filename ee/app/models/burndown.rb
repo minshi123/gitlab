@@ -1,20 +1,12 @@
 # frozen_string_literal: true
 
-class Burndown
+class Burndown < ChartDataBase
   include Gitlab::Utils::StrongMemoize
 
-  attr_reader :issues, :start_date, :end_date, :due_date, :accurate
+  attr_reader :accurate
 
   def initialize(issues, start_date, due_date)
-    @start_date = start_date
-    @due_date = due_date
-    @end_date = if due_date.blank? || due_date > Date.today
-                  Date.today
-                else
-                  due_date
-                end
-
-    @issues = filter_issues_created_before(@end_date, issues)
+    super(issues, start_date, due_date)
   end
 
   # Returns an array of milestone issue event data in the following format:
@@ -27,10 +19,6 @@ class Burndown
 
   def empty?
     issues.any? && legacy_data?
-  end
-
-  def valid?
-    start_date && due_date
   end
 
   # If all closed issues have no closed events, mark burndown chart as containing legacy data
@@ -46,10 +34,6 @@ class Burndown
   end
 
   private
-
-  def closed_issues
-    issues.select(&:closed?)
-  end
 
   def closed_issues_events_count
     strong_memoize(:closed_issues_events_count) do
@@ -118,11 +102,5 @@ class Burndown
 
   def build_burndown_event(created_at, issue_weight, action)
     { created_at: created_at, weight: issue_weight, action: action }
-  end
-
-  def filter_issues_created_before(date, issues)
-    return [] unless valid?
-
-    issues.where('issues.created_at <= ?', date.end_of_day).includes(:project)
   end
 end
