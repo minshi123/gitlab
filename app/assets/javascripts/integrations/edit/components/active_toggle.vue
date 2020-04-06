@@ -29,9 +29,11 @@ export default {
   },
   mounted() {
     // Initialize view
-    this.$nextTick(() => {
-      this.onToggle(this.activated);
-    });
+    if (this.showActive) {
+      this.$nextTick(() => {
+        this.onToggle(this.activated);
+      });
+    }
   },
   methods: {
     onToggle(e) {
