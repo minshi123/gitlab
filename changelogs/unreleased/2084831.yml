@@ -1,0 +1,5 @@
+---
+title: Ensure time series charts use eng notation
+merge_request: 28953
+author:
+type: changed
