@@ -7,6 +7,7 @@ import createState from '~/static_site_editor/store/state';
 
 import StaticSiteEditor from '~/static_site_editor/components/static_site_editor.vue';
 import EditArea from '~/static_site_editor/components/edit_area.vue';
+import Toolbar from '~/static_site_editor/components/toolbar.vue';
 
 const localVue = createLocalVue();
 
@@ -16,18 +17,22 @@ describe('StaticSiteEditor', () => {
   let wrapper;
   let store;
   let loadContentActionMock;
+  let setContentActionMock;
 
   const buildStore = ({ initialState, getters } = {}) => {
     loadContentActionMock = jest.fn();
+    setContentActionMock = jest.fn();
 
     store = new Vuex.Store({
       state: createState(initialState),
       getters: {
         isContentLoaded: () => false,
+        contentChanged: () => false,
         ...getters,
       },
       actions: {
         loadContent: loadContentActionMock,
+        setContent: setContentActionMock,
       },
     });
   };
@@ -40,6 +45,8 @@ describe('StaticSiteEditor', () => {
   };
 
   const findEditArea = () => wrapper.find(EditArea);
+  const findToolbar = () => wrapper.find(Toolbar);
+  const findSkeletonLoader = () => wrapper.find(GlSkeletonLoader);
 
   beforeEach(() => {
     buildStore();
@@ -53,6 +60,10 @@ describe('StaticSiteEditor', () => {
   describe('when content is not loaded', () => {
     it('does not render edit area', () => {
       expect(findEditArea().exists()).toBe(false);
+    });
+
+    it('does not render toolbar', () => {
+      expect(findToolbar().exists()).toBe(false);
     });
   });
 
@@ -68,8 +79,43 @@ describe('StaticSiteEditor', () => {
       expect(findEditArea().exists()).toBe(true);
     });
 
+    it('does not render skeleton loader', () => {
+      expect(findSkeletonLoader().exists()).toBe(false);
+    });
+
     it('passes page content to edit area', () => {
       expect(findEditArea().props('value')).toBe(content);
+    });
+
+    it('renders toolbar', () => {
+      expect(findToolbar().exists()).toBe(true);
+    });
+  });
+
+  describe('when content changes', () => {
+    it('sets toolbar as saveable', () => {
+      buildStore({
+        getters: {
+          isContentLoaded: () => true,
+          contentChanged: () => true,
+        },
+      });
+      buildWrapper();
+
+      expect(findToolbar().props('saveable')).toBe(true);
+    });
+  });
+
+  describe('when edit area emits input event', () => {
+    it('dispatches setContent action', () => {
+      const content = 'new content';
+
+      buildStore({ getters: { isContentLoaded: () => true } });
+      buildWrapper();
+
+      findEditArea().vm.$emit('input', content);
+
+      expect(setContentActionMock).toHaveBeenCalledWith(expect.anything(), content, undefined);
     });
   });
 
@@ -77,7 +123,7 @@ describe('StaticSiteEditor', () => {
     buildStore({ initialState: { isLoadingContent: true } });
     buildWrapper();
 
-    expect(wrapper.find(GlSkeletonLoader).exists()).toBe(true);
+    expect(findSkeletonLoader().exists()).toBe(true);
   });
 
   it('dispatches load content action', () => {
