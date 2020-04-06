@@ -1,0 +1,5 @@
+---
+title: Remove feature flag 'streming_serializer'
+merge_request: 28925
+author:
+type: performance
