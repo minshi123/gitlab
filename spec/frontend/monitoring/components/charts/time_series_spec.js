@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { setTestTimeout } from 'helpers/timeout';
+import { engineeringNotation } from '@gitlab/ui/src/utils/number_utils';
 import { GlLink } from '@gitlab/ui';
 import {
   GlAreaChart,
@@ -390,6 +391,29 @@ describe('Time series component', () => {
                 const { xAxis } = getChartOptions();
 
                 expect(xAxis).toMatchObject(mockCustomXAxisOption);
+              });
+            });
+
+            it('additional x axis data', () => {
+              let dataFormatter;
+              const mockCustomXAxisOption = {
+                axisLabel: {
+                  formatter: num => engineeringNotation(num, 2),
+                },
+              };
+
+              timeSeriesChart.setProps({
+                option: {
+                  yAxis: mockCustomXAxisOption,
+                },
+              });
+
+              return timeSeriesChart.vm.$nextTick().then(() => {
+                const { yAxis } = getChartOptions();
+                dataFormatter = yAxis[0].axisLabel.formatter;
+                expect(dataFormatter(0.88888, 2)).toBe('889m');
+                expect(dataFormatter(0.0000000001, 2)).toBe('100p');
+                expect(dataFormatter('3,301.02', 2)).toBe('3.3k');
               });
             });
           });
