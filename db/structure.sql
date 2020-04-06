@@ -7767,6 +7767,9 @@ ALTER TABLE ONLY public.feature_gates
 ALTER TABLE ONLY public.features
     ADD CONSTRAINT features_pkey PRIMARY KEY (id);
 
+ALTER TABLE public.lfs_objects
+    ADD CONSTRAINT file_store_not_null CHECK ((file_store IS NOT NULL)) NOT VALID;
+
 ALTER TABLE ONLY public.fork_network_members
     ADD CONSTRAINT fork_network_members_pkey PRIMARY KEY (id);
 
@@ -12938,5 +12941,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200403184110
 20200403185127
 20200403185422
+20200406165950
 \.
 
