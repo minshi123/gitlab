@@ -3,6 +3,10 @@
 module SCA
   class LicenseCompliance
     include ::Gitlab::Utils::StrongMemoize
+    SORT_DIRECTION = {
+      asc: -> (items) { items },
+      desc: -> (items) { items.reverse }
+    }.with_indifferent_access
 
     def initialize(project)
       @project = project
@@ -20,7 +24,7 @@ module SCA
         (detected_only && policy.dependencies.none?) ||
           (classifications.present? && !policy.classification.in?(classifications))
       end
-      sorted_by(matching_policies, sort)
+      sort_items(items: matching_policies, by: sort[:by], direction: sort[:direction])
     end
 
     def latest_build_for_default_branch
@@ -86,11 +90,10 @@ module SCA
       ::SCA::LicensePolicy.new(reported_license, software_license_policy)
     end
 
-    def sorted_by(policies, options)
-      sorted = policies.sort_by do |x|
-        x.public_send(options[:by] || :name)
-      end
-      (options[:direction] || :asc)&.to_sym == :asc ? sorted : sorted.reverse
+    def sort_items(items:, by: :name, direction: :asc, available_attributes: ::SCA::LicensePolicy::ATTRIBUTES)
+      attribute = available_attributes[by] || available_attributes[:name]
+      direction = SORT_DIRECTION[direction] || SORT_DIRECTION[:asc]
+      direction.call(items.sort_by { |item| attribute.call(item) })
     end
   end
 end

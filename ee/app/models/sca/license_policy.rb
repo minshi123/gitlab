@@ -2,6 +2,13 @@
 
 module SCA
   class LicensePolicy
+    ATTRIBUTES = {
+      classification: ->(policy) { policy.classification },
+      id: ->(policy) { policy.id },
+      name: ->(policy) { policy.name },
+      url: ->(policy) { policy.url }
+    }.with_indifferent_access
+
     attr_reader :id, :name, :url, :dependencies, :spdx_identifier, :classification
 
     def initialize(reported_license, software_policy)
