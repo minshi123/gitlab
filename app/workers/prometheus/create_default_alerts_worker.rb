@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Prometheus::CreateDefaultPrometheusAlertsWorker
+class Prometheus::CreateDefaultAlertsWorker
   include ApplicationWorker
 
   feature_category :incident_management

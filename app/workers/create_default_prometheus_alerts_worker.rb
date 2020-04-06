@@ -3,7 +3,7 @@
 class CreateDefaultPrometheusAlertsWorker
   include ApplicationWorker
 
-  feature_category :incident_management
+  feature_category :metrics
   urgency :high
   idempotent!
 
