@@ -255,6 +255,29 @@ RSpec.describe SCA::LicenseCompliance do
         )
       end
     end
+
+    context "when sorting policies" do
+      it 'sorts by `classification` in `ascending` order' do
+        results = subject.find_policies(sort: { by: :classification, direction: :asc })
+
+        expect(results.map(&:classification)).to eq(['allowed', 'denied', 'unclassified', 'unclassified'])
+      end
+
+      it 'sorts by `classification` in `descending` order' do
+        results = subject.find_policies(sort: { by: :classification, direction: :desc })
+
+        expect(results.map(&:classification)).to eq(['unclassified', 'unclassified', 'denied', 'allowed'])
+      end
+
+      it 'sorts by `name` in `ascending` order by default' do
+        results = subject.find_policies
+
+        expect(results.map(&:name)).to eq(['BSD 3-Clause "New" or "Revised" License', mit.name, other_license.name, 'unknown'])
+      end
+
+      it 'ignores unknown attributes'
+      it 'ignores unknown sort directions and defaults to ascending'
+    end
   end
 
   describe "#latest_build_for_default_branch" do

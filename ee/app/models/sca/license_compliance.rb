@@ -14,12 +14,16 @@ module SCA
       end
     end
 
-    def find_policies(detected_only: false, classification: [])
+    def find_policies(detected_only: false, classification: [], sort: { by: :name, direction: :asc })
       classifications = Array(classification || [])
-      policies.reject do |policy|
+      matching_policies = policies.reject do |policy|
         (detected_only && policy.dependencies.none?) ||
           (classifications.present? && !policy.classification.in?(classifications))
       end
+      sorted = matching_policies.sort_by do |x|
+        x.public_send(sort[:by])
+      end
+      sort[:direction]&.to_sym == :asc ? sorted : sorted.reverse
     end
 
     def latest_build_for_default_branch

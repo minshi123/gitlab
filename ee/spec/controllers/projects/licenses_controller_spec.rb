@@ -233,6 +233,20 @@ describe Projects::LicensesController do
                 })
               end
             end
+
+            context "when loading policies ordered by `classification` in `ascending` order" do
+              before do
+                get :index, params: {
+                  namespace_id: project.namespace,
+                  project_id: project,
+                  sort_by: :classification,
+                  sort_direction: :asc
+                }, format: :json
+              end
+
+              specify { expect(response).to have_gitlab_http_status(:ok) }
+              specify { expect(json_response['licenses'].map { |x| x['classification'] }).to eq(['allowed', 'denied', 'unclassified', 'unclassified']) }
+            end
           end
 
           context 'without existing report' do
