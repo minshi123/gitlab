@@ -150,7 +150,9 @@ class PrometheusService < MonitoringService
     manual_configuration_changed? && !manual_configuration?
   end
 
+  # rubocop: disable CodeReuse/ServiceClass
   def create_default_alerts
-    Gitlab::Prometheus::DefaultAlertSetup.new(project: project).execute
+    Prometheus::CreateDefaultAlertService.new(project: project).execute
   end
+  # rubocop: enable CodeReuse/ServiceClass
 end

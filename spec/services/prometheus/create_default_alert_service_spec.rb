@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Gitlab::Prometheus::DefaultAlertSetup do
+describe Prometheus::CreateDefaultAlertService do
   let_it_be(:project) { create(:project) }
   let_it_be(:instance) { described_class.new(project: project) }
   let(:expected_alerts) { described_class::DEFAULT_ALERTS }
