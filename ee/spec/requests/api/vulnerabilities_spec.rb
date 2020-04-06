@@ -197,6 +197,8 @@ describe API::Vulnerabilities do
 
           expect(response).to have_gitlab_http_status(:created)
           expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
+          expect(response.body).to include("dismissed_by_id")
+          expect(response.body).to include("dismissed_at")
 
           expect(vulnerability.reload).to(
             have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
@@ -284,6 +286,8 @@ describe API::Vulnerabilities do
 
           expect(response).to have_gitlab_http_status(:created)
           expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
+          expect(response.body).to include("resolved_by_id")
+          expect(response.body).to include("resolved_at")
 
           expect(vulnerability.reload).to(
             have_attributes(state: 'resolved', resolved_by: user, resolved_at: be_like_time(Time.current)))
@@ -341,6 +345,8 @@ describe API::Vulnerabilities do
 
           expect(response).to have_gitlab_http_status(:created)
           expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
+          expect(response.body).to include("confirmed_by_id")
+          expect(response.body).to include("confirmed_at")
 
           expect(vulnerability.reload).to(
             have_attributes(state: 'confirmed', confirmed_by: user, confirmed_at: be_like_time(Time.current)))
