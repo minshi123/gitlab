@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 describe ProjectImportState, type: :model do
-  subject { create(:import_state) }
+  let(:correlation_id) { 'cid' }
+
+  subject { create(:import_state, correlation_id_value: correlation_id) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
@@ -33,12 +35,21 @@ describe ProjectImportState, type: :model do
     end
 
     it 'records job and correlation IDs', :sidekiq_might_not_need_inline do
-      allow(Labkit::Correlation::CorrelationId).to receive(:current_or_new_id).and_return('abc')
+      allow(Labkit::Correlation::CorrelationId).to receive(:current_or_new_id).and_return(correlation_id)
 
       import_state.schedule
 
       expect(import_state.jid).to be_an_instance_of(String)
-      expect(import_state.correlation_id).to eq('abc')
+      expect(import_state.correlation_id).to eq(correlation_id)
+    end
+  end
+
+  describe '#relation_hard_failures' do
+    it 'returns hard relation failures related to this import' do
+      expected_failure = build(:import_failure, :hard_failure, correlation_id_value: correlation_id)
+      expect(ImportFailure).to receive(:hard_failures).with(correlation_id).and_return([expected_failure])
+
+      expect(subject.relation_hard_failures).to eq([expected_failure])
     end
   end
 

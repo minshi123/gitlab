@@ -6,4 +6,6 @@ class ImportFailure < ApplicationRecord
 
   validates :project, presence: true, unless: :group
   validates :group, presence: true, unless: :project
+
+  scope :hard_failures, ->(correlation_id) { where(correlation_id_value: correlation_id, retry_count: 0) }
 end

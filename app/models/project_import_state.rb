@@ -6,6 +6,7 @@ class ProjectImportState < ApplicationRecord
   self.table_name = "project_mirror_data"
 
   belongs_to :project, inverse_of: :import_state
+  has_many :import_failures, through: :project
 
   validates :project, presence: true
 
@@ -69,6 +70,12 @@ class ProjectImportState < ApplicationRecord
         # rubocop: enable CodeReuse/ServiceClass
       end
     end
+  end
+
+  # Returns any `import_failures` for relations that were unrecoverable errors or failed after
+  # several retries. An import can be successful even if some relations failed to import correctly.
+  def relation_hard_failures
+    import_failures.hard_failures(correlation_id)
   end
 
   def mark_as_failed(error_message)

@@ -3,12 +3,24 @@
 require 'spec_helper'
 
 describe ImportFailure do
-  describe "Associations" do
+  context 'Scopes' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:correlation_id) { 'ABC' }
+    let_it_be(:hard_failure) { create(:import_failure, :hard_failure, project: project, correlation_id_value: correlation_id) }
+    let_it_be(:soft_failure) { create(:import_failure, :soft_failure, project: project, correlation_id_value: correlation_id) }
+    let_it_be(:unrelated_failure) { create(:import_failure, project: project) }
+
+    it 'filters by hard failures' do
+      expect(ImportFailure.hard_failures(correlation_id)).to eq([hard_failure])
+    end
+  end
+
+  context 'Associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:group) }
   end
 
-  describe 'Validations' do
+  context 'Validations' do
     context 'has no group' do
       before do
         allow(subject).to receive(:group).and_return(nil)
