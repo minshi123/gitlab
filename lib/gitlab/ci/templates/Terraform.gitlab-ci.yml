@@ -42,6 +42,7 @@ plan:
     name: plan
     paths:
       - $PLAN
+      - tfplan.json
 
 # Separate apply job for manual launching Terraform as it can be destructive
 # action.
