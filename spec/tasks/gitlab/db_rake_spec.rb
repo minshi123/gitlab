@@ -107,7 +107,9 @@ describe 'gitlab:db namespace rake task' do
     it 'reenables the task after running' do
       allow(File).to receive(:read).with(structure_file).and_return(input)
       allow(File).to receive(:open).with(structure_file, any_args).and_yield(output)
-      expect_any_instance_of(Gitlab::Database::SchemaCleaner).to receive(:clean).with(output)
+      expect_next_instance_of(Gitlab::Database::SchemaCleaner) do |cleaner|
+        expect(cleaner).to receive(:clean).with(output)
+      end
 
       run_rake_task(clean_rake_task) do |rake_task|
         expect(rake_task).to receive(:reenable)
