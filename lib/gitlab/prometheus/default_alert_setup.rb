@@ -5,6 +5,27 @@ module Gitlab
     class DefaultAlertSetup
       attr_reader :project
 
+      def self.alert_ingress_16_http_error_rate
+        {
+          identifier: 'response_metrics_nginx_ingress_16_http_error_rate',
+          operator: 'gt',
+          threshold: 0.1
+        }
+      end
+
+      def self.alert_ingress_http_error_rate
+        {
+          identifier: 'response_metrics_nginx_ingress_http_error_rate',
+          operator: 'gt',
+          threshold: 0.1
+        }
+      end
+
+      DEFAULT_ALERTS = [
+        alert_ingress_http_error_rate,
+        alert_ingress_16_http_error_rate
+      ].freeze
+
       def initialize(project:)
         @project = project
       end
@@ -13,9 +34,16 @@ module Gitlab
         return unless project
         return unless environment
 
-        default_alerts.each do |alert_hash|
-          metric = metric_for_identifer(alert_hash[:identifier])
-          next if metric.nil?
+        metric_identifiers = DEFAULT_ALERTS.map { |alert| alert[:identifier] }
+        metrics_by_identifier = PrometheusMetricsFinder.new(identifier: metric_identifiers, common: true).execute.index_by(&:identifier)
+        alerts_by_identifier = Projects::Prometheus::AlertsFinder.new(project: project, metric: metrics_by_identifier.values).execute.index_by { |alert| alert.prometheus_metric.identifier }
+
+        DEFAULT_ALERTS.each do |alert_hash|
+          identifier = alert_hash[:identifier]
+          next if alerts_by_identifier.key?(identifier)
+
+          metric = metrics_by_identifier[identifier]
+          next unless metric
 
           create_alert(error: alert_hash, metric: metric)
         end
@@ -24,15 +52,10 @@ module Gitlab
       private
 
       def environment
-        project.environments.for_name('production').first ||
-          project.environments.first
-      end
+        environments = EnvironmentsFinder.new(project, name: 'production').find ||
+          project.environments
 
-      def metric_for_identifer(id)
-        metric = PrometheusMetric.common.for_identifier(id).first
-        return if PrometheusAlert.for_metric(metric).exists?
-
-        metric
+        environments.first
       end
 
       def create_alert(error:, metric:)
@@ -43,29 +66,8 @@ module Gitlab
           threshold: error[:threshold],
           operator: error[:operator]
         )
-      end
-
-      def default_alerts
-        [
-          alert_ingress_http_error_rate,
-          alert_ingress_16_http_error_rate
-        ]
-      end
-
-      def alert_ingress_16_http_error_rate
-        {
-          identifier: 'response_metrics_nginx_ingress_16_http_error_rate',
-          operator: 'gt',
-          threshold: 0.1
-        }
-      end
-
-      def alert_ingress_http_error_rate
-        {
-          identifier: 'response_metrics_nginx_ingress_http_error_rate',
-          operator: 'gt',
-          threshold: 0.1
-        }
+      rescue ActiveRecord::RecordNotUnique
+      # Ignore duplicate creations although it unlikely to happen
       end
     end
   end

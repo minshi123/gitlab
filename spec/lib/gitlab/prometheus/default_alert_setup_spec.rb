@@ -5,15 +5,14 @@ require 'spec_helper'
 describe Gitlab::Prometheus::DefaultAlertSetup do
   let_it_be(:project) { create(:project) }
   let_it_be(:instance) { described_class.new(project: project) }
-  let(:expected_alerts) { instance.send(:default_alerts) }
+  let(:expected_alerts) { described_class::DEFAULT_ALERTS }
 
   describe '#execute' do
-    subject(:execute_setup) { instance.execute }
+    subject(:execute) { instance.execute }
 
     shared_examples 'no alerts created' do
       it 'does not create alerts' do
-        execute_setup
-        expect(project.prometheus_alerts.count).to eq(0)
+        expect { execute }.not_to change { project.reload.prometheus_alerts.count }
       end
     end
 
@@ -42,8 +41,8 @@ describe Gitlab::Prometheus::DefaultAlertSetup do
         end
 
         it 'creates alerts' do
-          execute_setup
-          expect(project.prometheus_alerts.count).to eq(expected_alerts.size)
+          expect { execute }.to change { project.reload.prometheus_alerts.count }
+           .by(expected_alerts.size)
         end
       end
     end
@@ -52,15 +51,15 @@ describe Gitlab::Prometheus::DefaultAlertSetup do
   private
 
   def create_expected_metrics!
-    expected_alerts.each do |error|
-      create(:prometheus_metric, :common, identifier: error.fetch(:identifier))
+    expected_alerts.each do |alert_hash|
+      create(:prometheus_metric, :common, identifier: alert_hash.fetch(:identifier))
     end
   end
 
   def create_pre_existing_alerts!
-    expected_alerts.each do |error|
-      metric = PrometheusMetric.for_identifier(error[:identifier]).first
-      create(:prometheus_alert, prometheus_metric: metric)
+    expected_alerts.each do |alert_hash|
+      metric = PrometheusMetric.for_identifier(alert_hash[:identifier]).first!
+      create(:prometheus_alert, prometheus_metric: metric, project: project)
     end
   end
 end

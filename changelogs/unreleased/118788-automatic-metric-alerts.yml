@@ -1,5 +1,5 @@
 ---
-title: Add Prometheus alerts automatically after adding Prometheus
+title: Add Prometheus alerts automatically after Prometheus Service was activated
 merge_request: 28503
 author:
 type: added
