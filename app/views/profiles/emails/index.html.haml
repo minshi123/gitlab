@@ -1,5 +1,16 @@
+-# example.haml
+- name = 'James Brown'
+- unused_variable = 42
+
+%p Hello #{name.keys.first}!
+
+
 - page_title _('Emails')
 - @content_class = "limit-container-width" unless fluid_layout
+
+
+
+
 
 .row.prepend-top-default
   .col-lg-4.profile-settings-sidebar
@@ -18,7 +29,7 @@
         = f.submit _('Add email address'), class: 'btn btn-success', data: { qa_selector: 'add_email_address_button' }
     %hr
     %h4.prepend-top-0
-      = _('Linked emails (%{email_count})') % { email_count: @emails.count + 1 }
+      = _('Linked emails (%{email_count})') % { email_count: @emails.load.size + 1 }
     .account-well.append-bottom-default
       %ul
         %li
@@ -44,7 +55,7 @@
             %span.badge.badge-info= s_('Profiles|Public email')
           - if @primary_email === current_user.notification_email
             %span.badge.badge-info= s_('Profiles|Default notification email')
-      - @emails.each do |email|
+      - @emails.each do |email| # HERE is `each`
         %li{ data: { qa_selector: 'email_row_content' } }
           = render partial: 'shared/email_with_badge', locals: { email: email.email, verified: email.confirmed? }
           %span.float-right
