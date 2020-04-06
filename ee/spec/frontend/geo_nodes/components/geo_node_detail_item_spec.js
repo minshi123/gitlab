@@ -127,17 +127,5 @@ describe('GeoNodeDetailItemComponent', () => {
         expect(wrapper.find(GeoNodeSyncProgress).exists()).toBeFalsy();
       });
     });
-
-    describe('when featureDisabled is true', () => {
-      beforeEach(() => {
-        createComponent({
-          featureDisabled: true,
-        });
-      });
-
-      it('does not render', () => {
-        expect(wrapper.vm.$el.innerHTML).toBeUndefined();
-      });
-    });
   });
 });
