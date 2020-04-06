@@ -1,13 +1,26 @@
 <script>
 import getJiraProjects from '../queries/getJiraProjects.query.graphql';
+import JiraImportSetup from './jira_import_setup.vue';
 
 export default {
   name: 'JiraImportApp',
+  components: {
+    JiraImportSetup,
+  },
   props: {
+    isJiraConfigured: {
+      type: Boolean,
+      required: true,
+    },
     projectPath: {
       type: String,
       required: true,
     },
+  },
+  data() {
+    return {
+      isImportInProgress: false,
+    };
   },
   apollo: {
     getJiraImports: {
@@ -24,5 +37,8 @@ export default {
 </script>
 
 <template>
-  <div></div>
+  <div>
+    <jira-import-setup v-if="!isJiraConfigured" />
+    <div v-else></div>
+  </div>
 </template>

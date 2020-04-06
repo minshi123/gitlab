@@ -22,6 +22,7 @@ export default function mountJiraImportApp() {
       return createComponent(App, {
         props: {
           projectPath: el.dataset.projectPath,
+          isJiraConfigured: el.dataset.isJiraConfigured,
         },
       });
     },
