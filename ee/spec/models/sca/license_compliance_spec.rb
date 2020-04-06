@@ -275,8 +275,17 @@ RSpec.describe SCA::LicenseCompliance do
         expect(results.map(&:name)).to eq(['BSD 3-Clause "New" or "Revised" License', mit.name, other_license.name, 'unknown'])
       end
 
-      it 'ignores unknown attributes'
-      it 'ignores unknown sort directions and defaults to ascending'
+      it 'ignores unknown attributes' do
+        results = subject.find_policies(sort: { by: :invalid })
+
+        expect(results.map(&:name)).to eq(['BSD 3-Clause "New" or "Revised" License', mit.name, other_license.name, 'unknown'])
+      end
+
+      it 'ignores unknown sort directions and defaults to ascending' do
+        results = subject.find_policies(sort: { by: :name, direction: :invalid })
+
+        expect(results.map(&:name)).to eq(['BSD 3-Clause "New" or "Revised" License', mit.name, other_license.name, 'unknown'])
+      end
     end
   end
 

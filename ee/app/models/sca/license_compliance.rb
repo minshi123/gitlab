@@ -20,10 +20,7 @@ module SCA
         (detected_only && policy.dependencies.none?) ||
           (classifications.present? && !policy.classification.in?(classifications))
       end
-      sorted = matching_policies.sort_by do |x|
-        x.public_send(sort[:by])
-      end
-      sort[:direction]&.to_sym == :asc ? sorted : sorted.reverse
+      sorted_by(matching_policies, sort)
     end
 
     def latest_build_for_default_branch
@@ -87,6 +84,13 @@ module SCA
 
     def build_policy(reported_license, software_license_policy)
       ::SCA::LicensePolicy.new(reported_license, software_license_policy)
+    end
+
+    def sorted_by(policies, options)
+      sorted = policies.sort_by do |x|
+        x.public_send(options[:by] || :name)
+      end
+      (options[:direction] || :asc)&.to_sym == :asc ? sorted : sorted.reverse
     end
   end
 end
