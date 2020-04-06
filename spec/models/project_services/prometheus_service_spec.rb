@@ -119,9 +119,9 @@ describe PrometheusService, :use_clean_rails_memory_store_caching do
       subject(:create_service) { service.save! }
 
       it 'creates default alerts' do
-        expect_next_instance_of(Prometheus::CreateDefaultAlertService, project: project) do |setup|
-          expect(setup).to receive(:execute)
-        end
+        expect(CreateDefaultPrometheusAlertsWorker)
+          .to receive(:perform_async)
+          .with(project_id: project.id)
 
         create_service
       end

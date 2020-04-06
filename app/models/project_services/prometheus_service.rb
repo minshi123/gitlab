@@ -24,7 +24,7 @@ class PrometheusService < MonitoringService
 
   after_commit :track_events
 
-  after_create :create_default_alerts
+  after_create_commit :create_default_alerts
 
   def initialize_properties
     if properties.nil?
@@ -150,9 +150,7 @@ class PrometheusService < MonitoringService
     manual_configuration_changed? && !manual_configuration?
   end
 
-  # rubocop: disable CodeReuse/ServiceClass
   def create_default_alerts
-    Prometheus::CreateDefaultAlertService.new(project: project).execute
+    CreateDefaultPrometheusAlertsWorker.perform_async(project_id: project.id)
   end
-  # rubocop: enable CodeReuse/ServiceClass
 end
