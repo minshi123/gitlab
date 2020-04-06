@@ -8277,6 +8277,9 @@ ALTER TABLE ONLY public.spam_logs
 ALTER TABLE ONLY public.status_page_settings
     ADD CONSTRAINT status_page_settings_pkey PRIMARY KEY (project_id);
 
+ALTER TABLE public.uploads
+    ADD CONSTRAINT store_not_null CHECK ((store IS NOT NULL)) NOT VALID;
+
 ALTER TABLE ONLY public.subscriptions
     ADD CONSTRAINT subscriptions_pkey PRIMARY KEY (id);
 
@@ -12946,5 +12949,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200403185422
 20200406165950
 20200406171857
+20200406172135
 \.
 
