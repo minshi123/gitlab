@@ -57,7 +57,7 @@ export default {
     <div class="circle-icon-container" :class="iconStyle">
       <icon :size="16" :name="iconName" />
     </div>
-    <div class="ml-3" data-qa-selector="event_item_content">
+    <div class="ml-3 flex-grow-1" data-qa-selector="event_item_content">
       <div class="note-header-info pb-0">
         <a
           :href="author.path"
@@ -81,21 +81,19 @@ export default {
 
     <slot v-if="showRightSlot" name="right-content"></slot>
 
-    <div v-else class="d-flex flex-grow-1 align-self-start flex-row-reverse">
-      <div v-if="showActionButtons" class="action-buttons">
-        <gl-deprecated-button
-          v-for="button in actionButtons"
-          :key="button.title"
-          ref="button"
-          v-gl-tooltip
-          class="px-1"
-          variant="transparent"
-          :title="button.title"
-          @click="$emit(button.emit)"
-        >
-          <icon :name="button.iconName" class="link-highlight" />
-        </gl-deprecated-button>
-      </div>
+    <div v-else-if="showActionButtons" class="align-self-start">
+      <gl-deprecated-button
+        v-for="button in actionButtons"
+        :key="button.title"
+        ref="button"
+        v-gl-tooltip
+        class="px-1"
+        variant="transparent"
+        :title="button.title"
+        @click="$emit(button.emit)"
+      >
+        <icon :name="button.iconName" class="link-highlight" />
+      </gl-deprecated-button>
     </div>
   </div>
 </template>
