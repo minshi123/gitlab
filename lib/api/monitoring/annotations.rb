@@ -35,20 +35,20 @@ module API
         end
       end
 
-      resource :clusters do
-        post ':id/metrics_dashboard/annotations' do
-          cluster = ::Cluster.find(params[:id])
-          authorize! :create_metrics_dashboard_annotation
+      # resource :clusters do
+      #   post ':id/metrics_dashboard/annotations' do
+      #     cluster = ::Cluster.find(params[:id])
+      #     authorize! :create_metrics_dashboard_annotation
 
-          result = ::Metrics::Dashboard::Annotations::CreateService.new(current_user, params.merge(cluster: cluster)).execute
+      #     result = ::Metrics::Dashboard::Annotations::CreateService.new(current_user, params.merge(cluster: cluster)).execute
 
-          if result[:status] == :success
-            present result[:annotation], with: Entities::Monitoring::Annotation
-          else
-            result
-          end
-        end
-      end
+      #     if result[:status] == :success
+      #       present result[:annotation], with: Entities::Monitoring::Annotation
+      #     else
+      #       result
+      #     end
+      #   end
+      # end
     end
   end
 end
