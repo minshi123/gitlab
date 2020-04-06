@@ -48,6 +48,8 @@
   - 1
 - - create_commit_signature
   - 2
+- - create_default_prometheus_alerts
+  - 1
 - - create_evidence
   - 2
 - - create_github_webhook
@@ -199,6 +201,8 @@
 - - project_service
   - 1
 - - project_update_repository_storage
+  - 1
+- - prometheus_create_default_alerts
   - 1
 - - propagate_service_template
   - 1
