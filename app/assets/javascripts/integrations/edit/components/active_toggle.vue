@@ -30,12 +30,14 @@ export default {
   mounted() {
     // Initialize view
     this.$nextTick(() => {
-      this.$parent.$emit('toggle', this.activated);
+      this.onToggle(this.activated);
     });
   },
   methods: {
     onToggle(e) {
-      this.$parent.$emit('toggle', e);
+      if (this.$parent) {
+        this.$parent.$emit('toggle', e);
+      }
     },
   },
 };
