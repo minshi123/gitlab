@@ -394,7 +394,7 @@ describe('Time series component', () => {
               });
             });
 
-            it('additional x axis data', () => {
+            it('with engineeringNotation yAxis formatter, yAxis labels render correctly', () => {
               let dataFormatter;
               const mockCustomXAxisOption = {
                 axisLabel: {
