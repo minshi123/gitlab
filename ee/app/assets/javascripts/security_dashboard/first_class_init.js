@@ -4,6 +4,7 @@ import createDefaultClient from '~/lib/graphql';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import FirstClassProjectSecurityDashboard from './components/first_class_project_security_dashboard.vue';
 import FirstClassGroupSecurityDashboard from './components/first_class_group_security_dashboard.vue';
+import FirstClassInstanceSecurityDashboard from './components/first_class_instance_security_dashboard.vue';
 
 const isRequired = message => {
   throw new Error(message);
@@ -33,6 +34,8 @@ export default (
   } else if (dashboardType === DASHBOARD_TYPES.GROUP) {
     component = FirstClassGroupSecurityDashboard;
     props.groupFullPath = el.dataset.groupFullPath;
+  } else if (dashboardType === DASHBOARD_TYPES.INSTANCE) {
+    component = FirstClassInstanceSecurityDashboard;
   }
 
   return new Vue({
