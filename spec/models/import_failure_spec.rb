@@ -13,6 +13,15 @@ describe ImportFailure do
     it 'filters by hard failures' do
       expect(ImportFailure.hard_failures(correlation_id)).to eq([hard_failure])
     end
+
+    it 'orders hard failures by newest first' do
+      older_failure = hard_failure.dup
+      Timecop.freeze(1.day.before(hard_failure.created_at)) do
+        older_failure.save!
+
+        expect(ImportFailure.hard_failures(correlation_id)).to eq([hard_failure, older_failure])
+      end
+    end
   end
 
   context 'Associations' do
