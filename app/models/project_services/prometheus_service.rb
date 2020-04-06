@@ -151,6 +151,6 @@ class PrometheusService < MonitoringService
   end
 
   def create_default_alerts
-    CreateDefaultPrometheusAlertsWorker.perform_async(project_id: project.id)
+    Prometheus::CreateDefaultPrometheusAlertsWorker.perform_async(project_id: project.id)
   end
 end
