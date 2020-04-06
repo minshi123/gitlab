@@ -1,10 +1,11 @@
 <script>
 import IssueNote from 'ee/vue_shared/security_reports/components/issue_note.vue';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card.vue';
+import StateHistory from './state_history.vue';
 
 export default {
   name: 'VulnerabilityFooter',
-  components: { IssueNote, SolutionCard },
+  components: { IssueNote, SolutionCard, StateHistory },
   props: {
     feedback: {
       type: Object,
@@ -34,5 +35,6 @@ export default {
       <issue-note :feedback="feedback" :project="project" class="card-body" />
     </div>
     <hr />
+    <state-history />
   </div>
 </template>
