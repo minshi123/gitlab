@@ -122,6 +122,7 @@ License Compliance can be configured using environment variables.
 | `LM_PYTHON_VERSION`    | no | Version of Python. If set to `3`, dependencies are installed using Python 3 instead of Python 2.7. |
 | `SETUP_CMD`            | no | Custom setup for the dependency installation. (experimental) |
 | `PIP_INDEX_URL` | no | Base URL of Python Package Index. (default: `https://pypi.org/simple/`) |
+| `ADDITIONAL_CA_CERT_BUNDLE` | no | Bundle of CA certs that you want to trust. (Currently supported in Python projects.) |
 
 ### Installing custom dependencies
 
@@ -241,8 +242,10 @@ license_scanning:
     LM_PYTHON_VERSION: 2
 ```
 
-To bypass TLS verification the following approach can be used until
-support for installing root certificates becomes available.
+A custom root certificate can be supplied to complete TLS verification
+using the `ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variables).
+
+Or to bypass TLS verification the following approach can be used.
 
 ```yaml
 include:
