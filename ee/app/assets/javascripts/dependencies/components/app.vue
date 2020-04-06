@@ -3,6 +3,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   GlBadge,
   GlEmptyState,
+  GlIcon,
   GlLoadingIcon,
   GlTab,
   GlTabs,
@@ -10,7 +11,6 @@ import {
   GlDeprecatedButton,
 } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
-import Icon from '~/vue_shared/components/icon.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import DependenciesActions from './dependencies_actions.vue';
 import DependencyListIncompleteAlert from './dependency_list_incomplete_alert.vue';
@@ -24,6 +24,7 @@ export default {
   components: {
     DependenciesActions,
     GlBadge,
+    GlIcon,
     GlEmptyState,
     GlLoadingIcon,
     GlTab,
@@ -32,7 +33,6 @@ export default {
     GlDeprecatedButton,
     DependencyListIncompleteAlert,
     DependencyListJobFailedAlert,
-    Icon,
     PaginatedDependenciesTable,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -178,7 +178,7 @@ export default {
             :href="documentationPath"
             :aria-label="__('Dependencies help page link')"
           >
-            <icon name="question" />
+            <gl-icon name="question" />
           </gl-link>
         </h2>
         <p class="mb-0">

@@ -10,6 +10,7 @@ import DependencyVulnerabilities from './dependency_vulnerabilities.vue';
 const tdClass = (value, key, item) => {
   const classes = [];
 
+  // Don't draw a border between a row and its `row-details` slot
   // eslint-disable-next-line no-underscore-dangle
   if (item._showDetails) {
     classes.push('border-bottom-0');
@@ -72,14 +73,12 @@ export default {
     },
   },
   methods: {
+    // The GlTable component mutates the `_showDetails` property on items
+    // passed to it in order to track the visibilty of each row's `row-details`
+    // slot. So, create a deep clone of them here to avoid mutating the
+    // `dependencies` prop.
     transformDependenciesForUI(dependencies) {
-      return cloneDeep(dependencies).map(dependency => ({
-        ...dependency,
-
-        // GlTable uses this field to track whether to render the "details"
-        // row beneath this row.
-        _showDetails: false,
-      }));
+      return cloneDeep(dependencies);
     },
   },
   fields: [
@@ -102,6 +101,9 @@ export default {
     details-td-class="pt-0"
     stacked="md"
   >
+    <!-- toggleDetails and detailsShowing are scoped slot props provided by
+      GlTable; they mutate/read the item's _showDetails property, which GlTable
+      uses to show/hide the row-details slot -->
     <template #cell(component)="{ item, toggleDetails, detailsShowing }">
       <gl-new-button
         v-if="anyDependencyHasVulnerabilities"
