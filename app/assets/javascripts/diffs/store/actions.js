@@ -630,5 +630,21 @@ export const setSuggestPopoverDismissed = ({ commit, state }) =>
       createFlash(s__('MergeRequest|Error dismissing suggestion popover. Please try again.'));
     });
 
+export function changeCurrentCommit({ commit, state }, { commitId }) {
+  const commitRE = new RegExp(`${state.commit.id}`, 'g');
+
+  if (commitId) {
+    commit(types.SET_DIFF_FILES, []);
+    commit(types.SET_BASE_CONFIG, {
+      ...state,
+      endpoint: state.endpoint.replace(commitRE, commitId),
+      endpointBatch: state.endpointBatch.replace(commitRE, commitId),
+      endpointMetadata: state.endpointMetadata.replace(commitRE, commitId),
+    });
+
+    fetchDiffFilesMeta({ commit, state });
+  }
+}
+
 // prevent babel-plugin-rewire from generating an invalid default during karma tests
 export default () => {};
