@@ -63,11 +63,23 @@ describe('monitor helper', () => {
       };
 
       const [result] = monitorHelper.makeDataSeries(
-        [{ metric: { backend: 'HA Server',  frontend: 'BA Server',  app: 'prometheus',  instance: 'k8 cluster 1' }, values: series }],
+        [
+          {
+            metric: {
+              backend: 'HA Server',
+              frontend: 'BA Server',
+              app: 'prometheus',
+              instance: 'k8 cluster 1',
+            },
+            values: series,
+          },
+        ],
         config,
       );
 
-      expect(result.name).toEqual('backend: HA Server, frontend: BA Server, app: prometheus, instance: k8 cluster 1');
+      expect(result.name).toEqual(
+        'backend: HA Server, frontend: BA Server, app: prometheus, instance: k8 cluster 1',
+      );
     });
 
     it('supports space-padded template expressions', () => {
@@ -137,6 +149,5 @@ describe('monitor helper', () => {
       expect(firstSeries.name).toEqual('brpop');
       expect(secondSeries.name).toEqual('zrangebyscore');
     });
-
   });
 });

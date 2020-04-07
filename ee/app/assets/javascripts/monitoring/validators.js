@@ -37,5 +37,8 @@ export function alertsValidator(value) {
 //   }
 // ]
 export function queriesValidator(value) {
-  return value.every(query => query.metricId && typeof query.metricId === 'string' && typeof query.label === 'string');
+  return value.every(
+    query =>
+      query.metricId && typeof query.metricId === 'string' && typeof query.label === 'string',
+  );
 }

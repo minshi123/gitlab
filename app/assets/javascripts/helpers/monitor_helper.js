@@ -3,13 +3,13 @@
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
  * @returns {String || Boolean} The formatted query label or a false flag
  */
- function singleAttributeLabel(queryLabel, metricAttributes) {
-  if(!queryLabel) return false;
+function singleAttributeLabel(queryLabel, metricAttributes) {
+  if (!queryLabel) return false;
   const relevantAttribute = queryLabel.toLowerCase().replace(' ', '_');
   const value = metricAttributes[relevantAttribute];
-  if(!value) return false;
+  if (!value) return false;
   return `${queryLabel}: ${value}`;
-};
+}
 
 /**
  * @param {String} queryLabel - Default query label for chart
@@ -17,7 +17,7 @@
  * @returns {String || Boolean} The formatted query label or a false flag
  */
 function templatedLabel(queryLabel, metricAttributes) {
-  if(!queryLabel) return false;
+  if (!queryLabel) return false;
   let label = queryLabel;
   Object.keys(metricAttributes).forEach(templateVar => {
     const value = metricAttributes[templateVar];
@@ -27,7 +27,7 @@ function templatedLabel(queryLabel, metricAttributes) {
   });
 
   return label;
-};
+}
 
 /**
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
@@ -42,19 +42,18 @@ function multiMetricLabel(metricAttributes) {
   });
 
   return attributePairs.join(', ');
-};
+}
 
 /**
  * @param {String} queryLabel - Default query label for chart
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
  * @returns {String} The formatted query label
  */
-const getSeriesLabel = (queryLabel, metricAttributes) => (
+const getSeriesLabel = (queryLabel, metricAttributes) =>
   singleAttributeLabel(queryLabel, metricAttributes) ||
   templatedLabel(queryLabel, metricAttributes) ||
   multiMetricLabel(metricAttributes) ||
-  `${queryLabel}`
-);
+  `${queryLabel}`;
 
 /**
  * @param {Array} queryResults - Array of Result objects
