@@ -104,6 +104,22 @@
                     %kbd
                       %i.fa.fa-arrow-up
                   %td= _('Edit your most recent comment in a thread (from an empty textarea)')
+              %tbody
+                %tr
+                  %th
+                  %th= _('Epics (Ultimate / Gold license only)')
+                %tr
+                  %td.shortcut
+                    %kbd r
+                  %td= _('Comment/Reply (quoting selected text)')
+                %tr
+                  %td.shortcut
+                    %kbd e
+                  %td= _('Edit epic description')
+                %tr
+                  %td.shortcut
+                    %kbd l
+                  %td= _('Change label')
           .col-lg-4
             %table.shortcut-mappings.text-2
               %tbody
@@ -229,7 +245,7 @@
               %tbody
                 %tr
                   %th
-                  %th= _('Issues / Merge Requests')
+                  %th= _('Issues & Merge Requests')
                 %tr
                   %td.shortcut
                     %kbd a
@@ -250,49 +266,37 @@
                   %td.shortcut
                     %kbd l
                   %td= _('Change label')
+              %tbody
+                %tr
+                  %th
+                  %th= _('Merge Requests')
                 %tr
                   %td.shortcut
                     %kbd ]
                     \/
                     %kbd j
-                  %td= _('Next file in diff (MRs only)')
+                  %td= _('Next file in diff')
                 %tr
                   %td.shortcut
                     %kbd [
                     \/
                     %kbd k
-                  %td= _('Previous file in diff (MRs only)')
+                  %td= _('Previous file in diff')
                 %tr
                   %td.shortcut
                     - if browser.platform.mac?
                       %kbd &#8984; p
                     - else
                       %kbd ctrl p
-                  %td= _('Go to file (MRs only)')
+                  %td= _('Go to file')
                 %tr
                   %td.shortcut
                     %kbd n
-                  %td= _('Next unresolved discussion (MRs only)')
+                  %td= _('Next unresolved discussion')
                 %tr
                   %td.shortcut
                     %kbd p
-                  %td= _('Previous unresolved discussion (MRs only)')
-              %tbody
-                %tr
-                  %th
-                  %th= _('Epics (Ultimate / Gold license only)')
-                %tr
-                  %td.shortcut
-                    %kbd r
-                  %td= _('Comment/Reply (quoting selected text)')
-                %tr
-                  %td.shortcut
-                    %kbd e
-                  %td= _('Edit epic description')
-                %tr
-                  %td.shortcut
-                    %kbd l
-                  %td= _('Change label')
+                  %td= _('Previous unresolved discussion')
               %tbody
                 %tr
                   %th

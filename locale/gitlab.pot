@@ -9833,9 +9833,6 @@ msgstr ""
 msgid "Go to file"
 msgstr ""
 
-msgid "Go to file (MRs only)"
-msgstr ""
-
 msgid "Go to file permalink (while viewing a file)"
 msgstr ""
 
@@ -11237,7 +11234,7 @@ msgstr ""
 msgid "Issues"
 msgstr ""
 
-msgid "Issues / Merge Requests"
+msgid "Issues & Merge Requests"
 msgstr ""
 
 msgid "Issues Analytics"
@@ -13277,10 +13274,10 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-msgid "Next file in diff (MRs only)"
+msgid "Next file in diff"
 msgstr ""
 
-msgid "Next unresolved discussion (MRs only)"
+msgid "Next unresolved discussion"
 msgstr ""
 
 msgid "Nickname"
@@ -14926,10 +14923,10 @@ msgstr ""
 msgid "Previous Artifacts"
 msgstr ""
 
-msgid "Previous file in diff (MRs only)"
+msgid "Previous file in diff"
 msgstr ""
 
-msgid "Previous unresolved discussion (MRs only)"
+msgid "Previous unresolved discussion"
 msgstr ""
 
 msgid "Primary"
