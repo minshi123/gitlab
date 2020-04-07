@@ -224,7 +224,7 @@ panel_groups:
     weight: 1
     metrics:
     - id: response_metrics_nginx_http_error_percentage
-      query_range: 'sum(rate(nginx_server_requests{code=~"5.*", %{environment_filter}}[2m])) / sum(rate(nginx_server_requests{%{environment_filter}}[2m])) * 100'
+      query_range: 'sum(rate(nginx_server_requests{code=~"5.*", host="*", %{environment_filter}}[2m])) / sum(rate(nginx_server_requests{code="total", host="*", %{environment_filter}}[2m])) * 100'
       label: 5xx Errors (%)
       unit: "%"
 
