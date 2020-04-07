@@ -13,19 +13,11 @@ export default {
     GlDeprecatedButton,
     GlFormSelect,
   },
-  props: {
-    selectedVulnerabilities: {
-      type: Array,
-      required: true,
-    },
-  },
   data: () => ({
     dismissalReason: null,
   }),
   computed: {
-    selectedVulnerabilitiesCount() {
-      return this.selectedVulnerabilities.length;
-    },
+    ...mapGetters('vulnerabilities', ['selectedVulnerabilitiesCount']),
     canDismissVulnerability() {
       return this.dismissalReason && this.selectedVulnerabilitiesCount > 0;
     },
@@ -38,8 +30,8 @@ export default {
     },
   },
   methods: {
-    handleDismiss(e) {
-      console.log(__('handle event: '), e);
+    ...mapActions('vulnerabilities', ['dismissSelectedVulnerabilities']),
+    handleDismiss() {
       if (!this.canDismissVulnerability) {
         return;
       }
@@ -49,26 +41,6 @@ export default {
       } else {
         this.dismissSelectedVulnerabilities({ comment: this.dismissalReason });
       }
-    },
-    dismissSelectedVulnerabilities(e) {
-      // TODO 1. Make dismissing work
-      // TODO 2. Follow what dismissSelectedVulnerabilities does
-      // TODO 3. Fetch again
-      // TODO 4. If using axios, modify apollo query to return report type and need to figure out how to get the project_fingerprint (not in the GraphQL schema for vulnerability)
-      console.log(__('dismissed e: '), e);
-      // const promises = dismissableVulnerabilties.map(vulnerability =>
-      //   axios.post(vulnerability.create_vulnerability_feedback_dismissal_path, {
-      //     vulnerability_feedback: {
-      //       category: vulnerability.report_type,
-      //       comment,
-      //       feedback_type: 'dismissal',
-      //       project_fingerprint: vulnerability.project_fingerprint,
-      //       vulnerability_data: {
-      //         id: vulnerability.id,
-      //       },
-      //     },
-      //   }),
-      // );
     },
   },
   dismissalReasons: [
@@ -89,9 +61,9 @@ export default {
         class="mx-3 w-auto"
         :options="$options.dismissalReasons"
       />
-      <gl-deprecated-button type="submit" variant="close" :disabled="!canDismissVulnerability">
-        {{ __('Dismiss Selected') }}
-      </gl-deprecated-button>
+      <gl-deprecated-button type="submit" variant="close" :disabled="!canDismissVulnerability">{{
+        __('Dismiss Selected')
+      }}</gl-deprecated-button>
     </form>
   </div>
 </template>

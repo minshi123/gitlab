@@ -1,6 +1,7 @@
 <script>
 import { s__ } from '~/locale';
 import { GlAlert, GlDeprecatedButton, GlEmptyState, GlIntersectionObserver } from '@gitlab/ui';
+import SelectionSummary from 'ee/security_dashboard/components/selection_summary.vue';
 import VulnerabilityList from 'ee/vulnerabilities/components/vulnerability_list.vue';
 import vulnerabilitiesQuery from '../graphql/project_vulnerabilities.graphql';
 import { VULNERABILITIES_PER_PAGE } from '../constants';
@@ -12,6 +13,7 @@ export default {
     GlDeprecatedButton,
     GlEmptyState,
     GlIntersectionObserver,
+    SelectionSummary,
     VulnerabilityList,
   },
   props: {
@@ -38,6 +40,8 @@ export default {
       pageInfo: {},
       vulnerabilities: [],
       errorLoadingVulnerabilities: false,
+      // TODO: Make this an object to be able to add/subtract from easier
+      selectedVulnerabilities: [],
     };
   },
   apollo: {
@@ -83,6 +87,19 @@ export default {
         });
       }
     },
+    toggleAllVulnerabilities() {
+      console.log('all-vulnerability: ', this.vulnerabilities);
+      if (this.selectedVulnerabilities.length) {
+        this.selectedVulnerabilities = [];
+      } else {
+        this.selectedVulnerabilities = [...this.vulnerabilities];
+      }
+    },
+    toggleVulnerability(vulnerability) {
+      // TODO fix this
+      console.log('vulnerability: ', vulnerability);
+      this.selectedVulnerabilities.push(vulnerability);
+    },
   },
   emptyStateDescription: s__(
     `While it's rare to have no vulnerabilities for your project, it can happen. In any event, we ask that you double check your settings to make sure you've set up your dashboard correctly.`,
@@ -92,6 +109,10 @@ export default {
 
 <template>
   <div>
+    <selection-summary
+      v-if="selectedVulnerabilities.length"
+      :selected-vulnerabilities="selectedVulnerabilities"
+    />
     <gl-alert v-if="errorLoadingVulnerabilities" :dismissible="false" variant="danger">
       {{
         s__(
@@ -105,6 +126,8 @@ export default {
       :dashboard-documentation="dashboardDocumentation"
       :empty-state-svg-path="emptyStateSvgPath"
       :vulnerabilities="vulnerabilities"
+      :toggle-vulnerability="toggleVulnerability"
+      :toggle-all-vulnerabilities="toggleAllVulnerabilities"
     >
       <template #emptyState>
         <gl-empty-state
