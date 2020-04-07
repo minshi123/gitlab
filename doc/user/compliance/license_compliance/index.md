@@ -242,10 +242,16 @@ license_scanning:
     LM_PYTHON_VERSION: 2
 ```
 
+### Custom root certificates for Python
+
 A custom root certificate can be supplied to complete TLS verification
 using the `ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variables).
 
-Or to bypass TLS verification the following approach can be used.
+To bypass TLS verification a custom [pip.conf](https://pip.pypa.io/en/stable/user_guide/#config-file)
+file can be used to configure trusted hosts.
+
+The following `gitlab-ci.yml` file uses a [before_script](../../../ci/yaml/#before_script-and-after_script) to
+inject a custom [pip.conf](https://pip.pypa.io/en/stable/user_guide/#config-file).
 
 ```yaml
 include:
@@ -259,7 +265,8 @@ license_scanning:
     - cp pip.conf ~/.config/pip/pip.conf
 ```
 
-[pip.conf](https://pip.pypa.io/en/stable/reference/pip/#cmdoption-trusted-host)
+The [pip.conf](https://pip.pypa.io/en/stable/reference/pip/)
+allows specifing a list of [trusted hosts](https://pip.pypa.io/en/stable/reference/pip/#cmdoption-trusted-host).
 
 ```text
 [global]
