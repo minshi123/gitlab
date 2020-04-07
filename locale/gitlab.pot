@@ -8237,6 +8237,9 @@ msgstr ""
 msgid "Errors"
 msgstr ""
 
+msgid "Errors:"
+msgstr ""
+
 msgid "Estimated"
 msgstr ""
 

@@ -31,8 +31,21 @@ export const receiveSaveGeoNodeSuccess = ({ commit }) => {
   commit(types.RECEIVE_SAVE_GEO_NODE_COMPLETE);
   visitUrl('/admin/geo/nodes');
 };
-export const receiveSaveGeoNodeError = ({ commit }) => {
-  createFlash(__(`There was an error saving this Geo Node`));
+export const receiveSaveGeoNodeError = ({ commit }, message) => {
+  let alert = '';
+  try {
+    alert = __('Errors:');
+    Object.keys(message).forEach(key => {
+      message[key].forEach(m => {
+        alert += __(` ${key} ${m},`);
+      });
+    });
+    // Remove last comma
+    alert = alert.substring(0, alert.length - 1);
+  } catch {
+    alert = __(`There was an error saving this Geo Node`);
+  }
+  createFlash(alert);
   commit(types.RECEIVE_SAVE_GEO_NODE_COMPLETE);
 };
 
@@ -43,7 +56,8 @@ export const saveGeoNode = ({ dispatch }, node) => {
 
   ApiEE[saveFunc](sanitizedNode)
     .then(() => dispatch('receiveSaveGeoNodeSuccess'))
-    .catch(() => {
-      dispatch('receiveSaveGeoNodeError');
+    .catch(({ response }) => {
+      const { data } = response;
+      dispatch('receiveSaveGeoNodeError', data.message);
     });
 };

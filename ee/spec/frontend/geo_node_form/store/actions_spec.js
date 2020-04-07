@@ -6,7 +6,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import * as actions from 'ee/geo_node_form/store/actions';
 import * as types from 'ee/geo_node_form/store/mutation_types';
 import createState from 'ee/geo_node_form/store/state';
-import { MOCK_SYNC_NAMESPACES, MOCK_NODE } from '../mock_data';
+import { MOCK_SYNC_NAMESPACES, MOCK_NODE, MOCK_ERROR_MESSAGE } from '../mock_data';
 
 jest.mock('~/flash');
 jest.mock('~/lib/utils/url_utility', () => ({
@@ -53,13 +53,13 @@ describe('GeoNodeForm Store Actions', () => {
   });
 
   describe.each`
-    action                         | axiosMock                                                           | data                          | type         | actionCalls
-    ${actions.fetchSyncNamespaces} | ${{ method: 'onGet', code: 200, res: MOCK_SYNC_NAMESPACES }}        | ${null}                       | ${'success'} | ${[{ type: 'requestSyncNamespaces' }, { type: 'receiveSyncNamespacesSuccess', payload: MOCK_SYNC_NAMESPACES }]}
-    ${actions.fetchSyncNamespaces} | ${{ method: 'onGet', code: 500, res: null }}                        | ${null}                       | ${'error'}   | ${[{ type: 'requestSyncNamespaces' }, { type: 'receiveSyncNamespacesError' }]}
-    ${actions.saveGeoNode}         | ${{ method: 'onPost', code: 200, res: { ...MOCK_NODE, id: null } }} | ${{ ...MOCK_NODE, id: null }} | ${'success'} | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeSuccess' }]}
-    ${actions.saveGeoNode}         | ${{ method: 'onPost', code: 500, res: null }}                       | ${{ ...MOCK_NODE, id: null }} | ${'error'}   | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeError' }]}
-    ${actions.saveGeoNode}         | ${{ method: 'onPut', code: 200, res: MOCK_NODE }}                   | ${MOCK_NODE}                  | ${'success'} | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeSuccess' }]}
-    ${actions.saveGeoNode}         | ${{ method: 'onPut', code: 500, res: null }}                        | ${MOCK_NODE}                  | ${'error'}   | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeError' }]}
+    action                         | axiosMock                                                                | data                          | type         | actionCalls
+    ${actions.fetchSyncNamespaces} | ${{ method: 'onGet', code: 200, res: MOCK_SYNC_NAMESPACES }}             | ${null}                       | ${'success'} | ${[{ type: 'requestSyncNamespaces' }, { type: 'receiveSyncNamespacesSuccess', payload: MOCK_SYNC_NAMESPACES }]}
+    ${actions.fetchSyncNamespaces} | ${{ method: 'onGet', code: 500, res: null }}                             | ${null}                       | ${'error'}   | ${[{ type: 'requestSyncNamespaces' }, { type: 'receiveSyncNamespacesError' }]}
+    ${actions.saveGeoNode}         | ${{ method: 'onPost', code: 200, res: { ...MOCK_NODE, id: null } }}      | ${{ ...MOCK_NODE, id: null }} | ${'success'} | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeSuccess' }]}
+    ${actions.saveGeoNode}         | ${{ method: 'onPost', code: 500, res: { message: MOCK_ERROR_MESSAGE } }} | ${{ ...MOCK_NODE, id: null }} | ${'error'}   | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeError', payload: MOCK_ERROR_MESSAGE }]}
+    ${actions.saveGeoNode}         | ${{ method: 'onPut', code: 200, res: MOCK_NODE }}                        | ${MOCK_NODE}                  | ${'success'} | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeSuccess' }]}
+    ${actions.saveGeoNode}         | ${{ method: 'onPut', code: 500, res: { message: MOCK_ERROR_MESSAGE } }}  | ${MOCK_NODE}                  | ${'error'}   | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeError', payload: MOCK_ERROR_MESSAGE }]}
   `(`axios calls`, ({ action, axiosMock, data, type, actionCalls }) => {
     describe(action.name, () => {
       describe(`on ${type}`, () => {
@@ -70,6 +70,38 @@ describe('GeoNodeForm Store Actions', () => {
           testAction(action, data, state, [], actionCalls, done);
         });
       });
+    });
+  });
+
+  describe('receiveSaveGeoNodeError', () => {
+    it('when message passed it builds the error message correctly', () => {
+      testAction(
+        actions.receiveSaveGeoNodeError,
+        MOCK_ERROR_MESSAGE,
+        state,
+        [{ type: types.RECEIVE_SAVE_GEO_NODE_COMPLETE }],
+        [],
+        () => {
+          const error = "Errors: name can't be blank, url can't be blank, url must be a valid URL";
+          expect(flash).toHaveBeenCalledWith(error);
+          flash.mockClear();
+        },
+      );
+    });
+
+    it('when no message passed it defaults the error message correctly', () => {
+      testAction(
+        actions.receiveSaveGeoNodeError,
+        null,
+        state,
+        [{ type: types.RECEIVE_SAVE_GEO_NODE_COMPLETE }],
+        [],
+        () => {
+          const error = 'There was an error saving this Geo Node';
+          expect(flash).toHaveBeenCalledWith(error);
+          flash.mockClear();
+        },
+      );
     });
   });
 });
