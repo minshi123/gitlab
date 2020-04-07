@@ -471,7 +471,7 @@ service:
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-ci-yml/-/merge_requests/160) in GitLab 10.8.
 
 TIP: **Tip:**
-You can also set this inside your [project's settings](#deployment-strategy).
+You can also set this inside your [project's settings](index.md#deployment-strategy).
 
 The normal behavior of Auto DevOps is to use Continuous Deployment, pushing
 automatically to the `production` environment every time a new pipeline is run
@@ -503,7 +503,7 @@ If `CANARY_ENABLED` is defined in your project (e.g., set `CANARY_ENABLED` to
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/5415) in GitLab 10.8.
 
 TIP: **Tip:**
-You can also set this inside your [project's settings](#deployment-strategy).
+You can also set this inside your [project's settings](index.md#deployment-strategy).
 
 When you have a new version of your app to deploy in production, you may want
 to use an incremental rollout to replace just a few pods with the latest code.
@@ -561,7 +561,7 @@ This configuration is deprecated and will be removed in the future.
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/7545) in GitLab 11.4.
 
 TIP: **Tip:**
-You can also set this inside your [project's settings](#deployment-strategy).
+You can also set this inside your [project's settings](index.md#deployment-strategy).
 
 This configuration is based on
 [incremental rollout to production](#incremental-rollout-to-production-premium).
@@ -585,7 +585,7 @@ enabled:
 The banner can be disabled for:
 
 - A user when they dismiss it themselves.
-- A project by explicitly [disabling Auto DevOps](#enablingdisabling-auto-devops).
+- A project by explicitly [disabling Auto DevOps](index.md#enablingdisabling-auto-devops).
 - An entire GitLab instance:
   - By an administrator running the following in a Rails console:
 

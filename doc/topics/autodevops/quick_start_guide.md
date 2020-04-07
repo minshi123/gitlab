@@ -278,8 +278,8 @@ and customized to fit your workflow. Here are some helpful resources for further
 
 1. [Auto DevOps](index.md)
 1. [Multiple Kubernetes clusters](index.md#using-multiple-kubernetes-clusters-premium) **(PREMIUM)**
-1. [Incremental rollout to production](index.md#incremental-rollout-to-production-premium) **(PREMIUM)**
-1. [Disable jobs you don't need with environment variables](index.md#environment-variables)
+1. [Incremental rollout to production](configure.md#incremental-rollout-to-production-premium) **(PREMIUM)**
+1. [Disable jobs you don't need with environment variables](configure.md#environment-variables)
 1. [Use a static IP for your cluster](../../user/clusters/applications.md#using-a-static-ip)
-1. [Use your own buildpacks to build your application](index.md#custom-buildpacks)
+1. [Use your own buildpacks to build your application](configure.md#custom-buildpacks)
 1. [Prometheus monitoring](../../user/project/integrations/prometheus.md)
