@@ -250,7 +250,7 @@ using the `ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variable
 To bypass TLS verification a custom [pip.conf](https://pip.pypa.io/en/stable/user_guide/#config-file)
 file can be used to configure trusted hosts.
 
-The following `gitlab-ci.yml` file uses a [before_script](../../../ci/yaml/#before_script-and-after_script) to
+The following `gitlab-ci.yml` file uses a [before_script](../../../ci/yaml/README.md#before_script-and-after_script) to
 inject a custom [pip.conf](https://pip.pypa.io/en/stable/user_guide/#config-file).
 
 ```yaml
