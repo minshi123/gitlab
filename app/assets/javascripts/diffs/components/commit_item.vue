@@ -1,9 +1,15 @@
 <script>
+import { mapActions } from 'vuex';
+
+import { GlButtonGroup, GlNewButton } from '@gitlab/ui/';
+
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
 import Icon from '~/vue_shared/components/icon.vue';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+
 import CommitPipelineStatus from '~/projects/tree/components/commit_pipeline_status_component.vue';
+
 import initUserPopovers from '../../user_popovers';
 
 /**
@@ -26,6 +32,8 @@ export default {
     ClipboardButton,
     TimeAgoTooltip,
     CommitPipelineStatus,
+    GlButtonGroup,
+    GlNewButton,
   },
   props: {
     commit: {
@@ -54,11 +62,31 @@ export default {
     authorAvatar() {
       return this.author.avatar_url || this.commit.author_gravatar_url;
     },
+    canNavigateCommits() {
+      return this.commit.prev_commit_id || this.commit.next_commit_id;
+    },
   },
   created() {
     this.$nextTick(() => {
       initUserPopovers(this.$el.querySelectorAll('.js-user-link'));
     });
+  },
+  methods: {
+    ...mapActions('diffs', ['changeCurrentCommit']),
+    moveCommit(direction) {
+      const directions = {
+        next: () => {
+          this.changeCurrentCommit({ commitId: this.commit.next_commit_id });
+        },
+        prev: () => {
+          this.changeCurrentCommit({ commitId: this.commit.prev_commit_id });
+        },
+      };
+
+      if (directions[direction]) {
+        directions[direction]();
+      }
+    },
   },
 };
 </script>
@@ -115,6 +143,16 @@ export default {
           :endpoint="commit.pipeline_status_path"
           class="d-inline-flex"
         />
+        <div class="commit-nav-buttons">
+          <gl-button-group v-if="canNavigateCommits">
+            <gl-new-button v-if="commit.next_commit_id" @click="moveCommit('next')">
+              {{ __('Next') }}
+            </gl-new-button>
+            <gl-new-button v-if="commit.prev_commit_id" @click="moveCommit('prev')">
+              {{ __('Previous') }}
+            </gl-new-button>
+          </gl-button-group>
+        </div>
         <div class="commit-sha-group">
           <div class="label label-monospace monospace" v-text="commit.short_id"></div>
           <clipboard-button
