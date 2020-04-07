@@ -3,13 +3,15 @@
 module API
   module Entities
     class ProjectImportStatus < ProjectIdentity
+      MAX_RELATION_FAILURES = 100
+
       expose :import_status
       expose :correlation_id do |project, _options|
         project.import_state.correlation_id
       end
 
       expose :failed_relations, using: Entities::ProjectImportFailedRelation do |project, _options|
-        project.import_state.relation_hard_failures
+        project.import_state.relation_hard_failures(limit: MAX_RELATION_FAILURES)
       end
 
       # TODO: Use `expose_nil` once we upgrade the grape-entity gem

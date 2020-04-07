@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 describe ProjectImportState, type: :model do
-  let(:correlation_id) { 'cid' }
+  let_it_be(:correlation_id) { 'cid' }
+  let_it_be(:project) { create(:project) }
 
-  subject { create(:import_state, correlation_id_value: correlation_id) }
+  subject { create(:import_state, project: project, correlation_id_value: correlation_id) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
@@ -45,11 +46,15 @@ describe ProjectImportState, type: :model do
   end
 
   describe '#relation_hard_failures' do
-    it 'returns hard relation failures related to this import' do
-      expected_failure = build(:import_failure, :hard_failure, correlation_id_value: correlation_id)
-      expect(ImportFailure).to receive(:hard_failures).with(correlation_id).and_return([expected_failure])
+    let_it_be(:failure_1) { create(:import_failure, :hard_failure, project: project, correlation_id_value: correlation_id) }
+    let_it_be(:failure_2) { create(:import_failure, :hard_failure, project: project, correlation_id_value: correlation_id) }
 
-      expect(subject.relation_hard_failures).to eq([expected_failure])
+    it 'returns hard relation failures related to this import' do
+      expect(subject.relation_hard_failures).to match_array([failure_1, failure_2])
+    end
+
+    it 'limits returned collection to given maximum' do
+      expect(subject.relation_hard_failures(limit: 1).size).to eq(1)
     end
   end
 

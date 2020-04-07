@@ -74,8 +74,8 @@ class ProjectImportState < ApplicationRecord
 
   # Returns any `import_failures` for relations that were unrecoverable errors or failed after
   # several retries. An import can be successful even if some relations failed to import correctly.
-  def relation_hard_failures
-    import_failures.hard_failures(correlation_id)
+  def relation_hard_failures(limit: 100)
+    import_failures.hard_failures(correlation_id).limit(limit)
   end
 
   def mark_as_failed(error_message)
