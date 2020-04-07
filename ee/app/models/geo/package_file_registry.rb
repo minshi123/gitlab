@@ -80,4 +80,8 @@ class Geo::PackageFileRegistry < Geo::BaseRegistry
 
     super()
   end
+
+  def waiting_for_sync?
+    pending? || failed?
+  end
 end
