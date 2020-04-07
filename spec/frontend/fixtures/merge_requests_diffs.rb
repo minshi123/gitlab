@@ -10,7 +10,7 @@ describe Projects::MergeRequests::DiffsController, '(JavaScript fixtures)', type
   let(:project) { create(:project, :repository, namespace: namespace, path: 'merge-requests-project') }
   let(:merge_request) { create(:merge_request, :with_diffs, source_project: project, target_project: project, description: '- [ ] Task List Item') }
   let(:path) { "files/ruby/popen.rb" }
-  let(:selected_commit) { merge_request.all_commits[0] }
+  let(:selected_commit) { merge_request.all_commits.order(:merge_request_diff_id).first }
   let(:position) do
     build(:text_diff_position, :added,
       file: path,
