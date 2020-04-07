@@ -287,6 +287,9 @@ When the user is authenticated and `simple` is not set this returns something li
 ]
 ```
 
+NOTE: **Note:**
+The `marked_for_deletion_at` attribute will be deprecated in GitLab 13.0 in favour of the `marked_for_deletion_on` attribute.
+
 Users on GitLab [Starter, Bronze, or higher](https://about.gitlab.com/pricing/) will also see
 the `approvals_before_merge` parameter:
 
