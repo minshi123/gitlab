@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import { setTestTimeout } from 'helpers/timeout';
-import { engineeringNotation } from '@gitlab/ui/src/utils/number_utils';
 import { GlLink } from '@gitlab/ui';
 import {
   GlAreaChart,
