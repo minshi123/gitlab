@@ -1,4 +1,61 @@
 /**
+ * @param {String} queryLabel - Default query label for chart
+ * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
+ * @returns {String || Boolean} The formatted query label or a false flag
+ */
+ function singleAttributeLabel(queryLabel, metricAttributes) {
+  const relevantAttribute = queryLabel.toLowerCase().replace(' ', '_');
+  const value = metricAttributes[relevantAttribute];
+  if(!value) return false;
+  return `${queryLabel}: ${value}`;
+};
+
+/**
+ * @param {String} queryLabel - Default query label for chart
+ * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
+ * @returns {String || Boolean} The formatted query label or a false flag
+ */
+function templatedLabel(queryLabel, metricAttributes) {
+  if(!queryLabel) return false;
+  let label = queryLabel;
+  Object.keys(metricAttributes).forEach(templateVar => {
+    const value = metricAttributes[templateVar];
+    const regex = new RegExp(`{{\\s*${templateVar}\\s*}}`, 'g');
+
+    label = label.replace(regex, value);
+  });
+
+  return label;
+};
+
+/**
+ * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
+ * @returns {String || Boolean} The formatted query label or a false flag
+ */
+function multiMetricLabel(metricAttributes) {
+  if (!Object.keys(metricAttributes).length) return false;
+  const attributePairs = [];
+  Object.keys(metricAttributes).forEach(templateVar => {
+    const value = metricAttributes[templateVar];
+    attributePairs.push(`${templateVar}: ${value}`);
+  });
+
+  return attributePairs.join(', ');
+};
+
+/**
+ * @param {String} queryLabel - Default query label for chart
+ * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
+ * @returns {String} The formatted query label
+ */
+const getSeriesLabel = (queryLabel, metricAttributes) => (
+  singleAttributeLabel(queryLabel, metricAttributes) ||
+  templatedLabel(queryLabel, metricAttributes) ||
+  multiMetricLabel(metricAttributes) ||
+  `${queryLabel}`
+);
+
+/**
  * @param {Array} queryResults - Array of Result objects
  * @param {Object} defaultConfig - Default chart config values (e.g. lineStyle, name)
  * @returns {Array} The formatted values
@@ -12,21 +69,11 @@ export const makeDataSeries = (queryResults, defaultConfig) =>
       if (!data.length) {
         return null;
       }
-      const relevantMetric = defaultConfig.name.toLowerCase().replace(' ', '_');
-      const name = result.metric[relevantMetric];
       const series = { data };
-      if (name) {
-        series.name = `${defaultConfig.name}: ${name}`;
-      } else {
-        series.name = defaultConfig.name;
-        Object.keys(result.metric).forEach(templateVar => {
-          const value = result.metric[templateVar];
-          const regex = new RegExp(`{{\\s*${templateVar}\\s*}}`, 'g');
-
-          series.name = series.name.replace(regex, value);
-        });
-      }
-
-      return { ...defaultConfig, ...series };
+      return {
+        ...defaultConfig,
+        ...series,
+        name: getSeriesLabel(defaultConfig.name, result.metric),
+      };
     })
     .filter(series => series !== null);

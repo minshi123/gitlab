@@ -244,7 +244,7 @@ export default {
   },
   methods: {
     formatLegendLabel(query) {
-      return `${query.label}`;
+      return query.label;
     },
     formatTooltipText(params) {
       this.tooltip.title = dateFormat(params.value, dateFormats.default);

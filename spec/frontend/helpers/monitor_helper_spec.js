@@ -56,6 +56,20 @@ describe('monitor helper', () => {
       expect(result.name).toEqual('brpop');
     });
 
+    it('supports a multi metric label template expression', () => {
+      const config = {
+        ...defaultConfig,
+        name: '',
+      };
+
+      const [result] = monitorHelper.makeDataSeries(
+        [{ metric: { backend: 'HA Server',  frontend: 'BA Server',  app: 'prometheus',  instance: 'k8 cluster 1' }, values: series }],
+        config,
+      );
+
+      expect(result.name).toEqual('backend: HA Server, frontend: BA Server, app: prometheus, instance: k8 cluster 1');
+    });
+
     it('supports space-padded template expressions', () => {
       const config = {
         ...defaultConfig,
@@ -123,5 +137,6 @@ describe('monitor helper', () => {
       expect(firstSeries.name).toEqual('brpop');
       expect(secondSeries.name).toEqual('zrangebyscore');
     });
+
   });
 });
