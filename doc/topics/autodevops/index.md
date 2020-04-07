@@ -61,7 +61,7 @@ in multiple ways:
   and code quality testing.
 - Auto DevOps offers an incremental graduation path. If you need advanced customizations,
   you can start modifying the templates without having to start over on a
-  completely different platform. Review the [customizing](#customizing) section for more information.
+  completely different platform. Review the [customizing](customize.md) documentation for more information.
 
 ## Features
 
@@ -91,7 +91,7 @@ knowledge of the following:
 - [Prometheus](https://prometheus.io/docs/introduction/overview/)
 
 Auto DevOps provides great defaults for all the stages; you can, however,
-[customize](#customizing) almost everything to your needs.
+[customize](customize.md) almost everything to your needs.
 
 For an overview on the creation of Auto DevOps, read more
 [in this blog post](https://about.gitlab.com/blog/2017/06/29/whats-next-for-gitlab-ci/).
@@ -300,12 +300,12 @@ The available options are:
 - **Continuous deployment to production**: Enables [Auto Deploy](stages.md#auto-deploy)
   with `master` branch directly deployed to production.
 - **Continuous deployment to production using timed incremental rollout**: Sets the
-  [`INCREMENTAL_ROLLOUT_MODE`](#timed-incremental-rollout-to-production-premium) variable
+  [`INCREMENTAL_ROLLOUT_MODE`](customize.md#timed-incremental-rollout-to-production-premium) variable
   to `timed`, and production deployment will be executed with a 5 minute delay between
   each increment in rollout.
 - **Automatic deployment to staging, manual deployment to production**: Sets the
-  [`STAGING_ENABLED`](#deploy-policy-for-staging-and-production-environments) and
-  [`INCREMENTAL_ROLLOUT_MODE`](#incremental-rollout-to-production-premium) variables
+  [`STAGING_ENABLED`](customize.md#deploy-policy-for-staging-and-production-environments) and
+  [`INCREMENTAL_ROLLOUT_MODE`](customize.md#incremental-rollout-to-production-premium) variables
   to `1` and `manual`. This means:
 
   - `master` branch is directly deployed to staging.
@@ -336,8 +336,8 @@ be configured.
 | Cluster name | Cluster environment scope | `KUBE_INGRESS_BASE_DOMAIN` variable value | Variable environment scope | Notes |
 |--------------|---------------------------|-------------------------------------------|----------------------------|---|
 | review       | `review/*`                | `review.example.com`                      | `review/*`                 | The review cluster which will run all [Review Apps](../../ci/review_apps/index.md). `*` is a wildcard, which means it will be used by every environment name starting with `review/`. |
-| staging      | `staging`                 | `staging.example.com`                     | `staging`                  | (Optional) The staging cluster which will run the deployments of the staging environments. You need to [enable it first](#deploy-policy-for-staging-and-production-environments). |
-| production   | `production`              | `example.com`                             | `production`               | The production cluster which will run the deployments of the production environment. You can use [incremental rollouts](#incremental-rollout-to-production-premium). |
+| staging      | `staging`                 | `staging.example.com`                     | `staging`                  | (Optional) The staging cluster which will run the deployments of the staging environments. You need to [enable it first](customize.md#deploy-policy-for-staging-and-production-environments). |
+| production   | `production`              | `example.com`                             | `production`               | The production cluster which will run the deployments of the production environment. You can use [incremental rollouts](customize.md#incremental-rollout-to-production-premium). |
 
 To add a different cluster for each environment:
 
@@ -423,7 +423,7 @@ spec:
   key files the buildpack is looking for. For example, for ruby apps, you must
   have a `Gemfile` to be properly detected, even though it is possible to write a
   Ruby app without a `Gemfile`. Try specifying a [custom
-  buildpack](#custom-buildpacks).
+  buildpack](customize.md#custom-buildpacks).
 - Auto Test may fail because of a mismatch between testing frameworks. In this
   case, you may need to customize your `.gitlab-ci.yml` with your test commands.
 - Auto Deploy will fail if GitLab can not create a Kubernetes namespace and
