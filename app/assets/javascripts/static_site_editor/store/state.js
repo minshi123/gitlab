@@ -5,6 +5,7 @@ const createState = (initialState = {}) => ({
   isLoadingContent: false,
   isSavingChanges: false,
 
+  originalContent: '',
   content: '',
   title: '',
 
