@@ -1,3 +1,4 @@
+import { engineeringNotation } from '@gitlab/ui/src/utils/number_utils';
 import { SUPPORTED_FORMATS, getFormatter } from '~/lib/utils/unit_format';
 import { s__ } from '~/locale';
 
@@ -6,7 +7,6 @@ const yAxisBoundaryGap = [0.1, 0.1];
  * Max string length of formatted axis tick
  */
 const maxDataAxisTickLength = 8;
-
 //  Defaults
 const defaultFormat = SUPPORTED_FORMATS.number;
 
@@ -26,7 +26,8 @@ const chartGridLeft = 75;
  * @param {Object} param - Dashboard .yml definition options
  */
 const getDataAxisOptions = ({ format, precision, name }) => {
-  const formatter = getFormatter(format);
+  // default to engineeringNotation, same as gitlab-ui
+  const formatter = format === defaultYAxisFormat ? engineeringNotation : getFormatter(format);
 
   return {
     name,

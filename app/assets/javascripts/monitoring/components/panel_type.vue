@@ -2,7 +2,6 @@
 import { mapState } from 'vuex';
 import { pickBy } from 'lodash';
 import invalidUrl from '~/lib/utils/invalid_url';
-import { engineeringNotation } from '@gitlab/ui/src/utils/number_utils';
 import {
   GlResizeObserverDirective,
   GlDropdown,
@@ -100,13 +99,6 @@ export default {
     }),
     title() {
       return this.graphData.title || '';
-    },
-    yAxis() {
-      return {
-        axisLabel: {
-          formatter: num => engineeringNotation(num, 2),
-        },
-      };
     },
     alertWidgetAvailable() {
       // This method is extended by ee functionality
@@ -307,7 +299,6 @@ export default {
       v-else-if="graphDataHasMetrics"
       ref="timeChart"
       :graph-data="graphData"
-      :option="{ yAxis }"
       :deployment-data="deploymentData"
       :project-path="projectPath"
       :thresholds="getGraphAlertValues(graphData.metrics)"

@@ -393,29 +393,6 @@ describe('Time series component', () => {
                 expect(xAxis).toMatchObject(mockCustomXAxisOption);
               });
             });
-
-            it('with engineeringNotation yAxis formatter, yAxis labels render correctly', () => {
-              let dataFormatter;
-              const mockCustomXAxisOption = {
-                axisLabel: {
-                  formatter: num => engineeringNotation(num, 2),
-                },
-              };
-
-              timeSeriesChart.setProps({
-                option: {
-                  yAxis: mockCustomXAxisOption,
-                },
-              });
-
-              return timeSeriesChart.vm.$nextTick().then(() => {
-                const { yAxis } = getChartOptions();
-                dataFormatter = yAxis[0].axisLabel.formatter;
-                expect(dataFormatter(0.88888, 2)).toBe('889m');
-                expect(dataFormatter(0.0000000001, 2)).toBe('100p');
-                expect(dataFormatter('3,301.02', 2)).toBe('3.3k');
-              });
-            });
           });
 
           describe('yAxis formatter', () => {
@@ -428,7 +405,7 @@ describe('Time series component', () => {
             });
 
             it('formats and rounds to 2 decimal places', () => {
-              expect(dataFormatter(0.88888)).toBe('0.89');
+              expect(dataFormatter(0.88888)).toBe('889m');
             });
 
             it('deployment formatter is set as is required to display a tooltip', () => {

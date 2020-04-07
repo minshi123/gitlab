@@ -31,7 +31,25 @@ describe('options spec', () => {
       });
     });
 
-    it('formatter options', () => {
+    it('formatter options defaults to engineering notation', () => {
+      const options = getYAxisOptions({
+        format: SUPPORTED_FORMATS.number,
+      });
+
+      expect(options.axisLabel.formatter).toEqual(expect.any(Function));
+      expect(options.axisLabel.formatter('3,002.10')).toBe('3k');
+    });
+
+    it('formatter options allows for overrides in milliseconds', () => {
+      const options = getYAxisOptions({
+        format: SUPPORTED_FORMATS.milliseconds,
+      });
+
+      expect(options.axisLabel.formatter).toEqual(expect.any(Function));
+      expect(options.axisLabel.formatter(1.1234)).toBe('1.12ms');
+    });
+
+    it('formatter options allows for overrides in bytes', () => {
       const options = getYAxisOptions({
         format: SUPPORTED_FORMATS.bytes,
       });
