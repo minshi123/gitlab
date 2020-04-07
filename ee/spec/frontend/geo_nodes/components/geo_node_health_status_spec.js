@@ -1,75 +1,78 @@
-import Vue from 'vue';
-
+import { shallowMount } from '@vue/test-utils';
+import Icon from '~/vue_shared/components/icon.vue';
 import geoNodeHealthStatusComponent from 'ee/geo_nodes/components/geo_node_health_status.vue';
-import { HEALTH_STATUS_ICON, HEALTH_STATUS_CLASS } from 'ee/geo_nodes/constants';
-import mountComponent from 'helpers/vue_mount_component_helper';
+import {
+  HEALTH_STATUS_ICON,
+  HEALTH_STATUS_CLASS,
+  HEALTH_STATUS_LABEL,
+} from 'ee/geo_nodes/constants';
 import { mockNodeDetails } from '../mock_data';
 
-const createComponent = (status = mockNodeDetails.health) => {
-  const Component = Vue.extend(geoNodeHealthStatusComponent);
-
-  return mountComponent(Component, {
-    status,
-  });
-};
-
 describe('GeoNodeHealthStatusComponent', () => {
-  describe('computed', () => {
-    describe('healthCssClass', () => {
-      it('returns CSS class representing `status` prop value', () => {
-        const vm = createComponent('healthy');
+  let wrapper;
 
-        expect(vm.healthCssClass).toBe(HEALTH_STATUS_CLASS.healthy);
-        vm.$destroy();
-      });
+  const defaultProps = {
+    status: mockNodeDetails.health,
+  };
+
+  const createComponent = (props = {}) => {
+    wrapper = shallowMount(geoNodeHealthStatusComponent, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
     });
+  };
 
-    describe('statusIconName', () => {
-      it('returns icon name representing `status` prop value', () => {
-        let vm = createComponent('healthy');
-
-        expect(vm.statusIconName).toBe(HEALTH_STATUS_ICON.healthy);
-        vm.$destroy();
-
-        vm = createComponent('unhealthy');
-
-        expect(vm.statusIconName).toBe(HEALTH_STATUS_ICON.unhealthy);
-        vm.$destroy();
-
-        vm = createComponent('disabled');
-
-        expect(vm.statusIconName).toBe(HEALTH_STATUS_ICON.disabled);
-        vm.$destroy();
-
-        vm = createComponent('unknown');
-
-        expect(vm.statusIconName).toBe(HEALTH_STATUS_ICON.unknown);
-        vm.$destroy();
-
-        vm = createComponent('offline');
-
-        expect(vm.statusIconName).toBe(HEALTH_STATUS_ICON.offline);
-        vm.$destroy();
-      });
-    });
+  afterEach(() => {
+    wrapper.destroy();
+    wrapper = null;
   });
 
-  describe('template', () => {
-    it('renders container elements correctly', () => {
-      const vm = createComponent('Healthy');
+  const findStatusPill = () => wrapper.find('.rounded-pill');
 
-      expect(vm.$el.classList.contains('detail-section-item')).toBe(true);
-      expect(vm.$el.querySelector('.node-detail-title').innerText.trim()).toBe('Health status');
+  describe.each`
+    status         | healthCssClass                   | statusIconName                  | statusLabel
+    ${'Healthy'}   | ${HEALTH_STATUS_CLASS.healthy}   | ${HEALTH_STATUS_ICON.healthy}   | ${HEALTH_STATUS_LABEL.healthy}
+    ${'Unhealthy'} | ${HEALTH_STATUS_CLASS.unhealthy} | ${HEALTH_STATUS_ICON.unhealthy} | ${HEALTH_STATUS_LABEL.unhealthy}
+    ${'Disabled'}  | ${HEALTH_STATUS_CLASS.disabled}  | ${HEALTH_STATUS_ICON.disabled}  | ${HEALTH_STATUS_LABEL.disabled}
+    ${'Unknown'}   | ${HEALTH_STATUS_CLASS.unknown}   | ${HEALTH_STATUS_ICON.unknown}   | ${HEALTH_STATUS_LABEL.unknown}
+    ${'Offline'}   | ${HEALTH_STATUS_CLASS.offline}   | ${HEALTH_STATUS_ICON.offline}   | ${HEALTH_STATUS_LABEL.offline}
+  `(`computed properties`, ({ status, healthCssClass, statusIconName, statusLabel }) => {
+    beforeEach(() => {
+      createComponent({ status });
+    });
 
-      const iconContainerEl = vm.$el.querySelector('.node-health-status');
+    it(`returns ${healthCssClass} when status is ${status}`, () => {
+      expect(wrapper.vm.healthCssClass).toBe(healthCssClass);
+    });
 
-      expect(iconContainerEl).not.toBeNull();
-      expect(iconContainerEl.querySelector('svg use').getAttribute('xlink:href')).toContain(
-        '#status_success',
-      );
+    it('renders StatusPill correctly', () => {
+      expect(findStatusPill().html()).toMatchSnapshot();
+    });
 
-      expect(iconContainerEl.querySelector('.status-text').innerText.trim()).toBe('Healthy');
-      vm.$destroy();
+    it(`returns ${statusIconName} when status is ${status}`, () => {
+      expect(wrapper.vm.statusIconName).toBe(statusIconName);
+    });
+
+    it('renders Icon correctly', () => {
+      expect(
+        findStatusPill()
+          .find(Icon)
+          .html(),
+      ).toMatchSnapshot();
+    });
+
+    it(`returns ${statusLabel} when status is ${status}`, () => {
+      expect(wrapper.vm.statusLabel).toBe(statusLabel);
+    });
+
+    it('renders Label correctly', () => {
+      expect(
+        findStatusPill()
+          .find('span')
+          .html(),
+      ).toMatchSnapshot();
     });
   });
 });

@@ -1,6 +1,6 @@
 <script>
 import icon from '~/vue_shared/components/icon.vue';
-import { HEALTH_STATUS_ICON, HEALTH_STATUS_CLASS } from '../constants';
+import { HEALTH_STATUS_ICON, HEALTH_STATUS_CLASS, HEALTH_STATUS_LABEL } from '../constants';
 
 export default {
   components: {
@@ -19,6 +19,9 @@ export default {
     statusIconName() {
       return HEALTH_STATUS_ICON[this.status.toLowerCase()];
     },
+    statusLabel() {
+      return HEALTH_STATUS_LABEL[this.status.toLowerCase()];
+    },
   },
 };
 </script>
@@ -26,9 +29,12 @@ export default {
 <template>
   <div class="mt-2 detail-section-item">
     <div class="text-secondary-700 node-detail-title">{{ s__('GeoNodes|Health status') }}</div>
-    <div :class="healthCssClass" class="mt-1 d-flex align-items-center node-health-status">
+    <div
+      :class="healthCssClass"
+      class="rounded-pill d-inline-flex align-items-center px-2 py-1 mt-1"
+    >
       <icon :size="16" :name="statusIconName" />
-      <span class="status-text ml-2"> {{ status }} </span>
+      <span class="status-text ml-1 bold"> {{ statusLabel }} </span>
     </div>
   </div>
 </template>
