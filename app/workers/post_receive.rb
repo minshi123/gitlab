@@ -83,6 +83,7 @@ class PostReceive # rubocop:disable Scalability/IdempotentWorker
     # repository size or any other key.
     # We might also need to update the repository statistics.
     expire_caches(post_received, snippet.repository)
+    snippet.repository.expire_statistics_caches
   end
 
   # Expire the repository status, branch, and tag cache once per push.
