@@ -14,6 +14,20 @@ function updateDiffFilesInState(state, files) {
   return Object.assign(state, { diffFiles: files });
 }
 
+function swapNeighborCommits(diff) {
+  // Doesn't make sense?
+  // Please see: https://gitlab.com/gitlab-org/gitlab/-/issues/213609
+  const prev = diff.commit.prev_commit_id;
+  const next = diff.commit.next_commit_id;
+
+  Object.assign(diff.commit, {
+    prev_commit_id: next,
+    next_commit_id: prev,
+  });
+
+  return diff;
+}
+
 export default {
   [types.SET_BASE_CONFIG](state, options) {
     const {
@@ -56,6 +70,8 @@ export default {
 
   [types.SET_DIFF_DATA](state, data) {
     let files = state.diffFiles;
+
+    Object.assign(data, swapNeighborCommits(data));
 
     if (
       !(gon?.features?.diffsBatchLoad && window.location.search.indexOf('diff_id') === -1) &&
