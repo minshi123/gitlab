@@ -65,14 +65,14 @@ describe 'Timelogs through GroupQuery' do
 
       it 'contains correct data' do
         username = timelog_array.map {|data| data['user']['username'] }
-        date = timelog_array.map { |data| data['date'].to_date.to_s }
+        spent_at = timelog_array.map { |data| data['spentAt'].to_date.to_s }
         time_spent = timelog_array.map { |data| data['timeSpent'] }
         issue_title = timelog_array.map {|data| data['issue']['title'] }
         milestone_title = timelog_array.map {|data| data['issue']['milestone']['title'] }
         epic_title = timelog_array.map {|data| data['issue']['epic']['title'] }
 
         expect(username).to eq([user.username])
-        expect(date).to eq([timelog1.spent_at.to_date.to_s])
+        expect(spent_at).to eq([timelog1.spent_at.to_date.to_s])
         expect(time_spent).to eq([timelog1.time_spent])
         expect(issue_title).to eq([issue.title])
         expect(milestone_title).to eq([milestone.title])
