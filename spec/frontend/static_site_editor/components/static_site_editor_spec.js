@@ -18,10 +18,12 @@ describe('StaticSiteEditor', () => {
   let store;
   let loadContentActionMock;
   let setContentActionMock;
+  let submitChangesActionMock;
 
   const buildStore = ({ initialState, getters } = {}) => {
     loadContentActionMock = jest.fn();
     setContentActionMock = jest.fn();
+    submitChangesActionMock = jest.fn();
 
     store = new Vuex.Store({
       state: createState(initialState),
@@ -33,6 +35,7 @@ describe('StaticSiteEditor', () => {
       actions: {
         loadContent: loadContentActionMock,
         setContent: setContentActionMock,
+        submitChanges: submitChangesActionMock,
       },
     });
   };
@@ -92,20 +95,6 @@ describe('StaticSiteEditor', () => {
     });
   });
 
-  describe('when content changes', () => {
-    it('sets toolbar as saveable', () => {
-      buildStore({
-        getters: {
-          isContentLoaded: () => true,
-          contentChanged: () => true,
-        },
-      });
-      buildWrapper();
-
-      expect(findToolbar().props('saveable')).toBe(true);
-    });
-  });
-
   describe('when edit area emits input event', () => {
     it('dispatches setContent action', () => {
       const content = 'new content';
@@ -119,6 +108,23 @@ describe('StaticSiteEditor', () => {
     });
   });
 
+  describe('when saving changes', () => {
+    it('sets toolbar as saving changes', () => {
+      buildStore({
+        initialState: {
+          isSavingChanges: true,
+        },
+        getters: {
+          isContentLoaded: () => true,
+          contentChanged: () => true,
+        },
+      });
+      buildWrapper();
+
+      expect(findToolbar().props('savingChanges')).toBe(true);
+    });
+  });
+
   it('displays skeleton loader while loading content', () => {
     buildStore({ initialState: { isLoadingContent: true } });
     buildWrapper();
@@ -128,5 +134,19 @@ describe('StaticSiteEditor', () => {
 
   it('dispatches load content action', () => {
     expect(loadContentActionMock).toHaveBeenCalled();
+  });
+
+  describe('when toolbar emits submit event', () => {
+    it('dispatches submitChanges  action', () => {
+      buildStore({
+        getters: {
+          isContentLoaded: () => true,
+        },
+      });
+      buildWrapper();
+      findToolbar().vm.$emit('submit');
+
+      expect(submitChangesActionMock).toHaveBeenCalled();
+    });
   });
 });
