@@ -4,6 +4,7 @@
  * @returns {String || Boolean} The formatted query label or a false flag
  */
  function singleAttributeLabel(queryLabel, metricAttributes) {
+  if(!queryLabel) return false;
   const relevantAttribute = queryLabel.toLowerCase().replace(' ', '_');
   const value = metricAttributes[relevantAttribute];
   if(!value) return false;
