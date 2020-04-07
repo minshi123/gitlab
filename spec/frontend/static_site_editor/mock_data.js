@@ -16,3 +16,20 @@ export const sourceContentTitle = 'Handbook';
 
 export const projectId = '123456';
 export const sourcePath = 'foobar.md.html';
+
+export const submitChangesResponse = {
+  branch: {
+    name: 'foobar',
+    url: 'foobar/-/tree/foorbar',
+  },
+  commit: {
+    shortId: 'c1461b08 ',
+    url: 'foobar/-/c1461b08',
+  },
+  mergeRequest: {
+    iid: '123',
+    url: 'foobar/-/merge_requests/123',
+  },
+};
+
+export const submitChangesError = 'Could not save changes';
