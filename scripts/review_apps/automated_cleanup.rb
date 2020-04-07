@@ -12,7 +12,8 @@ class AutomatedCleanup
   HELM_RELEASES_BATCH_SIZE = 5
   IGNORED_HELM_ERRORS = [
     'transport is closing',
-    'error upgrading connection'
+    'error upgrading connection',
+    'not found'
   ].freeze
   IGNORED_KUBERNETES_ERRORS = [
     'NotFound'
