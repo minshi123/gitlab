@@ -1,7 +1,7 @@
 /**
  * @param {String} queryLabel - Default query label for chart
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
- * @returns {String} The formatted query label or a false flag
+ * @returns {String} The formatted query label
  * @example
  * singleAttributeLabel('app', {__name__: "up", app: "prometheus"}) -> "app: prometheus"
  */
@@ -16,7 +16,7 @@ const singleAttributeLabel = (queryLabel, metricAttributes) => {
 /**
  * @param {String} queryLabel - Default query label for chart
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
- * @returns {String} The formatted query label or a false flag
+ * @returns {String} The formatted query label
  * @example
  * templatedLabel('__name__', {__name__: "up", app: "prometheus"}) -> "__name__"
  */
@@ -34,7 +34,7 @@ const templatedLabel = (queryLabel, metricAttributes) => {
 
 /**
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
- * @returns {String} The formatted query label or a false flag
+ * @returns {String} The formatted query label
  * @example
  * multiMetricLabel('', {__name__: "up", app: "prometheus"}) -> "__name__: up, app: prometheus"
  */
