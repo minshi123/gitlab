@@ -1120,6 +1120,17 @@ class Repository
     end
   end
 
+  # TODO: pass this in directly to `Blob` rather than delegating it to here
+  #
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/201886
+  def lfs_enabled?
+    if container.is_a?(Project)
+      project.lfs_enabled?
+    else
+      false # LFS is only supported for project + project wiki repositories
+    end
+  end
+
   private
 
   # TODO Genericize finder, later split this on finders by Ref or Oid
