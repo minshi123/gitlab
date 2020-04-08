@@ -69,7 +69,7 @@ export default function dropzoneInput(form, config = { parallelUploads: 2 }) {
     uploadMultiple: false,
     headers: csrf.headers,
     previewContainer: false,
-    parallelUploads: config.parallelUploads,
+    ...config,
     processing: () => $('.div-dropzone-alert').alert('close'),
     dragover: () => {
       $mdArea.addClass('is-dropzone-hover');
