@@ -119,7 +119,6 @@ module Projects
         define_triggers_variables
         define_badges_variables
         define_auto_devops_variables
-        define_deploy_keys
       end
 
       def define_runners_variables
@@ -171,10 +170,6 @@ module Projects
         @deploy_tokens = @project.deploy_tokens.active
 
         @new_deploy_token = DeployToken.new
-      end
-
-      def define_deploy_keys
-        @deploy_keys = DeployKeysPresenter.new(@project, current_user: current_user)
       end
     end
   end
