@@ -43,7 +43,8 @@ plan:
     name: plan
     paths:
       - $PLAN
-      - $JSON_PLAN_FILE
+    reports:
+      terraform: $JSON_PLAN_FILE
 
 # Separate apply job for manual launching Terraform as it can be destructive
 # action.
