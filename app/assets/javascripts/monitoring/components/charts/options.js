@@ -46,8 +46,7 @@ export const getYAxisOptions = ({
   format = defaultYAxisFormat,
   precision = defaultYAxisPrecision,
 } = {}) => {
-
-  console.log(defaultFormat, defaultYAxisFormat)
+  console.log(defaultFormat, defaultYAxisFormat);
   return {
     nameGap: 63, // larger gap than gitlab-ui's default to fit with formatted numbers
     scale: true,

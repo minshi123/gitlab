@@ -42,7 +42,7 @@ export const SUPPORTED_FORMATS = {
   pebibytes: 'pebibytes',
 
   // Engineering Notation
-  engineering: 'engineering'
+  engineering: 'engineering',
 };
 
 /**

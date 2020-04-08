@@ -95,7 +95,11 @@ const mapXAxisToViewModel = ({ name = '' }) => ({ name });
  *
  * @param {Object} axis
  */
-const mapYAxisToViewModel = ({ name = '', format = SUPPORTED_FORMATS.engineering, precision = 2 }) => {
+const mapYAxisToViewModel = ({
+  name = '',
+  format = SUPPORTED_FORMATS.engineering,
+  precision = 2,
+}) => {
   return {
     name,
     format: SUPPORTED_FORMATS[format] || SUPPORTED_FORMATS.engineering,
