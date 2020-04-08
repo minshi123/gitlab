@@ -4521,6 +4521,14 @@ CREATE SEQUENCE public.pages_domains_id_seq
 
 ALTER SEQUENCE public.pages_domains_id_seq OWNED BY public.pages_domains.id;
 
+CREATE TABLE public.partitioned_foreign_keys (
+    cascade_delete boolean DEFAULT true NOT NULL,
+    to_table text NOT NULL,
+    from_table text NOT NULL,
+    from_column text NOT NULL,
+    to_column text NOT NULL
+);
+
 CREATE TABLE public.path_locks (
     id integer NOT NULL,
     path character varying NOT NULL,
@@ -8085,6 +8093,9 @@ ALTER TABLE ONLY public.pages_domain_acme_orders
 
 ALTER TABLE ONLY public.pages_domains
     ADD CONSTRAINT pages_domains_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.partitioned_foreign_keys
+    ADD CONSTRAINT partitioned_foreign_keys_pkey PRIMARY KEY (to_table, from_table, from_column);
 
 ALTER TABLE ONLY public.path_locks
     ADD CONSTRAINT path_locks_pkey PRIMARY KEY (id);
@@ -12979,5 +12990,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200403184110
 20200403185127
 20200403185422
+20200407182205
 \.
 
