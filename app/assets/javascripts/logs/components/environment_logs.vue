@@ -71,9 +71,10 @@ export default {
       return this.logs.isLoading;
     },
     shouldShowElasticStackCallout() {
-      return (
-        !this.isElasticStackCalloutDismissed &&
-        (this.environments.isLoading || !this.showAdvancedFilters)
+      return !(
+        this.isElasticStackCalloutDismissed ||
+        this.environments.isLoading ||
+        this.showAdvancedFilters
       );
     },
   },
