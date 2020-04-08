@@ -25,8 +25,7 @@ const chartGridLeft = 75;
  * @param {Object} param - Dashboard .yml definition options
  */
 const getDataAxisOptions = ({ format, precision, name }) => {
-  // default to engineeringNotation, same as gitlab-ui
-  const formatter = getFormatter(format);
+  const formatter = getFormatter(format);   // default to engineeringNotation, same as gitlab-ui
   return {
     name,
     nameLocation: 'center', // same as gitlab-ui's default
@@ -46,7 +45,6 @@ export const getYAxisOptions = ({
   format = defaultYAxisFormat,
   precision = defaultYAxisPrecision,
 } = {}) => {
-  console.log(defaultFormat, defaultYAxisFormat);
   return {
     nameGap: 63, // larger gap than gitlab-ui's default to fit with formatted numbers
     scale: true,
