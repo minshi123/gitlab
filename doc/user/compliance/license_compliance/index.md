@@ -208,8 +208,8 @@ license_scanning:
     MAVEN_CLI_OPTS: -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true -Dmaven.wagon.http.ssl.insecure=true
 ```
 
-Alternatively, a Java key store can be used to verify the TLS connection.
-Instructions on how to generate a key store file can be found in the
+Alternatively, you can use a Java key store to verify the TLS connection. For instructions on how to
+generate a key store file, see the
 [Maven Guide to Remote repository access through authenticated HTTPS](http://maven.apache.org/guides/mini/guide-repository-ssl.html).
 
 ### Selecting the version of Python
