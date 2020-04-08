@@ -196,8 +196,8 @@ you can use the `MAVEN_CLI_OPTS` environment variable.
 
 Read more on [how to use private Maven repos](../../application_security/index.md#using-private-maven-repos).
 
-`MAVEN_CLI_OPTS` can also be used to connect to a trusted Maven repository that uses a self signed or
-internally trusted certificate. For example:
+You can also use `MAVEN_CLI_OPTS` to connect to a trusted Maven repository that uses a self-signed
+or internally trusted certificate. For example:
 
 ```yaml
 include:
