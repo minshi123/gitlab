@@ -25,7 +25,7 @@ const chartGridLeft = 75;
  * @param {Object} param - Dashboard .yml definition options
  */
 const getDataAxisOptions = ({ format, precision, name }) => {
-  const formatter = getFormatter(format);   // default to engineeringNotation, same as gitlab-ui
+  const formatter = getFormatter(format); // default to engineeringNotation, same as gitlab-ui
   return {
     name,
     nameLocation: 'center', // same as gitlab-ui's default
