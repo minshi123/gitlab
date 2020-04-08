@@ -47,21 +47,15 @@ export default {
     height: 40,
   },
   i18n: {
-    containerRegistryTitle: s__('ContainerRegistry|Container Registry'),
-    connectionErrorTitle: s__('ContainerRegistry|Docker connection error'),
-    connectionErrorMessage: s__(
-      `ContainerRegistry|We are having trouble connecting to Docker, which could be due to an issue with your project name or path. %{docLinkStart}More Information%{docLinkEnd}`,
-    ),
-    introText: s__(
-      `ContainerRegistry|With the Docker Container Registry integrated into GitLab, every project can have its own space to store its Docker images. %{docLinkStart}More Information%{docLinkEnd}`,
-    ),
-    deleteButtonDisabled: s__(
-      'ContainerRegistry|Missing or insufficient permission, delete button disabled',
-    ),
-    removeRepositoryLabel: s__('ContainerRegistry|Remove repository'),
-    removeRepositoryModalText: s__(
-      'ContainerRegistry|You are about to remove repository %{title}. Once you confirm, this repository will be permanently deleted.',
-    ),
+    containerRegistryTitle: CONTAINER_REGISTRY_TITLE,
+    connectionErrorTitle: CONNECTION_ERROR_TITLE,
+    connectionErrorMessage: CONNECTION_ERROR_MESSAGE,
+    introText: LIST_INTRO_TEXT,
+    deleteButtonDisabled: LIST_DELETE_BUTTON_DISABLED,
+    removeRepositoryLabel: REMOVE_REPOSITORY_LABEL,
+    removeRepositoryModalText: REMOVE_REPOSITORY_MODAL_TEXT,
+    rowScheduledForDeletion: ROW_SCHEDULED_FOR_DELETION,
+    asyncDeleteErrorMessage: ASYNC_DELETE_IMAGE_ERROR_MESSAGE,
   },
   data() {
     return {
