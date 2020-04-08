@@ -4,7 +4,6 @@ require 'carrierwave/orm/activerecord'
 
 class Project < ApplicationRecord
   include Gitlab::ConfigHelper
-  include Gitlab::ShellAdapter
   include Gitlab::VisibilityLevel
   include AccessRequestable
   include Avatarable
@@ -1120,10 +1119,6 @@ class Project < ApplicationRecord
     elsif cross_project_reference?(from)
       name
     end
-  end
-
-  def web_url(only_path: nil)
-    Gitlab::Routing.url_helpers.project_url(self, only_path: only_path)
   end
 
   def readme_url

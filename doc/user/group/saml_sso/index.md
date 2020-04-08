@@ -281,7 +281,7 @@ GitLab [isn't limited to the SAML providers listed above](#my-identity-provider-
 | Additional URLs | | You may need to use the `Identifier` or `Assertion consumer service URL` in other fields on some providers. |
 | Single Sign Out URL | | Not supported |
 
-If the information information you need isn't listed above you may wish to check our [troubleshooting docs below](#i-need-additional-information-to-configure-my-identity-provider).
+If the information you need isn't listed above you may wish to check our [troubleshooting docs below](#i-need-additional-information-to-configure-my-identity-provider).
 
 ## Linking SAML to your existing GitLab.com account
 
@@ -415,7 +415,9 @@ Alternatively, an admin of your Identity Provider can use the [SCIM API](../../.
 
 ### Message: "SAML authentication failed: Email has already been taken"
 
-Same as ["SAML authentication failed: User has already been taken"](#message-saml-authentication-failed-user-has-already-been-taken).
+| Cause                                                                                                                                    | Solution                                                                 |
+|------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| When a user account with the email address already exists in GitLab, but the user does not have the SAML identity tied to their account. | The user will need to [link their account](#user-access-and-management). |
 
 ### Message: "SAML authentication failed: Extern uid has already been taken, User has already been taken"
 

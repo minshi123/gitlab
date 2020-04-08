@@ -429,7 +429,7 @@ Once you set them, they will be available for all subsequent pipelines.
 You can limit the environment scope of a variable by
 [defining which environments](../environments.md) it can be available for.
 
-To learn more about about scoping environments, see [Scoping environments with specs](../environments.md#scoping-environments-with-specs).
+To learn more about scoping environments, see [Scoping environments with specs](../environments.md#scoping-environments-with-specs).
 
 ### Deployment environment variables
 
@@ -453,7 +453,7 @@ pass CI variables to the running application by prefixing the key of the
 variable with `K8S_SECRET_`.
 
 These [prefixed
-variables](../../topics/autodevops/index.md#application-secret-variables) will
+variables](../../topics/autodevops/customize.md#application-secret-variables) will
 then be available as environment variables on the running application
 container.
 

@@ -48,6 +48,7 @@ module EE
       has_one :tracing_setting, class_name: 'ProjectTracingSetting'
       has_one :feature_usage, class_name: 'ProjectFeatureUsage'
       has_one :status_page_setting, inverse_of: :project
+      has_one :compliance_framework_setting, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings', inverse_of: :project
 
       has_many :reviews, inverse_of: :project
       has_many :approvers, as: :target, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
@@ -112,7 +113,7 @@ module EE
       scope :outside_shards, -> (shard_names) { where.not(repository_storage: Array(shard_names)) }
       scope :verification_failed_repos, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_repos) }
       scope :verification_failed_wikis, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_wikis) }
-      scope :for_plan_name, -> (name) { joins(namespace: :plan).where(plans: { name: name }) }
+      scope :for_plan_name, -> (name) { joins(namespace: { gitlab_subscription: :hosted_plan }).where(plans: { name: name }) }
       scope :requiring_code_owner_approval,
             -> { joins(:protected_branches).where(protected_branches: { code_owner_approval_required: true }) }
       scope :with_active_services, -> { joins(:services).merge(::Service.active) }
@@ -180,6 +181,7 @@ module EE
 
       accepts_nested_attributes_for :tracing_setting, update_only: true, allow_destroy: true
       accepts_nested_attributes_for :status_page_setting, update_only: true, allow_destroy: true
+      accepts_nested_attributes_for :compliance_framework_setting, update_only: true, allow_destroy: true
 
       alias_attribute :fallback_approvals_required, :approvals_before_merge
     end
@@ -645,12 +647,7 @@ module EE
 
     # LFS and hashed repository storage are required for using Design Management.
     def design_management_enabled?
-      lfs_enabled? &&
-        # We will allow the hashed storage requirement to be disabled for
-        # a few releases until we are able to understand the impact of the
-        # hashed storage requirement for existing design management projects.
-        # See https://gitlab.com/gitlab-org/gitlab/issues/13428#note_238729038
-        (hashed_storage?(:repository) || ::Feature.disabled?(:design_management_require_hashed_storage, self, default_enabled: true))
+      lfs_enabled? && hashed_storage?(:repository)
     end
 
     def design_repository
