@@ -15,6 +15,10 @@ describe Gitlab::UsageData, :aggregate_failures do
 
       before do
         allow(Gitlab::GrafanaEmbedUsageData).to receive(:issue_count).and_return(2)
+
+        %w(artifacts external_diffs lfs uploads packages).each do |n|
+          allow(Settings).to receive(:[]).with(n).and_return("#{n}_setting")
+        end
       end
 
       subject { described_class.data }
@@ -78,6 +82,15 @@ describe Gitlab::UsageData, :aggregate_failures do
         expect(count_data[:clusters_applications_elastic_stack]).to eq(1)
         expect(count_data[:grafana_integrated_projects]).to eq(2)
         expect(count_data[:clusters_applications_jupyter]).to eq(1)
+      end
+
+      it 'gathers object store usage correctly' do
+        object_store_data = subject[:object_store]
+        expect(object_store_data[:artifacts]).to eq('artifacts_setting')
+        expect(object_store_data[:external_diffs]).to eq('external_diffs_setting')
+        expect(object_store_data[:lfs]).to eq('lfs_setting')
+        expect(object_store_data[:uploads]).to eq('uploads_setting')
+        expect(object_store_data[:packages]).to eq('packages_setting')
       end
 
       it 'works when queries time out' do

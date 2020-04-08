@@ -24,6 +24,7 @@ module Gitlab
           .merge(features_usage_data)
           .merge(components_usage_data)
           .merge(cycle_analytics_usage_data)
+          .merge(object_store_usage_data)
       end
 
       def to_json(force_refresh: false)
@@ -201,6 +202,18 @@ module Gitlab
         Gitlab::AppLogger.error(e.message)
         Gitlab::ErrorTracking.track_exception(e)
         'unknown_app_server_type'
+      end
+
+      def object_store_usage_data
+        {
+          object_store: {
+            artifacts: Settings['artifacts'],
+            external_diffs: Settings['external_diffs'],
+            lfs: Settings['lfs'],
+            uploads: Settings['uploads'],
+            packages: Settings['packages']
+          }
+        }
       end
 
       def ingress_modsecurity_usage
