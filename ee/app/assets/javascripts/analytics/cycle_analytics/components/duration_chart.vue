@@ -50,7 +50,7 @@ export default {
         v-if="stages.length"
         class="ml-auto"
         :stages="stages"
-        @selected="$emit('stageSelected')"
+        @selected="selectedStages => $emit('stageSelected', selectedStages)"
       />
     </div>
     <scatterplot
