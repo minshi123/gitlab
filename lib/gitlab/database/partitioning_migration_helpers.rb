@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-module Gitlab module Database
+module Gitlab
+  module Database
     module PartitioningMigrationHelpers
+      include SchemaHelpers
 
       def add_foreign_key(from_table, to_table, column: nil, primary_key: :id, on_delete: :cascade)
         update_foreign_keys(from_table, to_table, column) do |from_column|
@@ -16,38 +18,31 @@ module Gitlab module Database
         end
       end
 
-      def fk_function_name(table, prefix: 'fk_fn')
-        object_name(table, prefix)
+      def fk_function_name(table)
+        object_name(table, "fk_cascade_function")
       end
 
-      def fk_trigger_name(table, prefix: 'fk_trigger')
-        object_name(table, prefix)
-      end
-
-      def object_name(table, type)
-        identifier = "#{table}_#{type}"
-        hashed_identifier = Digest::SHA256.hexdigest(identifier).first(10)
-
-        "#{type}_#{hashed_identifier}"
+      def fk_trigger_name(table)
+        object_name(table, "fk_cascade_trigger")
       end
 
       private
 
       def update_foreign_keys(from_table, to_table, column)
-        raise 'changes to custom foreign key functions should be run in a transaction' unless transaction_open?
+        raise "changes to custom foreign key functions should be run in a transaction" unless transaction_open?
 
         yield extract_from_column(to_table, column)
 
         fn_name = fk_function_name(to_table)
         trigger_name = fk_trigger_name(to_table)
-        drop_trigger_if_exists(to_table, trigger_name)
+        drop_trigger(to_table, trigger_name, if_exists: true)
 
         foreign_key_specs = query_foreign_keys(from_table, to_table)
         if foreign_key_specs.empty?
-          drop_function_if_exists(fn_name)
+          drop_function(fn_name, if_exists: true)
         else
           create_or_replace_fk_function(fn_name, foreign_key_specs)
-          create_fk_trigger(to_table, trigger_name, fn_name)
+          create_function_trigger(trigger_name, fn_name, fires: "AFTER DELETE ON #{to_table}")
         end
       end
 
@@ -96,50 +91,25 @@ module Gitlab module Database
         execute(delete_manager.to_sql)
       end
 
-      def drop_trigger_if_exists(table_name, name)
-        execute(<<~SQL)
-          DROP TRIGGER IF EXISTS #{name} ON #{table_name}
-        SQL
-      end
-
-      def drop_function_if_exists(name)
-        execute(<<~SQL)
-          DROP FUNCTION IF EXISTS #{name}
-        SQL
-      end
-
       def create_or_replace_fk_function(fn_name, fk_specs)
-        cascade_operations = build_cascade_statements(fk_specs)
+        create_trigger_function(fn_name, replace: true) do
+          cascade_statements = build_cascade_statements(fk_specs)
+          cascade_statements << "RETURN OLD;"
 
-        execute(<<~SQL)
-          CREATE OR REPLACE FUNCTION #{fn_name}()
-          RETURNS TRIGGER AS
-          $$
-          BEGIN
-          #{cascade_operations.join("\n")}
-          RETURN OLD;
-          END
-          $$ LANGUAGE PLPGSQL
-        SQL
+          cascade_statements.join("\n")
+        end
       end
 
       def build_cascade_statements(fk_specs)
         fk_specs.map do |spec|
+          from_table, from_column, to_column = spec.values_at(:from_table, :from_column, :to_column)
+
           if spec[:cascade_delete]
-            "DELETE FROM #{spec[:from_table]} WHERE #{spec[:from_column]} = OLD.#{spec[:to_column]};"
+            "DELETE FROM #{from_table} WHERE #{from_column} = OLD.#{to_column};"
           else
-            "UPDATE #{spec[:from_table]} SET #{spec[:from_column]} = NULL WHERE #{spec[:from_column]} = OLD.#{spec[:to_column]};"
+            "UPDATE #{from_table} SET #{from_column} = NULL WHERE #{from_column} = OLD.#{to_column};"
           end
         end
-      end
-
-      def create_fk_trigger(table_name, trigger_name, fn_name)
-        execute(<<~SQL)
-          CREATE TRIGGER #{trigger_name}
-          AFTER DELETE ON #{table_name}
-          FOR EACH ROW
-          EXECUTE PROCEDURE #{fn_name}();
-        SQL
       end
     end
   end
