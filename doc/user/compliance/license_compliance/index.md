@@ -265,8 +265,8 @@ license_scanning:
     - cp pip.conf ~/.config/pip/pip.conf
 ```
 
-The [pip.conf](https://pip.pypa.io/en/stable/reference/pip/)
-allows specifing a list of [trusted hosts](https://pip.pypa.io/en/stable/reference/pip/#cmdoption-trusted-host).
+The [`pip.conf`](https://pip.pypa.io/en/stable/reference/pip/) allows you to specify a list of
+[trusted hosts](https://pip.pypa.io/en/stable/reference/pip/#cmdoption-trusted-host):
 
 ```text
 [global]
