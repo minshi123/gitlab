@@ -318,7 +318,7 @@ module EE
       errors.add(:custom_project_templates_group_id, 'has to be a subgroup of the group')
     end
 
-    # Members belonging directly to Group or its subgroup
+    # Members belonging directly to Group or its subgroups
     def billed_group_members
       ::GroupMember.active_without_invites_and_requests.where(
         source_id: self_and_descendants
