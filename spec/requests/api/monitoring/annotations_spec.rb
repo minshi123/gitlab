@@ -36,16 +36,16 @@ describe API::Monitoring::Annotations do
       context 'with invalid parameters' do
         it 'returns error messsage' do
           post api("/environments/#{environment.id}/metrics_dashboard/annotations", user),
-              params: { dashboard_path: dashboard, starting_at: nil, description: nil }
+              params: { dashboard_path: nil, starting_at: nil, description: nil }
 
           expect(response).to have_gitlab_http_status(:bad_request)
-          expect(result['message']).to include({ "starting_at" => ["can't be blank"], "description" => ["can't be blank"] })
+          expect(result['message']).to include({ "starting_at" => ["can't be blank"], "description" => ["can't be blank"], "dashboard_path" => ["can't be blank"] })
         end
       end
     end
 
     context 'without correct permissions' do
-      it 'creates a new annotation', :aggregate_failures do
+      it 'returns error messsage' do
         post api("/environments/#{environment.id}/metrics_dashboard/annotations", guest), params: params
 
         expect(response).to have_gitlab_http_status(:forbidden)
