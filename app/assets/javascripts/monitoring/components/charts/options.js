@@ -1,4 +1,3 @@
-import { engineeringNotation } from '@gitlab/ui/src/utils/number_utils';
 import { SUPPORTED_FORMATS, getFormatter } from '~/lib/utils/unit_format';
 import { s__ } from '~/locale';
 
@@ -8,7 +7,7 @@ const yAxisBoundaryGap = [0.1, 0.1];
  */
 const maxDataAxisTickLength = 8;
 //  Defaults
-const defaultFormat = SUPPORTED_FORMATS.number;
+const defaultFormat = SUPPORTED_FORMATS.engineering;
 
 const defaultYAxisFormat = defaultFormat;
 const defaultYAxisPrecision = 2;
@@ -27,8 +26,7 @@ const chartGridLeft = 75;
  */
 const getDataAxisOptions = ({ format, precision, name }) => {
   // default to engineeringNotation, same as gitlab-ui
-  const formatter = format === defaultYAxisFormat ? engineeringNotation : getFormatter(format);
-
+  const formatter = getFormatter(format);
   return {
     name,
     nameLocation: 'center', // same as gitlab-ui's default
@@ -48,6 +46,8 @@ export const getYAxisOptions = ({
   format = defaultYAxisFormat,
   precision = defaultYAxisPrecision,
 } = {}) => {
+
+  console.log(defaultFormat, defaultYAxisFormat)
   return {
     nameGap: 63, // larger gap than gitlab-ui's default to fit with formatted numbers
     scale: true,

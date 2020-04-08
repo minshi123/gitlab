@@ -33,7 +33,7 @@ describe('options spec', () => {
 
     it('formatter options defaults to engineering notation', () => {
       const options = getYAxisOptions({
-        format: SUPPORTED_FORMATS.number,
+        format: SUPPORTED_FORMATS.engineering,
       });
 
       expect(options.axisLabel.formatter).toEqual(expect.any(Function));
@@ -64,7 +64,7 @@ describe('options spec', () => {
       const formatter = getTooltipFormatter();
 
       expect(formatter).toEqual(expect.any(Function));
-      expect(formatter(1)).toBe('1.000');
+      expect(formatter(1)).toBe('1');
     });
 
     it('defined format', () => {

@@ -403,7 +403,7 @@ describe('Time series component', () => {
               deploymentFormatter = getChartOptions().yAxis[1].axisLabel.formatter;
             });
 
-            it('formats and rounds to 2 decimal places', () => {
+            it('formats by default to precision notation', () => {
               expect(dataFormatter(0.88888)).toBe('889m');
             });
 
