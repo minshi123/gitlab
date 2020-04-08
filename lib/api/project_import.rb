@@ -21,6 +21,13 @@ module API
       def rate_limiter
         ::Gitlab::ApplicationRateLimiter
       end
+
+      def measurement_options
+        {
+          measurement_enabled: true,
+          logger: Gitlab::ImportExport::Project::Logger.build
+        }
+      end
     end
 
     before do
@@ -95,11 +102,14 @@ module API
             overwrite: import_params[:overwrite]
         }
 
+
+        options = import_params[:measurement_enabled] ? measurement_options : {}
+
         override_params = import_params.delete(:override_params)
         filter_attributes_using_license!(override_params) if override_params
 
         project = ::Projects::GitlabProjectsImportService.new(
-          current_user, project_params, override_params
+          current_user, project_params, override_params, options
         ).execute
 
         render_api_error!(project.errors.full_messages&.first, 400) unless project.saved?

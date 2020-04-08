@@ -3,6 +3,8 @@
 module Projects
   module ImportExport
     class ExportService < BaseService
+      include Gitlab::Utils::StrongMemoize
+
       def execute(after_export_strategy = nil, options = {})
         unless project.template_source? || can?(current_user, :admin_project, project)
           raise ::Gitlab::ImportExport::Error.permission_error(current_user, project)
@@ -10,8 +12,10 @@ module Projects
 
         @shared = project.import_export_shared
 
-        save_all!
-        execute_after_export_action(after_export_strategy)
+        with_measurement do
+          save_all!
+          execute_after_export_action(after_export_strategy)
+        end
       ensure
         cleanup
       end
@@ -19,6 +23,30 @@ module Projects
       private
 
       attr_accessor :shared
+
+      def measurement
+        strong_memoize(:measurement) do
+          measurement_enabled = params.fetch(:measurement_enabled, false)
+
+          if measurement_enabled
+            logger = params.fetch(:logger, nil)
+            Gitlab::Utils::Measuring.new(logger: logger, base_data: log_base_data)
+          end
+        end
+      end
+
+      def with_measurement
+        measurement ? measurement.with_measuring { yield } : yield
+      end
+
+      def log_base_data
+        {
+          class: self.class.name,
+          current_user: current_user.name,
+          project_full_path: project.full_path,
+          file_path: @shared.export_path
+        }
+      end
 
       def execute_after_export_action(after_export_strategy)
         return unless after_export_strategy

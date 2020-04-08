@@ -32,7 +32,7 @@ module Gitlab
               # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/24475#note_283090635
               # For development setups, this code-path will be excluded from n+1 detection.
               ::Gitlab::GitalyClient.allow_n_plus_1_calls do
-                measurement_enabled? ? measurement.with_measuring { yield } : yield
+                yield
               end
             end
 
@@ -60,7 +60,8 @@ module Gitlab
                 namespace_id: namespace.id,
                 path:         project_path,
                 file:         File.open(file_path)
-              }
+              },
+              options: measurement_options
             )
 
             service.execute

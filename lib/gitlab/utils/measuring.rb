@@ -5,13 +5,14 @@ require 'prometheus/pid_provider'
 module Gitlab
   module Utils
     class Measuring
-      def initialize(logger: Logger.new($stdout))
-        @logger = logger
+      def initialize(logger: nil, base_data: {})
+        @logger = logger || Logger.new($stdout)
+        @base_data = base_data
       end
 
       def with_measuring
         logger.info "Measuring enabled..."
-        with_gc_stats do
+        time_to_finish, count, gc_stats = with_gc_stats do
           with_count_queries do
             with_measure_time do
               yield
@@ -19,37 +20,52 @@ module Gitlab
           end
         end
 
-        logger.info "Memory usage: #{Gitlab::Metrics::System.memory_usage.to_f / 1024 / 1024} MiB"
-        logger.info "Label: #{::Prometheus::PidProvider.worker_id}"
+        log_info(
+          gc_stats: gc_stats,
+          time_to_finish: time_to_finish,
+          number_of_sql_calls: count,
+          memory_usage: "#{Gitlab::Metrics::System.memory_usage.to_f / 1024 / 1024} MiB",
+          label: ::Prometheus::PidProvider.worker_id
+        )
       end
 
       private
 
-      attr_reader :logger
+      attr_reader :logger, :base_data
 
       def with_count_queries(&block)
+        stats = []
         count = 0
 
         counter_f = ->(_name, _started, _finished, _unique_id, payload) {
           count += 1 unless payload[:name].in? %w[CACHE SCHEMA]
         }
 
-        ActiveSupport::Notifications.subscribed(counter_f, "sql.active_record", &block)
+        stats << ActiveSupport::Notifications.subscribed(counter_f, "sql.active_record", &block)
+        stats << count
 
-        logger.info "Number of sql calls: #{count}"
+        stats.flatten
+      end
+
+      def log_info(details)
+        details = base_data.merge(details)
+        details = details.to_yaml if ActiveSupport::Logger.logger_outputs_to?(logger, STDOUT)
+        logger.info(details)
       end
 
       def with_gc_stats
+        stats = []
         GC.start # perform a full mark-and-sweep
         stats_before = GC.stat
-        yield
+        stats << yield
         stats_after = GC.stat
         stats_diff = stats_after.map do |key, after_value|
           before_value = stats_before[key]
           [key, before: before_value, after: after_value, diff: after_value - before_value]
         end.to_h
-        logger.info "GC stats:"
-        logger.info JSON.pretty_generate(stats_diff)
+        stats << stats_diff
+
+        stats.flatten
       end
 
       def with_measure_time
@@ -57,7 +73,7 @@ module Gitlab
           yield
         end
 
-        logger.info "Time to finish: #{duration_in_numbers(timing)}"
+        timing
       end
 
       def duration_in_numbers(duration_in_seconds)

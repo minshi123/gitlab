@@ -10,6 +10,10 @@ module API
       def rate_limiter
         ::Gitlab::ApplicationRateLimiter
       end
+
+      def measurement_logger
+        { logger: ::Gitlab::ImportExport::Project::Logger.build }
+      end
     end
     before do
       not_found! unless Gitlab::CurrentSettings.project_export_enabled?
@@ -59,6 +63,8 @@ module API
         end
 
         project_export_params = declared_params(include_missing: false)
+        project_export_params.merge(measurement_logger) if project_export_params[:measurement_enabled]
+
         after_export_params = project_export_params.delete(:upload) || {}
 
         export_strategy = if after_export_params[:url].present?

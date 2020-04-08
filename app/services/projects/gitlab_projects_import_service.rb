@@ -10,19 +10,45 @@ module Projects
 
     attr_reader :current_user, :params
 
-    def initialize(user, import_params, override_params = nil)
+    def initialize(user, import_params, override_params = nil, options: {})
       @current_user, @params, @override_params = user, import_params.dup, override_params
+      @options = options
     end
 
     def execute
-      prepare_template_environment(template_file)
+      with_measurement do
+        prepare_template_environment(template_file)
 
-      prepare_import_params
+        prepare_import_params
 
-      ::Projects::CreateService.new(current_user, params).execute
+        ::Projects::CreateService.new(current_user, params).execute
+      end
     end
 
     private
+
+    def measurement
+      strong_memoize(:measurement) do
+        measurement_enabled = options.fetch(:measurement_enabled, false)
+        if measurement_enabled
+          logger = options.fetch(:logger, nil)
+          Gitlab::Utils::Measuring.new(logger: logger, base_data: log_base_data)
+        end
+      end
+    end
+
+    def log_base_data
+      {
+        class: self.class.name,
+        current_user: current_user.name,
+        project_full_path: "#{current_namespace.full_path}/#{params[:path]}",
+        file_path: template_file.path
+      }
+    end
+
+    def with_measurement
+      measurement ? measurement.with_measuring { yield } : yield
+    end
 
     def overwrite_project?
       overwrite? && project_with_same_full_path?
