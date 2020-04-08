@@ -9871,6 +9871,8 @@ CREATE INDEX index_projects_api_vis20_updated_at ON public.projects USING btree 
 
 CREATE INDEX index_projects_on_created_at_and_id ON public.projects USING btree (created_at, id);
 
+CREATE INDEX index_projects_on_creator_id_and_created_at_and_id ON public.projects USING btree (creator_id, created_at, id);
+
 CREATE INDEX index_projects_on_creator_id_and_created_at ON public.projects USING btree (creator_id, created_at);
 
 CREATE INDEX index_projects_on_description_trigram ON public.projects USING gin (description public.gin_trgm_ops);
@@ -13069,5 +13071,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200403185422
 20200407094005
 20200407094923
+20200408175424
 \.
 
