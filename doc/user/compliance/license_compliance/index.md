@@ -267,7 +267,7 @@ License Compliance can be executed on an offline GitLab Ultimate installation by
      image: registry.example.com/namespace/license-management:latest
    ```
 
-1. Ensure the package registry is reachable from within the gitlab-runner
+1. Ensure the package registry is reachable from within the GitLab environment
    and that the package manager is configured to use your preferred package
    registry.
 
