@@ -250,7 +250,7 @@ license_scanning:
       license_scanning: gl-license-scanning-report.json
 ```
 
-## Running License Compliance in an offline environment deployment
+## Running License Compliance in an offline environment
 
 License Compliance can be executed on an offline GitLab Ultimate installation by using the following process:
 
