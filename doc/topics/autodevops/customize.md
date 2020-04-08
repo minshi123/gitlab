@@ -160,7 +160,7 @@ It is also possible to copy and paste the contents of the [Auto DevOps template]
 into your project and edit this as needed. You may prefer to do it
 that way if you want to specifically remove any part of it.
 
-### Customizing the Kubernetes namespace
+## Customizing the Kubernetes namespace
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/27630) in GitLab 12.6.
 
