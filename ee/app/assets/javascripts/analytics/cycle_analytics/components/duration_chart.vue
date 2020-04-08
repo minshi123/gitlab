@@ -1,4 +1,5 @@
 <script>
+import { mapActions, mapState, mapGetters } from 'vuex';
 import { GlLoadingIcon } from '@gitlab/ui';
 import { dateFormats } from '../../shared/constants';
 import Scatterplot from '../../shared/components/scatterplot.vue';
@@ -31,6 +32,8 @@ export default {
     },
   },
   computed: {
+    ...mapState('durationChart', ['isLoadingDurationChart']),
+    ...mapGetters('durationChart', ['durationChartPlottableData', 'durationChartMedianData']),
     hasData() {
       // TODO: check if we want to display when only the median data is available
       return Boolean(this.scatterData.length || this.medianLineData.length);
