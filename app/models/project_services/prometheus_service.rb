@@ -53,9 +53,7 @@ class PrometheusService < MonitoringService
   end
 
   def fields
-    return [] unless editable?
-
-    [
+    return [
       {
         type: 'checkbox',
         name: 'manual_configuration',
