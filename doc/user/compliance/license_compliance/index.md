@@ -244,14 +244,14 @@ license_scanning:
 
 ### Custom root certificates for Python
 
-A custom root certificate can be supplied to complete TLS verification
-using the `ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variables).
+You can supply a custom root certificate to complete TLS verification by using the
+`ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variables).
 
-To bypass TLS verification a custom [pip.conf](https://pip.pypa.io/en/stable/user_guide/#config-file)
-file can be used to configure trusted hosts.
+To bypass TLS verification, you can use a custom [`pip.conf`](https://pip.pypa.io/en/stable/user_guide/#config-file)
+file to configure trusted hosts.
 
-The following `gitlab-ci.yml` file uses a [before_script](../../../ci/yaml/README.md#before_script-and-after_script) to
-inject a custom [pip.conf](https://pip.pypa.io/en/stable/user_guide/#config-file).
+The following `gitlab-ci.yml` file uses a [`before_script`](../../../ci/yaml/README.md#before_script-and-after_script)
+to inject a custom [`pip.conf`](https://pip.pypa.io/en/stable/user_guide/#config-file):
 
 ```yaml
 include:
