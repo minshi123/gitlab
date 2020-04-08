@@ -174,4 +174,14 @@ describe 'User page' do
       end
     end
   end
+
+  context 'when user has a verified `@gitlab.com` email' do
+    let(:user) { create(:user, email: 'test@gitlab.com') }
+
+    it 'shows a "GitLab Team Member" badge' do
+      visit(user_path(user))
+
+      expect(page).to have_selector('[aria-label="GitLab Team Member"]')
+    end
+  end
 end
