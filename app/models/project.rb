@@ -786,6 +786,10 @@ class Project < ApplicationRecord
     Feature.enabled?(:context_commits, default_enabled: true)
   end
 
+  def jira_issues_import_feature_flag_enabled?
+    Feature.enabled?(:jira_issue_import_vue, self)
+  end
+
   def team
     @team ||= ProjectTeam.new(self)
   end
@@ -972,7 +976,7 @@ class Project < ApplicationRecord
   end
 
   def jira_import?
-    import_type == 'jira' && Feature.enabled?(:jira_issue_import, self)
+    import_type == 'jira' && jira_issues_import_feature_flag_enabled?
   end
 
   def jira_force_import?

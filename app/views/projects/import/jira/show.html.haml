@@ -1,4 +1,4 @@
-- if Feature.enabled?(:jira_issue_import_vue, @project)
+- if @project.jira_issues_import_feature_flag_enabled?
   .js-jira-import-root{ data: { project_path: @project.full_path } }
 - else
   - title = _('Jira Issue Import')
