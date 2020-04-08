@@ -64,7 +64,9 @@ export default {
     },
     displayedEpics() {
       return this.epics.reduce((acc, epic) => {
-        acc.push(epic);
+        if (!epic.hasParent) {
+          acc.push(epic);
+        }
         if (epic.isChildEpicShowing) {
           acc.push(...epic.children.edges);
         }
