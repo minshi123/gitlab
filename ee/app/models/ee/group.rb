@@ -368,7 +368,7 @@ module EE
     end
 
     def invited_group_in_groups
-      ::Group.joins(:shared_groups)
+      ::Group.joins(:shared_group_links)
         .where(group_group_links: { shared_group_id: ::Group.groups_including_descendants_by([self]) })
     end
 
