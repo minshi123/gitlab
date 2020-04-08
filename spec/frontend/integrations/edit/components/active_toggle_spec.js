@@ -23,9 +23,9 @@ describe('ActiveToggle', () => {
     if (wrapper) wrapper.destroy();
   });
 
-  const containsGlToggle = () => wrapper.contains(GlToggle);
-  const findToggle = () => wrapper.find('button');
-  const findToggleInput = () => wrapper.find('input');
+  const findGlToggle = () => wrapper.find(GlToggle);
+  const findButtonInToggle = () => findGlToggle().find('button');
+  const findInputInToggle = () => findGlToggle().find('input');
 
   describe('template', () => {
     describe('when showActive is false', () => {
@@ -33,7 +33,8 @@ describe('ActiveToggle', () => {
         createComponent({
           showActive: false,
         });
-        expect(containsGlToggle()).toBe(false);
+
+        expect(findGlToggle().exists()).toBe(false);
       });
     });
 
@@ -42,32 +43,33 @@ describe('ActiveToggle', () => {
         createComponent({
           initialActivated: false,
         });
-        expect(containsGlToggle()).toBe(true);
-        expect(findToggle().classes()).not.toContain(GL_TOGGLE_ACTIVE_CLASS);
+
+        expect(findGlToggle().exists()).toBe(true);
+        expect(findButtonInToggle().classes()).not.toContain(GL_TOGGLE_ACTIVE_CLASS);
+        expect(findInputInToggle().attributes('value')).toBe('false');
       });
     });
 
     describe('when showActive is true, initialActivated is true', () => {
-      it('renders GlToggle as active', () => {
+      beforeEach(() => {
         createComponent();
-        expect(containsGlToggle()).toBe(true);
-        expect(findToggle().classes()).toContain(GL_TOGGLE_ACTIVE_CLASS);
       });
-    });
-  });
 
-  describe('on toggle click', () => {
-    it('switches the form value', () => {
-      createComponent();
+      it('renders GlToggle as active', () => {
+        expect(findGlToggle().exists()).toBe(true);
+        expect(findButtonInToggle().classes()).toContain(GL_TOGGLE_ACTIVE_CLASS);
+        expect(findInputInToggle().attributes('value')).toBe('true');
+      });
 
-      expect(findToggle().classes()).toContain(GL_TOGGLE_ACTIVE_CLASS);
-      expect(findToggleInput().attributes('value')).toBe('true');
+      describe('on toggle click', () => {
+        it('switches the form value', () => {
+          findButtonInToggle().trigger('click');
 
-      findToggle().trigger('click');
-
-      wrapper.vm.$nextTick(() => {
-        expect(findToggle().classes()).not.toContain(GL_TOGGLE_ACTIVE_CLASS);
-        expect(findToggleInput().attributes('value')).toBe('false');
+          wrapper.vm.$nextTick(() => {
+            expect(findButtonInToggle().classes()).not.toContain(GL_TOGGLE_ACTIVE_CLASS);
+            expect(findInputInToggle().attributes('value')).toBe('false');
+          });
+        });
       });
     });
   });
