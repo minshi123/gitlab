@@ -288,7 +288,8 @@ process:
 1. Ensure the package registry is reachable from within the GitLab environment and that the package
    manager is configured to use your preferred package registry.
 
-Additional [`configuration`](#using-private-maven-repos) may be needed for connecting to private Maven repositories.
+Additional [configuration](#using-private-maven-repos) may be needed for connecting to private Maven
+repositories.
 
 ## Project policies for License Compliance
 
