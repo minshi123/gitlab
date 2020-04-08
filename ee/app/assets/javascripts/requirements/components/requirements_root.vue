@@ -9,7 +9,11 @@ import { updateHistory, setUrlParams } from '~/lib/utils/url_utility';
 import RequirementsLoading from './requirements_loading.vue';
 import RequirementsEmptyState from './requirements_empty_state.vue';
 import RequirementItem from './requirement_item.vue';
+import RequirementForm from './requirement_form.vue';
+
 import projectRequirements from '../queries/projectRequirements.query.graphql';
+import createRequirement from '../queries/createRequirement.mutation.graphql';
+import updateRequirement from '../queries/updateRequirement.mutation.graphql';
 
 import { FilterState, DEFAULT_PAGE_SIZE } from '../constants';
 
@@ -20,6 +24,7 @@ export default {
     RequirementsLoading,
     RequirementsEmptyState,
     RequirementItem,
+    RequirementForm,
   },
   props: {
     projectPath: {
@@ -49,10 +54,6 @@ export default {
       type: String,
       required: false,
       default: '',
-    },
-    showCreateRequirement: {
-      type: Boolean,
-      required: true,
     },
     emptyStatePath: {
       type: String,
@@ -105,6 +106,9 @@ export default {
   },
   data() {
     return {
+      showCreateForm: false,
+      showUpdateFormForRequirement: 0,
+      createRequirementRequestActive: false,
       currentPage: this.page,
       prevPageCursor: this.prev,
       nextPageCursor: this.next,
@@ -136,6 +140,16 @@ export default {
       return nextPage > Math.ceil(this.totalRequirements / DEFAULT_PAGE_SIZE) ? null : nextPage;
     },
   },
+  mounted() {
+    document
+      .querySelector('.js-new-requirement')
+      .addEventListener('click', this.handleNewRequirementClick);
+  },
+  beforeDestroy() {
+    document
+      .querySelector('.js-new-requirement')
+      .removeEventListener('click', this.handleNewRequirementClick);
+  },
   methods: {
     /**
      * Update browser URL with updated query-param values
@@ -165,6 +179,74 @@ export default {
         title: document.title,
         replace: true,
       });
+    },
+    handleNewRequirementClick() {
+      this.showCreateForm = true;
+    },
+    handleEditRequirementClick(iid) {
+      this.showUpdateFormForRequirement = iid;
+    },
+    handleNewRequirementSave(title) {
+      this.createRequirementRequestActive = true;
+      return this.$apollo
+        .mutate({
+          mutation: createRequirement,
+          variables: {
+            createRequirementInput: {
+              projectPath: this.projectPath,
+              title,
+            },
+          },
+        })
+        .then(({ data }) => {
+          if (!data.createRequirement.errors.length) {
+            this.showCreateForm = false;
+            this.$apollo.queries.requirements.refetch();
+          } else {
+            throw new Error(`Error creating a requirement`);
+          }
+        })
+        .catch(e => {
+          createFlash(__('Something went wrong while creating a requirement.'));
+          Sentry.captureException(e);
+        })
+        .finally(() => {
+          this.createRequirementRequestActive = false;
+        });
+    },
+    handleNewRequirementCancel() {
+      this.showCreateForm = false;
+    },
+    handleUpdateRequirementSave({ iid, title }) {
+      this.createRequirementRequestActive = true;
+      return this.$apollo
+        .mutate({
+          mutation: updateRequirement,
+          variables: {
+            updateRequirementInput: {
+              projectPath: this.projectPath,
+              iid,
+              title,
+            },
+          },
+        })
+        .then(({ data }) => {
+          if (!data.updateRequirement.errors.length) {
+            this.showUpdateFormForRequirement = 0;
+          } else {
+            throw new Error(`Error updating a requirement`);
+          }
+        })
+        .catch(e => {
+          createFlash(__('Something went wrong while updating a requirement.'));
+          Sentry.captureException(e);
+        })
+        .finally(() => {
+          this.createRequirementRequestActive = false;
+        });
+    },
+    handleUpdateRequirementCancel() {
+      this.showUpdateFormForRequirement = 0;
     },
     handlePageChange(page) {
       const { startCursor, endCursor } = this.requirements.pageInfo;
@@ -202,6 +284,12 @@ export default {
       :current-tab-count="totalRequirements"
       :current-page="currentPage"
     />
+    <requirement-form
+      v-if="showCreateForm"
+      :requirement-request-active="createRequirementRequestActive"
+      @save="handleNewRequirementSave"
+      @cancel="handleNewRequirementCancel"
+    />
     <ul
       v-if="!requirementsListLoading && !requirementsListEmpty"
       class="content-list issuable-list issues-list requirements-list"
@@ -210,6 +298,11 @@ export default {
         v-for="requirement in requirements.list"
         :key="requirement.iid"
         :requirement="requirement"
+        :show-update-form="showUpdateFormForRequirement === requirement.iid"
+        :update-requirement-request-active="createRequirementRequestActive"
+        @updateSave="handleUpdateRequirementSave"
+        @updateCancel="handleUpdateRequirementCancel"
+        @editClick="handleEditRequirementClick"
       />
     </ul>
     <gl-pagination

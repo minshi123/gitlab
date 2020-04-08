@@ -13,7 +13,7 @@ There are two ways to set up Prometheus integration, depending on where your app
 - For deployments on Kubernetes, GitLab can automatically [deploy and manage Prometheus](#managed-prometheus-on-kubernetes).
 - For other deployment targets, simply [specify the Prometheus server](#manual-configuration-of-prometheus).
 
-Once enabled, GitLab will automatically detect metrics from known services in the [metric library](#monitoring-cicd-environments). You are also able to [add your own metrics](#adding-additional-metrics-premium) as well.
+Once enabled, GitLab will automatically detect metrics from known services in the [metric library](#monitoring-cicd-environments). You can also [add your own metrics](#adding-custom-metrics).
 
 ## Enabling Prometheus Integration
 
@@ -76,7 +76,7 @@ The Prometheus server will [automatically detect and monitor](https://prometheus
 - `prometheus.io/port` to define the port of the metrics endpoint.
 - `prometheus.io/path` to define the path of the metrics endpoint. Defaults to `/metrics`.
 
-CPU and Memory consumption is monitored, but requires [naming conventions](prometheus_library/kubernetes.md#specifying-the-environment) in order to determine the environment. If you are using [Auto DevOps](../../../topics/autodevops/), this is handled automatically.
+CPU and Memory consumption is monitored, but requires [naming conventions](prometheus_library/kubernetes.md#specifying-the-environment) in order to determine the environment. If you are using [Auto DevOps](../../../topics/autodevops/index.md), this is handled automatically.
 
 The [NGINX Ingress](../clusters/index.md#installing-applications) that is deployed by GitLab to clusters, is automatically annotated for monitoring providing key response metrics: latency, throughput, and error rates.
 
@@ -132,9 +132,10 @@ GitLab will automatically scan the Prometheus server for metrics from known serv
 
 You can view the performance dashboard for an environment by [clicking on the monitoring button](../../../ci/environments.md#monitoring-environments).
 
-### Adding additional metrics **(PREMIUM)**
+### Adding custom metrics
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/3799) in [GitLab Premium](https://about.gitlab.com/pricing/) 10.6.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/3799) in [GitLab Premium](https://about.gitlab.com/pricing/) 10.6.
+> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/28527) to [GitLab Core](https://about.gitlab.com/pricing/) 12.10.
 
 Custom metrics can be monitored by adding them on the monitoring dashboard page. Once saved, they will be displayed on the environment performance dashboard provided that either:
 
@@ -191,8 +192,8 @@ You may create a new file from scratch or duplicate a GitLab-defined Prometheus
 dashboard.
 
 NOTE: **Note:**
-The custom metrics as defined below do not support alerts, unlike
-[additional metrics](#adding-additional-metrics-premium).
+The metrics as defined below do not support alerts, unlike
+[custom metrics](#adding-custom-metrics).
 
 #### Adding a new dashboard to your project
 
@@ -396,7 +397,7 @@ Starting in [version 12.8](https://gitlab.com/gitlab-org/gitlab/issues/202696), 
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/16530) in GitLab 12.5.
 
-To add an anomaly chart panel type to a dashboard, add add a panel with *exactly* 3 metrics.
+To add an anomaly chart panel type to a dashboard, add a panel with *exactly* 3 metrics.
 
 The first metric represents the current state, and the second and third metrics represent the upper and lower limit respectively:
 
@@ -654,9 +655,9 @@ Data from Prometheus charts on the metrics dashboard can be downloaded as CSV.
 
 #### Managed Prometheus instances
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/6590) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 11.2 for [custom metrics](#adding-additional-metrics-premium), and 11.3 for [library metrics](prometheus_library/metrics.md).
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/6590) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 11.2 for [custom metrics](#adding-custom-metrics), and 11.3 for [library metrics](prometheus_library/metrics.md).
 
-For managed Prometheus instances using auto configuration, alerts for metrics [can be configured](#adding-additional-metrics-premium) directly in the performance dashboard.
+For managed Prometheus instances using auto configuration, alerts for metrics [can be configured](#adding-custom-metrics) directly in the performance dashboard.
 
 To set an alert:
 
@@ -774,7 +775,7 @@ GitLab unfurls the link as an embedded metrics panel:
 ![Embedded Metrics Rendered](img/embedded_metrics_rendered_v12_8.png)
 
 You can also embed a single chart. To get a link to a chart, click the
-**{ellipsis_v}** **More info** menu in the upper right corner of the chart,
+**{ellipsis_v}** **More actions** menu in the upper right corner of the chart,
 and select **Copy link to chart**, as shown in this example:
 
 ![Copy Link To Chart](img/copy_link_to_chart_v12_10.png)

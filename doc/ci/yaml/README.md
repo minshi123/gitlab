@@ -318,25 +318,25 @@ For:
 
 An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
-For more information, see see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
+For more information, see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
 
 #### `services:alias`
 
 An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
-For more information, see see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
+For more information, see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
 
 #### `services:entrypoint`
 
 An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
-For more information, see see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
+For more information, see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
 
 #### `services:command`
 
 An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
-For more information, see see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
+For more information, see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
 
 ### `before_script` and `after_script`
 
@@ -1630,7 +1630,7 @@ The `stop_review_app` job is **required** to have the following keywords defined
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/20956) in GitLab 12.8.
 
 The `auto_stop_in` keyword is for specifying life period of the environment,
-that when expired, GitLab GitLab automatically stops them.
+that when expired, GitLab automatically stops them.
 
 For example,
 
@@ -2549,7 +2549,7 @@ This example creates four paths of execution:
 
 The maximum number of jobs that can be defined within `needs:` defaults to 10, but
 can be changed to 50 via a feature flag. To change the limit to 50,
-[start a Rails console session](https://docs.gitlab.com/omnibus/maintenance/#starting-a-rails-console-session)
+[start a Rails console session](../../administration/troubleshooting/debug.md#starting-a-rails-console-session)
 and run:
 
 ```ruby

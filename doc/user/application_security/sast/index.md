@@ -18,8 +18,8 @@ vulnerabilities using Static Application Security Testing (SAST).
 
 You can take advantage of SAST by doing one of the following:
 
-- [Including the CI job](#configuration) in your existing `.gitlab-ci.yml` file.
-- Implicitly using [Auto SAST](../../../topics/autodevops/index.md#auto-sast-ultimate) provided by
+- [Including the SAST template](#configuration) in your existing `.gitlab-ci.yml` file.
+- Implicitly using [Auto SAST](../../../topics/autodevops/stages.md#auto-sast-ultimate) provided by
   [Auto DevOps](../../../topics/autodevops/index.md).
 
 GitLab checks the SAST report, compares the found vulnerabilities between the
@@ -96,7 +96,7 @@ The [Security Scanner Integration](../../../development/integrations/secure.md) 
 ## Configuration
 
 NOTE: **Note:**
-You don't have to configure SAST manually as shown in this section if you're using [Auto SAST](../../../topics/autodevops/index.md#auto-sast-ultimate)
+You don't have to configure SAST manually as shown in this section if you're using [Auto SAST](../../../topics/autodevops/stages.md#auto-sast-ultimate)
 provided by [Auto DevOps](../../../topics/autodevops/index.md).
 
 For GitLab 11.9 and later, to enable SAST you must [include](../../../ci/yaml/README.md#includetemplate)
@@ -166,18 +166,10 @@ it via [custom environment variables](#custom-environment-variables).
 
 #### Using a variable to pass username and password to a private Maven repository
 
-If you have a private Apache Maven repository that requires login credentials,
-you can use the `MAVEN_CLI_OPTS` [environment variable](#available-variables)
-to pass a username and password. You can set it under your project's settings
-so that your credentials aren't exposed in `.gitlab-ci.yml`.
+If you have a private Maven repository which requires login credentials,
+you can use the `MAVEN_CLI_OPTS` environment variable.
 
-If the username is `myuser` and the password is `verysecret` then you would
-[set the following variable](../../../ci/variables/README.md#via-the-ui)
-under your project's settings:
-
-| Type | Key | Value |
-| ---- | --- | ----- |
-| Variable | `MAVEN_CLI_OPTS` | `-Drepository.password=verysecret -Drepository.user=myuser` |
+Read more on [how to use private Maven repos](../index.md#using-private-maven-repos).
 
 ### Disabling Docker in Docker for SAST
 
@@ -193,6 +185,15 @@ variables:
 ```
 
 This will create individual `<analyzer-name>-sast` jobs for each analyzer that runs in your CI/CD pipeline.
+
+By removing Docker-in-Docker (DIND), GitLab relies on [Linguist](https://github.com/github/linguist)
+to start relevant analyzers depending on the detected repository language(s) instead of the
+[orchestrator](https://gitlab.com/gitlab-org/security-products/dependency-scanning/). However, there
+are some differences in the way repository languages are detected between DIND and non-DIND. You can
+observe these differences by checking both Linguist and the common library. For instance, Linguist
+looks for `*.java` files to spin up the [spotbugs](https://gitlab.com/gitlab-org/security-products/analyzers/spotbugs)
+image, while orchestrator only looks for the existence of `pom.xml`, `build.xml`, `gradlew`,
+`grailsw`, or `mvnw`.
 
 #### Enabling kubesec analyzer
 
@@ -297,6 +298,9 @@ Some analyzers make it possible to filter out vulnerabilities under a given thre
 | `SAST_FLAWFINDER_LEVEL` |         1 | Ignore Flawfinder vulnerabilities under given risk level. Integer, 0=No risk, 5=High risk. |
 | `SAST_GITLEAKS_ENTROPY_LEVEL` | 8.0 | Minimum entropy for secret detection. Float, 0.0 = low, 8.0 = high. |
 | `SAST_GOSEC_LEVEL`      |         0 | Ignore gosec vulnerabilities under given confidence level. Integer, 0=Undefined, 1=Low, 2=Medium, 3=High. |
+| `SAST_GITLEAKS_COMMIT_FROM` | -     | The commit a gitleaks scan starts at. |
+| `SAST_GITLEAKS_COMMIT_TO` | -       | The commit a gitleaks scan ends at. |
+| `SAST_GITLEAKS_HISTORIC_SCAN` | false | Flag to enable a historic gitleaks scan. |
 
 #### Timeouts
 
@@ -348,7 +352,7 @@ analyzer containers: `DOCKER_`, `CI`, `GITLAB_`, `FF_`, `HOME`, `PWD`, `OLDPWD`,
 CAUTION: **Caution:**
 The JSON report artifacts are not a public API of SAST and their format may change in the future.
 
-The SAST tool emits a JSON report report file. Here is an example of the report structure with all important parts of
+The SAST tool emits a JSON report file. Here is an example of the report structure with all important parts of
 it highlighted:
 
 ```json-doc
@@ -439,8 +443,8 @@ the report JSON unless stated otherwise. Presence of optional fields depends on 
 | `vulnerabilities[].message`             | A short text that describes the vulnerability, it may include the occurrence's specific information. Optional. |
 | `vulnerabilities[].description`         | A long text that describes the vulnerability. Optional. |
 | `vulnerabilities[].cve`                 | A fingerprint string value that represents a concrete occurrence of the vulnerability. Is used to determine whether two vulnerability occurrences are same or different. May not be 100% accurate. **This is NOT a [CVE](https://cve.mitre.org/)**. |
-| `vulnerabilities[].severity`            | How much the vulnerability impacts the software. Possible values: `Undefined` (an analyzer has not provided this info), `Info`, `Unknown`, `Low`, `Medium`, `High`, `Critical`. |
-| `vulnerabilities[].confidence`          | How reliable the vulnerability's assessment is. Possible values: `Undefined` (an analyzer has not provided this info), `Ignore`, `Unknown`, `Experimental`, `Low`, `Medium`, `High`, `Confirmed`. |
+| `vulnerabilities[].severity`            | How much the vulnerability impacts the software. Possible values: `Undefined` (an analyzer has not provided this information), `Info`, `Unknown`, `Low`, `Medium`, `High`, `Critical`. |
+| `vulnerabilities[].confidence`          | How reliable the vulnerability's assessment is. Possible values: `Undefined` (an analyzer has not provided this information), `Ignore`, `Unknown`, `Experimental`, `Low`, `Medium`, `High`, `Confirmed`. |
 | `vulnerabilities[].solution`            | Explanation of how to fix the vulnerability. Optional. |
 | `vulnerabilities[].scanner`             | A node that describes the analyzer used to find this vulnerability. |
 | `vulnerabilities[].scanner.id`          | Id of the scanner as a snake_case string. |
