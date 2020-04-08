@@ -5353,6 +5353,9 @@ msgstr ""
 msgid "ContainerRegistry|%{imageName} tags"
 msgstr ""
 
+msgid "ContainerRegistry|%{title} was scheduled for deletion successfully"
+msgstr ""
+
 msgid "ContainerRegistry|Automatically remove extra images that aren't designed to be kept."
 msgstr ""
 
@@ -5407,9 +5410,6 @@ msgstr ""
 msgid "ContainerRegistry|Image ID"
 msgstr ""
 
-msgid "ContainerRegistry|Image deleted successfully"
-msgstr ""
-
 msgid "ContainerRegistry|Keep and protect the images that matter most."
 msgstr ""
 
@@ -5445,9 +5445,6 @@ msgstr[1] ""
 msgid "ContainerRegistry|Retention policy has been Enabled"
 msgstr ""
 
-msgid "ContainerRegistry|Something went wrong while deleting the image."
-msgstr ""
-
 msgid "ContainerRegistry|Something went wrong while deleting the tag."
 msgstr ""
 
@@ -5457,10 +5454,13 @@ msgstr ""
 msgid "ContainerRegistry|Something went wrong while fetching the expiration policy."
 msgstr ""
 
-msgid "ContainerRegistry|Something went wrong while fetching the packages list."
+msgid "ContainerRegistry|Something went wrong while fetching the repository list."
 msgstr ""
 
 msgid "ContainerRegistry|Something went wrong while fetching the tags list."
+msgstr ""
+
+msgid "ContainerRegistry|Something went wrong while scheduling %{title} for deletion."
 msgstr ""
 
 msgid "ContainerRegistry|Something went wrong while updating the expiration policy."
@@ -5497,6 +5497,12 @@ msgid "ContainerRegistry|There are no container images available in this group"
 msgstr ""
 
 msgid "ContainerRegistry|There are no container images stored for this project"
+msgstr ""
+
+msgid "ContainerRegistry|There was an error during the deletion of this repository, please try again."
+msgstr ""
+
+msgid "ContainerRegistry|This Image Repository is being deleted"
 msgstr ""
 
 msgid "ContainerRegistry|This Registry contains deleted image tag data. Remember to run  %{docLinkStart}garbage collection%{docLinkEnd} to remove the stale data from storage."
