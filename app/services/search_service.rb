@@ -3,11 +3,6 @@
 class SearchService
   include Gitlab::Allowable
 
-  REDACTABLE_RESULTS = [
-    ActiveRecord::Relation,
-    Gitlab::Search::FoundBlob
-  ].freeze
-
   SEARCH_TERM_LIMIT = 64
   SEARCH_CHAR_LIMIT = 4096
 
@@ -68,10 +63,6 @@ class SearchService
     @search_objects ||= redact_unauthorized_results(search_results.objects(scope, params[:page]))
   end
 
-  def redactable_results
-    REDACTABLE_RESULTS
-  end
-
   private
 
   def visible_result?(object)
@@ -81,8 +72,6 @@ class SearchService
   end
 
   def redact_unauthorized_results(results)
-    return results unless redactable_results.any? { |redactable| results.is_a?(redactable) }
-
     permitted_results = results.select do |object|
       visible_result?(object)
     end
@@ -93,14 +82,19 @@ class SearchService
 
     log_redacted_search_results(filtered_results.values) if filtered_results.any?
 
-    return results.id_not_in(filtered_results.keys) if results.is_a?(ActiveRecord::Relation)
-
-    Kaminari.paginate_array(
-      permitted_results,
-      total_count: results.total_count,
-      limit: results.limit_value,
-      offset: results.offset_value
-    )
+    case results
+    when ActiveRecord::Relation
+      results.id_not_in(filtered_results.keys)
+    when Kaminari::PaginatableArray
+      Kaminari.paginate_array(
+        permitted_results,
+        total_count: results.total_count,
+        limit: results.limit_value,
+        offset: results.offset_value
+      )
+    else
+      Kaminari.paginate_array(permitted_results)
+    end
   end
 
   def log_redacted_search_results(filtered_results)
