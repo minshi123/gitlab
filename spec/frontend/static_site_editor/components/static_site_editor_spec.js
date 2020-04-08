@@ -7,6 +7,7 @@ import createState from '~/static_site_editor/store/state';
 
 import StaticSiteEditor from '~/static_site_editor/components/static_site_editor.vue';
 import EditArea from '~/static_site_editor/components/edit_area.vue';
+import EditHeader from '~/static_site_editor/components/edit_header.vue';
 
 const localVue = createLocalVue();
 
@@ -40,6 +41,7 @@ describe('StaticSiteEditor', () => {
   };
 
   const findEditArea = () => wrapper.find(EditArea);
+  const findEditHeader = () => wrapper.find(EditHeader);
 
   beforeEach(() => {
     buildStore();
@@ -71,6 +73,12 @@ describe('StaticSiteEditor', () => {
     it('passes page content to edit area', () => {
       expect(findEditArea().props('value')).toBe(content);
     });
+  });
+
+  it('renders the edit header', () => {
+    buildWrapper();
+
+    expect(findEditHeader().exists()).toBe(true);
   });
 
   it('displays skeleton loader while loading content', () => {

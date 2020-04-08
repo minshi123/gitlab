@@ -19238,6 +19238,12 @@ msgstr ""
 msgid "StaticSiteEditor|A new branch was created:"
 msgstr ""
 
+msgid "StaticSiteEditor|Edit content"
+msgstr ""
+
+msgid "StaticSiteEditor|Go back"
+msgstr ""
+
 msgid "StaticSiteEditor|Return to site"
 msgstr ""
 
