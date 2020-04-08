@@ -1,59 +1,62 @@
 /**
  * @param {String} queryLabel - Default query label for chart
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
- * @returns {String || Boolean} The formatted query label or a false flag
+ * @returns {String} The formatted query label or a false flag
+ * @example
+ * singleAttributeLabel('app', {__name__: "up", app: "prometheus"}) -> "app: prometheus"
  */
-function singleAttributeLabel(queryLabel, metricAttributes) {
-  if (!queryLabel) return false;
+const singleAttributeLabel = (queryLabel, metricAttributes) => {
+  if (!queryLabel) return '';
   const relevantAttribute = queryLabel.toLowerCase().replace(' ', '_');
   const value = metricAttributes[relevantAttribute];
-  if (!value) return false;
+  if (!value) return '';
   return `${queryLabel}: ${value}`;
-}
+};
 
 /**
  * @param {String} queryLabel - Default query label for chart
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
- * @returns {String || Boolean} The formatted query label or a false flag
+ * @returns {String} The formatted query label or a false flag
+ * @example
+ * templatedLabel('__name__', {__name__: "up", app: "prometheus"}) -> "__name__"
  */
-function templatedLabel(queryLabel, metricAttributes) {
-  if (!queryLabel) return false;
-  let label = queryLabel;
-  Object.keys(metricAttributes).forEach(templateVar => {
-    const value = metricAttributes[templateVar];
+const templatedLabel = (queryLabel, metricAttributes) => {
+  if (!queryLabel) return '';
+  // eslint-disable-next-line array-callback-return
+  Object.entries(metricAttributes).map(([templateVar, label]) => {
     const regex = new RegExp(`{{\\s*${templateVar}\\s*}}`, 'g');
-
-    label = label.replace(regex, value);
+    // eslint-disable-next-line no-param-reassign
+    queryLabel = queryLabel.replace(regex, label);
   });
 
-  return label;
-}
+  return queryLabel;
+};
 
 /**
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
- * @returns {String || Boolean} The formatted query label or a false flag
+ * @returns {String} The formatted query label or a false flag
+ * @example
+ * multiMetricLabel('', {__name__: "up", app: "prometheus"}) -> "__name__: up, app: prometheus"
  */
-function multiMetricLabel(metricAttributes) {
-  if (!Object.keys(metricAttributes).length) return false;
-  const attributePairs = [];
-  Object.keys(metricAttributes).forEach(templateVar => {
-    const value = metricAttributes[templateVar];
-    attributePairs.push(`${templateVar}: ${value}`);
-  });
-
-  return attributePairs.join(', ');
-}
+const multiMetricLabel = metricAttributes => {
+  return Object.entries(metricAttributes)
+    .map(([templateVar, label]) => `${templateVar}: ${label}`)
+    .join(', ');
+};
 
 /**
  * @param {String} queryLabel - Default query label for chart
  * @param {Object} metricAttributes - Default metric attribute values (e.g. method, instance)
  * @returns {String} The formatted query label
  */
-const getSeriesLabel = (queryLabel, metricAttributes) =>
-  singleAttributeLabel(queryLabel, metricAttributes) ||
-  templatedLabel(queryLabel, metricAttributes) ||
-  multiMetricLabel(metricAttributes) ||
-  `${queryLabel}`;
+const getSeriesLabel = (queryLabel, metricAttributes) => {
+  return (
+    singleAttributeLabel(queryLabel, metricAttributes) ||
+    templatedLabel(queryLabel, metricAttributes) ||
+    multiMetricLabel(metricAttributes) ||
+    queryLabel
+  );
+};
 
 /**
  * @param {Array} queryResults - Array of Result objects
