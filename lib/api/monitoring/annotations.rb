@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module API
-  module Monitoring
+  module Metrics
+    module Dashboards
     class Annotations < Grape::API
       desc 'Create a new monitoring dashboard annotation' do
         success Entities::Monitoring::Annotation
