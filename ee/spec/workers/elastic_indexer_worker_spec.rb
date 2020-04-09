@@ -66,7 +66,7 @@ describe ElasticIndexerWorker, :elastic do
     project, issue, milestone, note, merge_request = nil
 
     Sidekiq::Testing.disable! do
-      project = create :project, :repository, :public
+      project = create :project, :repository
       subject.perform("index", "Project", project.id, project.es_id)
 
       issue = create :issue, project: project
