@@ -8,6 +8,7 @@ fragment BaseEpic on Epic {
   startDate
   dueDate
   hasChildren
+  hasParent
   descendantCounts {
     openedEpics
     closedEpics
@@ -24,11 +25,8 @@ fragment EpicNode on Epic {
   ...BaseEpic
   state
   reference(full: true)
-  relationPath
   createdAt
   closedAt
-  hasChildren
-  hasIssues
   group {
     fullPath
   }

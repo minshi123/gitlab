@@ -551,6 +551,20 @@ describe Epic do
     end
   end
 
+  describe '#has_parent?' do
+    let(:epic) { create(:epic, group: group) }
+
+    it 'has no parent' do
+      expect(epic.has_parent?).to be_falsey
+    end
+
+    it 'has parent' do
+      create(:epic, group: group, children: [epic])
+
+      expect(epic.reload.has_parent?).to be_truthy
+    end
+  end
+
   context 'mentioning other objects' do
     let(:epic) { create(:epic, group: group) }
 

@@ -28,7 +28,7 @@ export default {
       return this.currentGroupId !== this.epic.groupId;
     },
     isExpandIconHidden() {
-      return !this.epic.hasChildren;
+      return this.epic.isChildEpic || !this.epic.children?.edges?.length;
     },
     expandIconName() {
       return this.epic.isChildEpicShowing ? 'chevron-down' : 'chevron-right';
