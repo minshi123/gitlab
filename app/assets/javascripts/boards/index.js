@@ -6,7 +6,6 @@ import 'ee_else_ce/boards/models/list';
 import BoardSidebar from 'ee_else_ce/boards/components/board_sidebar';
 import initNewListDropdown from 'ee_else_ce/boards/components/new_list_dropdown';
 import boardConfigToggle from 'ee_else_ce/boards/config_toggle';
-import toggleFocusMode from 'ee_else_ce/boards/toggle_focus';
 import toggleLabels from 'ee_else_ce/boards/toggle_labels';
 import {
   setPromotionState,
@@ -21,6 +20,7 @@ import { __ } from '~/locale';
 import './models/label';
 import './models/assignee';
 
+import toggleFocusMode from '~/boards/toggle_focus';
 import FilteredSearchBoards from '~/boards/filtered_search_boards';
 import eventHub from '~/boards/eventhub';
 import sidebarEventHub from '~/sidebar/event_hub';

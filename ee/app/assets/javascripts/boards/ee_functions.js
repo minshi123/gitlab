@@ -15,5 +15,4 @@ export const getMilestoneTitle = $boardApp => ({
 
 export const getBoardsModalData = $boardApp => ({
   isFullscreen: false,
-  focusModeAvailable: $boardApp.hasAttribute('data-focus-mode-available'),
 });
