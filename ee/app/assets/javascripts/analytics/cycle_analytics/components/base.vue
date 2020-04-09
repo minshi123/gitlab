@@ -53,7 +53,6 @@ export default {
       'isLoading',
       'isLoadingStage',
       'isLoadingTasksByTypeChart',
-      // 'isLoadingDurationChart',
       'isEmptyStage',
       'isSavingCustomStage',
       'isCreatingCustomStage',
@@ -76,8 +75,6 @@ export default {
     ...mapGetters([
       'hasNoAccessError',
       'currentGroupPath',
-      // 'durationChartPlottableData',
-      // 'durationChartMedianData',
       'tasksByTypeChartData',
       'activeStages',
       'selectedProjectIds',
@@ -93,13 +90,10 @@ export default {
       return this.selectedGroup && !this.errorCode;
     },
     shouldDisplayDurationChart() {
-      return this.featureFlags.hasDurationChart && !this.hasNoAccessError;
+      return this.featureFlags.hasDurationChart && !this.hasNoAccessError && !this.isLoading;
     },
     shouldDisplayTasksByTypeChart() {
       return this.featureFlags.hasTasksByTypeChart && !this.hasNoAccessError;
-    },
-    isDurationChartLoaded() {
-      return !this.isLoadingDurationChart && !this.isLoading;
     },
     isTasksByTypeChartLoaded() {
       return !this.isLoading && !this.isLoadingTasksByTypeChart;
@@ -192,9 +186,6 @@ export default {
     },
     onRemoveStage(id) {
       this.removeStage(id);
-    },
-    onDurationStageSelect(stages) {
-      this.updateSelectedDurationChartStages(stages);
     },
     onStageReorder(data) {
       this.reorderStage(data);
@@ -315,13 +306,7 @@ export default {
         </div>
       </div>
       <div v-if="shouldDisplayDurationChart" class="mt-3">
-        <duration-chart
-          :is-loading="isLoading"
-          :stages="activeStages"
-          :scatter-data="durationChartPlottableData"
-          :median-line-data="durationChartMedianData"
-          @stageSelected="onDurationStageSelect"
-        />
+        <duration-chart :stages="activeStages" />
       </div>
       <template v-if="shouldDisplayTasksByTypeChart">
         <div class="js-tasks-by-type-chart">

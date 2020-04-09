@@ -30,17 +30,18 @@ export const receiveDurationDataError = ({ commit }) => {
   createFlash(__('There was an error while fetching value stream analytics duration data.'));
 };
 
-export const fetchDurationData = ({ state, dispatch, getters }) => {
+export const fetchDurationData = ({ dispatch, rootGetters, rootState }) => {
   dispatch('requestDurationData');
 
+  // Maybe pass the group, stages and requestparams...
   const {
     stages,
     selectedGroup: { fullPath },
-  } = state;
+  } = rootState;
 
   const {
     cycleAnalyticsRequestParams: { created_after, created_before, project_ids },
-  } = getters;
+  } = rootGetters;
 
   return Promise.all(
     stages.map(stage => {

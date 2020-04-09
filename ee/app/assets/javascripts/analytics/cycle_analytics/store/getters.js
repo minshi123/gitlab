@@ -18,26 +18,6 @@ export const cycleAnalyticsRequestParams = ({ startDate = null, endDate = null }
   created_before: endDate ? dateFormat(endDate, dateFormats.isoDate) : null,
 });
 
-// export const durationChartPlottableData = state => {
-//   const { durationData, startDate, endDate } = state;
-//   const selectedStagesDurationData = durationData.filter(stage => stage.selected);
-//   const plottableData = getDurationChartData(selectedStagesDurationData, startDate, endDate);
-
-//   return plottableData.length ? plottableData : [];
-// };
-
-// export const durationChartMedianData = state => {
-//   const { durationMedianData, startDate, endDate } = state;
-//   const selectedStagesDurationMedianData = durationMedianData.filter(stage => stage.selected);
-//   const plottableData = getDurationChartMedianData(
-//     selectedStagesDurationMedianData,
-//     startDate,
-//     endDate,
-//   );
-
-//   return plottableData.length ? plottableData : [];
-// };
-
 export const tasksByTypeChartData = ({ tasksByType, startDate, endDate }) => {
   if (tasksByType && tasksByType.data.length) {
     return getTasksByTypeData({
