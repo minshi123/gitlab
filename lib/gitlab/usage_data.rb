@@ -207,13 +207,30 @@ module Gitlab
       def object_store_usage_data
         {
           object_store: {
-            artifacts: Settings['artifacts'],
-            external_diffs: Settings['external_diffs'],
-            lfs: Settings['lfs'],
-            uploads: Settings['uploads'],
-            packages: Settings['packages']
+            artifacts: object_store_config_filter('artifacts'),
+            external_diffs: object_store_config_filter('external_diffs'),
+            lfs: object_store_config_filter('lfs'),
+            uploads: object_store_config_filter('uploads'),
+            packages: object_store_config_filter('packages')
           }
         }
+      end
+
+      def object_store_config_filter(name)
+        alt_usage_data do
+          config = Settings[name]
+          next {} if config.nil?
+
+          result = {}
+          result['enabled'] = config['enabled']
+
+          unless config['object_store'].nil?
+            result['object_store'] = config['object_store'].slice('enabled', 'direct_upload', 'background_upload')
+            result['object_store']['provider'] = config['object_store']['connection']['provider']
+          end
+
+          result
+        end
       end
 
       def ingress_modsecurity_usage
