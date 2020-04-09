@@ -26,7 +26,7 @@ describe API::Metrics::Dashboard::Annotations do
           post api("/environments/#{environment.id}/metrics_dashboard/annotations", user), params: params
 
           expect(response).to have_gitlab_http_status(:created)
-          expect(result['id']).to eq(environment.id)
+          expect(result['environment_id']).to eq(environment.id)
           expect(result['starting_at'].to_time).to eq(starting_at.to_time)
           expect(result['ending_at'].to_time).to eq(ending_at.to_time)
           expect(result['description']).to eq(description)
