@@ -45,7 +45,7 @@ describe 'Group CI/CD settings' do
       visit group_settings_ci_cd_path(group)
     end
 
-    it_behaves_like 'a deploy token in ci/cd settings' do
+    it_behaves_like 'a deploy token in settings' do
       let(:entity_type) { 'group' }
     end
   end

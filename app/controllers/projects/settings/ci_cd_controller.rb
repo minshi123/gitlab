@@ -47,33 +47,6 @@ module Projects
         redirect_to namespace_project_settings_ci_cd_path
       end
 
-      def create_deploy_token
-        result = Projects::DeployTokens::CreateService.new(@project, current_user, deploy_token_params).execute
-        @new_deploy_token = result[:deploy_token]
-
-        if result[:status] == :success
-          respond_to do |format|
-            format.json do
-              # IMPORTANT: It's a security risk to expose the token value more than just once here!
-              json = API::Entities::DeployTokenWithToken.represent(@new_deploy_token).as_json
-              render json: json, status: result[:http_status]
-            end
-            format.html do
-              flash.now[:notice] = s_('DeployTokens|Your new project deploy token has been created.')
-              render :show
-            end
-          end
-        else
-          respond_to do |format|
-            format.json { render json: { message: result[:message] }, status: result[:http_status] }
-            format.html do
-              flash.now[:alert] = result[:message]
-              render :show
-            end
-          end
-        end
-      end
-
       private
 
       def update_params
@@ -90,10 +63,6 @@ module Projects
         ].tap do |list|
           list << :max_artifacts_size if can?(current_user, :update_max_artifacts_size, project)
         end
-      end
-
-      def deploy_token_params
-        params.require(:deploy_token).permit(:name, :expires_at, :read_repository, :read_registry, :username)
       end
 
       def run_autodevops_pipeline(service)
@@ -165,12 +134,6 @@ module Projects
 
       def define_auto_devops_variables
         @auto_devops = @project.auto_devops || ProjectAutoDevops.new
-      end
-
-      def define_deploy_token_variables
-        @deploy_tokens = @project.deploy_tokens.active
-
-        @new_deploy_token = DeployToken.new
       end
 
       def define_deploy_keys
