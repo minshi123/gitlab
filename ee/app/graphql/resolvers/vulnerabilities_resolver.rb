@@ -52,6 +52,9 @@ module Resolvers
     end
 
     def resolve_vulnerabilities_for_instance_security_dashboard?
+      # object will be nil when we're fetching vulnerabilities from QueryType,
+      # which is the source of vulnerability data for the instance security
+      # dashboard
       object.nil? && current_user.present?
     end
   end
