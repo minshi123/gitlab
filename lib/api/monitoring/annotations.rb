@@ -23,7 +23,7 @@ module API
         post ':id/metrics_dashboard/annotations' do
           environment = ::Environment.find(params[:id])
 
-          forbidden! unless can?(current_user, :create_metrics_dashboard_annotation, environment.project)
+          forbidden! unless can?(current_user, :create_metrics_dashboard_annotation, environment)
 
           result = ::Metrics::Dashboard::Annotations::CreateService.new(current_user, params.merge(environment: environment)).execute
 
