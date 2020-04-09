@@ -7149,8 +7149,7 @@ type Query {
   ): SnippetConnection
 
   """
-  Vulnerabilities reported on projects on the current user's instance security
-  dashboard. Available only when feature flag `first_class_vulnerabilities` is enabled
+  Vulnerabilities reported on projects on the current user's instance security dashboard
   """
   vulnerabilities(
     """

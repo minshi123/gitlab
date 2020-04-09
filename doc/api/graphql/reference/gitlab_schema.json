@@ -21405,7 +21405,7 @@
             },
             {
               "name": "vulnerabilities",
-              "description": "Vulnerabilities reported on projects on the current user's instance security dashboard. Available only when feature flag `first_class_vulnerabilities` is enabled",
+              "description": "Vulnerabilities reported on projects on the current user's instance security dashboard",
               "args": [
                 {
                   "name": "projectId",

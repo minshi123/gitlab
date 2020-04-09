@@ -13,8 +13,7 @@ module EE
               ::Types::VulnerabilityType.connection_type,
               null: true,
               description: "Vulnerabilities reported on projects on the current user's instance security dashboard",
-              resolver: Resolvers::VulnerabilitiesResolver,
-              feature_flag: :first_class_vulnerabilities
+              resolver: Resolvers::VulnerabilitiesResolver
 
         field :design_management, ::Types::DesignManagementType,
               null: false,
