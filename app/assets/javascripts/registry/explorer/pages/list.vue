@@ -205,7 +205,7 @@ export default {
             :key="index"
             ref="rowItem"
             v-gl-tooltip="{ disabled: !listItem.deleting }"
-            :title="$options.i18n.rowScheduledForDeletion"
+            :title="listItem.deleting ? $options.i18n.rowScheduledForDeletion : ''"
           >
             <div
               class="d-flex justify-content-between align-items-center py-2 border-bottom"
