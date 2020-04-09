@@ -8,6 +8,7 @@ describe Gitlab::BlobHelper do
   let(:project) { create(:project) }
   let(:blob) { fake_blob(path: 'file.txt') }
   let(:large_blob) { fake_blob(path: 'test.pdf', size: 2.megabytes, binary: true) }
+  let(:nil_blob) { fake_blob(path: 'empty.txt', data: nil) }
 
   describe '#extname' do
     it 'returns the extension' do
@@ -87,6 +88,10 @@ describe Gitlab::BlobHelper do
     it 'returns the payload in an Array' do
       expect(blob.lines).to eq(['foo'])
     end
+
+    it 'works for a nil blob' do
+      expect(nil_blob.lines).to eq([])
+    end
   end
 
   describe '#content_type' do
@@ -102,6 +107,10 @@ describe Gitlab::BlobHelper do
   describe '#encoded_newlines_re' do
     it 'returns a regular expression' do
       expect(blob.encoded_newlines_re).to eq(/\r\n|\r|\n/)
+    end
+
+    it 'works for a nil blob' do
+      expect(nil_blob.encoded_newlines_re).to eq(/\r\n|\r|\n/)
     end
   end
 
