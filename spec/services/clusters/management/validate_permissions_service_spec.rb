@@ -31,7 +31,7 @@ describe Clusters::Management::ValidatePermissionsService do
       end
 
       shared_examples 'management project is in scope' do
-        context 'when user is authorized to adminster manangement_project' do
+        context 'when user is authorized to administer manangement_project' do
           before do
             management_project.add_maintainer(user)
           end
