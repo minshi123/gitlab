@@ -1,5 +1,5 @@
 ---
-title: Endpoint to create annotations for environments dashboard
+title: API endpoint to create annotations for environments dashboard
 merge_request: 29089
 author:
 type: added
