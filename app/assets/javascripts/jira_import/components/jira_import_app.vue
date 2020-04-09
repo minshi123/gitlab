@@ -1,17 +1,32 @@
 <script>
-import getJiraProjects from '../queries/getJiraProjects.query.graphql';
+import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
+import getJiraImportDetailsQuery from '../queries/getJiraImportDetails.query.graphql';
+import initiateJiraImportMutation from '../queries/initiateJiraImport.mutation.graphql';
+import { IMPORT_STATE, isInProgress } from '../utils';
 import JiraImportForm from './jira_import_form.vue';
+import JiraImportProgress from './jira_import_progress.vue';
 import JiraImportSetup from './jira_import_setup.vue';
 
 export default {
   name: 'JiraImportApp',
   components: {
+    GlAlert,
+    GlLoadingIcon,
     JiraImportForm,
+    JiraImportProgress,
     JiraImportSetup,
   },
   props: {
+    inProgressIllustration: {
+      type: String,
+      required: true,
+    },
     isJiraConfigured: {
       type: Boolean,
+      required: true,
+    },
+    jiraProjects: {
+      type: Array,
       required: true,
     },
     projectPath: {
@@ -23,26 +38,112 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      errorMessage: '',
+      isAlertDismissed: true,
+    };
+  },
   apollo: {
-    getJiraImports: {
-      query: getJiraProjects,
+    jiraImportDetails: {
+      query: getJiraImportDetailsQuery,
       variables() {
         return {
           fullPath: this.projectPath,
         };
       },
-      update: data => data.project.jiraImports,
+      update: data => ({
+        status: data.project.jiraImportStatus,
+        import: data.project.jiraImports.nodes[0],
+      }),
       skip() {
         return !this.isJiraConfigured;
       },
+    },
+  },
+  computed: {
+    isImportInProgress() {
+      return isInProgress(this.jiraImportDetails?.status);
+    },
+    jiraProjectsOptions() {
+      return this.jiraProjects.map(([text, value]) => ({ text, value }));
+    },
+    shouldShowAlert() {
+      return !this.isAlertDismissed && this.errorMessage;
+    },
+  },
+  methods: {
+    dismissAlert() {
+      this.isAlertDismissed = true;
+    },
+    initiateJiraImport(project) {
+      this.$apollo
+        .mutate({
+          mutation: initiateJiraImportMutation,
+          variables: {
+            input: {
+              projectPath: this.projectPath,
+              jiraProjectKey: project,
+            },
+          },
+          update: (store, { data }) => {
+            if (data.jiraImportStart.errors.length) {
+              return;
+            }
+
+            store.writeQuery({
+              query: getJiraImportDetailsQuery,
+              variables: {
+                fullPath: this.projectPath,
+              },
+              data: {
+                project: {
+                  jiraImportStatus: IMPORT_STATE.SCHEDULED,
+                  jiraImports: {
+                    nodes: [data.jiraImportStart.jiraImport],
+                    __typename: 'JiraImportConnection',
+                  },
+                  // eslint-disable-next-line @gitlab/require-i18n-strings
+                  __typename: 'Project',
+                },
+              },
+            });
+          },
+        })
+        .then(({ data }) => {
+          if (data.jiraImportStart.errors.length) {
+            this.setAlertMessage(data.jiraImportStart.errors.join('; '));
+          }
+        })
+        .catch(() => this.setAlertMessage(__('There was an error importing the Jira project.')));
+    },
+    setAlertMessage(message) {
+      this.errorMessage = message;
+      this.isAlertDismissed = false;
     },
   },
 };
 </script>
 
 <template>
-  <div>
+  <div class="jira-import">
+    <gl-alert v-if="shouldShowAlert" variant="danger" @dismiss="dismissAlert">
+      {{ errorMessage }}
+    </gl-alert>
+
     <jira-import-setup v-if="!isJiraConfigured" :illustration="setupIllustration" />
-    <jira-import-form v-else />
+    <gl-loading-icon v-else-if="$apollo.loading" size="md" class="mt-3" />
+    <jira-import-progress
+      v-else-if="isImportInProgress"
+      :illustration="inProgressIllustration"
+      :import-initiator="jiraImportDetails.import.scheduledBy.name"
+      :import-project="jiraImportDetails.import.jiraProjectKey"
+      :import-time="jiraImportDetails.import.scheduledAt"
+    />
+    <jira-import-form
+      v-else
+      :jira-projects="jiraProjectsOptions"
+      @initiateJiraImport="initiateJiraImport"
+    />
   </div>
 </template>

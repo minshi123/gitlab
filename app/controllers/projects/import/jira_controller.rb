@@ -8,6 +8,7 @@ module Projects
 
       def show
         @is_jira_configured = @project.jira_service.present?
+        @jira_projects = @is_jira_configured ? @project.jira_service.client.Project.all.map { |p| ["#{p.name} (#{p.key})", p.key] } : []
         return if Feature.enabled?(:jira_issue_import_vue, @project)
 
         unless @project.latest_jira_import&.in_progress?
