@@ -2,7 +2,8 @@
 
 module API
   module Entities
-    module Monitoring
+    module Metrics
+      module Dashboards
       class Annotation < Grape::Entity
         expose :id
         expose :starting_at
