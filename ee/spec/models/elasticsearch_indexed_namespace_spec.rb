@@ -39,7 +39,7 @@ describe ElasticsearchIndexedNamespace do
     end
   end
 
-  context 'with plans' do
+  context 'with plans', :use_clean_rails_memory_store_caching do
     Plan::PAID_HOSTED_PLANS.each do |plan|
       plan_factory = "#{plan}_plan"
       let_it_be(plan_factory) { create(plan_factory) }
@@ -55,7 +55,9 @@ describe ElasticsearchIndexedNamespace do
     end
 
     def get_indexed_namespaces
-      described_class.order(:created_at).pluck(:namespace_id)
+      ids = described_class.order(:created_at).pluck(:namespace_id)
+      expect(ids).to match_array(described_class.limited_ids_cached)
+      ids
     end
 
     def expect_queue_to_contain(*args)
@@ -66,6 +68,8 @@ describe ElasticsearchIndexedNamespace do
 
     describe '.index_first_n_namespaces_of_plan' do
       it 'creates records, scoped by plan and ordered by namespace id' do
+        expect(ElasticsearchIndexedNamespace).to receive(:drop_limited_ids_cache!).exactly(3).times
+
         ids = namespaces.map(&:id)
 
         described_class.index_first_n_namespaces_of_plan('gold', 1)
@@ -92,6 +96,8 @@ describe ElasticsearchIndexedNamespace do
       end
 
       it 'creates records, scoped by plan and ordered by namespace id' do
+        expect(ElasticsearchIndexedNamespace).to receive(:drop_limited_ids_cache!).exactly(3).times
+
         ids = namespaces.map(&:id)
 
         expect(get_indexed_namespaces).to contain_exactly(ids[0], ids[2], ids[1])
