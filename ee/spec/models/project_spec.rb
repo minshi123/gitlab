@@ -23,6 +23,7 @@ describe Project do
     it { is_expected.to have_one(:import_state).class_name('ProjectImportState') }
     it { is_expected.to have_one(:repository_state).class_name('ProjectRepositoryState').inverse_of(:project) }
     it { is_expected.to have_one(:status_page_setting).class_name('StatusPageSetting') }
+    it { is_expected.to have_one(:compliance_framework_setting).class_name('ComplianceManagement::ComplianceFramework::ProjectSettings') }
 
     it { is_expected.to have_many(:reviews).inverse_of(:project) }
     it { is_expected.to have_many(:path_locks) }
@@ -2048,20 +2049,15 @@ describe Project do
   describe '#design_management_enabled?' do
     let(:project) { build(:project) }
 
-    where(:lfs_enabled, :hashed_storage_enabled, :hash_storage_required, :expectation) do
-      false | false | false | false
-      false | true  | true  | false
-      false | true  | false | false
-      false | false | true  | false
-      true  | false | false | true
-      true  | true  | true  | true
-      true  | true  | false | true
-      true  | false | true  | false
+    where(:lfs_enabled, :hashed_storage_enabled, :expectation) do
+      false | false | false
+      true  | false | false
+      false | true  | false
+      true  | true  | true
     end
 
     with_them do
       before do
-        stub_feature_flags(design_management_require_hashed_storage: hash_storage_required)
         expect(project).to receive(:lfs_enabled?).and_return(lfs_enabled)
         allow(project).to receive(:hashed_storage?).with(:repository).and_return(hashed_storage_enabled)
       end

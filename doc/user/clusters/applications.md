@@ -52,7 +52,7 @@ Some applications are installable only for a project-level cluster.
 Support for installing these applications in a group-level cluster is
 planned for future releases.
 For updates, see [the issue tracking
-progress](https://gitlab.com/gitlab-org/gitlab-foss/issues/51989).
+progress](https://gitlab.com/gitlab-org/gitlab/-/issues/24411).
 
 CAUTION: **Caution:**
 If you have an existing Kubernetes cluster with Helm already installed,
@@ -295,7 +295,7 @@ from processing any requests for the given application or environment.
 1. Switching its respective toggle to the disabled position and applying changes through the **Save changes** button. This will reinstall
 Ingress with the recent changes.
 
-![Disabling WAF](../../topics/web_application_firewall/img/guide_waf_ingress_save_changes_v12_9.png)
+![Disabling WAF](../../topics/web_application_firewall/img/guide_waf_ingress_save_changes_v12_10.png)
 
 ##### Viewing Web Application Firewall traffic
 
@@ -754,7 +754,7 @@ available configuration options.
 [Cilium](https://cilium.io/) is a networking plugin for Kubernetes
 that you can use to implement support for
 [NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
-resources. For more information on [Network Policies](../../topics/autodevops/index.md#network-policy), see the documentation.
+resources. For more information on [Network Policies](../../topics/autodevops/stages.md#network-policy), see the documentation.
 
 Enable Cilium in the `.gitlab/managed-apps/config.yaml` file to install it:
 
@@ -823,6 +823,28 @@ You can disable the monitor log in `.gitlab/managed-apps/cilium/values.yaml`:
 agent:
   monitor:
     enabled: false
+```
+
+The [Hubble](https://github.com/cilium/hubble) monitoring daemon is
+enabled by default and it's set to collect per namespace flow
+metrics. This metrics are accessible on the [Threat Monitoring](../application_security/threat_monitoring/index.md)
+dashboard. You can disable Hubble by adding the following to
+`.gitlab/managed-apps/config.yaml`:
+
+```yaml
+cilium:
+  installed: true
+  hubble:
+    installed: false
+```
+
+You can also adjust Helm values for Hubble via
+`.gitlab/managed-apps/cilium/hubble-values.yaml`:
+
+```yaml
+metrics:
+  enabled:
+    - 'flow:sourceContext=namespace;destinationContext=namespace'
 ```
 
 ### Install Vault using GitLab CI/CD

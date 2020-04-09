@@ -51,9 +51,9 @@ module EE
 
         def features_usage_data_ee
           {
-            elasticsearch_enabled: ::Gitlab::CurrentSettings.elasticsearch_search?,
-            license_trial_ends_on: License.trial_ends_on,
-            geo_enabled: ::Gitlab::Geo.enabled?
+            elasticsearch_enabled: alt_usage_data { ::Gitlab::CurrentSettings.elasticsearch_search? },
+            license_trial_ends_on: alt_usage_data { License.trial_ends_on },
+            geo_enabled: alt_usage_data { ::Gitlab::Geo.enabled? }
           }
         end
 
@@ -140,28 +140,31 @@ module EE
         override :system_usage_data
         def system_usage_data
           super.tap do |usage_data|
-            usage_data[:counts].merge!({
-                                         dependency_list_usages_total: ::Gitlab::UsageCounters::DependencyList.usage_totals[:total],
-                                         epics: count(::Epic),
-                                         feature_flags: count(Operations::FeatureFlag),
-                                         geo_nodes: count(::GeoNode),
-                                         ldap_group_links: count(::LdapGroupLink),
-                                         ldap_keys: count(::LDAPKey),
-                                         ldap_users: count(::User.ldap, 'users.id'),
-                                         pod_logs_usages_total: ::Gitlab::UsageCounters::PodLogs.usage_totals[:total],
-                                         projects_enforcing_code_owner_approval: count(::Project.without_deleted.non_archived.requiring_code_owner_approval),
-                                         merge_requests_with_optional_codeowners: distinct_count(::ApprovalMergeRequestRule.code_owner_approval_optional, :merge_request_id),
-                                         merge_requests_with_required_codeowners: distinct_count(::ApprovalMergeRequestRule.code_owner_approval_required, :merge_request_id),
-                                         projects_mirrored_with_pipelines_enabled: count(::Project.mirrored_with_enabled_pipelines),
-                                         projects_reporting_ci_cd_back_to_github: count(::GithubService.without_defaults.active),
-                                         projects_with_packages: distinct_count(::Packages::Package, :project_id),
-                                         projects_with_tracing_enabled: count(ProjectTracingSetting),
-                                         template_repositories: count(::Project.with_repos_templates) + count(::Project.with_groups_level_repos_templates)
-                                       },
-                                       service_desk_counts,
-                                       security_products_usage,
-                                       epics_deepest_relationship_level,
-                                       operations_dashboard_usage)
+            usage_data[:counts].merge!(
+              {
+                dependency_list_usages_total: ::Gitlab::UsageCounters::DependencyList.usage_totals[:total],
+                epics: count(::Epic),
+                feature_flags: count(Operations::FeatureFlag),
+                geo_nodes: count(::GeoNode),
+                ldap_group_links: count(::LdapGroupLink),
+                ldap_keys: count(::LDAPKey),
+                ldap_users: count(::User.ldap, 'users.id'),
+                pod_logs_usages_total: ::Gitlab::UsageCounters::PodLogs.usage_totals[:total],
+                projects_enforcing_code_owner_approval: count(::Project.without_deleted.non_archived.requiring_code_owner_approval),
+                merge_requests_with_optional_codeowners: distinct_count(::ApprovalMergeRequestRule.code_owner_approval_optional, :merge_request_id),
+                merge_requests_with_required_codeowners: distinct_count(::ApprovalMergeRequestRule.code_owner_approval_required, :merge_request_id),
+                projects_mirrored_with_pipelines_enabled: count(::Project.mirrored_with_enabled_pipelines),
+                projects_reporting_ci_cd_back_to_github: count(::GithubService.without_defaults.active),
+                projects_with_packages: distinct_count(::Packages::Package, :project_id),
+                projects_with_tracing_enabled: count(ProjectTracingSetting),
+                status_page_projects: count(::StatusPageSetting.enabled),
+                status_page_issues: count(::Issue.on_status_page),
+                template_repositories: count(::Project.with_repos_templates) + count(::Project.with_groups_level_repos_templates)
+              },
+              service_desk_counts,
+              security_products_usage,
+              epics_deepest_relationship_level,
+              operations_dashboard_usage)
           end
         end
 
@@ -199,10 +202,10 @@ module EE
         # rubocop:disable CodeReuse/ActiveRecord
         def usage_activity_by_stage_configure(time_period)
           {
-            clusters_applications_cert_managers: ::Clusters::Applications::CertManager.where(time_period).distinct_by_user,
-            clusters_applications_helm: ::Clusters::Applications::Helm.where(time_period).distinct_by_user,
-            clusters_applications_ingress: ::Clusters::Applications::Ingress.where(time_period).distinct_by_user,
-            clusters_applications_knative: ::Clusters::Applications::Knative.where(time_period).distinct_by_user,
+            clusters_applications_cert_managers: clusters_user_distinct_count(::Clusters::Applications::CertManager, time_period),
+            clusters_applications_helm: clusters_user_distinct_count(::Clusters::Applications::Helm, time_period),
+            clusters_applications_ingress: clusters_user_distinct_count(::Clusters::Applications::Ingress, time_period),
+            clusters_applications_knative: clusters_user_distinct_count(::Clusters::Applications::Knative, time_period),
             clusters_disabled: distinct_count(::Clusters::Cluster.disabled.where(time_period), :user_id),
             clusters_enabled: distinct_count(::Clusters::Cluster.enabled.where(time_period), :user_id),
             clusters_platforms_gke: distinct_count(::Clusters::Cluster.gcp_installed.enabled.where(time_period), :user_id),
@@ -254,7 +257,7 @@ module EE
         def usage_activity_by_stage_monitor(time_period)
           {
             clusters: distinct_count(::Clusters::Cluster.where(time_period), :user_id),
-            clusters_applications_prometheus: ::Clusters::Applications::Prometheus.where(time_period).distinct_by_user,
+            clusters_applications_prometheus: clusters_user_distinct_count(::Clusters::Applications::Prometheus, time_period),
             operations_dashboard_default_dashboard: count(::User.active.with_dashboard('operations').where(time_period)),
             operations_dashboard_users_with_projects_added: distinct_count(UsersOpsDashboardProject.joins(:user).merge(::User.active).where(time_period), :user_id),
             projects_prometheus_active: distinct_count(::Project.with_active_prometheus_service.where(time_period), :creator_id),
@@ -312,7 +315,7 @@ module EE
             ci_pipeline_schedules: distinct_count(::Ci::PipelineSchedule.where(time_period), :owner_id),
             ci_pipelines: distinct_count(::Ci::Pipeline.where(time_period), :user_id),
             ci_triggers: distinct_count(::Ci::Trigger.where(time_period), :owner_id),
-            clusters_applications_runner: ::Clusters::Applications::Runner.where(time_period).distinct_by_user,
+            clusters_applications_runner: clusters_user_distinct_count(::Clusters::Applications::Runner, time_period),
             projects_reporting_ci_cd_back_to_github: distinct_count(::Project.with_github_service_pipeline_events.where(time_period), :creator_id)
           }
         end
@@ -348,6 +351,9 @@ module EE
           distinct_count(::Project.service_desk_enabled.where(time_period), :creator_id, start: project_creator_id_start, finish: project_creator_id_finish)
         end
 
+        def clusters_user_distinct_count(clusters, time_period)
+          distinct_count(clusters.where(time_period).available.joins(:cluster), 'clusters.user_id')
+        end
         # rubocop:enable CodeReuse/ActiveRecord
       end
     end
