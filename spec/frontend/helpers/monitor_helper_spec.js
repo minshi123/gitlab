@@ -77,7 +77,7 @@ describe('monitor helper', () => {
         config,
       );
 
-      expect(result.name).toEqual(
+      expect(result.name).toBe(
         'backend: HA Server, frontend: BA Server, app: prometheus, instance: k8 cluster 1',
       );
     });
