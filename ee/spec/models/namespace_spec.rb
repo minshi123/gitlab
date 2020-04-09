@@ -918,7 +918,7 @@ describe Namespace do
             shared_group.add_developer(create(:user, :blocked))
 
             create(:group_group_link, { shared_with_group: shared_group,
-              shared_group: group })
+                                        shared_group: group })
           end
 
           context 'when feature is not enabled' do
@@ -926,8 +926,9 @@ describe Namespace do
               stub_feature_flags(share_group_with_group: false)
             end
 
-            it 'does not include users coming from the shared groups' do
+            it 'does not include users coming from the shared groups', :aggregate_failuers do
               expect(group.billed_user_ids).to match_array([developer.id])
+              expect(shared_group.billed_user_ids).not_to include([developer.id])
             end
           end
 
@@ -936,8 +937,9 @@ describe Namespace do
               stub_feature_flags(share_group_with_group: true)
             end
 
-            it 'includes active users from the shared group to the billed members' do
+            it 'includes active users from the shared group to the billed members', :aggregate_failuers do
               expect(group.billed_user_ids).to match_array([shared_group_developer.id, developer.id])
+              expect(shared_group.billed_user_ids).not_to include([developer.id])
             end
 
             context 'when subgroup invited another group to collaborate' do
@@ -954,11 +956,13 @@ describe Namespace do
                 before do
                   subgroup = create(:group, parent: group)
                   create(:group_group_link, { shared_with_group: another_shared_group,
-                    shared_group: subgroup })
+                                              shared_group: subgroup })
                 end
 
-                it 'includes all the active and non guest users from the shared group' do
+                it 'includes all the active and non guest users from the shared group', :aggregate_failuers do
                   expect(group.billed_user_ids).to match_array([shared_group_developer.id, developer.id, another_shared_group_developer.id])
+                  expect(shared_group.billed_user_ids).not_to include([developer.id])
+                  expect(another_shared_group.billed_user_ids).not_to include([developer.id, shared_group_developer.id])
                 end
               end
 
@@ -966,7 +970,7 @@ describe Namespace do
                 before do
                   subgroup = create(:group, parent: group)
                   create(:group_group_link, :guest, { shared_with_group: another_shared_group,
-                    shared_group: subgroup })
+                                                      shared_group: subgroup })
                 end
 
                 it 'does not includes any user from the shared group from the subgroup' do
@@ -1038,7 +1042,7 @@ describe Namespace do
               shared_group.add_developer(create(:user, :blocked))
 
               create(:group_group_link, { shared_with_group: shared_group,
-                shared_group: group })
+                                          shared_group: group })
             end
 
             context 'when feature is not enabled' do
@@ -1056,8 +1060,9 @@ describe Namespace do
                 stub_feature_flags(share_group_with_group: true)
               end
 
-              it 'includes active users from the shared group including guests' do
+              it 'includes active users from the shared group including guests', :aggregate_failuers do
                 expect(group.billed_user_ids).to match_array([developer.id, guest.id, shared_group_developer.id, shared_group_guest.id])
+                expect(shared_group.billed_user_ids).to match_array([shared_group_developer.id, shared_group_guest.id])
               end
             end
           end
