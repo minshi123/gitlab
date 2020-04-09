@@ -13,7 +13,7 @@ module API
         optional :ending_at, type: DateTime,
                 desc: 'Date time indicating ending moment to which the annotation relates.'
         requires :dashboard_path, type: String,
-                desc: 'The ID of the dashboard on which the annotation should be added'
+                desc: 'The path to a file defining the dashboard on which the annotation should be added'
         optional :tags, type: Array[String],
                 desc: 'The ID of the panel on which the annotation should be added'
         requires :description, type: String, desc: 'The description of the annotation'
