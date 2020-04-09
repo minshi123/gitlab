@@ -20,6 +20,8 @@ module API
 
         resource :environments do
           post ':id/metrics_dashboard/annotations' do
+            not_found! unless Feature.enabled?(:metrics_dashboard_annotations, current_user)
+
             environment = ::Environment.find(params[:id])
 
             forbidden! unless can?(current_user, :create_metrics_dashboard_annotation, environment)
