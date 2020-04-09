@@ -15,7 +15,7 @@ describe API::Monitoring::Annotations do
   let(:result) { JSON.parse(response.body) }
 
   describe 'POST /environments/:environment_id/metrics_dashboard/annotations' do
-    before do
+    before :all do
       project.add_developer(user)
       project.add_guest(guest)
     end
