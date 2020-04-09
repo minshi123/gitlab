@@ -14,7 +14,7 @@ describe Gitlab::UsageData, :aggregate_failures do
       let!(:ud) { build(:usage_data) }
 
       before do
-        allow(Gitlab::GrafanaEmbedUsageData).to receive(:issue_count).and_return(2)
+        allow(described_class).to receive(:grafana_embed_usage_data).and_return(2)
       end
 
       subject { described_class.data }
@@ -51,19 +51,21 @@ describe Gitlab::UsageData, :aggregate_failures do
         expect(count_data[:projects_with_repositories_enabled]).to eq(3)
         expect(count_data[:projects_with_error_tracking_enabled]).to eq(1)
         expect(count_data[:projects_with_alerts_service_enabled]).to eq(1)
+        expect(count_data[:projects_with_prometheus_alerts]).to eq(2)
         expect(count_data[:issues_created_from_gitlab_error_tracking_ui]).to eq(1)
         expect(count_data[:issues_with_associated_zoom_link]).to eq(2)
         expect(count_data[:issues_using_zoom_quick_actions]).to eq(3)
         expect(count_data[:issues_with_embedded_grafana_charts_approx]).to eq(2)
         expect(count_data[:incident_issues]).to eq(4)
 
-        expect(count_data[:clusters_enabled]).to eq(4)
-        expect(count_data[:project_clusters_enabled]).to eq(3)
+        expect(count_data[:clusters_enabled]).to eq(6)
+        expect(count_data[:project_clusters_enabled]).to eq(4)
         expect(count_data[:group_clusters_enabled]).to eq(1)
+        expect(count_data[:instance_clusters_enabled]).to eq(1)
         expect(count_data[:clusters_disabled]).to eq(3)
         expect(count_data[:project_clusters_disabled]).to eq(1)
-        expect(count_data[:group_clusters_disabled]).to eq(2)
-        expect(count_data[:group_clusters_enabled]).to eq(1)
+        expect(count_data[:group_clusters_disabled]).to eq(1)
+        expect(count_data[:instance_clusters_disabled]).to eq(1)
         expect(count_data[:clusters_platforms_eks]).to eq(1)
         expect(count_data[:clusters_platforms_gke]).to eq(1)
         expect(count_data[:clusters_platforms_user]).to eq(1)
@@ -77,6 +79,7 @@ describe Gitlab::UsageData, :aggregate_failures do
         expect(count_data[:clusters_applications_elastic_stack]).to eq(1)
         expect(count_data[:grafana_integrated_projects]).to eq(2)
         expect(count_data[:clusters_applications_jupyter]).to eq(1)
+        expect(count_data[:clusters_management_project]).to eq(1)
       end
 
       it 'works when queries time out' do
@@ -219,6 +222,71 @@ describe Gitlab::UsageData, :aggregate_failures do
         end
       end
 
+      describe '#grafana_embed_usage_data' do
+        subject { described_class.grafana_embed_usage_data }
+
+        let(:project) { create(:project) }
+        let(:description_with_embed) { "Some comment\n\nhttps://grafana.example.com/d/xvAk4q0Wk/go-processes?orgId=1&from=1573238522762&to=1573240322762&var-job=prometheus&var-interval=10m&panelId=1&fullscreen" }
+        let(:description_with_unintegrated_embed) { "Some comment\n\nhttps://grafana.exp.com/d/xvAk4q0Wk/go-processes?orgId=1&from=1573238522762&to=1573240322762&var-job=prometheus&var-interval=10m&panelId=1&fullscreen" }
+        let(:description_with_non_grafana_inline_metric) { "Some comment\n\n#{Gitlab::Routing.url_helpers.metrics_namespace_project_environment_url(*['foo', 'bar', 12])}" }
+
+        shared_examples "zero count" do
+          it "does not count the issue" do
+            expect(subject).to eq(0)
+          end
+        end
+
+        context 'with project grafana integration enabled' do
+          before do
+            create(:grafana_integration, project: project, enabled: true)
+          end
+
+          context 'with valid and invalid embeds' do
+            before do
+              # Valid
+              create(:issue, project: project, description: description_with_embed)
+              create(:issue, project: project, description: description_with_embed)
+              # In-Valid
+              create(:issue, project: project, description: description_with_unintegrated_embed)
+              create(:issue, project: project, description: description_with_non_grafana_inline_metric)
+              create(:issue, project: project, description: nil)
+              create(:issue, project: project, description: '')
+              create(:issue, project: project)
+            end
+
+            it 'counts only the issues with embeds' do
+              expect(subject).to eq(2)
+            end
+          end
+        end
+
+        context 'with project grafana integration disabled' do
+          before do
+            create(:grafana_integration, project: project, enabled: false)
+          end
+
+          context 'with one issue having a grafana link in the description and one without' do
+            before do
+              create(:issue, project: project, description: description_with_embed)
+              create(:issue, project: project)
+            end
+
+            it_behaves_like('zero count')
+          end
+        end
+
+        context 'with an un-integrated project' do
+          context 'with one issue having a grafana link in the description and one without' do
+            before do
+              create(:issue, project: project, description: description_with_embed)
+              create(:issue, project: project)
+            end
+
+            it_behaves_like('zero count')
+          end
+        end
+      end
+
       describe '#count' do
         let(:relation) { double(:relation) }
 
@@ -267,5 +335,19 @@ describe Gitlab::UsageData, :aggregate_failures do
     end
 
     it_behaves_like 'usage data execution'
+  end
+
+  describe '#alt_usage_data' do
+    it 'returns the fallback when it gets an error' do
+      expect(described_class.alt_usage_data { raise StandardError } ).to eq(-1)
+    end
+
+    it 'returns the evaluated block when give' do
+      expect(described_class.alt_usage_data { Gitlab::CurrentSettings.uuid } ).to eq(Gitlab::CurrentSettings.uuid)
+    end
+
+    it 'returns the value when given' do
+      expect(described_class.alt_usage_data(1)).to eq 1
+    end
   end
 end

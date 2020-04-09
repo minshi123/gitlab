@@ -1,17 +1,27 @@
 <script>
 import { escape as esc } from 'lodash';
-import { GlPopover, GlLink, GlAvatar, GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlPopover,
+  GlLink,
+  GlAvatar,
+  GlDeprecatedButton,
+  GlIcon,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
+
+import RequirementForm from './requirement_form.vue';
 
 export default {
   components: {
     GlPopover,
     GlLink,
     GlAvatar,
-    GlButton,
+    GlDeprecatedButton,
     GlIcon,
+    RequirementForm,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -25,6 +35,16 @@ export default {
         ['iid', 'state', 'userPermissions', 'title', 'createdAt', 'updatedAt', 'author'].every(
           prop => value[prop],
         ),
+    },
+    showUpdateForm: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    updateRequirementRequestActive: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   computed: {
@@ -51,12 +71,35 @@ export default {
       return this.requirement.author;
     },
   },
+  methods: {
+    /**
+     * This is needed as an independent method since
+     * when user changes current page, `$refs.authorLink`
+     * will be null until next page results are loaded & rendered.
+     */
+    getAuthorPopoverTarget() {
+      if (this.$refs.authorLink) {
+        return this.$refs.authorLink.$el;
+      }
+      return '';
+    },
+    handleUpdateRequirementSave(params) {
+      this.$emit('updateSave', params);
+    },
+  },
 };
 </script>
 
 <template>
   <li class="issue requirement">
-    <div class="issue-box">
+    <requirement-form
+      v-if="showUpdateForm"
+      :requirement="requirement"
+      :requirement-request-active="updateRequirementRequestActive"
+      @save="handleUpdateRequirementSave"
+      @cancel="$emit('updateCancel')"
+    />
+    <div v-else class="issue-box">
       <div class="issuable-info-container">
         <span class="issuable-reference text-muted d-none d-sm-block mr-2">{{ reference }}</span>
         <div class="issuable-main-info">
@@ -81,14 +124,20 @@ export default {
         <div class="issuable-meta">
           <ul v-if="canUpdate || canArchive" class="controls flex-column flex-sm-row">
             <li v-if="canUpdate" class="requirement-edit d-sm-block">
-              <gl-button v-gl-tooltip size="sm" class="border-0" :title="__('Edit')">
+              <gl-deprecated-button
+                v-gl-tooltip
+                size="sm"
+                class="border-0"
+                :title="__('Edit')"
+                @click="$emit('editClick', requirement.iid)"
+              >
                 <gl-icon name="pencil" />
-              </gl-button>
+              </gl-deprecated-button>
             </li>
             <li v-if="canArchive" class="requirement-archive d-sm-block">
-              <gl-button v-gl-tooltip size="sm" class="border-0" :title="__('Archive')">
+              <gl-deprecated-button v-gl-tooltip size="sm" class="border-0" :title="__('Archive')">
                 <gl-icon name="archive" />
-              </gl-button>
+              </gl-deprecated-button>
             </li>
           </ul>
           <div class="float-right issuable-updated-at d-none d-sm-inline-block">
@@ -101,7 +150,7 @@ export default {
         </div>
       </div>
     </div>
-    <gl-popover :target="() => $refs.authorLink.$el" triggers="hover focus" placement="top">
+    <gl-popover :target="getAuthorPopoverTarget()" triggers="hover focus" placement="top">
       <div class="user-popover p-0 d-flex">
         <div class="p-1 flex-shrink-1">
           <gl-avatar :entity-name="author.name" :alt="author.name" :src="author.avatarUrl" />

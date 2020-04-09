@@ -2,25 +2,22 @@
 type: reference, concepts
 ---
 
-# Scaling and High Availability
+# High Availability
 
-GitLab supports a number of scaling options to ensure that your self-managed
-instance is able to scale out to meet your organization's needs when scaling up
-is no longer practical or feasible.
-
-GitLab also offers high availability options for organizations that require
+GitLab offers high availability options for organizations that require
 the fault tolerance and redundancy necessary to maintain high-uptime operations.
 
-Scaling and high availability can be tackled separately as GitLab comprises
-modular components which can be individually scaled or made highly available
-depending on your organization's needs and resources.
+Please consult our [scaling documentation](../scaling) if you want to resolve
+performance bottlenecks you encounter in individual GitLab components without
+incurring the additional complexity costs associated with maintaining a
+highly-available architecture.
 
 On this page, we present examples of self-managed instances which demonstrate
 how GitLab can be scaled out and made highly available. These examples progress
 from simple to complex as scaling or highly-available components are added.
 
 For larger setups serving 2,000 or more users, we provide
-[reference architectures](#reference-architectures) based on GitLab's
+[reference architectures](../scaling/index.md#reference-architectures) based on GitLab's
 experience with GitLab.com and internal scale testing that aim to achieve the
 right balance of scalability and availability.
 
@@ -29,39 +26,7 @@ watch [this 1 hour Q&A](https://www.youtube.com/watch?v=uCU8jdYzpac)
 with [John Northrup](https://gitlab.com/northrup), and live questions coming
 in from some of our customers.
 
-## Scaling examples
-
-### Single-node Omnibus installation
-
-This solution is appropriate for many teams that have a single server at their disposal. With automatic backup of the GitLab repositories, configuration, and the database, this can be an optimal solution if you don't have strict availability requirements.
-
-You can also optionally configure GitLab to use an [external PostgreSQL service](../external_database.md)
-or an [external object storage service](object_storage.md) for added
-performance and reliability at a relatively low complexity cost.
-
-References:
-
-- [Installation Docs](../../install/README.md)
-- [Backup/Restore Docs](https://docs.gitlab.com/omnibus/settings/backups.html#backup-and-restore-omnibus-gitlab-configuration)
-
-### Omnibus installation with multiple application servers
-
-This solution is appropriate for teams that are starting to scale out when
-scaling up is no longer meeting their needs. In this configuration, additional application nodes will handle frontend traffic, with a load balancer in front to distribute traffic across those nodes. Meanwhile, each application node connects to a shared file server and PostgreSQL and Redis services on the back end.
-
-The additional application servers adds limited fault tolerance to your GitLab
-instance. As long as one application node is online and capable of handling the
-instance's usage load, your team's productivity will not be interrupted. Having
-multiple application nodes also enables [zero-downtime updates](https://docs.gitlab.com/omnibus/update/#zero-downtime-updates).
-
-References:
-
-- [Configure your load balancer for GitLab](load_balancer.md)
-- [Configure your NFS server to work with GitLab](nfs.md)
-- [Configure packaged PostgreSQL server to listen on TCP/IP](https://docs.gitlab.com/omnibus/settings/database.html#configure-packaged-postgresql-server-to-listen-on-tcpip)
-- [Setting up a Redis-only server](https://docs.gitlab.com/omnibus/settings/redis.html#setting-up-a-redis-only-server)
-
-## High-availability examples
+## Examples
 
 ### Omnibus installation with automatic database failover
 
@@ -128,147 +93,6 @@ them.
 
 In some cases, components can be combined on the same nodes to reduce complexity as well.
 
-## Recommended setups based on number of users
-
-- 1 - 1000 Users: A single-node [Omnibus](https://docs.gitlab.com/omnibus/) setup with frequent backups. Refer to the [requirements page](../../install/requirements.md) for further details of the specs you will require.
-- 1000 - 10000 Users: A scaled environment based on one of our [Reference Architectures](#reference-architectures), without the HA components applied. This can be a reasonable step towards a fully HA environment.
-- 2000 - 50000+ Users: A scaled HA environment based on one of our [Reference Architectures](#reference-architectures) below.
-
-## Reference architectures
-
-In this section we'll detail the Reference Architectures that can support large numbers
-of users. These were built, tested and verified by our Quality and Support teams.
-
-Testing was done with our GitLab Performance Tool at specific coded workloads, and the
-throughputs used for testing were calculated based on sample customer data. We
-test each endpoint type with the following number of requests per second (RPS)
-per 1000 users:
-
-- API: 20 RPS
-- Web: 2 RPS
-- Git: 2 RPS
-
-NOTE: **Note:** Note that depending on your workflow the below recommended
-reference architectures may need to be adapted accordingly. Your workload
-is influenced by factors such as - but not limited to - how active your users are,
-how much automation you use, mirroring, and repo/change size. Additionally the
-shown memory values are given directly by [GCP machine types](https://cloud.google.com/compute/docs/machine-types).
-On different cloud vendors a best effort like for like can be used.
-
-### 2,000 user configuration
-
-- **Supported users (approximate):** 2,000
-- **Test RPS rates:** API: 40 RPS, Web: 4 RPS, Git: 4 RPS
-- **Known issues:**  [List of known performance issues](https://gitlab.com/gitlab-org/gitlab/issues?label_name%5B%5D=Quality%3Aperformance-issues)
-
-| Service                     | Nodes | Configuration[^8]     | GCP type      |
-| ----------------------------|-------|-----------------------|---------------|
-| GitLab Rails[^1]            | 3     | 8 vCPU, 7.2GB Memory  | n1-highcpu-8 |
-| PostgreSQL                  | 3     | 2 vCPU, 7.5GB Memory  | n1-standard-2 |
-| PgBouncer                   | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Gitaly[^2] [^5] [^7]        | X     | 4 vCPU, 15GB Memory   | n1-standard-4 |
-| Redis[^3]                   | 3     | 2 vCPU, 7.5GB Memory  | n1-standard-2 |
-| Consul + Sentinel[^3]       | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Sidekiq                     | 4     | 2 vCPU, 7.5GB Memory  | n1-standard-2 |
-| Cloud Object Storage[^4]       | -     | -                     | -             |
-| NFS Server[^5] [^7]         | 1     | 4 vCPU, 3.6GB Memory  | n1-highcpu-4  |
-| Monitoring node             | 1     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| External load balancing node[^6] | 1 | 2 vCPU, 1.8GB Memory | n1-highcpu-2  |
-| Internal load balancing node[^6] | 1 | 2 vCPU, 1.8GB Memory | n1-highcpu-2  |
-
-### 5,000 user configuration
-
-- **Supported users (approximate):** 5,000
-- **Test RPS rates:** API: 100 RPS, Web: 10 RPS, Git: 10 RPS
-- **Known issues:**  [List of known performance issues](https://gitlab.com/gitlab-org/gitlab/issues?label_name%5B%5D=Quality%3Aperformance-issues)
-
-| Service                     | Nodes | Configuration[^8]     | GCP type      |
-| ----------------------------|-------|-----------------------|---------------|
-| GitLab Rails[^1]            | 3     | 16 vCPU, 14.4GB Memory | n1-highcpu-16 |
-| PostgreSQL                  | 3     | 2 vCPU, 7.5GB Memory  | n1-standard-2 |
-| PgBouncer                   | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Gitaly[^2] [^5] [^7]        | X     | 8 vCPU, 30GB Memory   | n1-standard-8 |
-| Redis[^3]                   | 3     | 2 vCPU, 7.5GB Memory  | n1-standard-2 |
-| Consul + Sentinel[^3]       | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Sidekiq                     | 4     | 2 vCPU, 7.5GB Memory  | n1-standard-2 |
-| Cloud Object Storage[^4]       | -     | -                     | -             |
-| NFS Server[^5] [^7]         | 1     | 4 vCPU, 3.6GB Memory  | n1-highcpu-4  |
-| Monitoring node             | 1     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| External load balancing node[^6] | 1 | 2 vCPU, 1.8GB Memory | n1-highcpu-2  |
-| Internal load balancing node[^6] | 1 | 2 vCPU, 1.8GB Memory | n1-highcpu-2  |
-
-### 10,000 user configuration
-
-- **Supported users (approximate):** 10,000
-- **Test RPS rates:** API: 200 RPS, Web: 20 RPS, Git: 20 RPS
-- **Known issues:**  [List of known performance issues](https://gitlab.com/gitlab-org/gitlab/issues?label_name%5B%5D=Quality%3Aperformance-issues)
-
-| Service                     | Nodes | Configuration[^8]     | GCP type      |
-| ----------------------------|-------|-----------------------|---------------|
-| GitLab Rails[^1]            | 3     | 32 vCPU, 28.8GB Memory | n1-highcpu-32 |
-| PostgreSQL                  | 3     | 4 vCPU, 15GB Memory   | n1-standard-4 |
-| PgBouncer                   | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Gitaly[^2] [^5] [^7]        | X     | 16 vCPU, 60GB Memory  | n1-standard-16 |
-| Redis[^3] - Cache           | 3     | 4 vCPU, 15GB Memory   | n1-standard-4 |
-| Redis[^3] - Queues / Shared State | 3 | 4 vCPU, 15GB Memory | n1-standard-4 |
-| Redis Sentinel[^3] - Cache  | 3     | 1 vCPU, 1.7GB Memory  | g1-small      |
-| Redis Sentinel[^3] - Queues / Shared State | 3 | 1 vCPU, 1.7GB Memory | g1-small |
-| Consul                      | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Sidekiq                     | 4     | 4 vCPU, 15GB Memory   | n1-standard-4 |
-| Cloud Object Storage[^4]       | -     | -                     | -             |
-| NFS Server[^5] [^7]         | 1     | 4 vCPU, 3.6GB Memory  | n1-highcpu-4  |
-| Monitoring node             | 1     | 4 vCPU, 3.6GB Memory  | n1-highcpu-4  |
-| External load balancing node[^6] | 1 | 2 vCPU, 1.8GB Memory | n1-highcpu-2  |
-| Internal load balancing node[^6] | 1 | 2 vCPU, 1.8GB Memory | n1-highcpu-2  |
-
-### 25,000 user configuration
-
-- **Supported users (approximate):** 25,000
-- **Test RPS rates:** API: 500 RPS, Web: 50 RPS, Git: 50 RPS
-- **Known issues:**  [List of known performance issues](https://gitlab.com/gitlab-org/gitlab/issues?label_name%5B%5D=Quality%3Aperformance-issues)
-
-| Service                     | Nodes | Configuration[^8]     | GCP type      |
-| ----------------------------|-------|-----------------------|---------------|
-| GitLab Rails[^1]            | 5     | 32 vCPU, 28.8GB Memory | n1-highcpu-32 |
-| PostgreSQL                  | 3     | 8 vCPU, 30GB Memory   | n1-standard-8 |
-| PgBouncer                   | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Gitaly[^2] [^5] [^7]        | X     | 32 vCPU, 120GB Memory | n1-standard-32 |
-| Redis[^3] - Cache           | 3     | 4 vCPU, 15GB Memory   | n1-standard-4 |
-| Redis[^3] - Queues / Shared State | 3 | 4 vCPU, 15GB Memory | n1-standard-4 |
-| Redis Sentinel[^3] - Cache  | 3     | 1 vCPU, 1.7GB Memory  | g1-small      |
-| Redis Sentinel[^3] - Queues / Shared State | 3 | 1 vCPU, 1.7GB Memory | g1-small |
-| Consul                      | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Sidekiq                     | 4     | 4 vCPU, 15GB Memory   | n1-standard-4 |
-| Cloud Object Storage[^4]       | -     | -                     | -             |
-| NFS Server[^5] [^7]         | 1     | 4 vCPU, 3.6GB Memory  | n1-highcpu-4  |
-| Monitoring node             | 1     | 4 vCPU, 3.6GB Memory  | n1-highcpu-4  |
-| External load balancing node[^6] | 1 | 2 vCPU, 1.8GB Memory | n1-highcpu-2  |
-| Internal load balancing node[^6] | 1 | 4 vCPU, 3.6GB Memory | n1-highcpu-4  |
-
-### 50,000 user configuration
-
-- **Supported users (approximate):** 50,000
-- **Test RPS rates:** API: 1000 RPS, Web: 100 RPS, Git: 100 RPS
-- **Known issues:**  [List of known performance issues](https://gitlab.com/gitlab-org/gitlab/issues?label_name%5B%5D=Quality%3Aperformance-issues)
-
-| Service                     | Nodes | Configuration[^8]     | GCP type      |
-| ----------------------------|-------|-----------------------|---------------|
-| GitLab Rails[^1]            | 12    | 32 vCPU, 28.8GB Memory | n1-highcpu-32 |
-| PostgreSQL                  | 3     | 16 vCPU, 60GB Memory  | n1-standard-16 |
-| PgBouncer                   | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Gitaly[^2] [^5] [^7]        | X     | 64 vCPU, 240GB Memory | n1-standard-64 |
-| Redis[^3] - Cache           | 3     | 4 vCPU, 15GB Memory   | n1-standard-4 |
-| Redis[^3] - Queues / Shared State | 3 | 4 vCPU, 15GB Memory | n1-standard-4 |
-| Redis Sentinel[^3] - Cache  | 3     | 1 vCPU, 1.7GB Memory  | g1-small      |
-| Redis Sentinel[^3] - Queues / Shared State | 3 | 1 vCPU, 1.7GB Memory | g1-small |
-| Consul                      | 3     | 2 vCPU, 1.8GB Memory  | n1-highcpu-2  |
-| Sidekiq                     | 4     | 4 vCPU, 15GB Memory   | n1-standard-4 |
-| NFS Server[^5] [^7]         | 1     | 4 vCPU, 3.6GB Memory  | n1-highcpu-4  |
-| Cloud Object Storage[^4]       | -     | -                     | -             |
-| Monitoring node             | 1     | 4 vCPU, 3.6GB Memory  | n1-highcpu-4  |
-| External load balancing node[^6] | 1 | 2 vCPU, 1.8GB Memory | n1-highcpu-2  |
-| Internal load balancing node[^6] | 1 | 8 vCPU, 7.2GB Memory | n1-highcpu-8  |
-
 [^1]: In our architectures we run each GitLab Rails node using the Puma webserver
       and have its number of workers set to 90% of available CPUs along with 4 threads.
 
@@ -308,6 +132,9 @@ On different cloud vendors a best effort like for like can be used.
 
 [^8]: The architectures were built and tested with the [Intel Xeon E5 v3 (Haswell)](https://cloud.google.com/compute/docs/cpu-platforms)
       CPU platform on GCP. On different hardware you may find that adjustments, either lower
-      or higher, are required for your CPU or Node counts accordingly. For more info a
+      or higher, are required for your CPU or Node counts accordingly. For more information, a
       [Sysbench](https://github.com/akopytov/sysbench) benchmark of the CPU can be found
       [here](https://gitlab.com/gitlab-org/quality/performance/-/wikis/Reference-Architectures/GCP-CPU-Benchmarks).
+
+[^9]: AWS-equivalent configurations are rough suggestions and may change in the
+      future. They have not yet been tested and validated.

@@ -101,7 +101,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
             end
 
             scope module: :vulnerabilities do
-              resources :notes, only: [:index], concerns: :awardable, constraints: { id: /\d+/ }
+              resources :notes, only: [:index, :create, :destroy, :update], concerns: :awardable, constraints: { id: /\d+/ }
             end
           end
         end
@@ -127,12 +127,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
       resources :path_locks, only: [:index, :destroy] do
         collection do
           post :toggle
-        end
-      end
-
-      namespace :prometheus do
-        resources :metrics, constraints: { id: %r{[^\/]+} }, only: [] do
-          post :validate_query, on: :collection
         end
       end
 

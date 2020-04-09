@@ -1,20 +1,30 @@
 <script>
 import * as Sentry from '@sentry/browser';
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlPagination } from '@gitlab/ui';
 import { __ } from '~/locale';
 import createFlash from '~/flash';
+import { urlParamsToObject } from '~/lib/utils/common_utils';
+import { updateHistory, setUrlParams } from '~/lib/utils/url_utility';
 
+import RequirementsLoading from './requirements_loading.vue';
 import RequirementsEmptyState from './requirements_empty_state.vue';
 import RequirementItem from './requirement_item.vue';
-import projectRequirements from '../queries/projectRequirements.query.graphql';
+import RequirementForm from './requirement_form.vue';
 
-import { FilterState } from '../constants';
+import projectRequirements from '../queries/projectRequirements.query.graphql';
+import createRequirement from '../queries/createRequirement.mutation.graphql';
+import updateRequirement from '../queries/updateRequirement.mutation.graphql';
+
+import { FilterState, DEFAULT_PAGE_SIZE } from '../constants';
 
 export default {
+  DEFAULT_PAGE_SIZE,
   components: {
-    GlLoadingIcon,
+    GlPagination,
+    RequirementsLoading,
     RequirementsEmptyState,
     RequirementItem,
+    RequirementForm,
   },
   props: {
     projectPath: {
@@ -25,9 +35,25 @@ export default {
       type: String,
       required: true,
     },
-    showCreateRequirement: {
-      type: Boolean,
+    requirementsCount: {
+      type: Object,
       required: true,
+      validator: value => ['OPENED', 'ARCHIVED', 'ALL'].every(prop => value[prop]),
+    },
+    page: {
+      type: Number,
+      required: false,
+      default: 1,
+    },
+    prev: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    next: {
+      type: String,
+      required: false,
+      default: '',
     },
     emptyStatePath: {
       type: String,
@@ -42,13 +68,36 @@ export default {
           projectPath: this.projectPath,
         };
 
+        if (this.prevPageCursor) {
+          queryVariables.prevPageCursor = this.prevPageCursor;
+          queryVariables.lastPageSize = DEFAULT_PAGE_SIZE;
+        } else if (this.nextPageCursor) {
+          queryVariables.nextPageCursor = this.nextPageCursor;
+          queryVariables.firstPageSize = DEFAULT_PAGE_SIZE;
+        } else {
+          queryVariables.firstPageSize = DEFAULT_PAGE_SIZE;
+        }
+
         if (this.filterBy !== FilterState.all) {
           queryVariables.state = this.filterBy;
         }
 
         return queryVariables;
       },
-      update: data => data.project?.requirements?.nodes || [],
+      update(data) {
+        const requirementsRoot = data.project?.requirements;
+        const count = data.project?.requirementStatesCount;
+
+        return {
+          list: requirementsRoot?.nodes || [],
+          pageInfo: requirementsRoot?.pageInfo || {},
+          count: {
+            OPENED: count.opened,
+            ARCHIVED: count.archived,
+            ALL: count.opened + count.archived,
+          },
+        };
+      },
       error: e => {
         createFlash(__('Something went wrong while fetching requirements list.'));
         Sentry.captureException(e);
@@ -57,7 +106,17 @@ export default {
   },
   data() {
     return {
-      requirements: [],
+      showCreateForm: false,
+      showUpdateFormForRequirement: 0,
+      createRequirementRequestActive: false,
+      currentPage: this.page,
+      prevPageCursor: this.prev,
+      nextPageCursor: this.next,
+      requirements: {
+        list: [],
+        count: {},
+        pageInfo: {},
+      },
     };
   },
   computed: {
@@ -65,7 +124,148 @@ export default {
       return this.$apollo.queries.requirements.loading;
     },
     requirementsListEmpty() {
-      return !this.$apollo.queries.requirements.loading && !this.requirements.length;
+      return !this.$apollo.queries.requirements.loading && !this.requirements.list.length;
+    },
+    totalRequirements() {
+      return this.requirements.count[this.filterBy] || this.requirementsCount[this.filterBy];
+    },
+    showPaginationControls() {
+      return this.totalRequirements > DEFAULT_PAGE_SIZE && !this.requirementsListEmpty;
+    },
+    prevPage() {
+      return Math.max(this.currentPage - 1, 0);
+    },
+    nextPage() {
+      const nextPage = this.currentPage + 1;
+      return nextPage > Math.ceil(this.totalRequirements / DEFAULT_PAGE_SIZE) ? null : nextPage;
+    },
+  },
+  mounted() {
+    document
+      .querySelector('.js-new-requirement')
+      .addEventListener('click', this.handleNewRequirementClick);
+  },
+  beforeDestroy() {
+    document
+      .querySelector('.js-new-requirement')
+      .removeEventListener('click', this.handleNewRequirementClick);
+  },
+  methods: {
+    /**
+     * Update browser URL with updated query-param values
+     * based on current page details.
+     */
+    updateUrl({ page, prev, next }) {
+      const { href, search } = window.location;
+      const queryParams = urlParamsToObject(search);
+
+      queryParams.page = page || 1;
+      // Only keep params that have any values.
+      if (prev) {
+        queryParams.prev = prev;
+      } else {
+        delete queryParams.prev;
+      }
+      if (next) {
+        queryParams.next = next;
+      } else {
+        delete queryParams.next;
+      }
+
+      // We want to replace the history state so that back button
+      // correctly reloads the page with previous URL.
+      updateHistory({
+        url: setUrlParams(queryParams, href, true),
+        title: document.title,
+        replace: true,
+      });
+    },
+    handleNewRequirementClick() {
+      this.showCreateForm = true;
+    },
+    handleEditRequirementClick(iid) {
+      this.showUpdateFormForRequirement = iid;
+    },
+    handleNewRequirementSave(title) {
+      this.createRequirementRequestActive = true;
+      return this.$apollo
+        .mutate({
+          mutation: createRequirement,
+          variables: {
+            createRequirementInput: {
+              projectPath: this.projectPath,
+              title,
+            },
+          },
+        })
+        .then(({ data }) => {
+          if (!data.createRequirement.errors.length) {
+            this.showCreateForm = false;
+            this.$apollo.queries.requirements.refetch();
+          } else {
+            throw new Error(`Error creating a requirement`);
+          }
+        })
+        .catch(e => {
+          createFlash(__('Something went wrong while creating a requirement.'));
+          Sentry.captureException(e);
+        })
+        .finally(() => {
+          this.createRequirementRequestActive = false;
+        });
+    },
+    handleNewRequirementCancel() {
+      this.showCreateForm = false;
+    },
+    handleUpdateRequirementSave({ iid, title }) {
+      this.createRequirementRequestActive = true;
+      return this.$apollo
+        .mutate({
+          mutation: updateRequirement,
+          variables: {
+            updateRequirementInput: {
+              projectPath: this.projectPath,
+              iid,
+              title,
+            },
+          },
+        })
+        .then(({ data }) => {
+          if (!data.updateRequirement.errors.length) {
+            this.showUpdateFormForRequirement = 0;
+          } else {
+            throw new Error(`Error updating a requirement`);
+          }
+        })
+        .catch(e => {
+          createFlash(__('Something went wrong while updating a requirement.'));
+          Sentry.captureException(e);
+        })
+        .finally(() => {
+          this.createRequirementRequestActive = false;
+        });
+    },
+    handleUpdateRequirementCancel() {
+      this.showUpdateFormForRequirement = 0;
+    },
+    handlePageChange(page) {
+      const { startCursor, endCursor } = this.requirements.pageInfo;
+
+      if (page > this.currentPage) {
+        this.prevPageCursor = '';
+        this.nextPageCursor = endCursor;
+      } else {
+        this.prevPageCursor = startCursor;
+        this.nextPageCursor = '';
+      }
+
+      this.currentPage = page;
+
+      this.updateUrl({
+        page,
+        prev: this.prevPageCursor,
+        next: this.nextPageCursor,
+      });
     },
   },
 };
@@ -78,13 +278,42 @@ export default {
       :filter-by="filterBy"
       :empty-state-path="emptyStatePath"
     />
-    <gl-loading-icon v-if="requirementsListLoading" class="mt-3" size="md" />
-    <ul v-else class="content-list issuable-list issues-list requirements-list">
+    <requirements-loading
+      v-show="requirementsListLoading"
+      :filter-by="filterBy"
+      :current-tab-count="totalRequirements"
+      :current-page="currentPage"
+    />
+    <requirement-form
+      v-if="showCreateForm"
+      :requirement-request-active="createRequirementRequestActive"
+      @save="handleNewRequirementSave"
+      @cancel="handleNewRequirementCancel"
+    />
+    <ul
+      v-if="!requirementsListLoading && !requirementsListEmpty"
+      class="content-list issuable-list issues-list requirements-list"
+    >
       <requirement-item
-        v-for="requirement in requirements"
+        v-for="requirement in requirements.list"
         :key="requirement.iid"
         :requirement="requirement"
+        :show-update-form="showUpdateFormForRequirement === requirement.iid"
+        :update-requirement-request-active="createRequirementRequestActive"
+        @updateSave="handleUpdateRequirementSave"
+        @updateCancel="handleUpdateRequirementCancel"
+        @editClick="handleEditRequirementClick"
       />
     </ul>
+    <gl-pagination
+      v-if="showPaginationControls"
+      :value="currentPage"
+      :per-page="$options.DEFAULT_PAGE_SIZE"
+      :prev-page="prevPage"
+      :next-page="nextPage"
+      align="center"
+      class="gl-pagination prepend-top-default"
+      @input="handlePageChange"
+    />
   </div>
 </template>

@@ -24,7 +24,7 @@ for known vulnerabilities using Dynamic Application Security Testing (DAST).
 
 You can take advantage of DAST by either [including the CI job](#configuration) in
 your existing `.gitlab-ci.yml` file or by implicitly using
-[Auto DAST](../../../topics/autodevops/index.md#auto-dast-ultimate)
+[Auto DAST](../../../topics/autodevops/stages.md#auto-dast-ultimate)
 that is provided by [Auto DevOps](../../../topics/autodevops/index.md).
 
 GitLab checks the DAST report, compares the found vulnerabilities between the source and target
@@ -107,6 +107,23 @@ is used to run the tests on the specified URL and scan it for possible vulnerabi
 By default, the DAST template will use the latest major version of the DAST Docker image. Using the `DAST_VERSION` variable,
 you can choose to automatically update DAST with new features and fixes by pinning to a major version (e.g. 1), only update fixes by pinning to a minor version (e.g. 1.6) or prevent all updates by pinning to a specific version (e.g. 1.6.4).
 Find the latest DAST versions on the [Releases](https://gitlab.com/gitlab-org/security-products/dast/-/releases) page.
+
+### When DAST scans run
+
+When using `DAST.gitlab-ci.yml` template, the `dast` job is run last as shown in the example below. To ensure DAST is scanning the latest code, your CI pipeline should deploy changes to the web server in one of the jobs preceeding the `dast` job.
+
+```yaml
+stages:
+  - build
+  - test
+  - deploy
+  - dast
+```
+
+Be aware that if your pipeline is configured to deploy to the same webserver in each run, running a pipeline while another is still running, could cause a race condition
+where one pipeline overwrites the code from another pipeline. The site to be scanned should be excluded from changes for the duration of a DAST scan.
+The only changes to the site should be from the DAST scanner. Be aware that any changes that users, scheduled tasks, database or code changes, other pipelines, or other scanners make to
+the site during a scan could lead to inaccurate results.
 
 ### Authenticated scan
 
@@ -254,6 +271,8 @@ LoadModule proxy_http_module modules/mod_proxy_http.so
 configured to act as a remote proxy and add the `Gitlab-DAST-Permission` header.
 
 ### API scan
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/10928) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.10.
 
 Using an API specification as a scan's target is a useful way to seed URLs for scanning an API.
 Vulnerability rules in an API scan are different than those in a normal website scan.
@@ -442,7 +461,7 @@ dast:
 The DAST job does not require the project's repository to be present when running, so by default
 [`GIT_STRATEGY`](../../../ci/yaml/README.md#git-strategy) is set to `none`.
 
-## Running DAST in an offline environment deployment
+## Running DAST in an offline environment
 
 DAST can be executed on an offline GitLab Ultimate installation by using the following process:
 
@@ -476,7 +495,7 @@ The DAST job can emit various reports.
 CAUTION: **Caution:**
 The JSON report artifacts are not a public API of DAST and their format is expected to change in the future.
 
-The DAST tool always emits a JSON report report file called `gl-dast-report.json` and sample reports can be found in the [DAST repository](https://gitlab.com/gitlab-org/security-products/dast/-/tree/master/test/end-to-end/expect).
+The DAST tool always emits a JSON report file called `gl-dast-report.json` and sample reports can be found in the [DAST repository](https://gitlab.com/gitlab-org/security-products/dast/-/tree/master/test/end-to-end/expect).
 
 There are two formats of data in the JSON report that are used side by side: the proprietary ZAP format which will be eventually deprecated, and a "common" format which will be the default in the future.
 

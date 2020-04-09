@@ -725,7 +725,7 @@ describe Projects::IssuesController do
                 stub_feature_flags(allow_possible_spam: false)
               end
 
-              it 'rejects an issue recognized as a spam' do
+              it 'rejects an issue recognized as spam' do
                 expect { update_issue }.not_to change { issue.reload.title }
               end
 
@@ -981,7 +981,7 @@ describe Projects::IssuesController do
               stub_feature_flags(allow_possible_spam: false)
             end
 
-            it 'rejects an issue recognized as a spam' do
+            it 'rejects an issue recognized as spam' do
               expect { post_spam_issue }.not_to change(Issue, :count)
             end
 
@@ -1247,6 +1247,26 @@ describe Projects::IssuesController do
       create_merge_request
 
       expect(response).to have_gitlab_http_status(:not_found)
+    end
+
+    context 'invalid branch name' do
+      it 'is unprocessable' do
+        post(
+          :create_merge_request,
+          params: {
+            target_project_id: nil,
+            branch_name: 'master',
+            ref: 'master',
+            namespace_id: project.namespace.to_param,
+            project_id: project.to_param,
+            id: issue.to_param
+          },
+          format: :json
+        )
+
+        expect(response.body).to eq('Branch already exists')
+        expect(response).to have_gitlab_http_status(:unprocessable_entity)
+      end
     end
 
     context 'target_project_id is set' do

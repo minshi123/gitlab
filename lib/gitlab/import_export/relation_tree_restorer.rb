@@ -67,7 +67,7 @@ module Gitlab
       end
 
       def process_relation!(relation_key, relation_definition)
-        @relation_reader.consume_relation(@importable_path, relation_key) do |data_hash, relation_index|
+        @relation_reader.consume_relation(@importable_path, relation_key).each do |data_hash, relation_index|
           process_relation_item!(relation_key, relation_definition, relation_index, data_hash)
         end
       end
@@ -142,9 +142,9 @@ module Gitlab
       end
 
       def build_relations(relation_key, relation_definition, data_hashes)
-        data_hashes.map do |data_hash|
-          build_relation(relation_key, relation_definition, data_hash)
-        end.compact
+        data_hashes
+          .map { |data_hash| build_relation(relation_key, relation_definition, data_hash) }
+          .tap { |entries| entries.compact! }
       end
 
       def build_relation(relation_key, relation_definition, data_hash)

@@ -10,9 +10,9 @@ import App from 'ee/vulnerabilities/components/app.vue';
 import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
 import ResolutionAlert from 'ee/vulnerabilities/components/resolution_alert.vue';
 import VulnerabilityStateDropdown from 'ee/vulnerabilities/components/vulnerability_state_dropdown.vue';
-import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
+import { VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
 
-const vulnerabilityStateEntries = Object.entries(VULNERABILITY_STATES);
+const vulnerabilityStateEntries = Object.entries(VULNERABILITY_STATE_OBJECTS);
 const mockAxios = new MockAdapter(axios);
 jest.mock('~/flash');
 
@@ -24,6 +24,25 @@ describe('Vulnerability management app', () => {
     created_at: new Date().toISOString(),
     report_type: 'sast',
     state: 'detected',
+  };
+
+  const findingWithIssue = {
+    description: 'description',
+    identifiers: 'identifiers',
+    links: 'links',
+    location: 'location',
+    name: 'name',
+    issue_feedback: {
+      issue_iid: 12,
+    },
+  };
+
+  const findingWithoutIssue = {
+    description: 'description',
+    identifiers: 'identifiers',
+    links: 'links',
+    location: 'location',
+    name: 'name',
   };
 
   const dataset = {
@@ -49,11 +68,12 @@ describe('Vulnerability management app', () => {
   const findResolutionAlert = () => wrapper.find(ResolutionAlert);
   const findStatusDescription = () => wrapper.find(StatusDescription);
 
-  const createWrapper = (vulnerability = {}) => {
+  const createWrapper = (vulnerability = {}, finding = findingWithoutIssue) => {
     wrapper = shallowMount(App, {
       propsData: {
         ...dataset,
         initialVulnerability: { ...defaultVulnerability, ...vulnerability },
+        finding,
       },
     });
   };
@@ -98,8 +118,13 @@ describe('Vulnerability management app', () => {
   describe('create issue button', () => {
     beforeEach(createWrapper);
 
-    it('renders properly', () => {
+    it('does display if there is not an issue already created', () => {
       expect(findCreateIssueButton().exists()).toBe(true);
+    });
+
+    it('does not display if there is an issue already created', () => {
+      createWrapper({}, findingWithIssue);
+      expect(findCreateIssueButton().exists()).toBe(false);
     });
 
     it('calls create issue endpoint on click and redirects to new issue', () => {
@@ -120,6 +145,7 @@ describe('Vulnerability management app', () => {
             project_fingerprint: dataset.projectFingerprint,
             vulnerability_data: {
               ...defaultVulnerability,
+              ...findingWithoutIssue,
               category: defaultVulnerability.report_type,
               vulnerability_id: defaultVulnerability.id,
             },

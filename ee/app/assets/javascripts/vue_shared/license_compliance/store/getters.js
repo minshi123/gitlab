@@ -1,5 +1,6 @@
 import { n__, s__, sprintf } from '~/locale';
-import { LICENSE_APPROVAL_STATUS } from '../constants';
+import { addLicensesMatchingReportGroupStatus, reportGroupHasAtLeastOneLicense } from './utils';
+import { LICENSE_APPROVAL_STATUS, REPORT_GROUPS } from '../constants';
 
 export const isLoading = state => state.isLoadingManagedLicenses || state.isLoadingLicenseReport;
 
@@ -10,6 +11,11 @@ export const isAddingNewLicense = (_, getters) => getters.isLicenseBeingUpdated(
 export const hasPendingLicenses = state => state.pendingLicenses.length > 0;
 
 export const licenseReport = state => state.newLicenses;
+
+export const licenseReportGroups = state =>
+  REPORT_GROUPS.map(addLicensesMatchingReportGroupStatus(state.newLicenses)).filter(
+    reportGroupHasAtLeastOneLicense,
+  );
 
 export const licenseSummaryText = (state, getters) => {
   const hasReportItems = getters.licenseReport && getters.licenseReport.length;
@@ -33,8 +39,8 @@ export const licenseSummaryText = (state, getters) => {
     if (!baseReportHasLicenses) {
       return getters.reportContainsBlacklistedLicense
         ? n__(
-            'LicenseCompliance|License Compliance detected %d license for the source branch only; approval required',
-            'LicenseCompliance|License Compliance detected %d licenses for the source branch only; approval required',
+            'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only; approval required',
+            'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only; approval required',
             licenseReportLength,
           )
         : n__(
@@ -46,8 +52,8 @@ export const licenseSummaryText = (state, getters) => {
 
     return getters.reportContainsBlacklistedLicense
       ? n__(
-          'LicenseCompliance|License Compliance detected %d new license; approval required',
-          'LicenseCompliance|License Compliance detected %d new licenses; approval required',
+          'LicenseCompliance|License Compliance detected %d new license and policy violation; approval required',
+          'LicenseCompliance|License Compliance detected %d new licenses and policy violations; approval required',
           licenseReportLength,
         )
       : n__(
@@ -66,7 +72,7 @@ export const licenseSummaryText = (state, getters) => {
   return s__('LicenseCompliance|License Compliance detected no new licenses');
 };
 
-export const reportContainsBlacklistedLicense = (_state, getters) =>
+export const reportContainsBlacklistedLicense = (_, getters) =>
   (getters.licenseReport || []).some(
     license => license.approvalStatus === LICENSE_APPROVAL_STATUS.DENIED,
   );

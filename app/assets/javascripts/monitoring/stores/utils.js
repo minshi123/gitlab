@@ -2,6 +2,7 @@ import { slugify } from '~/lib/utils/text_utility';
 import createGqClient, { fetchPolicies } from '~/lib/graphql';
 import { SUPPORTED_FORMATS } from '~/lib/utils/unit_format';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { NOT_IN_DB_PREFIX } from '../constants';
 
 export const gqClient = createGqClient(
   {},
@@ -14,11 +15,18 @@ export const gqClient = createGqClient(
  * Metrics loaded from project-defined dashboards do not have a metric_id.
  * This method creates a unique ID combining metric_id and id, if either is present.
  * This is hopefully a temporary solution until BE processes metrics before passing to FE
+ *
+ * Related:
+ * https://gitlab.com/gitlab-org/gitlab/-/issues/28241
+ * https://gitlab.com/gitlab-org/gitlab/-/merge_requests/27447
+ *
  * @param {Object} metric - metric
+ * @param {Number} metric.metric_id - Database metric id
+ * @param {String} metric.id - User-defined identifier
  * @returns {Object} - normalized metric with a uniqueID
  */
 // eslint-disable-next-line babel/camelcase
-export const uniqMetricsId = ({ metric_id, id }) => `${metric_id}_${id}`;
+export const uniqMetricsId = ({ metric_id, id }) => `${metric_id || NOT_IN_DB_PREFIX}_${id}`;
 
 /**
  * Project path has a leading slash that doesn't work well
@@ -60,12 +68,11 @@ export const parseEnvironmentsResponse = (response = [], projectPath) =>
  * https://gitlab.com/gitlab-org/gitlab/issues/207198
  *
  * @param {Array} metrics - Array of prometheus metrics
- * @param {String} defaultLabel - Default label for metrics
  * @returns {Object}
  */
-const mapToMetricsViewModel = (metrics, defaultLabel) =>
+const mapToMetricsViewModel = metrics =>
   metrics.map(({ label, id, metric_id, query_range, prometheus_endpoint_path, ...metric }) => ({
-    label: label || defaultLabel,
+    label,
     queryRange: query_range,
     prometheusEndpointPath: prometheus_endpoint_path,
     metricId: uniqMetricsId({ metric_id, id }),
@@ -109,6 +116,7 @@ const mapPanelToViewModel = ({
   y_label,
   y_axis = {},
   metrics = [],
+  max_value,
 }) => {
   // Both `x_axis.name` and `x_label` are supported for now
   // https://gitlab.com/gitlab-org/gitlab/issues/210521
@@ -125,6 +133,7 @@ const mapPanelToViewModel = ({
     y_label: yAxis.name, // Changing y_label to yLabel is pending https://gitlab.com/gitlab-org/gitlab/issues/207198
     yAxis,
     xAxis,
+    maxValue: max_value,
     metrics: mapToMetricsViewModel(metrics, yAxis.name),
   };
 };
