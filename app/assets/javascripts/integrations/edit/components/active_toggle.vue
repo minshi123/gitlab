@@ -1,5 +1,3 @@
-import { __ } from '~/locale';
-
 <script>
 import { GlToggle } from '@gitlab/ui';
 
