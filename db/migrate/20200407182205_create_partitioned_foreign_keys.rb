@@ -6,18 +6,16 @@ class CreatePartitionedForeignKeys < ActiveRecord::Migration[6.0]
   DOWNTIME = false
 
   def up
-    create_table :partitioned_foreign_keys, id: false do |t|
+    create_table :partitioned_foreign_keys do |t|
       t.boolean :cascade_delete, null: false, default: true
       t.text :to_table, null: false
       t.text :from_table, null: false
-      t.text :from_column, null: false
       t.text :to_column, null: false
+      t.text :from_column, null: false
     end
 
-    execute(<<~SQL)
-      ALTER TABLE partitioned_foreign_keys ADD CONSTRAINT partitioned_foreign_keys_pkey
-      PRIMARY KEY (to_table, from_table, from_column)
-    SQL
+    add_index :partitioned_foreign_keys, [:to_table, :from_table, :from_column], unique: true,
+      name: "index_partitioned_foreign_keys_unique_index"
   end
 
   def down

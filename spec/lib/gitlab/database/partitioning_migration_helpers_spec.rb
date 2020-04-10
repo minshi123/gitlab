@@ -32,17 +32,44 @@ describe Gitlab::Database::PartitioningMigrationHelpers do
     end
 
     context "when the table already has foreign keys" do
-      before do
-        model.add_foreign_key :issue_assignees, referenced_table
+      context "when the foreign key is from a different table" do
+        before do
+          model.add_foreign_key :issue_assignees, referenced_table
+        end
+
+        it "creates a trigger function to handle the multiple cascades" do
+          model.add_foreign_key :epic_issues, referenced_table
+
+          expect_function_to_contain(function_name,
+            "delete from issue_assignees where issue_id = old.id",
+            "delete from epic_issues where issue_id = old.id")
+          expect_valid_function_trigger(trigger_name, function_name)
+        end
       end
 
-      it "creates a trigger function to handle the multiple cascades" do
-        model.add_foreign_key :epic_issues, referenced_table
+      context "when the foreign key is from the same table" do
+        before do
+          model.add_foreign_key :issues, referenced_table, column: :moved_to_id
+        end
 
-        expect_function_to_contain(function_name,
-          "delete from issue_assignees where issue_id = old.id",
-          "delete from epic_issues where issue_id = old.id")
-        expect_valid_function_trigger(trigger_name, function_name)
+        context "when the foreign key is from a different column" do
+          it "creates a trigger function to handle the multiple cascades" do
+            model.add_foreign_key :issues, referenced_table, column: :duplicated_to_id
+
+            expect_function_to_contain(function_name,
+              "delete from issues where moved_to_id = old.id",
+              "delete from issues where duplicated_to_id = old.id")
+            expect_valid_function_trigger(trigger_name, function_name)
+          end
+        end
+
+        context "when the foreign key is from the same column" do
+          it "raises an error" do
+            expect do
+              model.add_foreign_key :issues, referenced_table, column: :moved_to_id
+            end.to raise_error(/foreign key definition for issues.moved_to_id to #{referenced_table} exists/)
+          end
+        end
       end
     end
 
@@ -70,10 +97,28 @@ describe Gitlab::Database::PartitioningMigrationHelpers do
       let(:trigger_name) { model.fk_trigger_name(:user_details) }
 
       it "creates a trigger function with the correct column name" do
-        model.add_foreign_key :user_settings, referenced_table, column: :user_id, primary_key: :user_id
+        model.add_foreign_key :user_preferences, referenced_table, column: :user_id, primary_key: :user_id
 
-        expect_function_to_contain(function_name, "delete from user_settings where user_id = old.user_id")
+        expect_function_to_contain(function_name, "delete from user_preferences where user_id = old.user_id")
         expect_valid_function_trigger(trigger_name, function_name)
+      end
+    end
+
+    context "when the given key definition is invalid" do
+      it "raises an error with the appropriate message" do
+        expect do
+          model.add_foreign_key :issue_assignees, referenced_table, column: :not_a_real_issue_id
+        end.to raise_error(/From column must be a valid column/)
+      end
+    end
+
+    context "when run outside a transaction" do
+      it "raises an error" do
+        expect(model).to receive(:transaction_open?).and_return(false)
+
+        expect do
+          model.add_foreign_key :issue_assignees, referenced_table
+        end.to raise_error(/should be run in a transaction/)
       end
     end
   end
@@ -111,6 +156,28 @@ describe Gitlab::Database::PartitioningMigrationHelpers do
 
         expect(find_function_def(function_name)).to be_nil
         expect(find_trigger_def(trigger_name)).to be_nil
+      end
+    end
+
+    context "when the foreign key does not exist" do
+      it "raises an error" do
+        expect do
+          model.remove_foreign_key :issue_assignees, referenced_table
+        end.to raise_error(/foreign key definition for issue_assignees.issue_id to #{referenced_table} doesn't exist/)
+      end
+    end
+
+    context "when run outside a transaction" do
+      before do
+        model.add_foreign_key :issue_assignees, referenced_table
+      end
+
+      it "raises an error" do
+        expect(model).to receive(:transaction_open?).and_return(false)
+
+        expect do
+          model.remove_foreign_key :issue_assignees, referenced_table
+        end.to raise_error(/should be run in a transaction/)
       end
     end
   end

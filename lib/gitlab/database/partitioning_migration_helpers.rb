@@ -6,15 +6,31 @@ module Gitlab
       include SchemaHelpers
 
       def add_foreign_key(from_table, to_table, column: nil, primary_key: :id, on_delete: :cascade)
-        update_foreign_keys(from_table, to_table, column) do |from_column|
+        update_foreign_keys(from_table, to_table, column) do |from_column, current_keys|
           cascade_delete = extract_cascade_option(on_delete)
-          insert_foreign_key(from_table, to_table, from_column, primary_key, cascade_delete)
+          specified_key = fk_from_config(to_table, from_table, primary_key, from_column, cascade_delete)
+          raise "invalid foreign key: #{specified_key.errors.full_messages.to_sentence}" unless specified_key.valid?
+
+          if find_existing_key(current_keys, specified_key).nil?
+            specified_key.save!
+            current_keys << specified_key
+          else
+            raise "foreign key definition for #{from_table}.#{from_column} to #{to_table} exists"
+          end
         end
       end
 
-      def remove_foreign_key(from_table, to_table, column: nil)
-        update_foreign_keys(from_table, to_table, column) do |from_column|
-          delete_foreign_key(from_table, to_table, from_column)
+      def remove_foreign_key(from_table, to_table, column: nil, primary_key: :id)
+        update_foreign_keys(from_table, to_table, column) do |from_column, current_keys|
+          specified_key = fk_from_config(to_table, from_table, primary_key, from_column, nil)
+
+          if existing_key = find_existing_key(current_keys, specified_key)
+            existing_key.destroy!
+            current_keys.delete(existing_key)
+            current_keys
+          else
+            raise "foreign key definition for #{from_table}.#{from_column} to #{to_table} doesn't exist"
+          end
         end
       end
 
@@ -28,20 +44,27 @@ module Gitlab
 
       private
 
+      def fk_from_config(to_table, from_table, to_column, from_column, cascade_delete)
+        PartitionedForeignKey.new(to_table: to_table.to_s, from_table: from_table.to_s, to_column: to_column.to_s,
+                                  from_column: from_column.to_s, cascade_delete: cascade_delete)
+      end
+
       def update_foreign_keys(from_table, to_table, column)
         raise "changes to custom foreign key functions should be run in a transaction" unless transaction_open?
 
-        yield extract_from_column(to_table, column)
+        from_column = extract_from_column(to_table, column)
+        current_foreign_keys = PartitionedForeignKey.by_referenced_table(to_table).to_a
+
+        final_foreign_keys = yield from_column, current_foreign_keys
 
         fn_name = fk_function_name(to_table)
         trigger_name = fk_trigger_name(to_table)
         drop_trigger(to_table, trigger_name, if_exists: true)
 
-        foreign_key_specs = query_foreign_keys(from_table, to_table)
-        if foreign_key_specs.empty?
+        if final_foreign_keys.empty?
           drop_function(fn_name, if_exists: true)
         else
-          create_or_replace_fk_function(fn_name, foreign_key_specs)
+          create_or_replace_fk_function(fn_name, final_foreign_keys)
           create_function_trigger(trigger_name, fn_name, fires: "AFTER DELETE ON #{to_table}")
         end
       end
@@ -58,37 +81,8 @@ module Gitlab
         end
       end
 
-      def query_foreign_keys(from_table, to_table)
-        table = Arel::Table.new(:partitioned_foreign_keys)
-        query = table
-          .project([table[:from_table], table[:from_column], table[:to_column], table[:cascade_delete]])
-          .where(table[:to_table].eq(to_table))
-
-        execute(query.to_sql).map(&:symbolize_keys)
-      end
-
-      def insert_foreign_key(from_table, to_table, from_column, to_column, cascade_delete)
-        table = Arel::Table.new(:partitioned_foreign_keys)
-        insert_manager = Arel::InsertManager.new
-          .insert([[table[:from_table], from_table],
-                   [table[:to_table], to_table],
-                   [table[:from_column], from_column],
-                   [table[:to_column], to_column],
-                   [table[:cascade_delete], cascade_delete]])
-          .into(table)
-
-        execute(insert_manager.to_sql)
-      end
-
-      def delete_foreign_key(from_table, to_table, from_column)
-        table = Arel::Table.new(:partitioned_foreign_keys)
-        delete_manager = Arel::DeleteManager.new
-          .from(table)
-          .where(table[:from_table].eq(from_table))
-          .where(table[:to_table].eq(to_table))
-          .where(table[:from_column].eq(from_column))
-
-        execute(delete_manager.to_sql)
+      def find_existing_key(keys, key)
+        keys.find { |k| k.from_table == key.from_table && k.from_column == key.from_column }
       end
 
       def create_or_replace_fk_function(fn_name, fk_specs)
@@ -100,14 +94,12 @@ module Gitlab
         end
       end
 
-      def build_cascade_statements(fk_specs)
-        fk_specs.map do |spec|
-          from_table, from_column, to_column = spec.values_at(:from_table, :from_column, :to_column)
-
-          if spec[:cascade_delete]
-            "DELETE FROM #{from_table} WHERE #{from_column} = OLD.#{to_column};"
+      def build_cascade_statements(foreign_keys)
+        foreign_keys.map do |fks|
+          if fks.cascade_delete?
+            "DELETE FROM #{fks.from_table} WHERE #{fks.from_column} = OLD.#{fks.to_column};"
           else
-            "UPDATE #{from_table} SET #{from_column} = NULL WHERE #{from_column} = OLD.#{to_column};"
+            "UPDATE #{fks.from_table} SET #{fks.from_column} = NULL WHERE #{fks.from_column} = OLD.#{fks.to_column};"
           end
         end
       end
