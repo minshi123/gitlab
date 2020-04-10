@@ -21,7 +21,7 @@ export default {
       required: true,
     },
     initialCommentDetail: {
-      type: Boolean,
+      type: String,
       required: true,
     },
   },
@@ -48,9 +48,12 @@ export default {
         }}
       </p>
 
+      <input name="service[commit_events]" type="hidden" value="false" />
       <gl-form-checkbox v-model="triggerCommit" name="service[commit_events]">
         {{ __('Commit') }}
       </gl-form-checkbox>
+
+      <input name="service[merge_requests_events]" type="hidden" value="false" />
       <gl-form-checkbox v-model="triggerMergeRequest" name="service[merge_requests_events]">
         {{ __('Merge request') }}
       </gl-form-checkbox>
@@ -59,6 +62,7 @@ export default {
         <p>
           <strong>{{ s__('Integrations|Comment settings:') }}</strong>
         </p>
+        <input name="service[comment_on_event_enabled]" type="hidden" value="false" />
         <gl-form-checkbox v-model="enableComments" name="service[comment_on_event_enabled]">
           {{ s__('Integrations|Enable comments') }}
         </gl-form-checkbox>
