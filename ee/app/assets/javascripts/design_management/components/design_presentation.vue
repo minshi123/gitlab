@@ -224,10 +224,7 @@ export default {
         y: clientY,
       };
 
-      this.lastDragPosition = {
-        x: clientX,
-        y: clientY,
-      };
+      this.lastDragPosition = { ...this.startDragPosition };
     },
     onPresentationMousemove({ clientX, clientY }) {
       if (!this.lastDragPosition) return;
