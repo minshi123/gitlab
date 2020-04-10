@@ -38,7 +38,8 @@ export default {
     requirementsCount: {
       type: Object,
       required: true,
-      validator: value => ['OPENED', 'ARCHIVED', 'ALL'].every(prop => value[prop]),
+      validator: value =>
+        ['OPENED', 'ARCHIVED', 'ALL'].every(prop => typeof value[prop] === 'number'),
     },
     page: {
       type: Number,
@@ -348,22 +349,23 @@ export default {
 
 <template>
   <div class="requirements-list-container">
-    <requirements-empty-state
-      v-if="requirementsListEmpty"
-      :filter-by="filterBy"
-      :empty-state-path="emptyStatePath"
-    />
-    <requirements-loading
-      v-show="requirementsListLoading"
-      :filter-by="filterBy"
-      :current-tab-count="totalRequirements"
-      :current-page="currentPage"
-    />
     <requirement-form
       v-if="showCreateForm"
       :requirement-request-active="createRequirementRequestActive"
       @save="handleNewRequirementSave"
       @cancel="handleNewRequirementCancel"
+    />
+    <requirements-empty-state
+      v-if="requirementsListEmpty"
+      :filter-by="filterBy"
+      :empty-state-path="emptyStatePath"
+      :requirements-count="requirementsCount"
+    />
+    <requirements-loading
+      v-show="requirementsListLoading"
+      :filter-by="filterBy"
+      :current-page="currentPage"
+      :requirements-count="requirementsCount"
     />
     <ul
       v-if="!requirementsListLoading && !requirementsListEmpty"

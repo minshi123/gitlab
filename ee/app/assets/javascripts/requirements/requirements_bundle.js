@@ -45,18 +45,20 @@ export default () => {
         emptyStatePath,
         opened,
         archived,
+        all,
       } = el.dataset;
       const stateFilterBy = filterBy ? FilterState[filterBy] : FilterState.opened;
 
       const OPENED = parseInt(opened, 10);
       const ARCHIVED = parseInt(archived, 10);
+      const ALL = parseInt(all, 10);
 
       return {
         filterBy: stateFilterBy,
         requirementsCount: {
           OPENED,
           ARCHIVED,
-          ALL: OPENED + ARCHIVED,
+          ALL,
         },
         page,
         prev,
