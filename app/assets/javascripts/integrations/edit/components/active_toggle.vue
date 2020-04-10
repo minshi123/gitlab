@@ -35,8 +35,8 @@ export default {
   },
   methods: {
     onToggle(e) {
-      if (this.$parent) {
-        this.$parent.$emit('toggle', e);
+      if (this.$root) {
+        this.$root.$emit('toggle', e);
       }
     },
   },
