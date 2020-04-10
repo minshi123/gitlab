@@ -438,7 +438,7 @@ describe('Design management design presentation component', () => {
       });
     });
 
-    it('opens a comment form is design was not dragged', () => {
+    it('opens a comment form if design was not dragged', () => {
       const startDragPosition = { x: 1, y: 1 };
       const lastDragPosition = { x: 1, y: 1 };
       createComponent(
