@@ -4,7 +4,7 @@ import FirstClassGroupVulnerabilities from 'ee/security_dashboard/components/fir
 import VulnerabilityList from 'ee/vulnerabilities/components/vulnerability_list.vue';
 import { generateVulnerabilities } from '../../vulnerabilities/mock_data';
 
-describe('First Class Group Dashboard Vulnerabilities Component', () => {
+describe('First Class Instance Dashboard Vulnerabilities Component', () => {
   let wrapper;
 
   const dashboardDocumentation = 'dashboard-documentation';
