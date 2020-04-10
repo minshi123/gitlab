@@ -120,7 +120,18 @@ export default {
           :can-edit="canEdit"
         />
         <tr v-else :key="index">
-          <td class="js-name">{{ rule.name }}</td>
+          <td class="js-name">
+            <div ref="name">{{ rule.name }}</div>
+            <div class="text-muted" ref="indicator">
+              {{
+                rule.hasSource
+                  ? rule.overridden
+                    ? __('Overridden')
+                    : ''
+                  : __('Added for this merge request')
+              }}
+            </div>
+          </td>
           <td class="js-members" :class="settings.allowMultiRule ? 'd-none d-sm-table-cell' : null">
             <user-avatar-list :items="rule.approvers" :img-size="24" />
           </td>
