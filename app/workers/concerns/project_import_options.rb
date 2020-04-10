@@ -18,7 +18,9 @@ module ProjectImportOptions
                  "import"
                end
 
-      project.import_state.mark_as_failed(_("Every %{action} attempt has failed: %{job_error_message}. Please try again.") % { action: action, job_error_message: job['error_message'] })
+      import_state = project.jira_import? ? project.latest_jira_import : project.import_state
+
+      import_state&.mark_as_failed(_("Every %{action} attempt has failed: %{job_error_message}. Please try again.") % { action: action, job_error_message: job['error_message'] })
       Sidekiq.logger.warn "Failed #{job['class']} with #{job['args']}: #{job['error_message']}"
     end
   end
