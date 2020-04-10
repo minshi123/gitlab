@@ -5782,7 +5782,8 @@ CREATE TABLE public.services (
     description character varying(500),
     comment_on_event_enabled boolean DEFAULT true NOT NULL,
     template boolean DEFAULT false,
-    instance boolean DEFAULT false NOT NULL
+    instance boolean DEFAULT false NOT NULL,
+    comment_detail smallint DEFAULT 1 NOT NULL
 );
 
 CREATE SEQUENCE public.services_id_seq
