@@ -2,12 +2,14 @@
 import SecurityDashboardLayout from 'ee/security_dashboard/components/security_dashboard_layout.vue';
 import InstanceSecurityVulnerabilities from './first_class_instance_security_dashboard_vulnerabilities.vue';
 import Filters from 'ee/security_dashboard/components/first_class_vulnerability_filters.vue';
+import VulnerabilitySeverity from 'ee/security_dashboard/components/vulnerability_severity.vue';
 
 export default {
   components: {
     SecurityDashboardLayout,
     InstanceSecurityVulnerabilities,
     Filters,
+    VulnerabilitySeverity,
   },
   props: {
     dashboardDocumentation: {
@@ -15,6 +17,10 @@ export default {
       required: true,
     },
     emptyStateSvgPath: {
+      type: String,
+      required: true,
+    },
+    vulnerableProjectsEndpoint: {
       type: String,
       required: true,
     },
@@ -45,5 +51,8 @@ export default {
       :empty-state-svg-path="emptyStateSvgPath"
       :filters="filters"
     />
+    <template #aside>
+      <vulnerability-severity :endpoint="vulnerableProjectsEndpoint" />
+    </template>
   </security-dashboard-layout>
 </template>
