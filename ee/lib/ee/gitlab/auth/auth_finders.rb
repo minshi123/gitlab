@@ -9,6 +9,7 @@ module EE
 
         def find_user_from_bearer_token
           find_user_from_job_bearer_token ||
+            find_user_from_deploy_token ||
             find_user_from_access_token
         end
 
@@ -43,6 +44,10 @@ module EE
           @current_authenticated_job = job # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
           job.user
+        end
+
+        def find_user_from_deploy_token
+          # TODO
         end
       end
     end
