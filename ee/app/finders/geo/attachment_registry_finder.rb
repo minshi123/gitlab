@@ -52,8 +52,18 @@ module Geo
     #
     # @return [Array] the first element is an Array of untracked IDs, and the second element is an Array of tracked IDs that are unused
     def find_registry_differences(range)
-      source = attachments(fdw: false).where(id: range).pluck(::Upload.arel_table[:id], ::Upload.arel_table[:uploader]) # rubocop:disable CodeReuse/ActiveRecord
-      tracked = Geo::UploadRegistry.where(file_id: range).pluck(:file_id, :file_type) # rubocop:disable CodeReuse/ActiveRecord
+      # rubocop:disable CodeReuse/ActiveRecord
+      source =
+        attachments(fdw: false)
+            .id_in(range)
+            .pluck(::Upload.arel_table[:id], ::Upload.arel_table[:uploader])
+            .map! { |id, uploader| [id, uploader.sub(/Uploader\z/, '').underscore] }
+
+      tracked =
+        Geo::UploadRegistry
+            .model_id_in(range)
+            .pluck(:file_id, :file_type)
+      # rubocop:enable CodeReuse/ActiveRecord
 
       untracked = source - tracked
       unused_tracked = tracked - source
