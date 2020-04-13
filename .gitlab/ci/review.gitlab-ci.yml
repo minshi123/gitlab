@@ -32,30 +32,18 @@ build-qa-image:
   before_script:
     - source scripts/utils.sh
     - install_gitlab_gem
-  script:
-    - ruby -rrubygems scripts/review_apps/automated_cleanup.rb
-
-review-cleanup:
-  extends:
-    - .review-cleanup-base
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-helm3-kubectl1.14
-
-review-gcp-cleanup:
-  extends:
-    - .review:rules:review-gcp-cleanup
-  stage: prepare
-  image: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
-  allow_failure: true
-  environment:
-    name: review/auto-gcp-cleanup
-    action: stop
-  before_script:
     - gcloud auth activate-service-account --key-file=$REVIEW_APPS_GCP_CREDENTIALS
     - gcloud config set project $REVIEW_APPS_GCP_PROJECT
     - apt-get install -y jq
     - source scripts/review_apps/gcp_cleanup.sh
   script:
+    - ruby -rrubygems scripts/review_apps/automated_cleanup.rb
     - gcp_cleanup
+
+review-cleanup:
+  extends:
+    - .review-cleanup-base
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-helm3-kubectl1.14
 
 review-build-cng:
   extends:
