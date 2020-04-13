@@ -38,13 +38,6 @@ build-qa-image:
 review-cleanup:
   extends:
     - .review-cleanup-base
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
-
-review-cleanup-helm3:
-  extends:
-    - .review-cleanup-base
-  variables:
-    HELM_3: 1
   image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-helm3-kubectl1.14
 
 review-gcp-cleanup:

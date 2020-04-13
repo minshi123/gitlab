@@ -29,7 +29,7 @@ module Quality
     # A single page of data and the corresponding page number.
     Page = Struct.new(:releases, :number)
 
-    def initialize(namespace:, tiller_namespace: nil)
+    def initialize(namespace:)
       @namespace = namespace
     end
 
