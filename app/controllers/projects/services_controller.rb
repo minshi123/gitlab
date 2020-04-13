@@ -26,7 +26,7 @@ class Projects::ServicesController < Projects::ApplicationController
     respond_to do |format|
       format.html do
         if saved
-          redirect_to project_settings_integrations_path(@project),
+          redirect_to edit_project_service_path(@project, @service),
             notice: success_message
         else
           render 'edit'

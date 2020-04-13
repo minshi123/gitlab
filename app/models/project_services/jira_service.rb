@@ -185,12 +185,14 @@ class JiraService < IssueTrackerService
       },
       project: {
         name: project.full_path,
-        url: resource_url(namespace_project_path(project.namespace, project)) # rubocop:disable Cop/ProjectPathHelper
+        url: resource_url(project_path(project))
       },
       entity: {
+        id: noteable.is_a?(MergeRequest) ? noteable.to_reference : noteable.short_id,
         name: noteable_type.humanize.downcase,
         url: entity_url,
-        title: noteable.title
+        title: noteable.title,
+        branch: noteable.is_a?(MergeRequest) ? noteable.source_branch : noteable.ref_names(project.repository).first
       }
     }
 
@@ -264,20 +266,34 @@ class JiraService < IssueTrackerService
   end
 
   def add_comment(data, issue)
-    user_name    = data[:user][:name]
-    user_url     = data[:user][:url]
     entity_name  = data[:entity][:name]
     entity_url   = data[:entity][:url]
     entity_title = data[:entity][:title]
-    project_name = data[:project][:name]
 
-    message      = "[#{user_name}|#{user_url}] mentioned this issue in [a #{entity_name} of #{project_name}|#{entity_url}]:\n'#{entity_title.chomp}'"
+    message      = comment_message(data)
     link_title   = "#{entity_name.capitalize} - #{entity_title}"
     link_props   = build_remote_link_props(url: entity_url, title: link_title)
 
     unless comment_exists?(issue, message)
       send_message(issue, message, link_props)
     end
+  end
+
+  def comment_message(data)
+    user_link = "[#{data[:user][:name]}|#{data[:user][:url]}]"
+    entity_name = data[:entity][:name]
+    entity_ref =
+      if all_details?
+        "#{entity_name} #{data[:entity][:id]}"
+      elsif standard?
+        "a #{entity_name}"
+      end
+
+    entity_link = "[#{entity_ref} of #{data[:project][:name]}|#{data[:entity][:url]}]"
+    branch_name = "*#{data[:entity][:branch]}*"
+    entity_title = data[:entity][:title].chomp
+
+    s_('JiraService|%{user_link} mentioned this issue in %{entity_link} on branch %{branch_name}:{quote}%{entity_title}{quote}') % { user_link: user_link, entity_link: entity_link, branch_name: branch_name, entity_title: entity_title }
   end
 
   def has_resolution?(issue)
