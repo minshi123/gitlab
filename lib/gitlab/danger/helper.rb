@@ -191,6 +191,19 @@ module Gitlab
         gitlab_helper.mr_json['web_url'].include?('/gitlab-org/security/')
       end
 
+      def mr_has_label?(label)
+        return false unless gitlab_helper
+
+        gitlab_helper.mr_labels.include?(label)
+      end
+
+      def labels_for_mr(labels)
+        return '' unless labels.present?
+
+        labels_list = labels.map { |label| %Q{~"#{label}"} }.join(' ')
+        "/label #{labels_list}"
+      end
+
       private
 
       def has_database_scoped_labels?(current_mr_labels)

@@ -363,4 +363,38 @@ describe Gitlab::Danger::Helper do
       expect(helper).to be_security_mr
     end
   end
+
+  describe '#mr_has_label?' do
+    let(:mr_labels) { ['telemetry', 'telemetry::reviewed'] }
+
+    it 'returns false when `gitlab_helper` is unavailable' do
+      expect(helper).to receive(:gitlab_helper).and_return(nil)
+
+      expect(helper.mr_has_label?('telemetry')).to be_falsey
+    end
+
+    it 'returns true when mr has the label' do
+      expect(fake_gitlab).to receive(:mr_labels).and_return(mr_labels)
+
+      expect(helper.mr_has_label?('telemetry')).to be_truthy
+    end
+
+    it "returns false when mr doesn't have the label" do
+      expect(fake_gitlab).to receive(:mr_labels).and_return(mr_labels)
+
+      expect(helper.mr_has_label?('database')).to be_falsey
+    end
+  end
+
+  describe '#labels_for_mr' do
+    let(:mr_labels) { ['telemetry', 'telemetry::reviewed'] }
+
+    it 'composes the labels string' do
+      expect(helper.labels_for_mr(mr_labels)).to eq('/label ~"telemetry" ~"telemetry::reviewed"')
+    end
+
+    it 'returns empty string for empty array' do
+      expect(helper.labels_for_mr([])).to eq('')
+    end
+  end
 end
