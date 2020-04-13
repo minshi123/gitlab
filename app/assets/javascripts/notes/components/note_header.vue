@@ -39,13 +39,18 @@ export default {
       required: false,
       default: true,
     },
+    showSpinner: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   computed: {
     toggleChevronClass() {
       return this.expanded ? 'fa-chevron-up' : 'fa-chevron-down';
     },
     noteTimestampLink() {
-      return `#note_${this.noteId}`;
+      return this.noteId ? `#note_${this.noteId}` : undefined;
     },
     hasAuthor() {
       return this.author && Object.keys(this.author).length;
@@ -101,6 +106,7 @@ export default {
           <template v-if="actionText">{{ actionText }}</template>
         </span>
         <a
+          v-if="noteTimestampLink"
           ref="noteTimestamp"
           :href="noteTimestampLink"
           class="note-timestamp system-note-separator"
@@ -108,9 +114,11 @@ export default {
         >
           <time-ago-tooltip :time="createdAt" tooltip-placement="bottom" />
         </a>
+        <time-ago-tooltip v-else :time="createdAt" tooltip-placement="bottom" />
       </template>
       <slot name="extra-controls"></slot>
       <i
+        v-if="showSpinner"
         class="fa fa-spinner fa-spin editing-spinner"
         :aria-label="__('Comment is being updated')"
         aria-hidden="true"
