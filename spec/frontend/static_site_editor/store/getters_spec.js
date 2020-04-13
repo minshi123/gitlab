@@ -25,5 +25,11 @@ describe('Static Site Editor Store getters', () => {
 
       expect(contentChanged(state)).toBe(false);
     });
+
+    it('returns false when content is empty', () => {
+      const state = createState({ content: '', originalContent: content });
+
+      expect(contentChanged(state)).toBe(false);
+    });
   });
 });
