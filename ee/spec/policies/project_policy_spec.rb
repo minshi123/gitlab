@@ -68,7 +68,7 @@ describe ProjectPolicy do
       let(:current_user) { create(:user, :auditor) }
 
       before do
-        stub_licensed_features(security_dashboard: true, license_scanning: true, threat_monitoring: true)
+        stub_licensed_features(security_dashboard: true, sast: true, license_scanning: true, threat_monitoring: true)
       end
 
       context 'who is not a team member' do
@@ -392,33 +392,21 @@ describe ProjectPolicy do
     end
   end
 
-  shared_context 'when security dashboard feature is not available' do
-    before do
-      stub_licensed_features(security_dashboard: false)
-    end
-  end
-
   describe 'read_project_security_dashboard' do
-    context 'with developer' do
+    context 'when security dashboard feature is not available' do
       let(:current_user) { developer }
-
-      include_context 'when security dashboard feature is not available'
 
       it { is_expected.to be_disallowed(:read_project_security_dashboard) }
     end
   end
 
   describe 'vulnerability permissions' do
-    describe 'dismiss_vulnerability' do
-      context 'with developer' do
-        let(:current_user) { developer }
+    context 'with security features are not available' do
+      let(:current_user) { developer }
 
-        include_context 'when security dashboard feature is not available'
-
-        it { is_expected.to be_disallowed(:create_vulnerability) }
-        it { is_expected.to be_disallowed(:admin_vulnerability) }
-        it { is_expected.to be_disallowed(:create_vulnerability_export) }
-      end
+      it { is_expected.to be_disallowed(:create_vulnerability) }
+      it { is_expected.to be_disallowed(:admin_vulnerability) }
+      it { is_expected.to be_disallowed(:create_vulnerability_export) }
     end
   end
 

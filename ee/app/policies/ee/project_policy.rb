@@ -93,6 +93,12 @@ module EE
       end
 
       with_scope :subject
+      condition(:security_features_enabled) do
+        @subject.feature_available?(:sast) | @subject.feature_available?(:dependency_scanning) |
+          @subject.feature_available?(:dast) | @subject.feature_available?(:container_scanning)
+      end
+
+      with_scope :subject
       condition(:license_scanning_enabled) do
         @subject.feature_available?(:license_scanning) || @subject.feature_available?(:license_management)
       end
@@ -188,12 +194,13 @@ module EE
 
       rule { can?(:public_access) }.enable :read_package
 
-      rule { security_dashboard_enabled & can?(:developer_access) }.enable :read_vulnerability
+      rule { security_features_enabled & can?(:developer_access) }.enable :read_vulnerability
 
       rule { can?(:read_merge_request) & can?(:read_pipeline) }.enable :read_merge_train
 
+      rule { security_dashboard_enabled & can?(:read_vulnerability) }.enable :read_project_security_dashboard
+
       rule { can?(:read_vulnerability) }.policy do
-        enable :read_project_security_dashboard
         enable :create_vulnerability
         enable :create_vulnerability_export
         enable :admin_vulnerability
@@ -244,7 +251,7 @@ module EE
         enable :read_pages
       end
 
-      rule { auditor & security_dashboard_enabled }.policy do
+      rule { auditor & security_features_enabled }.policy do
         enable :read_vulnerability
       end
 
