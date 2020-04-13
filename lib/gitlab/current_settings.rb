@@ -43,8 +43,6 @@ module Gitlab
       end
 
       def uncached_application_settings
-        return fake_application_settings unless connect_to_db?
-
         current_settings = ::ApplicationSetting.current
         # If there are pending migrations, it's possible there are columns that
         # need to be added to the application settings. To prevent Rake tasks
@@ -66,16 +64,6 @@ module Gitlab
 
       def in_memory_application_settings
         @in_memory_application_settings ||= ::ApplicationSetting.build_from_defaults
-      end
-
-      def connect_to_db?
-        # When the DBMS is not available, an exception (e.g. PG::ConnectionBad) is raised
-        active_db_connection = ActiveRecord::Base.connection.active? rescue false
-
-        active_db_connection &&
-          Gitlab::Database.cached_table_exists?('application_settings')
-      rescue ActiveRecord::NoDatabaseError
-        false
       end
     end
   end
