@@ -5,19 +5,36 @@
 You can select units to format your charts by adding `format` to your
 [axis configuration](prometheus.md#dashboard-yaml-properties).
 
+## Engineering Notation
+
+For generic/default data, numbers are formatted according to the current locale in engineering notation.
+
+Formats: `engineering`
+
+**Examples:**
+
+| Data       | Displayed |
+| ---------- | --------- |
+| `0.00011`  | 110μ      |
+| `0.001`    | 1m        |
+| `1,000.00` | 1K        |
+| `-1,000.00`| -1K       |
+| `3,002.10` | 3K        |
+| `-3,002.10`| -3K       |
+
 ## Numbers
 
-For generic data, numbers are formatted according to the current locale.
+For number data, numbers are formatted according to the current locale.
 
 Formats: `number`
 
 **Examples:**
 
-| Data      | Displayed |
-| --------- | --------- |
-| `10`      | 1         |
-| `1000`    | 1,000     |
-| `1000000` | 1,000,000 |
+| Format  | Data  | Displayed |
+| ------- | ----- | --------- |
+| `number` | `10`       | 1         |
+| `number` | `1000`     | 1,000     |
+| `number` | `1000000`  | 1,000,000 |
 
 ## Percentage
 
