@@ -398,7 +398,8 @@ CREATE TABLE public.application_settings (
     npm_package_requests_forwarding boolean DEFAULT true NOT NULL,
     namespace_storage_size_limit bigint DEFAULT 0 NOT NULL,
     seat_link_enabled boolean DEFAULT true NOT NULL,
-    container_expiration_policies_enable_historic_entries boolean DEFAULT false NOT NULL
+    container_expiration_policies_enable_historic_entries boolean DEFAULT false NOT NULL,
+    allow_group_owners_to_manage_default_branch_protection boolean DEFAULT true NOT NULL
 );
 
 CREATE SEQUENCE public.application_settings_id_seq
@@ -13090,5 +13091,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200407094005
 20200407094923
 20200408110856
+20200413072059
 \.
 
