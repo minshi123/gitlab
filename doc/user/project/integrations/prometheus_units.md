@@ -30,11 +30,11 @@ Formats: `number`
 
 **Examples:**
 
-| Format  | Data  | Displayed |
-| ------- | ----- | --------- |
-| `number` | `10`       | 1         |
-| `number` | `1000`     | 1,000     |
-| `number` | `1000000`  | 1,000,000 |
+| Data  | Displayed |
+| ---------- | --------- |
+| `10`       | 1         |
+| `1000`     | 1,000     |
+| `1000000`  | 1,000,000 |
 
 ## Percentage
 
