@@ -16,15 +16,16 @@ export const sourceContentTitle = 'Handbook';
 
 export const username = 'gitlabuser';
 export const projectId = '123456';
+export const returnUrl = 'https://www.gitlab.com';
 export const sourcePath = 'foobar.md.html';
 
 export const savedContentMeta = {
   branch: {
     label: 'foobar',
-    url: 'foobar/-/tree/foorbar',
+    url: 'foobar/-/tree/foobar',
   },
   commit: {
-    label: 'c1461b08 ',
+    label: 'c1461b08',
     url: 'foobar/-/c1461b08',
   },
   mergeRequest: {

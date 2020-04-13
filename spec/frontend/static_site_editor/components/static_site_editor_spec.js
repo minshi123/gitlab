@@ -8,8 +8,9 @@ import createState from '~/static_site_editor/store/state';
 import StaticSiteEditor from '~/static_site_editor/components/static_site_editor.vue';
 import EditArea from '~/static_site_editor/components/edit_area.vue';
 import PublishToolbar from '~/static_site_editor/components/publish_toolbar.vue';
+import SavedChangesMessage from '~/static_site_editor/components/saved_changes_message.vue';
 
-import { sourceContent } from '../mock_data';
+import { returnUrl, sourceContent, savedContentMeta } from '../mock_data';
 
 const localVue = createLocalVue();
 
@@ -61,6 +62,7 @@ describe('StaticSiteEditor', () => {
   const findEditArea = () => wrapper.find(EditArea);
   const findPublishToolbar = () => wrapper.find(PublishToolbar);
   const findSkeletonLoader = () => wrapper.find(GlSkeletonLoader);
+  const findSavedChangesMessage = () => wrapper.find(SavedChangesMessage);
 
   beforeEach(() => {
     buildStore();
@@ -69,6 +71,17 @@ describe('StaticSiteEditor', () => {
 
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  describe('when edit is successfully saved', () => {
+    beforeEach(() => {
+      buildStore({ initialState: { returnUrl, savedContentMeta } });
+      buildWrapper();
+    });
+
+    it('renders the saved changes message', () => {
+      expect(findSavedChangesMessage().exists()).toBe(true);
+    });
   });
 
   describe('when content is not loaded', () => {

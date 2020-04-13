@@ -1,6 +1,7 @@
 const createState = (initialState = {}) => ({
   username: null,
   projectId: null,
+  returnUrl: null,
   sourcePath: null,
 
   isLoadingContent: false,
@@ -9,6 +10,8 @@ const createState = (initialState = {}) => ({
   originalContent: '',
   content: '',
   title: '',
+
+  savedContentMeta: null,
 
   ...initialState,
 });

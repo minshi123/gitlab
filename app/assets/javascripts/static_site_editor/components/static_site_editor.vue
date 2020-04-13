@@ -3,16 +3,24 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { GlSkeletonLoader } from '@gitlab/ui';
 
 import EditArea from './edit_area.vue';
+import SavedChangesMessage from './saved_changes_message.vue';
 import Toolbar from './publish_toolbar.vue';
 
 export default {
   components: {
     EditArea,
     GlSkeletonLoader,
+    SavedChangesMessage,
     Toolbar,
   },
   computed: {
-    ...mapState(['content', 'isLoadingContent', 'isSavingChanges']),
+    ...mapState([
+      'content',
+      'isLoadingContent',
+      'isSavingChanges',
+      'returnUrl',
+      'savedContentMeta',
+    ]),
     ...mapGetters(['isContentLoaded', 'contentChanged']),
   },
   mounted() {
@@ -24,28 +32,40 @@ export default {
 };
 </script>
 <template>
-  <div class="d-flex justify-content-center h-100  pt-2">
-    <div v-if="isLoadingContent" class="w-50 h-50">
-      <gl-skeleton-loader :width="500" :height="102">
-        <rect width="500" height="16" rx="4" />
-        <rect y="20" width="375" height="16" rx="4" />
-        <rect x="380" y="20" width="120" height="16" rx="4" />
-        <rect y="40" width="250" height="16" rx="4" />
-        <rect x="255" y="40" width="150" height="16" rx="4" />
-        <rect x="410" y="40" width="90" height="16" rx="4" />
-      </gl-skeleton-loader>
-    </div>
-    <div v-if="isContentLoaded" class="d-flex flex-grow-1 flex-column">
-      <edit-area
-        class="w-75 h-100 shadow-none align-self-center"
-        :value="content"
-        @input="setContent"
-      />
-      <toolbar
-        :saveable="contentChanged"
-        :saving-changes="isSavingChanges"
-        @submit="submitChanges"
-      />
-    </div>
+  <div class="d-flex justify-content-center h-100 pt-2">
+    <!-- Success view -->
+    <saved-changes-message
+      v-if="savedContentMeta"
+      :branch="savedContentMeta.branch"
+      :commit="savedContentMeta.commit"
+      :merge-request="savedContentMeta.mergeRequest"
+      :return-url="returnUrl"
+    />
+
+    <!-- Main view -->
+    <template v-else>
+      <div v-if="isLoadingContent" class="w-50 h-50">
+        <gl-skeleton-loader :width="500" :height="102">
+          <rect width="500" height="16" rx="4" />
+          <rect y="20" width="375" height="16" rx="4" />
+          <rect x="380" y="20" width="120" height="16" rx="4" />
+          <rect y="40" width="250" height="16" rx="4" />
+          <rect x="255" y="40" width="150" height="16" rx="4" />
+          <rect x="410" y="40" width="90" height="16" rx="4" />
+        </gl-skeleton-loader>
+      </div>
+      <div v-if="isContentLoaded" class="d-flex flex-grow-1 flex-column">
+        <edit-area
+          class="w-75 h-100 shadow-none align-self-center"
+          :value="content"
+          @input="setContent"
+        />
+        <toolbar
+          :saveable="contentChanged"
+          :saving-changes="isSavingChanges"
+          @submit="submitChanges"
+        />
+      </div>
+    </template>
   </div>
 </template>
