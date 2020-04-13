@@ -18,6 +18,7 @@ module Gitlab
         end
       end
 
+      # test change
       def uncached_data
         license_usage_data
           .merge(system_usage_data)
