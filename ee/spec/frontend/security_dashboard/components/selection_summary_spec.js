@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import SelectionSummary from 'ee//security_dashboard/components/selection_summary.vue';
+import SelectionSummary from 'ee/security_dashboard/components/selection_summary.vue';
 
 describe('Selection Summary component', () => {
   let wrapper;

@@ -16,10 +16,6 @@ export default {
     GlFormSelect,
   },
   props: {
-    refetchVulnerabilities: {
-      type: Function,
-      required: true,
-    },
     deselectAllVulnerabilities: {
       type: Function,
       required: true,
@@ -29,9 +25,11 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    dismissalReason: null,
-  }),
+  data() {
+    return {
+      dismissalReason: null,
+    };
+  },
   computed: {
     selectedVulnerabilitiesCount() {
       return this.selectedVulnerabilities.length;
@@ -72,15 +70,13 @@ export default {
         .then(() => {
           toast(this.dismissalSuccessMessage());
           this.deselectAllVulnerabilities();
+          this.$emit('refetch-vulnerabilities');
         })
         .catch(() => {
           createFlash(
             s__('Security Reports|There was an error dismissing the vulnerabilities.'),
             'alert',
           );
-        })
-        .finally(() => {
-          this.refetchVulnerabilities();
         });
     },
   },
