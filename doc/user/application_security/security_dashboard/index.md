@@ -54,6 +54,15 @@ for your project from the last successful pipeline. Use it to find and fix vulne
 
 ![Project Security Dashboard](img/project_security_dashboard_v12_3.png)
 
+### Exporting Vulnerabilities
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/197494) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.10.
+
+Starting from 12.10, it is possible to export all vulnerabilities at the project level. Clicking on the export button located 
+at top right of the Project Security Dashboard will initiate the process and once complete it will download a CSV report. Please note
+that this export will contain all vulnerabilities in the project and the filters won't apply.
+
+![CSV Export Button](img/project_security_dashboard_export_csv_v12.10.png)
+
 ## Group Security Dashboard
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/6709) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 11.5.
