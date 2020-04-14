@@ -535,8 +535,8 @@ The metrics include:
 
 GitLab provides some initial alerts for you after you install Prometheus:
 
-- Ingress status code 500 > 0.1%
-- NGINX status code 500 > 0.1%
+- Ingress status code `500` > 0.1%
+- NGINX status code `500` > 0.1%
 
 To make use of Auto Monitoring:
 
