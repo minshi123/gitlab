@@ -1,0 +1,6 @@
+---
+title: Remove redundant index_projects_on_creator_id_and_created_at from projects
+  table
+merge_request: 29507
+author:
+type: performance
