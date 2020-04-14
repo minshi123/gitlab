@@ -22,7 +22,7 @@ module ImportExport
 
     def extract_archive(path, archive)
       if File.exist?(File.join(path, archive))
-        system("cd #{path}; tar xzvf #{archive} &> /dev/null")
+        system("cd #{path}; tar xzf #{archive}")
       end
     end
 
@@ -31,7 +31,7 @@ module ImportExport
       export_path = File.join(*export_path)
 
       if File.exist?(File.join(export_path, 'tree.tar.gz'))
-        system("cd #{export_path}; rm -fr tree &> /dev/null")
+        system("cd #{export_path}; rm -fr tree")
       end
     end
 
