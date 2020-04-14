@@ -26,7 +26,7 @@ module API
 
             forbidden! unless can?(current_user, :create_metrics_dashboard_annotation, environment)
 
-            result = ::Metrics::Dashboard::Annotations::CreateService.new(current_user, params.merge(environment: environment)).execute
+            result = ::Metrics::Dashboard::Annotations::CreateService.new(current_user, declared(params).merge(environment: environment)).execute
 
             if result[:status] == :success
               present result[:annotation], with: Entities::Metrics::Dashboard::Annotation
