@@ -8,6 +8,7 @@ module Packages
 
       MAX_PER_PAGE = 30
       MAX_VERSIONS_PER_PACKAGE = 10
+      PRE_RELEASE_VERSION_MATCHING_TERM = '%-%'
 
       DEFAULT_OPTIONS = {
         include_prerelease_versions: true,
@@ -49,7 +50,7 @@ module Packages
                                 .where(arel_table[:row_number].lteq(MAX_VERSIONS_PER_PACKAGE))
 
         unless include_prerelease_versions?
-          pkgs = pkgs.where.not(arel_table[:version].matches('%-%'))
+          pkgs = pkgs.where.not(arel_table[:version].matches(PRE_RELEASE_VERSION_MATCHING_TERM))
         end
         # rubocop: enable CodeReuse/ActiveRecord
 
@@ -78,7 +79,7 @@ module Packages
                          .without_nuget_temporary_name
                          .order_name
                          .select_distinct_name
-          pkgs = pkgs.without_version_like('%-%') unless include_prerelease_versions?
+          pkgs = pkgs.without_version_like(PRE_RELEASE_VERSION_MATCHING_TERM) unless include_prerelease_versions?
           pkgs = pkgs.search_by_name(@search_term) if @search_term.present?
           pkgs.page(0) # we're using a padding
               .per(per_page)
