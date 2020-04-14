@@ -22,7 +22,6 @@ module Gitlab
       @limit_projects = limit_projects || Project.all
       @query = query
       @default_project_filter = default_project_filter
-      @per_page = per_page
     end
 
     def objects(scope, page = nil, per_page = 20, without_count = true)
