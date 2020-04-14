@@ -22,10 +22,8 @@ describe 'User notification dot', :aggregate_failures do
     end
 
     it 'shows notification dot' do
-      expect_next_instance_of(ProjectsController) do |ctrl|
-        expect(ctrl).to receive(:track_event)
-                          .with('show_buy_ci_minutes_notification', label: 'free', property: 'user_dropdown')
-      end
+      expect(Gitlab::Tracking).to receive(:event)
+                                    .with('Projects:show', 'load', label: 'show_buy_ci_minutes_notification', property: 'user_dropdown', context: 'free')
 
       visit project_path(project)
 
@@ -37,9 +35,8 @@ describe 'User notification dot', :aggregate_failures do
     let(:group) { create(:group, :with_not_used_build_minutes_limit) }
 
     it 'shows notification dot' do
-      expect_next_instance_of(ProjectsController) do |ctrl|
-        expect(ctrl).not_to receive(:track_event)
-      end
+      expect(Gitlab::Tracking).not_to receive(:event)
+                                    .with('Projects:show', 'load', label: 'show_buy_ci_minutes_notification', property: 'user_dropdown', context: 'free')
 
       visit project_path(project)
 

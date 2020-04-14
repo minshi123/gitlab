@@ -73,6 +73,29 @@ export default class Tracking {
     return handlers;
   }
 
+  static trackLoadEvents(category = document.body.dataset.page, documentOverride = null) {
+    const el = documentOverride || document;
+    if (!this.enabled()) return [];
+
+    const loadEvents = el.querySelectorAll('[data-track-event="load"]');
+
+    loadEvents.forEach(element => {
+      const action = element.dataset.trackEvent;
+      const value = element.dataset.trackValue || element.value || undefined;
+
+      const data = {
+        label: element.dataset.trackLabel,
+        property: element.dataset.trackProperty,
+        value,
+        context: element.dataset.trackContext,
+      };
+
+      this.event(category, action, data);
+    });
+
+    return loadEvents;
+  }
+
   static mixin(opts = {}) {
     return {
       computed: {
@@ -111,6 +134,7 @@ export function initUserTracking() {
   if (opts.linkClickTracking) window.snowplow('enableLinkClickTracking');
 
   Tracking.bindDocument();
+  Tracking.trackLoadEvents();
 
   document.dispatchEvent(new Event('SnowplowInitialized'));
 }
