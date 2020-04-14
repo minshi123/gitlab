@@ -12,10 +12,13 @@ class ResourceMilestoneEvent < ResourceEvent
 
   validate :exactly_one_issuable
 
+  ACTION_ADD = :add
+  ACTION_REMOVE = :remove
+
   enum action: {
-         add: 1,
-         remove: 2
-       }
+    ACTION_ADD => 1,
+    ACTION_REMOVE => 2
+  }
 
   # state is used for issue and merge request states.
   enum state: Issue.available_states.merge(MergeRequest.available_states)
@@ -24,5 +27,13 @@ class ResourceMilestoneEvent < ResourceEvent
 
   def self.issuable_attrs
     %i(issue merge_request).freeze
+  end
+
+  def add_milestone?
+    action == ACTION_ADD.to_s
+  end
+
+  def remove_milestone?
+    action == ACTION_REMOVE.to_s
   end
 end
