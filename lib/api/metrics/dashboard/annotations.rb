@@ -18,20 +18,29 @@ module API
           requires :description, type: String, desc: 'The description of the annotation'
         end
 
-        resource :environments do
-          post ':id/metrics_dashboard/annotations' do
-            environment = ::Environment.find(params[:id])
+        METRICS_SOURCES = [
+          { class: ::Environment, resource: :environments },
+          { class: Clusters::Cluster, resource: :clusters }
+        ].freeze
 
-            not_found! unless Feature.enabled?(:metrics_dashboard_annotations, environment.project)
+        METRICS_SOURCES.each do |metrics_source|
+          resource metrics_source[:resource] do
+            post ':id/metrics_dashboard/annotations' do
+              metrics_source_object = metrics_source[:class].find(params[:id])
 
-            forbidden! unless can?(current_user, :create_metrics_dashboard_annotation, environment)
+              not_found! unless Feature.enabled?(:metrics_dashboard_annotations, metrics_source_object.project)
 
-            result = ::Metrics::Dashboard::Annotations::CreateService.new(current_user, declared(params).merge(environment: environment)).execute
+              forbidden! unless can?(current_user, :create_metrics_dashboard_annotation, metrics_source_object)
 
-            if result[:status] == :success
-              present result[:annotation], with: Entities::Metrics::Dashboard::Annotation
-            else
-              error!(result, 400)
+              create_service_params = declared(params).merge(Hash[metrics_source[:resource].to_s.singularize, metrics_source_object])
+
+              result = ::Metrics::Dashboard::Annotations::CreateService.new(current_user, create_service_params).execute
+
+              if result[:status] == :success
+                present result[:annotation], with: Entities::Metrics::Dashboard::Annotation
+              else
+                error!(result, 400)
+              end
             end
           end
         end
