@@ -1,6 +1,4 @@
-- return unless @project.feature_available?(:status_page, current_user) && @project.beta_feature_available?(:status_page)
-
-- setting = status_page_settings_data(@project.status_page_setting)
+- setting = status_page_settings_data
 
 .js-status-page-settings{ data: { operations_settings_endpoint: project_settings_operations_path(@project),
     enabled: setting['setting-enabled'],

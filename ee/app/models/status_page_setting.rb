@@ -32,6 +32,7 @@ class StatusPageSetting < ApplicationRecord
   scope :enabled, -> { where(enabled: true) }
 
   def masked_aws_secret_key
+    return nil if aws_secret_key.blank?
     '*' * 40
   end
 
