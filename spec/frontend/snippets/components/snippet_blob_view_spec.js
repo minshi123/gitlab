@@ -79,12 +79,6 @@ describe('Blob Embeddable', () => {
       expect(wrapper.find(BlobEmbeddable).exists()).toBe(true);
     });
 
-    it('shows loading icon while blob content data is in flight', () => {
-      createComponent({}, dataMock, true);
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
-      expect(wrapper.find(BlobContent).exists()).toBe(false);
-    });
-
     it('sets simple viewer correctly', () => {
       createComponent();
       expect(wrapper.find(SimpleViewer).exists()).toBe(true);
