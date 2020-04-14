@@ -54,6 +54,8 @@ describe VulnerabilitiesHelper do
         vulnerability_json: kind_of(String),
         project_fingerprint: vulnerability.finding.project_fingerprint,
         create_issue_url: kind_of(String),
+        notes_url: kind_of(String),
+        discussions_url: kind_of(String),
         has_mr: anything,
         vulnerability_feedback_help_path: kind_of(String),
         finding_json: kind_of(String)
