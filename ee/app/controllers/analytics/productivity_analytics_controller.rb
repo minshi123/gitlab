@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Analytics::ProductivityAnalyticsController < Analytics::ApplicationController
+class Analytics::ProductivityAnalyticsController < ::Analytics::ApplicationController
   check_feature_flag Gitlab::Analytics::PRODUCTIVITY_ANALYTICS_FEATURE_FLAG
   increment_usage_counter Gitlab::UsageDataCounters::ProductivityAnalyticsCounter,
     :views, only: :show, if: -> { request.format.html? }
@@ -81,7 +81,7 @@ class Analytics::ProductivityAnalyticsController < Analytics::ApplicationControl
   end
 
   def build_request_params
-    @request_params ||= Analytics::ProductivityAnalyticsRequestParams.new(allowed_request_params.merge(group: @group, project: @project))
+    @request_params ||= ::Analytics::ProductivityAnalyticsRequestParams.new(allowed_request_params.merge(group: @group, project: @project))
   end
 
   def allowed_request_params
