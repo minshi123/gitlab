@@ -47,7 +47,7 @@ This could lead to false successes where subsequent "requests" could have querie
 
 There are multiple ways to find the source of queries.
 
-1. The `QueryRecorder` `data` attribute stores queries by `file_name:line_number:method_name`.
+-  The `QueryRecorder` `data` attribute stores queries by `file_name:line_number:method_name`.
    Each entry is a `hash` with the following fields:
 
    - `count`: the number of times a query from this `file_name:line_number:method_name` was called
@@ -64,11 +64,11 @@ There are multiple ways to find the source of queries.
 
    `QueryRecorder#occurrences_by_line_method` returns a sorted array based on `data`, sorted by `count`.
 
-1. You can output the call backtrace for the specific `QueryRecorder` instance you want
+-  You can output the call backtrace for the specific `QueryRecorder` instance you want
    by using `ActiveRecord::QueryRecorder.new(query_recorder_debug: true)`. The output
    will be in `test.log`
 
-1. Using the environment variable `QUERY_RECORDER_DEBUG`, the call backtrace will be output for all tests.
+-  Using the environment variable `QUERY_RECORDER_DEBUG`, the call backtrace will be output for all tests.
 
    To enable this, run the specs with the `QUERY_RECORDER_DEBUG` environment variable set. For example:
 
