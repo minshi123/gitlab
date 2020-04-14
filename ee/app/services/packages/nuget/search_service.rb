@@ -50,6 +50,7 @@ module Packages
                                 .where(arel_table[:row_number].lteq(MAX_VERSIONS_PER_PACKAGE))
 
         unless include_prerelease_versions?
+          # we can't use pkgs.without_version_like since we have a custom from
           pkgs = pkgs.where.not(arel_table[:version].matches(PRE_RELEASE_VERSION_MATCHING_TERM))
         end
         # rubocop: enable CodeReuse/ActiveRecord
