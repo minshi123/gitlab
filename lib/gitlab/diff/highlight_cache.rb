@@ -94,7 +94,11 @@ module Gitlab
         Gitlab::Redis::Cache.with do |redis|
           redis.pipelined do
             hash.each do |diff_file_id, highlighted_diff_lines_hash|
-              redis.hset(key, diff_file_id, highlighted_diff_lines_hash.to_json)
+              redis.hset(
+                key,
+                diff_file_id,
+                ActiveSupport::Gzip.compress(highlighted_diff_lines_hash.to_json)
+              )
             end
 
             # HSETs have to have their expiration date manually updated
@@ -152,7 +156,7 @@ module Gitlab
         end
 
         results.map! do |result|
-          JSON.parse(result, symbolize_names: true) unless result.nil?
+          JSON.parse(ActiveSupport::Gzip.decompress(result), symbolize_names: true) unless result.nil?
         end
 
         file_paths.zip(results).to_h
