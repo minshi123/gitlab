@@ -237,6 +237,12 @@ describe('RelatedItemsTree', () => {
         });
       });
 
+      describe('itemPath', () => {
+        it('returns string containing item path', () => {
+          expect(wrapper.vm.itemPath).toBe('gitlab-org/gitlab-shell');
+        });
+      });
+
       describe('computedPath', () => {
         it('returns value of `itemWebPath` when it is defined', () => {
           expect(wrapper.vm.computedPath).toBe(mockItem.webPath);
