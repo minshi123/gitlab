@@ -468,7 +468,7 @@ variables:
 
 See explanations of the variables above in the [configuration section](#configuration).
 
-### Setting analyzer specific CI job variables
+### Specific settings per languages and package managers
 
 #### npm and yarn projects
 
