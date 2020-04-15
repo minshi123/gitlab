@@ -1,21 +1,12 @@
 <script>
 import { GlStackedColumnChart } from '@gitlab/ui/dist/charts';
-import { s__, sprintf } from '~/locale';
-import { formattedDate } from '../../../shared/utils';
-import { TASKS_BY_TYPE_SUBJECT_ISSUE } from '../../constants';
-import TasksByTypeFilters from './tasks_by_type_filters.vue';
 
 export default {
   name: 'TasksByTypeChart',
   components: {
     GlStackedColumnChart,
-    TasksByTypeFilters,
   },
   props: {
-    filters: {
-      type: Object,
-      required: true,
-    },
     chartData: {
       type: Object,
       required: true,
@@ -25,47 +16,11 @@ export default {
     hasData() {
       return Boolean(this.chartData?.data?.length);
     },
-    summaryDescription() {
-      const {
-        startDate,
-        endDate,
-        selectedProjectIds,
-        selectedGroup: { name: groupName },
-      } = this.filters;
-
-      const selectedProjectCount = selectedProjectIds.length;
-      const str =
-        selectedProjectCount > 0
-          ? s__(
-              "CycleAnalytics|Showing data for group '%{groupName}' and %{selectedProjectCount} projects from %{startDate} to %{endDate}",
-            )
-          : s__(
-              "CycleAnalytics|Showing data for group '%{groupName}' from %{startDate} to %{endDate}",
-            );
-      return sprintf(str, {
-        startDate: formattedDate(startDate),
-        endDate: formattedDate(endDate),
-        groupName,
-        selectedProjectCount,
-      });
-    },
-    selectedSubjectFilter() {
-      const {
-        filters: { subject },
-      } = this;
-      return subject || TASKS_BY_TYPE_SUBJECT_ISSUE;
-    },
   },
 };
 </script>
 <template>
   <div v-if="hasData">
-    <p>{{ summaryDescription }}</p>
-    <tasks-by-type-filters
-      :selected-label-ids="filters.selectedLabelIds"
-      :subject-filter="selectedSubjectFilter"
-      @updateFilter="$emit('updateFilter', $event)"
-    />
     <gl-stacked-column-chart
       :data="chartData.data"
       :group-by="chartData.groupBy"

@@ -320,6 +320,9 @@ export const fetchTasksByTypeData = ({ dispatch, state, getters }) => {
     tasksByType: { subject, selectedLabelIds },
   } = state;
 
+  // ensure we clear any chart data currently in state
+  dispatch('requestTasksByTypeData');
+
   // dont request if we have no labels selected...for now
   if (selectedLabelIds.length) {
     const params = {
@@ -330,13 +333,11 @@ export const fetchTasksByTypeData = ({ dispatch, state, getters }) => {
       label_ids: selectedLabelIds,
     };
 
-    dispatch('requestTasksByTypeData');
-
     return Api.cycleAnalyticsTasksByType(currentGroupPath, params)
       .then(({ data }) => dispatch('receiveTasksByTypeDataSuccess', data))
       .catch(error => dispatch('receiveTasksByTypeDataError', error));
   }
-  return Promise.resolve();
+  return dispatch('receiveTasksByTypeDataSuccess', []);
 };
 
 export const requestUpdateStage = ({ commit }) => commit(types.REQUEST_UPDATE_STAGE);
@@ -526,7 +527,7 @@ export const updateSelectedDurationChartStages = ({ state, commit }, stages) => 
 
 export const setTasksByTypeFilters = ({ dispatch, commit }, data) => {
   commit(types.SET_TASKS_BY_TYPE_FILTERS, data);
-  dispatch('fetchTasksByTypeData');
+  dispatch('fetchTopRankedGroupLabels');
 };
 
 export const initializeCycleAnalyticsSuccess = ({ commit }) =>
