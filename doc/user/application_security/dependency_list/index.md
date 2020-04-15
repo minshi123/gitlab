@@ -28,9 +28,8 @@ Dependencies are displayed with the following information:
 | Location  | A link to the packager-specific lockfile in your project that declared the dependency |
 | License   | Links to dependency's software licenses |
 
-Dependencies shown are initially sorted by the severity of their known
-vulnerabilities, if any. They can also be sorted their name, or the packager
-they were installed by.
+Dependencies shown are initially sorted by the severity of their known vulnerabilities, if any. They
+can also be sorted by name or by the packager that installed them.
 
 ### Vulnerabilities
 
