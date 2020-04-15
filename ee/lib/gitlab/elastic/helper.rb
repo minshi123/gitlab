@@ -3,12 +3,6 @@
 module Gitlab
   module Elastic
     class Helper
-      class << self
-        def create_proxy(version = nil)
-          Project.__elasticsearch__.version(version)
-        end
-      end
-
       attr_reader :version, :client
       attr_accessor :index_name
 
@@ -22,6 +16,24 @@ module Gitlab
         @client = client || proxy.client
         @index_name = index_name || proxy.index_name
         @version = version
+      end
+
+      class << self
+        def create_proxy(version = nil)
+          Project.__elasticsearch__.version(version)
+        end
+
+        def default
+          @default ||= self.new
+        end
+
+        delegate :create_empty_index,
+                 :delete_index,
+                 :index_exists?,
+                 :index_size,
+                 :reindex_to_another_cluster,
+                 :refresh_index,
+                 to: :default
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
