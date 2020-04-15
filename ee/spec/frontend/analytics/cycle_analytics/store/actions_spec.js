@@ -1265,7 +1265,7 @@ describe('Cycle analytics actions', () => {
     const filter = TASKS_BY_TYPE_FILTERS.SUBJECT;
     const value = 'issue';
 
-    it(`commits the ${types.SET_TASKS_BY_TYPE_FILTERS} mutation and dispatches 'fetchTasksByTypeData'`, done => {
+    it(`commits the ${types.SET_TASKS_BY_TYPE_FILTERS} mutation and dispatches 'fetchTopRankedGroupLabels'`, done => {
       testAction(
         actions.setTasksByTypeFilters,
         { filter, value },
@@ -1278,7 +1278,7 @@ describe('Cycle analytics actions', () => {
         ],
         [
           {
-            type: 'fetchTasksByTypeData',
+            type: 'fetchTopRankedGroupLabels',
           },
         ],
         done,

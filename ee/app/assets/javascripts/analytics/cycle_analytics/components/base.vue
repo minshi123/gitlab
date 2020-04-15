@@ -53,6 +53,7 @@ export default {
       'isLoading',
       'isLoadingStage',
       'isLoadingTasksByTypeChart',
+      'isLoadingTasksByTypeChartTopLabels',
       'isLoadingDurationChart',
       'isEmptyStage',
       'isSavingCustomStage',
@@ -102,8 +103,10 @@ export default {
     isDurationChartLoaded() {
       return !this.isLoadingDurationChart && !this.isLoading;
     },
-    isTasksByTypeChartLoaded() {
-      return !this.isLoading && !this.isLoadingTasksByTypeChart;
+    isLoadingTypeOfWork() {
+      return (
+        this.isLoading || this.isLoadingTasksByTypeChartTopLabels || this.isLoadingTasksByTypeChart
+      );
     },
     hasDateRangeSet() {
       return this.startDate && this.endDate;
@@ -331,7 +334,7 @@ export default {
       </div>
       <template v-if="shouldDisplayTypeOfWorkCharts">
         <type-of-work-charts
-          :is-loading="isTasksByTypeChartLoaded"
+          :is-loading="isLoadingTypeOfWork"
           :tasks-by-type-chart-data="tasksByTypeChartData"
           :selected-tasks-by-type-filters="selectedTasksByTypeFilters"
           @updateFilter="setTasksByTypeFilters"

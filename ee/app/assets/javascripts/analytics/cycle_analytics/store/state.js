@@ -9,6 +9,7 @@ export default () => ({
   isLoading: false,
   isLoadingStage: false,
   isLoadingTasksByTypeChart: false,
+  isLoadingTasksByTypeChartTopLabels: false,
   isLoadingDurationChart: false,
   isLoadingDurationChartMedianData: false,
 
