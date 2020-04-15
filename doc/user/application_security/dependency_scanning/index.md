@@ -427,8 +427,8 @@ To use Dependency Scanning in an offline environment, you need:
 - [Disable Docker-In-Docker](#disabling-docker-in-docker-for-dependency-scanning)
 - GitLab Runner with the [`docker` or `kubernetes` executor](#requirements).
 - Docker Container Registry with locally available copies of dependency scanning [analyzer](https://gitlab.com/gitlab-org/security-products/analyzers) images.
-- Host an offline git copy of the [gemnasium-db advisory database](https://gitlab.com/gitlab-org/security-products/gemnasium-db/)
-- _Only if scanning ruby projects_: Host offline git copy of the [ruby-advisory-db advisory database](https://github.com/rubysec/ruby-advisory-db)
+- Host an offline Git copy of the [gemnasium-db advisory database](https://gitlab.com/gitlab-org/security-products/gemnasium-db/)
+- _Only if scanning Ruby projects_: Host offline Git copy of the [advisory database](https://github.com/rubysec/ruby-advisory-db)
 - _Only if scanning npm/yarn projects_: Host offline copy of the [retire.js](https://github.com/RetireJS/retire.js/) [node](https://github.com/RetireJS/retire.js/blob/master/repository/npmrepository.json) and [js](https://github.com/RetireJS/retire.js/blob/master/repository/jsrepository.json) advisory databases.
 
 ### Make GitLab Dependency Scanning analyzer images available inside your Docker registry
@@ -479,7 +479,7 @@ RETIREJS_JS_ADVISORY_DB: "example.com/jsrepository.json"
 RETIREJS_NODE_ADVISORY_DB: "example.com/npmrepository.json"
 ```
 
-#### ruby projects
+#### Ruby projects
 
 Add the following to the variables section of `.gitlab-ci.yml` above:
 
@@ -499,7 +499,6 @@ MAVEN_CLI_OPTS="-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allo
 ### gradle projects
 
 When using self-signed certificates, add the following job section to `.gitlab-ci.yml` above:
-
 
 ```yaml
 gemnasium-maven-dependency_scanning:
