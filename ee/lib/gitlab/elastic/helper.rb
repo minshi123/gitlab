@@ -99,7 +99,7 @@ module Gitlab
 
       def delete_index
         client.indices.delete(index: index_name)
-      rescue Elasticsearch::Transport::Transport::Errors::NotFound
+      rescue ::Elasticsearch::Transport::Transport::Errors::NotFound
         raise "Index '#{index_name}' does not exist"
       end
 
