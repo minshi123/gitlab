@@ -319,6 +319,14 @@ module Gitlab
         fallback
       end
 
+      def redis_usage_data(fallback: -1, &block)
+        if block_given?
+          yield
+        end
+      rescue ::Redis::CommandError
+        fallback
+      end
+
       private
 
       def installation_type

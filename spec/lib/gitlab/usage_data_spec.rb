@@ -387,4 +387,15 @@ describe Gitlab::UsageData, :aggregate_failures do
       expect(described_class.alt_usage_data(1)).to eq 1
     end
   end
+
+  describe '#redis_usage_data' do
+    it 'returns the fallback when it gets an error' do
+      expect(described_class.redis_usage_data { raise ::Redis::CommandError } ).to eq(-1)
+    end
+
+    it 'returns the evaluated block when given' do
+      allow(::Gitlab::UsageCounters::PodLogs).to receive(:usage_totals).and_return(total: 1)
+      expect(described_class.alt_usage_data { ::Gitlab::UsageCounters::PodLogs.usage_totals[:total] } ).to eq(1)
+    end
+  end
 end
