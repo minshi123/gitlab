@@ -1,0 +1,5 @@
+---
+title: Add documentation for new dependency scanning (GRADLE_CLI_OPTS and SBT_CLI_OPTS) env vars
+merge_request:
+author:
+type: added
