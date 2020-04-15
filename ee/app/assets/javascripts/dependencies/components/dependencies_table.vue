@@ -147,7 +147,7 @@ export default {
         class="d-inline-flex align-items-center bg-warning-100 text-warning-700 bold"
         @click.native="toggleDetails"
       >
-        <gl-icon name="warning" class="text-warning-500 pr-1" />
+        <gl-icon name="warning" class="text-warning-500 mr-1" />
         {{
           n__(
             'Dependencies|%d vulnerability detected',
