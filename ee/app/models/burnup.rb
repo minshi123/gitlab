@@ -38,7 +38,8 @@ class Burnup
         created_at: event.created_at,
         action: event.action,
         milestone_id: milestone_id_of(event, assigned_milestones),
-        issue_id: event.issue_id
+        issue_id: event.issue_id,
+        weight: issue_weight_on_time(event.issue_id, event.created_at)
     }
   end
 
@@ -70,6 +71,30 @@ class Burnup
           .where('created_at <= ?', end_time)
           .order(:created_at)
     end
+  end
+
+  def resource_weight_events
+    strong_memoize(:resource_weight_events) do
+      ResourceWeightEvent
+          .where(issue_id: relevant_issue_ids)
+          .where('created_at <= ?', end_time)
+          .order(:created_at)
+          .group_by(&:issue_id)
+    end
+  end
+
+  def issue_weight_on_time(issue_id, time)
+    events = resource_weight_events[issue_id] || []
+
+    weight = nil
+
+    events.each do |event|
+      return weight if event.created_at.after?(time)
+
+      weight = event.weight
+    end
+
+    weight
   end
 
   def relevant_issue_ids

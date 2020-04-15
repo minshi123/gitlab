@@ -19,6 +19,12 @@ describe Burnup do
   let!(:issue3) { create(:issue, project: project, milestone: milestone1) }
   let!(:other_issue) { create(:issue, project: project) }
 
+  let!(:weight_event1) { create(:resource_weight_event, issue: issue1, weight: 9, created_at: start_date + 1.second) }
+  let!(:weight_event2) { create(:resource_weight_event, issue: issue2, weight: 3, created_at: start_date + 1.second) }
+  let!(:weight_event3) { create(:resource_weight_event, issue: issue3, weight: 1, created_at: start_date + 2.days) }
+  let!(:weight_event4) { create(:resource_weight_event, issue: issue3, weight: 2, created_at: start_date + 2.days + 23.hours + 59.minutes + 59.seconds) }
+  let!(:weight_event5) { create(:resource_weight_event, issue: issue3, weight: 7, created_at: start_date + 4.days + 1.second) }
+
   let!(:event1) { create(:resource_milestone_event, issue: issue1, action: :add, milestone: milestone1, created_at: start_date + 1.second) }
   let!(:event2) { create(:resource_milestone_event, issue: issue2, action: :add, milestone: milestone1, created_at: start_date + 2.seconds) }
   let!(:event3) { create(:resource_milestone_event, issue: issue3, action: :add, milestone: milestone1, created_at: start_date + 1.day) }
@@ -45,13 +51,13 @@ describe Burnup do
 
       expect(data.size).to eq(7)
 
-      expect(data[0]).to include(action: 'add', issue_id: issue1.id, milestone_id: milestone2.id, created_at: start_date.beginning_of_day - 1.second)
-      expect(data[1]).to include(action: 'add', issue_id: issue1.id, milestone_id: milestone1.id, created_at: start_date + 1.second)
-      expect(data[2]).to include(action: 'add', issue_id: issue2.id, milestone_id: milestone1.id, created_at: start_date + 2.seconds)
-      expect(data[3]).to include(action: 'add', issue_id: issue3.id, milestone_id: milestone1.id, created_at: start_date + 1.day)
-      expect(data[4]).to include(action: 'remove', issue_id: issue3.id, milestone_id: milestone1.id, created_at: start_date + 2.days + 1.second)
-      expect(data[5]).to include(action: 'add', issue_id: issue3.id, milestone_id: milestone2.id, created_at: start_date + 3.days)
-      expect(data[6]).to include(action: 'remove', issue_id: issue3.id, milestone_id: milestone2.id, created_at: start_date + 4.days)
+      expect(data[0]).to include(action: 'add', issue_id: issue1.id, milestone_id: milestone2.id, weight: nil, created_at: start_date.beginning_of_day - 1.second)
+      expect(data[1]).to include(action: 'add', issue_id: issue1.id, milestone_id: milestone1.id, weight: 9, created_at: start_date + 1.second)
+      expect(data[2]).to include(action: 'add', issue_id: issue2.id, milestone_id: milestone1.id, weight: 3, created_at: start_date + 2.seconds)
+      expect(data[3]).to include(action: 'add', issue_id: issue3.id, milestone_id: milestone1.id, weight: nil, created_at: start_date + 1.day)
+      expect(data[4]).to include(action: 'remove', issue_id: issue3.id, milestone_id: milestone1.id, weight: 1, created_at: start_date + 2.days + 1.second)
+      expect(data[5]).to include(action: 'add', issue_id: issue3.id, milestone_id: milestone2.id, weight: 2, created_at: start_date + 3.days)
+      expect(data[6]).to include(action: 'remove', issue_id: issue3.id, milestone_id: milestone2.id, weight: 2, created_at: start_date + 4.days)
     end
 
     it 'excludes issues which should not be visible to the user ' do
