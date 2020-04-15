@@ -20,7 +20,8 @@ module Geo
     end
 
     def max_capacity
-      current_node.files_max_capacity
+      # See  https://gitlab.com/gitlab-org/gitlab/-/issues/213872#note_336828581 for explanation
+      max(current_node.files_max_capacity * 3/4, 1)
     end
 
     def schedule_job(object_type, object_db_id)
