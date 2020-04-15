@@ -15,6 +15,7 @@ class Upload < ApplicationRecord
   scope :with_files_stored_locally, -> { where(store: ObjectStorage::Store::LOCAL) }
   scope :with_files_stored_remotely, -> { where(store: ObjectStorage::Store::REMOTE) }
 
+  before_save :set_store, if: ->(upload) { upload.store.nil? }
   before_save  :calculate_checksum!, if: :foreground_checksummable?
   after_commit :schedule_checksum,   if: :needs_checksum?
 
@@ -133,6 +134,29 @@ class Upload < ApplicationRecord
   end
 
   private
+
+  # TODO: remove once `store` column has a default value set
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/213382
+  def set_store
+    self.store =
+      if immediately_remote_stored?
+        ::ObjectStorage::Store::REMOTE
+      else
+        ::ObjectStorage::Store::LOCAL
+      end
+  end
+
+  def immediately_remote_stored?
+    object_storage_available? && direct_upload_enabled?
+  end
+
+  def object_storage_available?
+    uploader_class.ancestors.include?(ObjectStorage::Concern)
+  end
+
+  def direct_upload_enabled?
+    uploader_class.object_store_enabled? && uploader_class.direct_upload_enabled?
+  end
 
   def delete_file!
     retrieve_uploader.remove!

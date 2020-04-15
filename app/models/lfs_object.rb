@@ -17,7 +17,21 @@ class LfsObject < ApplicationRecord
 
   mount_uploader :file, LfsObjectUploader
 
+  before_save :set_file_store, if: ->(lfs_object) { lfs_object.file_store.nil? }
+
   after_save :update_file_store, if: :saved_change_to_file?
+
+  def self.calculate_oid(path)
+    self.hexdigest(path)
+  end
+
+  # rubocop: disable DestroyAll
+  def self.destroy_unreferenced
+    joins("LEFT JOIN lfs_objects_projects ON lfs_objects_projects.lfs_object_id = #{table_name}.id")
+        .where(lfs_objects_projects: { id: nil })
+        .destroy_all
+  end
+  # rubocop: enable DestroyAll
 
   def self.not_linked_to_project(project)
     where('NOT EXISTS (?)',
@@ -44,16 +58,17 @@ class LfsObject < ApplicationRecord
     file_store == LfsObjectUploader::Store::LOCAL
   end
 
-  # rubocop: disable DestroyAll
-  def self.destroy_unreferenced
-    joins("LEFT JOIN lfs_objects_projects ON lfs_objects_projects.lfs_object_id = #{table_name}.id")
-        .where(lfs_objects_projects: { id: nil })
-        .destroy_all
-  end
-  # rubocop: enable DestroyAll
+  private
 
-  def self.calculate_oid(path)
-    self.hexdigest(path)
+  # TODO: remove once `file_store` column has a default value set
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/213382
+  def set_file_store
+    self.file_store =
+      if LfsObjectUploader.object_store_enabled? && LfsObjectUploader.direct_upload_enabled?
+        LfsObjectUploader::Store::REMOTE
+      else
+        file.object_store
+      end
   end
 end
 

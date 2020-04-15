@@ -48,6 +48,48 @@ describe Upload do
       end
     end
 
+    describe '#set_store' do
+      subject { build(:upload, :issuable_upload, store: nil) }
+
+      context 'when object storage is disabled' do
+        before do
+          stub_uploads_object_storage(FileUploader, enabled: false)
+        end
+
+        it 'sets the store to local' do
+          subject.save
+
+          expect(subject.store).to eq(ObjectStorage::Store::LOCAL)
+        end
+      end
+
+      context 'when object storage is enabled' do
+        context 'when direct upload is enabled' do
+          before do
+            stub_uploads_object_storage(FileUploader, direct_upload: true)
+          end
+
+          it 'sets the store to remote' do
+            subject.save
+
+            expect(subject.store).to eq(ObjectStorage::Store::REMOTE)
+          end
+        end
+
+        context 'when direct upload is disabled' do
+          before do
+            stub_uploads_object_storage(FileUploader, direct_upload: false)
+          end
+
+          it 'sets the store to local' do
+            subject.save
+
+            expect(subject.store).to eq(ObjectStorage::Store::LOCAL)
+          end
+        end
+      end
+    end
+
     describe 'after_destroy' do
       context 'uploader is FileUploader-based' do
         subject { create(:upload, :issuable_upload) }

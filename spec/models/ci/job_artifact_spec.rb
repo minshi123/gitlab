@@ -153,9 +153,51 @@ describe Ci::JobArtifact do
   end
 
   describe 'callbacks' do
-    subject { create(:ci_job_artifact, :archive) }
+    describe '#set_file_store' do
+      subject { build(:ci_job_artifact, :archive, file_store: nil) }
+
+      context 'when object storage is disabled' do
+        before do
+          stub_artifacts_object_storage(enabled: false)
+        end
+
+        it 'sets the file_store to local' do
+          subject.save
+
+          expect(subject.file_store).to eq(JobArtifactUploader::Store::LOCAL)
+        end
+      end
+
+      context 'when object storage is enabled' do
+        context 'when direct upload is enabled' do
+          before do
+            stub_artifacts_object_storage(direct_upload: true)
+          end
+
+          it 'sets the file_store to remote' do
+            subject.save
+
+            expect(subject.file_store).to eq(JobArtifactUploader::Store::REMOTE)
+          end
+        end
+
+        context 'when direct upload is disabled' do
+          before do
+            stub_artifacts_object_storage(direct_upload: false)
+          end
+
+          it 'sets the file_store to local' do
+            subject.save
+
+            expect(subject.file_store).to eq(JobArtifactUploader::Store::LOCAL)
+          end
+        end
+      end
+    end
 
     describe '#schedule_background_upload' do
+      subject { create(:ci_job_artifact, :archive) }
+
       context 'when object storage is disabled' do
         before do
           stub_artifacts_object_storage(enabled: false)
@@ -186,7 +228,7 @@ describe Ci::JobArtifact do
             stub_artifacts_object_storage(background_upload: false)
           end
 
-          it 'schedules the model for migration' do
+          it 'does not schedule the migration' do
             expect(ObjectStorage::BackgroundMoveWorker).not_to receive(:perform_async)
 
             subject
