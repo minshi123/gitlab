@@ -1867,7 +1867,8 @@ CREATE TABLE public.container_expiration_policies (
     cadence character varying(12) DEFAULT '7d'::character varying NOT NULL,
     older_than character varying(12),
     keep_n integer,
-    enabled boolean DEFAULT true NOT NULL
+    enabled boolean DEFAULT true NOT NULL,
+    name_regex_keep character varying(255)
 );
 
 CREATE TABLE public.container_repositories (
@@ -13169,5 +13170,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200415160722
 20200415161021
 20200415161206
+20200415192656
 \.
 
