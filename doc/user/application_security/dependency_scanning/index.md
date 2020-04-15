@@ -433,7 +433,7 @@ To use Dependency Scanning in an offline environment, you need:
 
 ### Make GitLab Dependency Scanning analyzer images available inside your Docker registry
 
-For Dependency Scanning import docker images ([supported languages and frameworks](##supported-languages-and-package-managers)) from `registry.gitlab.com` to your "offline" docker registry. The Dependency Scanning analyzer docker images are:
+For Dependency Scanning import docker images ([supported languages and frameworks](#supported-languages-and-package-managers)) from `registry.gitlab.com` to your "offline" docker registry. The Dependency Scanning analyzer docker images are:
 
 ```plaintext
 registry.gitlab.com/gitlab-org/security-products/analyzers/gemnasium:2
