@@ -107,13 +107,18 @@ class BoardsStoreEE {
     }
 
     let { weight } = this.store.boardConfig;
-    if (weight !== -1) {
-      if (weight === 0) {
-        /* eslint-disable-next-line @gitlab/require-i18n-strings */
-        weight = 'No+Weight';
-      }
-      updateFilterPath('weight', weight);
+    if (weight === 0) {
+      /* eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings */
+      weight = '0';
+    } else if (weight === -1) {
+      /* eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings */
+      weight = 'Any';
+    } else if (Number.isNaN(weight)) {
+      /* eslint-disable-next-line @gitlab/i18n/no-non-i18n-strings */
+      weight = 'None';
     }
+
+    updateFilterPath('weight', weight);
     updateFilterPath('assignee_username', this.store.boardConfig.assigneeUsername);
     if (this.store.boardConfig.assigneeUsername) {
       this.store.cantEdit.push('assignee');

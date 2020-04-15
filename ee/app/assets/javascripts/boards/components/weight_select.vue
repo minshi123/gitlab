@@ -1,8 +1,8 @@
 <script>
 import { GlDeprecatedButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 
-const ANY_WEIGHT = 'Any Weight';
-const NO_WEIGHT = 'No Weight';
+const ANY_WEIGHT = 'Any';
+const NO_WEIGHT = 'None';
 
 export default {
   components: {
@@ -40,7 +40,8 @@ export default {
     valueText() {
       const { weight } = this.board;
       if (weight > 0) return weight.toString();
-      if (weight === 0 || weight === NO_WEIGHT) return NO_WEIGHT;
+      if (weight === null) return NO_WEIGHT;
+      if (weight === 0) return weight.toString();
       return ANY_WEIGHT;
     },
   },
@@ -56,11 +57,13 @@ export default {
     weightInt(weight) {
       if (weight > 0) {
         return weight;
-      }
-      if (weight === NO_WEIGHT) {
+      } else if (weight === NO_WEIGHT) {
+        return null
+      } else if (weight === '0') {
         return 0;
+      } else {
+        return -1;
       }
-      return -1;
     },
   },
 };
