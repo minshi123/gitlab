@@ -415,6 +415,131 @@ You can search the [gemnasium-db](https://gitlab.com/gitlab-org/security-product
 to find a vulnerability in the Gemnasium database.
 You can also [submit new vulnerabilities](https://gitlab.com/gitlab-org/security-products/gemnasium-db/blob/master/CONTRIBUTING.md).
 
+## Running Dependency Scanning in an offline environment
+
+For self-managed GitLab instances in an environment with limited, restricted, or intermittent access
+to external resources through the internet, some adjustments are required for dependency scannings jobs to run successfully. For more information, see [Offline environments](../offline_deployments/index.md).
+
+### Requirements for offline Dependency Scanning
+
+To use Dependency Scanning in an offline environment, you need:
+
+- [Disable Docker-In-Docker](#disabling-docker-in-docker-for-dependency-scanning)
+- GitLab Runner with the [`docker` or `kubernetes` executor](#requirements).
+- Docker Container Registry with locally available copies of dependency scanning [analyzer](https://gitlab.com/gitlab-org/security-products/analyzers) images.
+- Host an offline git copy of the [gemnasium-db advisory database](https://gitlab.com/gitlab-org/security-products/gemnasium-db/)
+- _Only if scanning ruby projects_: Host offline git copy of the [ruby-advisory-db advisory database](https://github.com/rubysec/ruby-advisory-db)
+- _Only if scanning npm/yarn projects_: Host offline copy of the [retire.js](https://github.com/RetireJS/retire.js/) [node](https://github.com/RetireJS/retire.js/blob/master/repository/npmrepository.json) and [js](https://github.com/RetireJS/retire.js/blob/master/repository/jsrepository.json) advisory databases.
+
+### Make GitLab Dependency Scanning analyzer images available inside your Docker registry
+
+For Dependency Scanning import docker images ([supported languages and frameworks](##supported-languages-and-package-managers)) from `registry.gitlab.com` to your "offline" docker registry. The Dependency Scanning analyzer docker images are:
+
+```plaintext
+registry.gitlab.com/gitlab-org/security-products/analyzers/gemnasium:2
+registry.gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven:2
+registry.gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python:2
+registry.gitlab.com/gitlab-org/security-products/analyzers/retire.js:2
+registry.gitlab.com/gitlab-org/security-products/analyzers/bundler-audit:2
+```
+
+The process for importing Docker images into a local offline Docker registry depends on
+**your network security policy**. Please consult your IT staff to find an accepted and approved
+process by which external resources can be imported or temporarily accessed. Note that these scanners are [updated periodically](../index.md#maintenance-and-update-of-the-vulnerabilities-database)
+with new definitions, so consider if you are able to make periodic updates yourself.
+
+For details on saving and transporting Docker images as a file, see Docker's documentation on
+[`docker save`](https://docs.docker.com/engine/reference/commandline/save/), [`docker load`](https://docs.docker.com/engine/reference/commandline/load/),
+[`docker export`](https://docs.docker.com/engine/reference/commandline/export/), and [`docker import`](https://docs.docker.com/engine/reference/commandline/import/).
+
+### Set Dependency Scanning CI config for "offline" use
+
+Below is a general template `.gitlab-ci.yml` to configure your environment for running Dependency Scanning:
+
+```yaml
+include:
+  - template: Dependency-Scanning.gitlab-ci.yml
+
+variables:
+  DS_DISABLE_DIND: "true"
+  DS_ANALYZER_IMAGE_PREFIX: "docker-registry.example.com/analyzers"
+  GEMNASIUM_DB_REMOTE_URL: "gitlab.example.com/gemnasium-db.git"
+```
+
+See explanations of the variables above in the [configuration section](#configuration).
+
+### Setting analyzer specific CI job variables
+
+#### npm and yarn projects
+
+Add the following to the variables section of `.gitlab-ci.yml` above:
+
+```yaml
+RETIREJS_JS_ADVISORY_DB: "example.com/jsrepository.json"
+RETIREJS_NODE_ADVISORY_DB: "example.com/npmrepository.json"
+```
+
+#### ruby projects
+
+Add the following to the variables section of `.gitlab-ci.yml` above:
+
+```yaml
+BUNDLER_AUDIT_ADVISORY_DB_REF_NAME: "master"
+BUNDLER_AUDIT_ADVISORY_DB_URL: "gitlab.example.com/ruby-advisory-db.git"
+```
+
+#### maven projects
+
+When using a self-signed certificates, add the following to the variables section of `.gitlab-ci.yml` above:
+
+```yaml
+MAVEN_CLI_OPTS="-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true"`
+```
+
+### gradle projects
+
+When using self-signed certificates, add the following job section to `.gitlab-ci.yml` above:
+
+
+```yaml
+gemnasium-maven-dependency_scanning:
+  variables:
+    before_script:
+      - echo -n | openssl s_client -connect gitlab-airgap-test.us-west1-b.c.group-secure-a89fe7.internal:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/internal.crt
+      - keytool -importcert -file /tmp/internal.crt -cacerts -storepass changeit -noprompt
+```
+
+### scala sbt projects
+
+When using self-signed certificates, add the following job section to `.gitlab-ci.yml` above:
+
+```yaml
+gemnasium-maven-dependency_scanning:
+  variables:
+    before_script:
+      - echo -n | openssl s_client -connect gitlab-airgap-test.us-west1-b.c.group-secure-a89fe7.internal:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/internal.crt
+      - keytool -importcert -file /tmp/internal.crt -cacerts -storepass changeit -noprompt
+```
+
+### pip and pipenv projects
+
+Add the following `pip.conf` to your repository to define your index url and trust its self-signed certificate:
+
+```toml
+[global]
+index-url = https://pypi.example.com
+trusted-host = pypi.example.com
+```
+
+Add the following job section to `.gitlab-ci.yml` above:
+
+```yaml
+gemnasium-python-dependency_scanning:
+  before_script:
+    - mkdir ~/.pip
+    - cp pip.conf ~/.pip
+```
+
 ## Troubleshooting
 
 ### Error response from daemon: error processing tar file: docker-tar: relocation error
