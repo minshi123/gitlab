@@ -1,5 +1,5 @@
 <script>
-import { __ } from '~/locale';
+import { __, sprintf } from '~/locale';
 
 import GeoNodeHealthStatus from '../geo_node_health_status.vue';
 import GeoNodeActions from '../geo_node_actions.vue';
@@ -45,6 +45,25 @@ export default {
     nodeHealthStatus() {
       return this.nodeDetails.healthy ? this.nodeDetails.health : this.nodeDetails.healthStatus;
     },
+    selectiveSyncronization() {
+      if (!this.nodeDetails.selectiveSyncType) {
+        return null;
+      }
+
+      let selectiveSync = '';
+
+      if (this.nodeDetails.selectiveSyncType === 'shards') {
+        selectiveSync = sprintf(__('Shards(%{shards})'), {
+          shards: this.node.selectiveSyncShards.join(', '),
+        });
+      } else {
+        selectiveSync = sprintf(__('Groups(%{groups})'), {
+          groups: this.nodeDetails.namespaces.map(n => n.full_path).join(', '),
+        });
+      }
+
+      return selectiveSync;
+    },
   },
 };
 </script>
@@ -75,6 +94,14 @@ export default {
           class="mt-1 font-weight-bold js-node-version-value"
         >
           {{ nodeVersion }}
+        </span>
+      </div>
+      <div v-if="selectiveSyncronization" class="d-flex flex-column mt-2">
+        <span class="text-secondary-700 js-node-version-title">{{
+          s__('GeoNodes|Selective synchronization')
+        }}</span>
+        <span class="mt-1 font-weight-bold js-node-version-value">
+          {{ selectiveSyncronization }}
         </span>
       </div>
       <geo-node-health-status :status="nodeHealthStatus" />

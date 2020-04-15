@@ -40,7 +40,9 @@ export default {
         return s__('GeoNodes|Full');
       }
 
-      return `${s__('GeoNodes|Selective')} (${this.selectiveSyncType})`;
+      return `${s__('GeoNodes|Selective')} (${
+        this.selectiveSyncType === 'namespaces' ? 'groups' : this.selectiveSyncType
+      })`;
     },
     eventTimestampEmpty() {
       return this.lastEvent.timeStamp === 0 || this.cursorLastEvent.timeStamp === 0;

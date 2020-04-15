@@ -9497,6 +9497,9 @@ msgstr ""
 msgid "GeoNodes|Selective"
 msgstr ""
 
+msgid "GeoNodes|Selective synchronization"
+msgstr ""
+
 msgid "GeoNodes|Something went wrong while changing node status"
 msgstr ""
 
@@ -10533,6 +10536,9 @@ msgid "Groups with access to %{strong_start}%{group_name}%{strong_end}"
 msgstr ""
 
 msgid "Groups with access to <strong>%{project_name}</strong>"
+msgstr ""
+
+msgid "Groups(%{groups})"
 msgstr ""
 
 msgid "GroupsDropdown|Frequently visited"
@@ -18607,6 +18613,9 @@ msgid "Severity: %{severity}"
 msgstr ""
 
 msgid "Shards to synchronize"
+msgstr ""
+
+msgid "Shards(%{shards})"
 msgstr ""
 
 msgid "Share"
