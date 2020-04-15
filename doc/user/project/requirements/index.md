@@ -33,7 +33,7 @@ list is sorted by creation date in descending order.
 You can edit a requirement (if you have the necessary privileges) from the requirements
 list page.
 
-To edit a requirements:
+To edit a requirement:
 
 1. From the requirements list, click the **Edit** (**{pencil}**) button.
 1. Update the title in text input field.
