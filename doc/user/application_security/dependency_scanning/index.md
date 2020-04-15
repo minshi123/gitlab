@@ -463,14 +463,21 @@ include:
 variables:
   DS_DISABLE_DIND: "true"
   DS_ANALYZER_IMAGE_PREFIX: "docker-registry.example.com/analyzers"
-  GEMNASIUM_DB_REMOTE_URL: "gitlab.example.com/gemnasium-db.git"
 ```
 
 See explanations of the variables above in the [configuration section](#configuration).
 
-### Specific settings per languages and package managers
+### Specific settings for languages and package managers
 
-#### npm and yarn projects
+#### For every language and package manager
+
+Add the following to the variables section of `.gitlab-ci.yml` above:
+
+```yaml
+GEMNASIUM_DB_REMOTE_URL: "gitlab.example.com/gemnasium-db.git"
+```
+
+#### JavaScript (npm and yarn) projects
 
 Add the following to the variables section of `.gitlab-ci.yml` above:
 
@@ -479,7 +486,7 @@ RETIREJS_JS_ADVISORY_DB: "example.com/jsrepository.json"
 RETIREJS_NODE_ADVISORY_DB: "example.com/npmrepository.json"
 ```
 
-#### Ruby projects
+#### Ruby (gem) projects
 
 Add the following to the variables section of `.gitlab-ci.yml` above:
 
@@ -488,7 +495,7 @@ BUNDLER_AUDIT_ADVISORY_DB_REF_NAME: "master"
 BUNDLER_AUDIT_ADVISORY_DB_URL: "gitlab.example.com/ruby-advisory-db.git"
 ```
 
-#### maven projects
+#### Java (Maven) projects
 
 When using a self-signed certificates, add the following to the variables section of `.gitlab-ci.yml` above:
 
@@ -496,7 +503,7 @@ When using a self-signed certificates, add the following to the variables sectio
 MAVEN_CLI_OPTS="-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true"`
 ```
 
-### gradle projects
+### Java (Gradle) projects
 
 When using self-signed certificates, add the following job section to `.gitlab-ci.yml` above:
 
@@ -508,7 +515,7 @@ gemnasium-maven-dependency_scanning:
       - keytool -importcert -file /tmp/internal.crt -cacerts -storepass changeit -noprompt
 ```
 
-### scala sbt projects
+### Scala (sbt) projects
 
 When using self-signed certificates, add the following job section to `.gitlab-ci.yml` above:
 
@@ -520,7 +527,7 @@ gemnasium-maven-dependency_scanning:
       - keytool -importcert -file /tmp/internal.crt -cacerts -storepass changeit -noprompt
 ```
 
-### pip and pipenv projects
+### Python (pip) and Python (Pipfile) projects
 
 Add the following `pip.conf` to your repository to define your index url and trust its self-signed certificate:
 
@@ -535,8 +542,8 @@ Add the following job section to `.gitlab-ci.yml` above:
 ```yaml
 gemnasium-python-dependency_scanning:
   before_script:
-    - mkdir ~/.pip
-    - cp pip.conf ~/.pip
+    - mkdir ~/.config/pip
+    - cp pip.conf ~/.config/pip/pip.conf
 ```
 
 ## Troubleshooting
