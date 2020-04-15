@@ -1,5 +1,5 @@
 import { mount, shallowMount } from '@vue/test-utils';
-import TasksByTypeChart from 'ee/analytics/cycle_analytics/components/tasks_by_type_chart.vue';
+import TasksByTypeChart from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_chart.vue';
 import { TASKS_BY_TYPE_SUBJECT_ISSUE } from 'ee/analytics/cycle_analytics/constants';
 
 const seriesNames = ['Cool label', 'Normal label'];
