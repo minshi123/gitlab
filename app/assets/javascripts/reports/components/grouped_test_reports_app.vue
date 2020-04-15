@@ -23,6 +23,11 @@ export default {
       type: String,
       required: true,
     },
+    pipelinePath: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
   },
   componentNames,
   computed: {
@@ -42,6 +47,9 @@ export default {
       }
 
       return summaryTextBuilder(s__('Reports|Test summary'), this.summary);
+    },
+    testTab() {
+      return `${this.pipelinePath}/test_report`;
     },
   },
   created() {
@@ -89,6 +97,20 @@ export default {
     :has-issues="reports.length > 0"
     class="mr-widget-section grouped-security-reports mr-report"
   >
+
+    <template v-if="pipelinePath" #actionButtons>
+      <div>
+        <a
+          :href="testTab"
+          target="_blank"
+          class="btn btn-default btn-sm float-right append-right-default"
+        >
+          <span>{{ s__('ciReport|View full report') }}</span>
+          <icon :size="16" name="external-link" />
+        </a>
+      </div>
+    </template>
+
     <div slot="body" class="mr-widget-grouped-section report-block">
       <template v-for="(report, i) in reports">
         <summary-row
