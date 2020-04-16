@@ -38,17 +38,6 @@ export const durationChartMedianData = state => {
   return plottableData.length ? plottableData : [];
 };
 
-export const tasksByTypeChartData = ({ tasksByType, startDate, endDate }) => {
-  if (tasksByType && tasksByType.data.length) {
-    return getTasksByTypeData({
-      data: tasksByType.data,
-      startDate,
-      endDate,
-    });
-  }
-  return { groupBy: [], data: [], seriesNames: [] };
-};
-
 const filterStagesByHiddenStatus = (stages = [], isHidden = true) =>
   stages.filter(({ hidden = false }) => hidden === isHidden);
 
