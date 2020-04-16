@@ -13,12 +13,14 @@ module Projects
     end
 
     def propagate
-      return unless @template.active?
+      return unless template.active?
 
       propagate_projects_with_template
     end
 
     private
+
+    attr_reader :template
 
     def propagate_projects_with_template
       loop do
@@ -50,7 +52,7 @@ module Projects
             SELECT true
             FROM services
             WHERE services.project_id = projects.id
-            AND services.type = '#{@template.type}'
+            AND services.type = '#{template.type}'
           )
           AND projects.pending_delete = false
           AND projects.archived = false
@@ -71,7 +73,7 @@ module Projects
     def service_hash
       @service_hash ||=
         begin
-          template_hash = @template.as_json(methods: :type).except('id', 'template', 'project_id')
+          template_hash = template.as_json(methods: :type).except('id', 'template', 'project_id')
 
           template_hash.each_with_object({}) do |(key, value), service_hash|
             value = value.is_a?(Hash) ? value.to_json : value
@@ -95,11 +97,11 @@ module Projects
     # rubocop: enable CodeReuse/ActiveRecord
 
     def active_external_issue_tracker?
-      @template.issue_tracker? && !@template.default
+      template.issue_tracker? && !template.default
     end
 
     def active_external_wiki?
-      @template.type == 'ExternalWikiService'
+      template.type == 'ExternalWikiService'
     end
   end
 end
