@@ -1,5 +1,3 @@
-import { TASKS_BY_TYPE_SUBJECT_ISSUE } from '../constants';
-
 export default () => ({
   featureFlags: {},
 
@@ -8,8 +6,6 @@ export default () => ({
 
   isLoading: false,
   isLoadingStage: false,
-  isLoadingTasksByTypeChart: false,
-  isLoadingTasksByTypeChartTopLabels: false,
   isLoadingDurationChart: false,
   isLoadingDurationChartMedianData: false,
 
@@ -30,18 +26,11 @@ export default () => ({
 
   stages: [],
   summary: [],
-  topRankedLabels: [],
   medians: {},
 
   customStageFormEvents: [],
   customStageFormErrors: null,
   customStageFormInitialData: null,
-
-  tasksByType: {
-    subject: TASKS_BY_TYPE_SUBJECT_ISSUE,
-    selectedLabelIds: [],
-    data: [],
-  },
 
   durationData: [],
   durationMedianData: [],
