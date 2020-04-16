@@ -280,13 +280,13 @@ To fix the broken test:
 1. Change line 7 to say `You're on Rails! Powered by GitLab Auto DevOps.`
 1. Click **Commit**.
 1. In the left-hand column, under **Unstaged changes**, click the checkmark icon
-   to stage the changes.
+   (**{stage-all}**) to stage the changes.
 1. Write a commit message, and click **Commit**.
 
 Return to the **Overview** page of your merge request, and you should not only
 see the test passing, but also the application deployed as a
 [review application](stages.md#auto-review-apps). You can visit it by clicking
-the **View app** button to see your changes deployed.
+the **View app** **{external-link}** button to see your changes deployed.
 
 ![Review app](img/guide_merge_request_review_app_v12_3.png)
 
