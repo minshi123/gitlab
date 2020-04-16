@@ -145,7 +145,7 @@ class GeoNodeStatus < ApplicationRecord
     design_repositories_registry_count: 'Number of design repositories in the registry'
   }.freeze
 
-  EXPIRATION_IN_MINUTES = 5
+  EXPIRATION_IN_MINUTES = 10
   HEALTHY_STATUS = 'Healthy'.freeze
   UNHEALTHY_STATUS = 'Unhealthy'.freeze
 

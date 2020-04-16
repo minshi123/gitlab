@@ -9413,16 +9413,22 @@ msgstr ""
 msgid "GeoNodeSyncStatus|Node is slow, overloaded, or it just recovered after an outage."
 msgstr ""
 
+msgid "GeoNodes| Node's status was updated %{timeAgo}."
+msgstr ""
+
+msgid "GeoNodes| Updated %{timeAgo}"
+msgstr ""
+
 msgid "GeoNodes|Attachments"
 msgstr ""
 
 msgid "GeoNodes|Checksummed"
 msgstr ""
 
-msgid "GeoNodes|Container repositories"
+msgid "GeoNodes|Consult Geo troubleshooting information"
 msgstr ""
 
-msgid "GeoNodes|Data is out of date from %{timeago}"
+msgid "GeoNodes|Container repositories"
 msgstr ""
 
 msgid "GeoNodes|Data replication lag"
@@ -9462,6 +9468,9 @@ msgid "GeoNodes|Last event ID processed by cursor"
 msgstr ""
 
 msgid "GeoNodes|Last event ID seen from primary"
+msgstr ""
+
+msgid "GeoNodes|Learn more about Geo node statuses"
 msgstr ""
 
 msgid "GeoNodes|Loading nodes"

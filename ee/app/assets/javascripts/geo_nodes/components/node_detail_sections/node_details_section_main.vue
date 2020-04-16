@@ -77,7 +77,7 @@ export default {
           {{ nodeVersion }}
         </span>
       </div>
-      <geo-node-health-status :status="nodeHealthStatus" />
+      <geo-node-health-status :status="nodeHealthStatus" :node-details="nodeDetails" />
     </div>
   </div>
 </template>

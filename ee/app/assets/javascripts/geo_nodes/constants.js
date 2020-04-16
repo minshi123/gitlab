@@ -43,3 +43,9 @@ export const HELP_INFO_URL =
 
 export const REPLICATION_HELP_URL =
   'https://docs.gitlab.com/ee/administration/geo/replication/datatypes.html#limitations-on-replicationverification';
+
+export const HELP_NODE_HEALTH_URL =
+  'https://docs.gitlab.com/ee/administration/geo/replication/troubleshooting.html#check-the-health-of-the-secondary-node';
+
+export const GEO_TROUBLESHOOTING_URL =
+  'https://docs.gitlab.com/ee/administration/geo/replication/troubleshooting.html';
