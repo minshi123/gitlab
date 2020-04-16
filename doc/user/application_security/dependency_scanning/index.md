@@ -454,7 +454,7 @@ For details on saving and transporting Docker images as a file, see Docker's doc
 
 ### Set Dependency Scanning CI config for "offline" use
 
-Below is a general template `.gitlab-ci.yml` to configure your environment for running Dependency Scanning:
+Below is a general template `.gitlab-ci.yml` to configure your environment for running Dependency Scanning offline:
 
 ```yaml
 include:
@@ -505,19 +505,21 @@ MAVEN_CLI_OPTS="-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allo
 
 ### Java (Gradle) projects
 
-When using self-signed certificates, add the following job section to `.gitlab-ci.yml` above:
+When using self-signed certificates, add the following job section to the `.gitlab-ci.yml` above:
 
 ```yaml
 gemnasium-maven-dependency_scanning:
   variables:
     before_script:
-      - echo -n | openssl s_client -connect gitlab-airgap-test.us-west1-b.c.group-secure-a89fe7.internal:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/internal.crt
+      - echo -n | openssl s_client -connect maven-repo.example.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/internal.crt
       - keytool -importcert -file /tmp/internal.crt -cacerts -storepass changeit -noprompt
 ```
+
+This adds the self-signed certificates of your maven repository to the Java Key Store of the analyzer's docker image.
 
 ### Scala (sbt) projects
 
-When using self-signed certificates, add the following job section to `.gitlab-ci.yml` above:
+When using self-signed certificates, add the following job section to the `.gitlab-ci.yml` above:
 
 ```yaml
 gemnasium-maven-dependency_scanning:
@@ -526,6 +528,8 @@ gemnasium-maven-dependency_scanning:
       - echo -n | openssl s_client -connect gitlab-airgap-test.us-west1-b.c.group-secure-a89fe7.internal:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/internal.crt
       - keytool -importcert -file /tmp/internal.crt -cacerts -storepass changeit -noprompt
 ```
+
+This adds the self-signed certificates of your maven repository to the Java Key Store of the analyzer's docker image.
 
 ### Python (pip) and Python (Pipfile) projects
 
@@ -545,6 +549,32 @@ gemnasium-python-dependency_scanning:
     - mkdir ~/.config/pip
     - cp pip.conf ~/.config/pip/pip.conf
 ```
+
+### Python (setuptools)
+
+When using self-signed certificates for your private pypi repo no extra job configuration (aside from the template `.gitlab-ci.yml` above) is needed.
+
+However, you do need to update your `setup.py` to ensure that it can reach your private repo. Here is an example configuration:
+
+1. Update `setup.py` to create a `dependency_links` attribute pointing at your private repo for each dependency in `install_requires` list:
+
+    ```python
+    install_requires=['pyparsing>=2.0.3'],
+    dependency_links=['https://pypi.example.com/simple/pyparsing'],
+    ```
+
+1. Fetch certificate from your repository url and add it to project:
+
+    ```bash
+    echo -n | openssl s_client -connect pypi.example.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > internal.crt
+    ```
+
+1. Point `setup.py` at the newly downloaded certificate:
+
+    ```python
+    import setuptools.ssl_support
+    setuptools.ssl_support.cert_paths = ['internal.crt']
+    ```
 
 ## Troubleshooting
 
