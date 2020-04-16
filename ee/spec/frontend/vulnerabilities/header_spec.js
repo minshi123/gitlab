@@ -207,8 +207,8 @@ describe('Vulnerability Header', () => {
 
     beforeEach(() => {
       createWrapper({
-        resolved_on_default_branch: true,
-        default_branch_name: branchName,
+        resolved_on_default_branch: branchName,
+        project_default_branch: branchName,
       });
     });
 
