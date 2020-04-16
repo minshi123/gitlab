@@ -9,12 +9,14 @@ import {
   GlPagination,
   GlModal,
   GlSprintf,
+  GlAlert,
+  GlLink,
   GlEmptyState,
   GlResizeObserverDirective,
   GlSkeletonLoader,
 } from '@gitlab/ui';
 import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
-import { n__, s__ } from '~/locale';
+import { n__ } from '~/locale';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
@@ -35,6 +37,18 @@ import {
   DELETE_TAG_ERROR_MESSAGE,
   DELETE_TAGS_SUCCESS_MESSAGE,
   DELETE_TAGS_ERROR_MESSAGE,
+  REMOVE_TAG_CONFIRMATION_TEXT,
+  REMOVE_TAGS_CONFIRMATION_TEXT,
+  REMOVE_TAG,
+  REMOVE_TAGS,
+  DETAILS_PAGE_TITLE,
+  REMOVE_TAGS_BUTTON_TITLE,
+  REMOVE_TAG_BUTTON_TITLE,
+  EMPTY_IMAGE_REPOSITORY_TITLE,
+  EMPTY_IMAGE_REPOSITORY_MESSAGE,
+  LAYER_TEXT,
+  LAYERS_TEXT,
+  ADMIN_GARBAGE_COLLECTION_TIP,
 } from '../constants';
 
 export default {
@@ -49,6 +63,8 @@ export default {
     GlSkeletonLoader,
     GlSprintf,
     GlEmptyState,
+    GlAlert,
+    GlLink,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -60,6 +76,13 @@ export default {
     width: 1000,
     height: 40,
   },
+  i18n: {
+    detailsPageTitle: DETAILS_PAGE_TITLE,
+    removeTagsButtonTitle: REMOVE_TAGS_BUTTON_TITLE,
+    removeTagButtonTitle: REMOVE_TAG_BUTTON_TITLE,
+    emptyImageRepositoryTitle: EMPTY_IMAGE_REPOSITORY_TITLE,
+    emptyImageRepositoryMessage: EMPTY_IMAGE_REPOSITORY_MESSAGE,
+  },
   data() {
     return {
       selectedItems: [],
@@ -67,6 +90,7 @@ export default {
       selectAllChecked: false,
       modalDescription: null,
       isDesktop: true,
+      deleteAlertType: false,
     };
   },
   computed: {
@@ -96,11 +120,7 @@ export default {
       };
     },
     modalAction() {
-      return n__(
-        'ContainerRegistry|Remove tag',
-        'ContainerRegistry|Remove tags',
-        this.isMultiDelete ? this.itemsToBeDeleted.length : 1,
-      );
+      return n__(REMOVE_TAG, REMOVE_TAGS, this.isMultiDelete ? this.itemsToBeDeleted.length : 1);
     },
     currentPage: {
       get() {
@@ -110,20 +130,47 @@ export default {
         this.requestTagsList({ pagination: { page }, params: this.$route.params.id });
       },
     },
+    deleteAlertConfig() {
+      const config = {
+        title: '',
+        message: '',
+        type: 'success',
+      };
+      if (this.deleteAlertType) {
+        [config.type] = this.deleteAlertType.split('_');
+
+        const dictionary = {
+          success_tag: DELETE_TAG_SUCCESS_MESSAGE,
+          danger_tag: DELETE_TAG_ERROR_MESSAGE,
+          success_tags: DELETE_TAGS_SUCCESS_MESSAGE,
+          danger_tags: DELETE_TAGS_ERROR_MESSAGE,
+        };
+        const defaultMessage = dictionary[this.deleteAlertType];
+
+        if (this.config.isAdmin && config.type === 'success') {
+          config.title = defaultMessage;
+          config.message = ADMIN_GARBAGE_COLLECTION_TIP;
+        } else {
+          config.message = defaultMessage;
+        }
+      }
+
+      return config;
+    },
   },
   methods: {
     ...mapActions(['requestTagsList', 'requestDeleteTag', 'requestDeleteTags']),
     setModalDescription(itemIndex = -1) {
       if (itemIndex === -1) {
         this.modalDescription = {
-          message: s__(`ContainerRegistry|You are about to remove %{item} tags. Are you sure?`),
+          message: REMOVE_TAGS_CONFIRMATION_TEXT,
           item: this.itemsToBeDeleted.length,
         };
       } else {
         const { path } = this.tags[itemIndex];
 
         this.modalDescription = {
-          message: s__(`ContainerRegistry|You are about to remove %{item}. Are you sure?`),
+          message: REMOVE_TAG_CONFIRMATION_TEXT,
           item: path,
         };
       }
@@ -132,7 +179,7 @@ export default {
       return numberToHumanSize(size);
     },
     layers(layers) {
-      return layers ? n__('%d layer', '%d layers', layers) : '';
+      return layers ? n__(LAYER_TEXT, LAYERS_TEXT, layers) : '';
     },
     onSelectAllChange() {
       if (this.selectAllChecked) {
@@ -182,16 +229,12 @@ export default {
     handleSingleDelete(itemToDelete) {
       this.itemsToBeDeleted = [];
       return this.requestDeleteTag({ tag: itemToDelete, params: this.$route.params.id })
-        .then(() =>
-          this.$toast.show(DELETE_TAG_SUCCESS_MESSAGE, {
-            type: 'success',
-          }),
-        )
-        .catch(() =>
-          this.$toast.show(DELETE_TAG_ERROR_MESSAGE, {
-            type: 'error',
-          }),
-        );
+        .then(() => {
+          this.deleteAlertType = 'success_tag';
+        })
+        .catch(() => {
+          this.deleteAlertType = 'danger_tag';
+        });
     },
     handleMultipleDelete() {
       const { itemsToBeDeleted } = this;
@@ -202,16 +245,12 @@ export default {
         ids: itemsToBeDeleted.map(x => this.tags[x].name),
         params: this.$route.params.id,
       })
-        .then(() =>
-          this.$toast.show(DELETE_TAGS_SUCCESS_MESSAGE, {
-            type: 'success',
-          }),
-        )
-        .catch(() =>
-          this.$toast.show(DELETE_TAGS_ERROR_MESSAGE, {
-            type: 'error',
-          }),
-        );
+        .then(() => {
+          this.deleteAlertType = 'success_tags';
+        })
+        .catch(() => {
+          this.deleteAlertType = 'danger_tags';
+        });
     },
     onDeletionConfirmed() {
       this.track('confirm_delete');
@@ -231,9 +270,24 @@ export default {
 
 <template>
   <div v-gl-resize-observer="handleResize" class="my-3 w-100 slide-enter-to-element">
+    <gl-alert
+      v-if="deleteAlertType"
+      :variant="deleteAlertConfig.type"
+      :title="deleteAlertConfig.title"
+      class="my-2"
+      @dismiss="deleteAlertType = null"
+    >
+      <gl-sprintf :message="deleteAlertConfig.message">
+        <template #docLink="{content}">
+          <gl-link :href="config.garbageCollectionHelpPagePath" target="_blank">
+            {{ content }}
+          </gl-link>
+        </template>
+      </gl-sprintf>
+    </gl-alert>
     <div class="d-flex my-3 align-items-center">
       <h4>
-        <gl-sprintf :message="s__('ContainerRegistry|%{imageName} tags')">
+        <gl-sprintf :message="$options.i18n.detailsPageTitle">
           <template #imageName>
             {{ imageName }}
           </template>
@@ -256,8 +310,8 @@ export default {
           :disabled="!selectedItems || selectedItems.length === 0"
           class="float-right"
           variant="danger"
-          :title="s__('ContainerRegistry|Remove selected tags')"
-          :aria-label="s__('ContainerRegistry|Remove selected tags')"
+          :title="$options.i18n.removeTagsButtonTitle"
+          :aria-label="$options.i18n.removeTagsButtonTitle"
           @click="deleteMultipleItems()"
         >
           <gl-icon name="remove" />
@@ -306,8 +360,8 @@ export default {
       <template #cell(actions)="{index, item}">
         <gl-deprecated-button
           ref="singleDeleteButton"
-          :title="s__('ContainerRegistry|Remove tag')"
-          :aria-label="s__('ContainerRegistry|Remove tag')"
+          :title="$options.i18n.removeTagButtonTitle"
+          :aria-label="$options.i18n.removeTagButtonTitle"
           :disabled="!item.destroy_path"
           variant="danger"
           class="js-delete-registry float-right btn-inverted btn-border-color btn-icon"
@@ -337,15 +391,9 @@ export default {
         </template>
         <gl-empty-state
           v-else
-          :title="s__('ContainerRegistry|This image has no active tags')"
+          :title="$options.i18n.emptyImageRepositoryTitle"
           :svg-path="config.noContainersImage"
-          :description="
-            s__(
-              `ContainerRegistry|The last tag related to this image was recently removed.
-            This empty image and any associated data will be automatically removed as part of the regular Garbage Collection process.
-            If you have any questions, contact your administrator.`,
-            )
-          "
+          :description="$options.i18n.emptyImageRepositoryMessage"
           class="mx-auto my-0"
         />
       </template>

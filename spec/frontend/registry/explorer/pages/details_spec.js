@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { GlTable, GlPagination, GlSkeletonLoader } from '@gitlab/ui';
+import { GlTable, GlPagination, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
 import Tracking from '~/tracking';
 import stubChildren from 'helpers/stub_children';
 import component from '~/registry/explorer/pages/details.vue';
@@ -30,6 +30,7 @@ describe('Details Page', () => {
   const findAllCheckboxes = () => wrapper.findAll('.js-row-checkbox');
   const findCheckedCheckboxes = () => findAllCheckboxes().filter(c => c.attributes('checked'));
   const findFirsTagColumn = () => wrapper.find('.js-tag-column');
+  const findAlert = () => wrapper.find(GlAlert);
 
   const routeId = window.btoa(JSON.stringify({ name: 'foo', tags_path: 'bar' }));
 
@@ -330,23 +331,6 @@ describe('Details Page', () => {
           expect(wrapper.vm.itemsToBeDeleted).toEqual([]);
           expect(findCheckedCheckboxes()).toHaveLength(0);
         });
-
-        it('show success toast on successful delete', () => {
-          return wrapper.vm.handleSingleDelete(0).then(() => {
-            expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(DELETE_TAG_SUCCESS_MESSAGE, {
-              type: 'success',
-            });
-          });
-        });
-
-        it('show error toast on erred delete', () => {
-          dispatchSpy.mockRejectedValue();
-          return wrapper.vm.handleSingleDelete(0).then(() => {
-            expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(DELETE_TAG_ERROR_MESSAGE, {
-              type: 'error',
-            });
-          });
-        });
       });
 
       describe('when multiple elements are selected', () => {
@@ -365,23 +349,6 @@ describe('Details Page', () => {
           expect(wrapper.vm.itemsToBeDeleted).toEqual([]);
           expect(findCheckedCheckboxes()).toHaveLength(0);
         });
-
-        it('show success toast on successful delete', () => {
-          return wrapper.vm.handleMultipleDelete(0).then(() => {
-            expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(DELETE_TAGS_SUCCESS_MESSAGE, {
-              type: 'success',
-            });
-          });
-        });
-
-        it('show error toast on erred delete', () => {
-          dispatchSpy.mockRejectedValue();
-          return wrapper.vm.handleMultipleDelete(0).then(() => {
-            expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(DELETE_TAGS_ERROR_MESSAGE, {
-              type: 'error',
-            });
-          });
-        });
       });
     });
 
@@ -391,6 +358,30 @@ describe('Details Page', () => {
       return wrapper.vm.$nextTick().then(() => {
         expect(Tracking.event).toHaveBeenCalledWith(undefined, 'cancel_delete', {
           label: 'registry_tag_delete',
+        });
+      });
+    });
+  });
+
+  describe('Delete alert', () => {
+    describe('when the user is an admin', () => {
+      beforeEach(() => {
+        store.dispatch('setInitialState', { isAdmin: true });
+      });
+
+      describe('when delete is successful', () => {
+        beforeEach(() => {
+          dispatchSpy.mockResolvedValue();
+        });
+
+        it('on single tag delete ', () => {
+          mountComponent();
+          return wrapper.vm.handleSingleDelete('foo').then(() => {
+            const alert = findAlert();
+            expect(alert.exists()).toBe(true);
+            console.log(alert.html());
+            console.log(wrapper.vm.deleteAlertConfig);
+          });
         });
       });
     });
