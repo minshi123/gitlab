@@ -57,7 +57,7 @@ module Projects
           AND projects.pending_delete = false
           AND projects.archived = false
           LIMIT #{BATCH_SIZE}
-      SQL
+        SQL
       )
     end
 
@@ -66,7 +66,7 @@ module Projects
         <<-SQL.strip_heredoc
           INSERT INTO services (#{columns.join(', ')})
           VALUES #{values_array.map { |tuple| "(#{tuple.join(', ')})" }.join(', ')}
-      SQL
+        SQL
       )
     end
 

@@ -14,7 +14,8 @@ describe Projects::PropagateServiceTemplate do
           priority: 4,
           user_key: 'asdf',
           api_key: '123456789'
-        })
+        }
+      )
     end
 
     let!(:project) { create(:project) }
@@ -35,7 +36,7 @@ describe Projects::PropagateServiceTemplate do
         properties: {
           bamboo_url: 'http://gitlab.com',
           username: 'mic',
-          password: "password",
+          password: 'password',
           build_key: 'build'
         }
       )
@@ -54,7 +55,7 @@ describe Projects::PropagateServiceTemplate do
         properties: {
           bamboo_url: 'http://gitlab.com',
           username: 'mic',
-          password: "password",
+          password: 'password',
           build_key: 'build'
         }
       )
