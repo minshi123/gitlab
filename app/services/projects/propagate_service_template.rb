@@ -4,8 +4,8 @@ module Projects
   class PropagateServiceTemplate
     BATCH_SIZE = 100
 
-    def self.propagate(*args)
-      new(*args).propagate
+    def self.propagate(template)
+      new(template).propagate
     end
 
     def initialize(template)
