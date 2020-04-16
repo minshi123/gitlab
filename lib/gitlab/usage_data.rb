@@ -207,30 +207,53 @@ module Gitlab
       def object_store_usage_data
         {
           object_store: {
-            artifacts: object_store_config_filter('artifacts'),
-            external_diffs: object_store_config_filter('external_diffs'),
-            lfs: object_store_config_filter('lfs'),
-            uploads: object_store_config_filter('uploads'),
-            packages: object_store_config_filter('packages')
+            artifacts: {
+              enabled: alt_usage_data { Settings['artifacts']['enabled'] },
+              object_store: {
+                enabled: alt_usage_data { Settings['artifacts']['object_store']['enabled'] },
+                direct_upload: alt_usage_data { Settings['artifacts']['object_store']['direct_upload'] },
+                background_upload: alt_usage_data { Settings['artifacts']['object_store']['background_upload'] },
+                provider: alt_usage_data { Settings['artifacts']['object_store']['connection']['provider'] }
+              }
+            },
+            external_diffs: {
+              enabled: alt_usage_data { Settings['external_diffs']['enabled'] },
+              object_store: {
+                enabled: alt_usage_data { Settings['external_diffs']['object_store']['enabled'] },
+                direct_upload: alt_usage_data { Settings['external_diffs']['object_store']['direct_upload'] },
+                background_upload: alt_usage_data { Settings['external_diffs']['object_store']['background_upload'] },
+                provider: alt_usage_data { Settings['external_diffs']['object_store']['connection']['provider'] }
+              }
+            },
+            lfs: {
+              enabled: alt_usage_data { Settings['lfs']['enabled'] },
+              object_store: {
+                enabled: alt_usage_data { Settings['lfs']['object_store']['enabled'] },
+                direct_upload: alt_usage_data { Settings['lfs']['object_store']['direct_upload'] },
+                background_upload: alt_usage_data { Settings['lfs']['object_store']['background_upload'] },
+                provider: alt_usage_data { Settings['lfs']['object_store']['connection']['provider'] }
+              }
+            },
+            uploads: {
+              enabled: alt_usage_data { Settings['uploads']['enabled'] },
+              object_store: {
+                enabled: alt_usage_data { Settings['uploads']['object_store']['enabled'] },
+                direct_upload: alt_usage_data { Settings['uploads']['object_store']['direct_upload'] },
+                background_upload: alt_usage_data { Settings['uploads']['object_store']['background_upload'] },
+                provider: alt_usage_data { Settings['uploads']['object_store']['connection']['provider'] }
+              }
+            },
+            packages: {
+              enabled: alt_usage_data { Settings['packages']['enabled'] },
+              object_store: {
+                enabled: alt_usage_data { Settings['packages']['object_store']['enabled'] },
+                direct_upload: alt_usage_data { Settings['packages']['object_store']['direct_upload'] },
+                background_upload: alt_usage_data { Settings['packages']['object_store']['background_upload'] },
+                provider: alt_usage_data { Settings['packages']['object_store']['connection']['provider'] }
+              }
+            }
           }
         }
-      end
-
-      def object_store_config_filter(name)
-        alt_usage_data do
-          config = Settings[name]
-          next {} if config.nil?
-
-          result = {}
-          result['enabled'] = config['enabled']
-
-          unless config['object_store'].nil?
-            result['object_store'] = config['object_store'].slice('enabled', 'direct_upload', 'background_upload')
-            result['object_store']['provider'] = config['object_store']['connection']['provider']
-          end
-
-          result
-        end
       end
 
       def ingress_modsecurity_usage
