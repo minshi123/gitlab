@@ -15,8 +15,6 @@ module Projects
     def propagate
       return unless @template.active?
 
-      Rails.logger.info("Propagating services for template #{@template.id}") # rubocop:disable Gitlab/RailsLogger
-
       propagate_projects_with_template
     end
 
