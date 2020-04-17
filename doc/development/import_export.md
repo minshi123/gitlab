@@ -331,3 +331,20 @@ module Projects
            wiki_repo_saver, lfs_saver].all?(&:save)
       end
 ```
+
+## Test fixtures
+
+Fixtures used in Import/Export specs live in `spec/fixtures/lib/gitlab/import_export`.
+
+There are two versions of these fixtures:
+
+- A human readable single JSON file with all objects
+- A tree.tar.gz file containing a tree of files in `ndjson` format
+  - At root level there's a `project.ndjson` file containing project information and a `project` directory
+  - Inside the `project` directory, each different model has its own `ndjson` file.
+   If you need to add a new model, please create a new file for it.
+   Please keep in mind that relationships must be added to the parent object as well.
+   Take a look at how milestone information is duplicated inside `issues.ndjson` for an example.
+  - Once you're done editing the files, please compile them using `tar -czf tree.tar.gz tree` from the same directory as the `tree` directory is located.
+
+When updating these fixtures, please ensure you update both formats, as both are currently tested against.
