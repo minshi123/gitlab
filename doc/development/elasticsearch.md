@@ -122,7 +122,155 @@ Uses an [Edge NGram token filter](https://www.elastic.co/guide/en/elasticsearch/
 - Searches can have their own analyzers. Remember to check when editing analyzers
 - `Character` filters (as opposed to token filters) always replace the original character, so they're not a good choice as they can hinder exact searches
 
-## Zero downtime reindexing with multiple indices
+## Zero downtime reindexing
+
+### Using ElasticSearch alias
+
+NOTE: **Note:** we are currently in the process of migrating the default ElasticSearch configuration to leverage index alias natively ([#213628](https://gitlab.com/gitlab-org/gitlab/-/issues/213628)).
+
+The idea behind this reindexing method is to leverage ElasticSearch index alias feature to atomically swap between two indices.
+We will refer to each index as `primary` (online and used by GitLab for read/writes) and `secondary` (offline, for reindexation purpose).
+
+Instead of connecting directly to the `primary` index, we'll setup an index alias such as we can change the underlying index at will.
+
+NOTE: Any index attached to the production alias is deemed a `primary` and will end up being used by the GitLab ElasticSearch integration.
+
+Using this flow, everytime you need to re-index, you will end up doing the following:
+
+  1. Create a new `secondary` index
+  1. Trigger the reindex from `primary` → `secondary`
+  1. Add the `secondary` to the alias, thus electing it as a `primary`
+  1. Remove the older `primary` to the alias, thus demoting it as a `backup`
+  1. Delete the `backup` index (optional)
+  
+#### Setup
+
+This process involves multiple shell commands and curl invocations, so a good inital setup will help down the road.
+
+NOTE: **Note:** There are no convention for the secondary index name: simply use something unique each time.
+
+```bash
+# You can find this value under Admin Area > Integration > ElasticSearch > URL
+export CLUSTER_URL="http://localhost:9200"
+
+export PRIMARY_INDEX="gitlab-production-1445400000"
+export SECONDARY_INDEX="gitlab-production-$(date +%s)"
+```
+
+To find the `primary` index name, use the following command:
+
+NOTE: **Important:** If this is the first time you are doing this process, the `gitlab-production` alias might not be created. In this case, your `primary` index is `gitlab-production` and it'll be migrated to an alias by the end of this process.
+
+```bash
+curl -X GET "localhost:9200/_alias/gitlab-production?pretty"
+
+{
+  "gitlab-production-1445400000" : {  # this is an index attached to this alias
+    "aliases" : {
+      "gitlab-production" : { }
+    }
+  }
+}
+```
+  
+#### Creating a secondary index
+
+From your administration terminal:
+
+```bash
+
+# Omnibus installation
+sudo gitlab-rake "gitlab:elastic:create_empty_index[$SECONDARY_INDEX]"
+
+# Source installation
+bundle exec rake "gitlab:elastic:create_empty_index[$SECONDARY_INDEX]"
+```
+
+The index should be created successfully, with the latest index options and mappings.
+
+Now, let's optimize it for _writes_ so the reindex process runs quicker.
+
+```bash
+curl -XPUT -d '{"index":{"number_of_replicas":"0","refresh_interval":"-1","translog":{"durability":"async"}}}' -H 'Content-Type: application/json' "$CLUSTER_URL/$SECONDARY_INDEX/_settings"
+```
+
+#### Trigger the re-index from `primary`
+
+We'll leverage the ElasticSearch (Reindex API)[https://www.elastic.co/guide/en/elasticsearch/reference/7.6/docs-reindex.html]
+
+```bash
+curl -H 'Content-Type: application/json' -d "{ \"source\": { \"index\": \"$PRIMARY_INDEX\" }, \"dest\": { \"index\": \"$SECONDARY_INDEX\" } }" -X POST "$CLUSTER_URL/_reindex?slices=auto&wait_for_completion=false"
+
+> {"task":"3qw_Tr0YQLq7PF16Xek8YA:1012"}
+```
+
+Note the `task` value here as it may be usefull to follow the reindex progress.
+
+```bash
+export TASK_ID=3qw_Tr0YQLq7PF16Xek8YA:1012
+
+curl "$CLUSTER_URL/_tasks/$TASK_ID?pretty"
+
+> {"completed":false, …}
+```
+
+**Wait for the reindex process to complete before continuing.**
+
+We can now revert the write optimizations we've set above to make the `secondary` more reliable.
+
+```bash
+curl -XPUT -H 'Content-Type: application/json' -d '{"index":{"number_of_replicas":"1","refresh_interval":"60s","translog":{"durability":"request"}}}' "$CLUSTER_URL/$SECONDARY_INDEX/_settings"
+```
+
+#### Create the alias
+
+If this is the first time you are running this process, you'll have to create the `primary` alias.
+
+**We highly recommend that you take a snapshot of your cluster to make sure there is a recovery path if anything goes awry.**
+
+NOTE: **Note:** Due to a technical limitation, there will be a slight downtime because of the fact that we need to reclaim the current `primary` index to be used as the alias.
+
+First, let's make sure that the secondary index has data in it, because this process will **destroy your exising `primary` index**.
+We can use the ElasticSearch API to look for the index size and compare our two indices:
+
+```bash
+curl $CLUSTER_URL/$PRIMARY_INDEX/_count => 123123
+curl $CLUSTER_URL/$SECONDARY_INDEX/_count => 123123
+```
+
+NOTE: **Note:** Comparing the document count is more accurate than using the index size, as improvements to the storage might cause the new index to be smaller than the original one.
+
+Once you are confident your `secondary` index is valid, you can process to the creation of the alias.
+
+Delete the current `primary`:
+
+```bash
+curl -X DELETE $CLUSTER_URL/$PRIMARY_INDEX
+```
+
+Create the alias, pointing to the `secondary`
+
+```bash
+ curl -XPOST -H 'Content-Type: application/json' -d "{\"actions\":[{\"add\":{\"index\":\"$SECONDARY_INDEX\",\"alias\":"gitlab-production"}}]}}' $CLUSTER_URL/_aliases
+```
+
+#### Update the alias
+
+Use the following command to update (or create) the alias to use `secondary` and remove the `primary`:
+
+```bash
+curl -XPOST -H 'Content-Type: application/json' "$CLUSTER_URL/_aliases?pretty" -d "{\"actions\": [{\"add\": {\"index\": \"$SECONDARY_INDEX\", \"alias\": \"gitlab-production\"}}, {\"remove\": {\"index\": \"$PRIMARY_INDEX\", \"alias\": \"gitlab-production\"}}]}"
+```
+
+You can then verify the setup using:
+
+```bash
+curl $CLUSTER_URL/gitlab-production/_count => 123123
+```
+
+### Using with multiple indices
+
+NOTE: **Note:** this is not applicable yet as multiple indices functionality is not fully implemented.
 
 Currently GitLab can only handle a single version of setting. Any setting/schema changes would require reindexing everything from scratch. Since reindexing can take a long time, this can cause search functionality downtime.
 
@@ -138,7 +286,7 @@ This is also helpful for migrating to new servers, e.g. moving to/from AWS.
 
 Currently we are on the process of migrating to this new design. Everything is hardwired to work with one single version for now.
 
-### Architecture
+#### Architecture
 
 The traditional setup, provided by `elasticsearch-rails`, is to communicate through its internal proxy classes. Developers would write model-specific logic in a module for the model to include in (e.g. `SnippetsSearch`). The `__elasticsearch__` methods would return a proxy object, e.g.:
 
@@ -158,7 +306,7 @@ In the planned new design, each model would have a pair of corresponding subclas
 
 The global configurations per version are now in the `Elastic::(Version)::Config` class. You can change mappings there.
 
-### Creating new version of schema
+#### Creating new version of schema
 
 NOTE: **Note:** this is not applicable yet as multiple indices functionality is not fully implemented.
 
