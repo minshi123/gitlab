@@ -7,6 +7,8 @@ describe Gitlab::UsageData, :aggregate_failures do
 
   before do
     allow(ActiveRecord::Base.connection).to receive(:transaction_open?).and_return(false)
+
+    stub_object_store_settings
   end
 
   shared_examples "usage data execution" do
@@ -80,14 +82,15 @@ describe Gitlab::UsageData, :aggregate_failures do
         expect(count_data[:clusters_applications_jupyter]).to eq(1)
       end
 
-      # it 'gathers object store usage correctly' do
-      #   object_store_data = subject[:object_store]
-      #   expect(object_store_data[:artifacts]).to eq('artifacts_setting')
-      #   expect(object_store_data[:external_diffs]).to eq('external_diffs_setting')
-      #   expect(object_store_data[:lfs]).to eq('lfs_setting')
-      #   expect(object_store_data[:uploads]).to eq('uploads_setting')
-      #   expect(object_store_data[:packages]).to eq('packages_setting')
-      # end
+      it 'gathers object store usage correctly' do
+        expect(subject[:object_store]).to eq(
+          { artifacts: { enabled: true, object_store: { enabled: false, direct_upload: true, background_upload: true, provider: "AWS" } },
+           external_diffs: { enabled: false, object_store: { enabled: -1, direct_upload: -1, background_upload: -1, provider: -1 } },
+           lfs: { enabled: true, object_store: { enabled: false, direct_upload: true, background_upload: true, provider: "AWS" } },
+           uploads: { enabled: nil, object_store: { enabled: false, direct_upload: true, background_upload: true, provider: "AWS" } },
+           packages: { enabled: true, object_store: { enabled: false, direct_upload: true, background_upload: true, provider: "AWS" } } }
+        )
+      end
 
       it 'works when queries time out' do
         allow_any_instance_of(ActiveRecord::Relation)
@@ -168,14 +171,6 @@ describe Gitlab::UsageData, :aggregate_failures do
           expect(subject[:gitaly][:servers]).to be >= 1
           expect(subject[:gitaly][:filesystems]).to be_an(Array)
           expect(subject[:gitaly][:filesystems].first).to be_a(String)
-        end
-      end
-
-      describe '#object_store_usage_data', quarantine: 'TODO' do
-        subject { described_class.object_store_usage_data }
-
-        it 'gathers object store usage data' do
-
         end
       end
 
