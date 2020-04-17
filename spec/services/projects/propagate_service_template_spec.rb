@@ -8,6 +8,7 @@ describe Projects::PropagateServiceTemplate do
       PushoverService.create(
         template: true,
         active: true,
+        push_events: false,
         properties: {
           device: 'MyDevice',
           sound: 'mic',
@@ -71,6 +72,10 @@ describe Projects::PropagateServiceTemplate do
       described_class.propagate(service_template)
 
       expect(project.pushover_service.properties).to eq(service_template.properties)
+
+      excluded_attributes = %w[id project_id template created_at updated_at title description]
+      expect(project.pushover_service.attributes.except(*excluded_attributes))
+        .to eq(service_template.attributes.except(*excluded_attributes))
     end
 
     describe 'bulk update', :use_sql_query_cache do
