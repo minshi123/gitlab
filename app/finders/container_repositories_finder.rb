@@ -1,38 +1,46 @@
 # frozen_string_literal: true
 
 class ContainerRepositoriesFinder
+  attr_reader :params, :user, :subject
   VALID_SUBJECTS = [Group, Project].freeze
 
-  def initialize(user:, subject:)
+  def initialize(user:, subject:, params: {})
     @user = user
     @subject = subject
+    @params = params
   end
 
   def execute
     raise ArgumentError, "invalid subject_type" unless valid_subject_type?
     return unless authorized?
 
-    return project_repositories if @subject.is_a?(Project)
-    return group_repositories if @subject.is_a?(Group)
+    repositories = subject.is_a?(Project) ? project_repositories : group_repositories
+    filter_by_image_name(repositories)
   end
 
   private
 
   def valid_subject_type?
-    VALID_SUBJECTS.include?(@subject.class)
+    VALID_SUBJECTS.include?(subject.class)
   end
 
   def project_repositories
-    return unless @subject.container_registry_enabled
+    return unless subject.container_registry_enabled
 
-    @subject.container_repositories
+    subject.container_repositories
   end
 
   def group_repositories
-    ContainerRepository.for_group_and_its_subgroups(@subject)
+    ContainerRepository.for_group_and_its_subgroups(subject)
+  end
+
+  def filter_by_image_name(repositories)
+    return repositories unless params[:name]
+
+    repositories.search_by_name(params[:name])
   end
 
   def authorized?
-    Ability.allowed?(@user, :read_container_image, @subject)
+    Ability.allowed?(user, :read_container_image, subject)
   end
 end

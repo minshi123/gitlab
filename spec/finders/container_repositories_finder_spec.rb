@@ -8,16 +8,28 @@ describe ContainerRepositoriesFinder do
 
   let(:group) { create(:group) }
   let(:project) { create(:project, group: group) }
-  let!(:project_repository) { create(:container_repository, project: project) }
+  let!(:project_repository) { create(:container_repository, name: 'my_image', project: project) }
+  let(:params) { {} }
 
   before do
     group.add_reporter(reporter)
     project.add_reporter(reporter)
   end
 
+  shared_examples 'with name search' do
+    let(:params) { { name: 'my_image' } }
+    let!(:not_searched_repository) do
+      create(:container_repository, name: 'foo_bar_baz', project: project)
+    end
+
+    it { is_expected.to contain_exactly(project_repository)}
+
+    it { is_expected.not_to include(not_searched_repository)}
+  end
+
   describe '#execute' do
     context 'with authorized user' do
-      subject { described_class.new(user: reporter, subject: subject_object).execute }
+      subject { described_class.new(user: reporter, subject: subject_object, params: params).execute }
 
       context 'when subject_type is group' do
         let(:subject_object) { group }
@@ -28,12 +40,16 @@ describe ContainerRepositoriesFinder do
         end
 
         it { is_expected.to match_array([project_repository, other_repository]) }
+
+        it_behaves_like 'with name search'
       end
 
       context 'when subject_type is project' do
         let(:subject_object) { project }
 
         it { is_expected.to match_array([project_repository]) }
+
+        it_behaves_like 'with name search'
       end
 
       context 'with invalid subject_type' do
