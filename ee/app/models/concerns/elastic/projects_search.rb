@@ -16,7 +16,11 @@ module Elastic
 
     included do
       def use_elasticsearch?
-        ::Gitlab::CurrentSettings.elasticsearch_indexes_project?(self)
+        return ::Gitlab::CurrentSettings.elasticsearch_indexes_project?(self) unless Feature.enabled?(:use_elasticsearch_cache, default_enabled: true)
+
+        Gitlab::Cache::GroupedCache.fetch(:use_elasticsearch_cache_project, id) do
+          ::Gitlab::CurrentSettings.elasticsearch_indexes_project?(self)
+        end
       end
 
       # TODO: ElasticIndexerWorker does extra work for project hooks, so we
