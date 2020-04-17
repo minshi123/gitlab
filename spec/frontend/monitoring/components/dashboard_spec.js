@@ -10,7 +10,7 @@ import Dashboard from '~/monitoring/components/dashboard.vue';
 import DateTimePicker from '~/vue_shared/components/date_time_picker/date_time_picker.vue';
 import DashboardsDropdown from '~/monitoring/components/dashboards_dropdown.vue';
 import GroupEmptyState from '~/monitoring/components/group_empty_state.vue';
-import PanelType from 'ee_else_ce/monitoring/components/panel_type.vue';
+import DashboardPanel from 'ee_else_ce/monitoring/components/dashboard_panel.vue';
 import { createStore } from '~/monitoring/stores';
 import * as types from '~/monitoring/stores/mutation_types';
 import { setupStoreWithDashboard, setMetricResult, setupStoreWithData } from '../store_utils';
@@ -126,7 +126,7 @@ describe('Dashboard', () => {
     it('hides the group panels when showPanels is false', () => {
       createMountedWrapper(
         { hasMetrics: true, showPanels: false },
-        { stubs: ['graph-group', 'panel-type'] },
+        { stubs: ['graph-group', 'dashboard-panel'] },
       );
 
       setupStoreWithData(wrapper.vm.$store);
@@ -140,7 +140,7 @@ describe('Dashboard', () => {
     it('fetches the metrics data with proper time window', () => {
       jest.spyOn(store, 'dispatch');
 
-      createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'panel-type'] });
+      createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'dashboard-panel'] });
 
       wrapper.vm.$store.commit(
         `monitoringDashboard/${types.RECEIVE_ENVIRONMENTS_DATA_SUCCESS}`,
@@ -155,7 +155,7 @@ describe('Dashboard', () => {
 
   describe('when all requests have been commited by the store', () => {
     beforeEach(() => {
-      createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'panel-type'] });
+      createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'dashboard-panel'] });
 
       setupStoreWithData(wrapper.vm.$store);
 
@@ -184,7 +184,7 @@ describe('Dashboard', () => {
   });
 
   it('hides the environments dropdown list when there is no environments', () => {
-    createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'panel-type'] });
+    createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'dashboard-panel'] });
 
     setupStoreWithDashboard(wrapper.vm.$store);
 
@@ -194,7 +194,7 @@ describe('Dashboard', () => {
   });
 
   it('renders the datetimepicker dropdown', () => {
-    createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'panel-type'] });
+    createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'dashboard-panel'] });
 
     setupStoreWithData(wrapper.vm.$store);
 
@@ -204,7 +204,7 @@ describe('Dashboard', () => {
   });
 
   it('renders the refresh dashboard button', () => {
-    createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'panel-type'] });
+    createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'dashboard-panel'] });
 
     setupStoreWithData(wrapper.vm.$store);
 
@@ -251,7 +251,7 @@ describe('Dashboard', () => {
         { hasMetrics: true },
         {
           attachToDocument: true,
-          stubs: ['graph-group', 'panel-type'],
+          stubs: ['graph-group', 'dashboard-panel'],
         },
       );
 
@@ -463,7 +463,7 @@ describe('Dashboard', () => {
 
   describe('Dashboard dropdown', () => {
     beforeEach(() => {
-      createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'panel-type'] });
+      createMountedWrapper({ hasMetrics: true }, { stubs: ['graph-group', 'dashboard-panel'] });
 
       wrapper.vm.$store.commit(
         `monitoringDashboard/${types.SET_ALL_DASHBOARDS}`,
@@ -489,7 +489,7 @@ describe('Dashboard', () => {
           showTimeWindowDropdown: false,
           externalDashboardUrl: '/mockUrl',
         },
-        { stubs: ['graph-group', 'panel-type'] },
+        { stubs: ['graph-group', 'dashboard-panel'] },
       );
 
       return wrapper.vm.$nextTick();
@@ -509,7 +509,7 @@ describe('Dashboard', () => {
 
     const getClipboardTextAt = i =>
       wrapper
-        .findAll(PanelType)
+        .findAll(DashboardPanel)
         .at(i)
         .props('clipboardText');
 

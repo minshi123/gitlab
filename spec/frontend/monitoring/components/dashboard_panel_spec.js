@@ -4,7 +4,7 @@ import { setTestTimeout } from 'helpers/timeout';
 import invalidUrl from '~/lib/utils/invalid_url';
 import axios from '~/lib/utils/axios_utils';
 
-import PanelType from '~/monitoring/components/panel_type.vue';
+import DashboardPanel from '~/monitoring/components/dashboard_panel.vue';
 import {
   anomalyMockGraphData,
   mockLogsHref,
@@ -54,7 +54,7 @@ describe('Panel Type component', () => {
   const findContextualMenu = () => wrapper.find({ ref: 'contextualMenu' });
 
   const createWrapper = props => {
-    wrapper = shallowMount(PanelType, {
+    wrapper = shallowMount(DashboardPanel, {
       propsData: {
         graphData,
         ...props,
@@ -369,7 +369,7 @@ describe('Panel Type component', () => {
 
   describe('when downloading metrics data as CSV', () => {
     beforeEach(() => {
-      wrapper = shallowMount(PanelType, {
+      wrapper = shallowMount(DashboardPanel, {
         propsData: {
           clipboardText: exampleText,
           graphData: {
@@ -418,7 +418,7 @@ describe('Panel Type component', () => {
       store.registerModule(mockNamespace, monitoringDashboard);
       store.state.embedGroup.modules.push(mockNamespace);
 
-      wrapper = shallowMount(PanelType, {
+      wrapper = shallowMount(DashboardPanel, {
         propsData: {
           graphData,
           namespace: mockNamespace,

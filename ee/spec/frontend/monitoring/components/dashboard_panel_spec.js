@@ -2,7 +2,7 @@ import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
 import { GlDropdownItem } from '@gitlab/ui';
 import { monitoringDashboard } from '~/monitoring/stores';
-import PanelType from 'ee/monitoring/components/panel_type.vue';
+import DashboardPanel from 'ee/monitoring/components/dashboard_panel.vue';
 import AlertWidget from 'ee/monitoring/components/alert_widget.vue';
 import { graphData } from 'jest/monitoring/fixture_data';
 
@@ -26,7 +26,7 @@ describe('Panel Type', () => {
   };
 
   const createWrapper = propsData => {
-    wrapper = shallowMount(PanelType, {
+    wrapper = shallowMount(DashboardPanel, {
       propsData: {
         ...mockPropsData,
         ...propsData,
