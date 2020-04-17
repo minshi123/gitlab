@@ -7119,6 +7119,9 @@ msgstr ""
 msgid "Detect host keys"
 msgstr ""
 
+msgid "Detected"
+msgstr ""
+
 msgid "DevOps Score"
 msgstr ""
 
@@ -7527,6 +7530,9 @@ msgid "Edited %{timeago}"
 msgstr ""
 
 msgid "Editing"
+msgstr ""
+
+msgid "Either you don't have permission to view this dashboard or the dashboard has not been setup. Please check your permission settings with your administrator or check your dashboard configurations to proceed."
 msgstr ""
 
 msgid "Elasticsearch"
@@ -18673,6 +18679,9 @@ msgid "Settings related to the use and experience of using GitLab's Package Regi
 msgstr ""
 
 msgid "Settings to prevent self-approval across all projects in the instance. Only an administrator can modify these settings."
+msgstr ""
+
+msgid "Severity"
 msgstr ""
 
 msgid "Severity: %{severity}"
