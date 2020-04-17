@@ -18,7 +18,6 @@ class Milestone < ApplicationRecord
   include Sortable
   include Timebox
   include FromUnion
-  include Gitlab::SQL::Pattern
 
   prepend_if_ee('::EE::Milestone') # rubocop: disable Cop/InjectEnterpriseEditionModule
 
@@ -36,50 +35,6 @@ class Milestone < ApplicationRecord
 
   has_internal_id :iid, scope: :project, track_if: -> { !importing? }, init: ->(s) { s&.project&.milestones&.maximum(:iid) }
   has_internal_id :iid, scope: :group, track_if: -> { !importing? }, init: ->(s) { s&.group&.milestones&.maximum(:iid) }
-
-  class << self
-    # Searches for milestones with a matching title or description.
-    #
-    # This method uses ILIKE on PostgreSQL and LIKE on MySQL.
-    #
-    # query - The search query as a String
-    #
-    # Returns an ActiveRecord::Relation.
-    def search(query)
-      fuzzy_search(query, [:title, :description])
-    end
-
-    # Searches for milestones with a matching title.
-    #
-    # This method uses ILIKE on PostgreSQL and LIKE on MySQL.
-    #
-    # query - The search query as a String
-    #
-    # Returns an ActiveRecord::Relation.
-    def search_title(query)
-      fuzzy_search(query, [:title])
-    end
-
-    def filter_by_state(milestones, state)
-      case state
-      when 'closed' then milestones.closed
-      when 'all' then milestones
-      else milestones.active
-      end
-    end
-
-    def count_by_state
-      reorder(nil).group(:state).count
-    end
-
-    def predefined_id?(id)
-      [Any.id, None.id, Upcoming.id, Started.id].include?(id)
-    end
-
-    def predefined?(milestone)
-      predefined_id?(milestone&.id)
-    end
-  end
 
   def self.reference_pattern
     # NOTE: The iid pattern only matches when all characters on the expression

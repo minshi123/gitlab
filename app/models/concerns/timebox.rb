@@ -5,6 +5,7 @@ module Timebox
 
   include AtomicInternalId
   include CacheMarkdownField
+  include Gitlab::SQL::Pattern
   include IidRoutes
   include Importable
   include Milestoneish
@@ -75,6 +76,48 @@ module Timebox
   class_methods do
     def reference_prefix
       '%'
+    end
+
+    # Searches for timeboxes with a matching title or description.
+    #
+    # This method uses ILIKE on PostgreSQL and LIKE on MySQL.
+    #
+    # query - The search query as a String
+    #
+    # Returns an ActiveRecord::Relation.
+    def search(query)
+      fuzzy_search(query, [:title, :description])
+    end
+
+    # Searches for timeboxes with a matching title.
+    #
+    # This method uses ILIKE on PostgreSQL and LIKE on MySQL.
+    #
+    # query - The search query as a String
+    #
+    # Returns an ActiveRecord::Relation.
+    def search_title(query)
+      fuzzy_search(query, [:title])
+    end
+
+    def filter_by_state(timeboxes, state)
+      case state
+      when 'closed' then timeboxes.closed
+      when 'all' then timeboxes
+      else timeboxes.active
+      end
+    end
+
+    def count_by_state
+      reorder(nil).group(:state).count
+    end
+
+    def predefined_id?(id)
+      [Any.id, None.id, Upcoming.id, Started.id].include?(id)
+    end
+
+    def predefined?(milestone)
+      predefined_id?(milestone&.id)
     end
   end
 
