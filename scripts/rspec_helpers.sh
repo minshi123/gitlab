@@ -15,9 +15,13 @@ function retrieve_tests_metadata() {
 function update_tests_metadata() {
   echo "{}" > "${KNAPSACK_RSPEC_SUITE_REPORT_PATH}"
 
-  scripts/merge-reports "${KNAPSACK_RSPEC_SUITE_REPORT_PATH}" knapsack/rspec*_pg9_*.json
+  scripts/merge-reports "${KNAPSACK_RSPEC_SUITE_REPORT_PATH}" knapsack/rspec*_pg11_*.json
   if [[ -n "${TESTS_METADATA_S3_BUCKET}" ]]; then
-    scripts/sync-reports put "${TESTS_METADATA_S3_BUCKET}" "${KNAPSACK_RSPEC_SUITE_REPORT_PATH}"
+    if [[ "$CI_PIPELINE_SOURCE" == "schedule" ]]; then
+      scripts/sync-reports put "${TESTS_METADATA_S3_BUCKET}" "${KNAPSACK_RSPEC_SUITE_REPORT_PATH}"
+    else
+      echo "Not uplaoding report to S3 as the pipeline is not a scheduled one."
+    fi
   fi
 
   rm -f knapsack/rspec*.json
@@ -28,12 +32,20 @@ function update_tests_metadata() {
   scripts/flaky_examples/prune-old-flaky-examples "${FLAKY_RSPEC_SUITE_REPORT_PATH}"
 
   if [[ -n ${TESTS_METADATA_S3_BUCKET} ]]; then
-    scripts/sync-reports put "${TESTS_METADATA_S3_BUCKET}" "${FLAKY_RSPEC_SUITE_REPORT_PATH}"
+    if [[ "$CI_PIPELINE_SOURCE" == "schedule" ]]; then
+      scripts/sync-reports put "${TESTS_METADATA_S3_BUCKET}" "${FLAKY_RSPEC_SUITE_REPORT_PATH}"
+    else
+      echo "Not uplaoding report to S3 as the pipeline is not a scheduled one."
+    fi
   fi
 
   rm -f rspec_flaky/all_*.json rspec_flaky/new_*.json
 
-  scripts/insert-rspec-profiling-data
+  if [[ "$CI_PIPELINE_SOURCE" == "schedule" ]]; then
+    scripts/insert-rspec-profiling-data
+  else
+    echo "Not inserting profiling data as the pipeline is not a scheduled one."
+  fi
 }
 
 function rspec_simple_job() {
