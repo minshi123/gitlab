@@ -2,6 +2,6 @@
 
 require 'spec_helper'
 
-describe Analytics::CycleAnalytics::SummaryController do
+describe Analytics::CycleAnalytics::TimeSummaryController do
   it_behaves_like 'base summary controller'
 end

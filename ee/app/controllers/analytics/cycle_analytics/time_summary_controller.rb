@@ -2,9 +2,9 @@
 
 module Analytics
   module CycleAnalytics
-    class SummaryController < BaseSummaryController
+    class TimeSummaryController < BaseSummaryController
       def summary(group_level)
-        group_level.summary
+        group_level.time_summary
       end
     end
   end

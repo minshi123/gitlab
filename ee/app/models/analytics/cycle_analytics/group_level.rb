@@ -19,6 +19,13 @@ module Analytics
             .data
       end
 
+      def time_summary
+        @time_summary ||=
+          Gitlab::Analytics::CycleAnalytics::GroupStageTimeSummary
+            .new(group, options: options)
+            .data
+      end
+
       def permissions(*)
         STAGES.each_with_object({}) do |stage, obj|
           obj[stage] = true
