@@ -84,6 +84,19 @@ describe Projects::Registry::RepositoriesController do
             expect(json_response).to be_kind_of(Array)
           end
         end
+
+        context 'whith name parameter' do
+          let(:params) { { name: 'foo' } }
+
+          it 'calls ContainerRepositoryFinder with the correct param' do
+            finder = double('ContainerRepositoriesFinder', execute: [])
+            expect(ContainerRepositoriesFinder).to receive(:new).with(user: user, subject: project, params: params).and_return(finder)
+
+            go_to_index(format: :json, params: params)
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
+        end
       end
     end
 
@@ -138,11 +151,11 @@ describe Projects::Registry::RepositoriesController do
     end
   end
 
-  def go_to_index(format: :html)
-    get :index, params: {
+  def go_to_index(format: :html, params: {} )
+    get :index, params: params.merge({
                   namespace_id: project.namespace,
                   project_id: project
-                },
+                }),
                 format: format
   end
 

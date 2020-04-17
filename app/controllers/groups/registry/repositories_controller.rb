@@ -9,7 +9,8 @@ module Groups
         respond_to do |format|
           format.html
           format.json do
-            @images = ContainerRepositoriesFinder.new(user: current_user, subject: group).execute.with_api_entity_associations
+            sanitised_params = { name: params[:name] }
+            @images = ContainerRepositoriesFinder.new(user: current_user, subject: group, params: sanitised_params).execute.with_api_entity_associations
 
             track_event(:list_repositories)
 

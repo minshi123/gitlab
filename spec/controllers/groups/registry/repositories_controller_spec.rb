@@ -6,12 +6,13 @@ describe Groups::Registry::RepositoriesController do
   let_it_be(:user)  { create(:user) }
   let_it_be(:guest) { create(:user) }
   let_it_be(:group, reload: true) { create(:group) }
+  let(:additional_parameters) { {} }
 
   subject do
-    get :index, params: {
+    get :index, params: additional_parameters.merge({
       group_id: group,
       format: format
-    }
+    })
   end
 
   before do
@@ -81,6 +82,22 @@ describe Groups::Registry::RepositoriesController do
               expect(json_response).to be_kind_of(Array)
               expect(json_response.length).to eq 2
             end
+          end
+        end
+
+        context 'whith name parameter' do
+          let(:additional_parameters) { { name: 'foo' } }
+
+          it 'calls ContainerRepositoryFinder with the correct param' do
+            finder_instance = double
+            model_instance = double
+            allow(finder_instance).to receive(:execute).and_return(model_instance)
+            allow(model_instance).to receive(:with_api_entity_associations).and_return([])
+            expect(ContainerRepositoriesFinder).to receive(:new).with(user: user, subject: group, params: additional_parameters).and_return(finder_instance)
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
           end
         end
       end
