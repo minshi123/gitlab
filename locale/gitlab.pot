@@ -5552,6 +5552,9 @@ msgstr ""
 msgid "ContainerRegistry|Quick Start"
 msgstr ""
 
+msgid "ContainerRegistry|Remember to run %{docLinkStart}garbage collection%{docLinkEnd} to remove the stale data from storage."
+msgstr ""
+
 msgid "ContainerRegistry|Remove repository"
 msgstr ""
 
@@ -5590,7 +5593,7 @@ msgstr ""
 msgid "ContainerRegistry|Tag"
 msgstr ""
 
-msgid "ContainerRegistry|Tag deleted successfully"
+msgid "ContainerRegistry|Tag deleted successfully."
 msgstr ""
 
 msgid "ContainerRegistry|Tag expiration policy"
@@ -5599,7 +5602,7 @@ msgstr ""
 msgid "ContainerRegistry|Tag expiration policy is designed to:"
 msgstr ""
 
-msgid "ContainerRegistry|Tags deleted successfully"
+msgid "ContainerRegistry|Tags deleted successfully."
 msgstr ""
 
 msgid "ContainerRegistry|The Container Registry tag expiration and retention policies for this project have not been enabled."
@@ -5624,9 +5627,6 @@ msgid "ContainerRegistry|There are no container images stored for this project"
 msgstr ""
 
 msgid "ContainerRegistry|There was an error during the deletion of this image repository, please try again."
-msgstr ""
-
-msgid "ContainerRegistry|This Registry contains deleted image tag data. Remember to run  %{docLinkStart}garbage collection%{docLinkEnd} to remove the stale data from storage."
 msgstr ""
 
 msgid "ContainerRegistry|This image has no active tags"

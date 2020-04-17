@@ -39,15 +39,11 @@ import {
   DELETE_TAGS_ERROR_MESSAGE,
   REMOVE_TAG_CONFIRMATION_TEXT,
   REMOVE_TAGS_CONFIRMATION_TEXT,
-  REMOVE_TAG,
-  REMOVE_TAGS,
   DETAILS_PAGE_TITLE,
   REMOVE_TAGS_BUTTON_TITLE,
   REMOVE_TAG_BUTTON_TITLE,
   EMPTY_IMAGE_REPOSITORY_TITLE,
   EMPTY_IMAGE_REPOSITORY_MESSAGE,
-  LAYER_TEXT,
-  LAYERS_TEXT,
   ADMIN_GARBAGE_COLLECTION_TIP,
 } from '../constants';
 
@@ -120,7 +116,11 @@ export default {
       };
     },
     modalAction() {
-      return n__(REMOVE_TAG, REMOVE_TAGS, this.isMultiDelete ? this.itemsToBeDeleted.length : 1);
+      return n__(
+        'ContainerRegistry|Remove tag',
+        'ContainerRegistry|Remove tags',
+        this.isMultiDelete ? this.itemsToBeDeleted.length : 1,
+      );
     },
     currentPage: {
       get() {
@@ -154,7 +154,6 @@ export default {
           config.message = defaultMessage;
         }
       }
-
       return config;
     },
   },
@@ -179,7 +178,7 @@ export default {
       return numberToHumanSize(size);
     },
     layers(layers) {
-      return layers ? n__(LAYER_TEXT, LAYERS_TEXT, layers) : '';
+      return layers ? n__('%d layer', '%d layers', layers) : '';
     },
     onSelectAllChange() {
       if (this.selectAllChecked) {

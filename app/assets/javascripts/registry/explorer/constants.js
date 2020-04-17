@@ -70,12 +70,6 @@ export const LIST_LABEL_LAST_UPDATED = s__('ContainerRegistry|Last Updated');
 export const REMOVE_TAG_BUTTON_TITLE = s__('ContainerRegistry|Remove tag');
 export const REMOVE_TAGS_BUTTON_TITLE = s__('ContainerRegistry|Remove selected tags');
 
-export const LAYER_TEXT = '%d layer';
-export const LAYERS_TEXT = '%d layers';
-
-export const REMOVE_TAG = 'ContainerRegistry|Remove tag';
-export const REMOVE_TAGS = 'ContainerRegistry|Remove tags';
-
 export const REMOVE_TAG_CONFIRMATION_TEXT = s__(
   `ContainerRegistry|You are about to remove %{item}. Are you sure?`,
 );
@@ -91,7 +85,7 @@ If you have any questions, contact your administrator.`,
 );
 
 export const ADMIN_GARBAGE_COLLECTION_TIP = s__(
-  'ContainerRegistry|Remember to run  %{docLinkStart}garbage collection%{docLinkEnd} to remove the stale data from storage.',
+  'ContainerRegistry|Remember to run %{docLinkStart}garbage collection%{docLinkEnd} to remove the stale data from storage.',
 );
 
 // Expiration policies

@@ -3,13 +3,14 @@ import { GlTable, GlPagination, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
 import Tracking from '~/tracking';
 import stubChildren from 'helpers/stub_children';
 import component from '~/registry/explorer/pages/details.vue';
-import store from '~/registry/explorer/stores/';
+import { createStore } from '~/registry/explorer/stores/';
 import { SET_MAIN_LOADING } from '~/registry/explorer/stores/mutation_types/';
 import {
   DELETE_TAG_SUCCESS_MESSAGE,
   DELETE_TAG_ERROR_MESSAGE,
   DELETE_TAGS_SUCCESS_MESSAGE,
   DELETE_TAGS_ERROR_MESSAGE,
+  ADMIN_GARBAGE_COLLECTION_TIP,
 } from '~/registry/explorer/constants';
 import { tagsListResponse } from '../mock_data';
 import { GlModal } from '../stubs';
@@ -18,6 +19,7 @@ import { $toast } from '../../shared/mocks';
 describe('Details Page', () => {
   let wrapper;
   let dispatchSpy;
+  let store;
 
   const findDeleteModal = () => wrapper.find(GlModal);
   const findPagination = () => wrapper.find(GlPagination);
@@ -56,6 +58,7 @@ describe('Details Page', () => {
   };
 
   beforeEach(() => {
+    store = createStore();
     dispatchSpy = jest.spyOn(store, 'dispatch');
     store.dispatch('receiveTagsListSuccess', tagsListResponse);
     jest.spyOn(Tracking, 'event');
@@ -63,6 +66,7 @@ describe('Details Page', () => {
 
   afterEach(() => {
     wrapper.destroy();
+    wrapper = null;
   });
 
   describe('when isLoading is true', () => {
@@ -364,26 +368,100 @@ describe('Details Page', () => {
   });
 
   describe('Delete alert', () => {
+    const config = {
+      garbageCollectionHelpPagePath: 'foo',
+    };
+
     describe('when the user is an admin', () => {
       beforeEach(() => {
-        store.dispatch('setInitialState', { isAdmin: true });
+        store.commit('SET_INITIAL_STATE', { ...config, isAdmin: true });
       });
 
-      describe('when delete is successful', () => {
-        beforeEach(() => {
-          dispatchSpy.mockResolvedValue();
+      afterEach(() => {
+        store.commit('SET_INITIAL_STATE', config);
+      });
+
+      describe.each`
+        deleteType                | successTitle                   | errorTitle
+        ${'handleSingleDelete'}   | ${DELETE_TAG_SUCCESS_MESSAGE}  | ${DELETE_TAG_ERROR_MESSAGE}
+        ${'handleMultipleDelete'} | ${DELETE_TAGS_SUCCESS_MESSAGE} | ${DELETE_TAGS_ERROR_MESSAGE}
+      `('behaves correctly on $deleteType', ({ deleteType, successTitle, errorTitle }) => {
+        describe('when delete is successful', () => {
+          beforeEach(() => {
+            dispatchSpy.mockResolvedValue();
+            mountComponent();
+            return wrapper.vm[deleteType]('foo');
+          });
+
+          it('alert exist', () => {
+            expect(findAlert().exists()).toBe(true);
+          });
+
+          it('alert body contains admin tip', () => {
+            expect(
+              findAlert()
+                .text()
+                .replace(/\s\s+/gm, ' '),
+            ).toBe(ADMIN_GARBAGE_COLLECTION_TIP.replace(/%{\w+}/gm, ''));
+          });
+
+          it('alert title is appropriate', () => {
+            expect(findAlert().attributes('title')).toBe(successTitle);
+          });
         });
 
-        it('on single tag delete ', () => {
-          mountComponent();
-          return wrapper.vm.handleSingleDelete('foo').then(() => {
-            const alert = findAlert();
-            expect(alert.exists()).toBe(true);
-            console.log(alert.html());
-            console.log(wrapper.vm.deleteAlertConfig);
+        describe('when delete is not successful', () => {
+          beforeEach(() => {
+            mountComponent();
+            dispatchSpy.mockRejectedValue();
+            return wrapper.vm[deleteType]('foo');
+          });
+
+          it('alert exist and text is appropriate', () => {
+            expect(findAlert().exists()).toBe(true);
+            expect(findAlert().text()).toBe(errorTitle);
           });
         });
       });
     });
+
+    describe.each`
+      deleteType                | successTitle                   | errorTitle
+      ${'handleSingleDelete'}   | ${DELETE_TAG_SUCCESS_MESSAGE}  | ${DELETE_TAG_ERROR_MESSAGE}
+      ${'handleMultipleDelete'} | ${DELETE_TAGS_SUCCESS_MESSAGE} | ${DELETE_TAGS_ERROR_MESSAGE}
+    `(
+      'when the user is not an admin alert behaves correctly on $deleteType',
+      ({ deleteType, successTitle, errorTitle }) => {
+        beforeEach(() => {
+          store.commit('SET_INITIAL_STATE', { ...config });
+        });
+
+        describe('when delete is successful', () => {
+          beforeEach(() => {
+            dispatchSpy.mockResolvedValue();
+            mountComponent();
+            return wrapper.vm[deleteType]('foo');
+          });
+
+          it('alert exist and text is appropriate', () => {
+            expect(findAlert().exists()).toBe(true);
+            expect(findAlert().text()).toBe(successTitle);
+          });
+        });
+
+        describe('when delete is not successful', () => {
+          beforeEach(() => {
+            mountComponent();
+            dispatchSpy.mockRejectedValue();
+            return wrapper.vm[deleteType]('foo');
+          });
+
+          it('alert exist and text is appropriate', () => {
+            expect(findAlert().exists()).toBe(true);
+            expect(findAlert().text()).toBe(errorTitle);
+          });
+        });
+      },
+    );
   });
 });
