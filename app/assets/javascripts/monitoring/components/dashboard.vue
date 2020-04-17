@@ -18,6 +18,7 @@ import PanelType from 'ee_else_ce/monitoring/components/panel_type.vue';
 import { s__ } from '~/locale';
 import createFlash from '~/flash';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import CustomMetricsFormFields from '~/custom_metrics/components/custom_metrics_form_fields.vue';
 import { mergeUrlParams, redirectTo, updateHistory } from '~/lib/utils/url_utility';
 import invalidUrl from '~/lib/utils/invalid_url';
 import Icon from '~/vue_shared/components/icon.vue';
@@ -46,6 +47,7 @@ export default {
     GlDropdownDivider,
     GlSearchBoxByType,
     GlModal,
+    CustomMetricsFormFields,
 
     DateTimePicker,
     GraphGroup,
@@ -142,6 +144,7 @@ export default {
       type: String,
       required: true,
     },
+
     customMetricsAvailable: {
       type: Boolean,
       required: false,
@@ -152,6 +155,7 @@ export default {
       required: false,
       default: invalidUrl,
     },
+
     validateQueryPath: {
       type: String,
       required: false,
@@ -204,9 +208,9 @@ export default {
     };
   },
   computed: {
-    canAddMetrics() {
-      return this.customMetricsAvailable && this.customMetricsPath.length;
-    },
+    // canAddMetrics() {
+    //   return this.customMetricsAvailable;
+    // },
     ...mapState('monitoringDashboard', [
       'dashboard',
       'emptyState',
@@ -228,8 +232,7 @@ export default {
     },
     addingMetricsAvailable() {
       return (
-        IS_EE &&
-        this.canAddMetrics &&
+        this.customMetricsAvailable &&
         !this.showEmptyState &&
         this.firstDashboard === this.selectedDashboard
       );
