@@ -38,7 +38,16 @@ module Projects
       end
 
       Project.transaction do
-        bulk_insert_services(service_hash.keys << 'project_id', service_list)
+        results = bulk_insert('services', service_hash.keys << 'project_id', service_list)
+
+        if data_fields_present?
+          data_list = results.rows.flatten.map do |service_id|
+            data_hash.values << service_id
+          end
+
+          bulk_insert(template.data_fields.class.table_name, data_hash.keys << 'service_id', data_list)
+        end
+
         run_callbacks(batch)
       end
     end
@@ -61,11 +70,12 @@ module Projects
       )
     end
 
-    def bulk_insert_services(columns, values_array)
-      ActiveRecord::Base.connection.execute(
-        <<-SQL.strip_heredoc
-          INSERT INTO services (#{columns.join(', ')})
+    def bulk_insert(table, columns, values_array)
+      ActiveRecord::Base.connection.exec_query(
+        <<~SQL
+          INSERT INTO #{table} (#{columns.join(', ')})
           VALUES #{values_array.map { |tuple| "(#{tuple.join(', ')})" }.join(', ')}
+          RETURNING id
         SQL
       )
     end
@@ -82,6 +92,17 @@ module Projects
               ActiveRecord::Base.connection.quote(value)
           end
         end
+    end
+
+    def data_hash
+      @data_hash ||= begin
+        template_data_hash = template.data_fields.as_json(only: template.data_fields.class.column_names).except('id', 'service_id')
+
+        template_data_hash.each_with_object({}) do |(key, value), template_data_hash|
+          template_data_hash[ActiveRecord::Base.connection.quote_column_name(key)] =
+            ActiveRecord::Base.connection.quote(value)
+        end
+      end
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
@@ -102,6 +123,10 @@ module Projects
 
     def active_external_wiki?
       template.type == 'ExternalWikiService'
+    end
+
+    def data_fields_present?
+      template.data_fields_present?
     end
   end
 end

@@ -78,6 +78,31 @@ describe Projects::PropagateServiceTemplate do
         .to eq(service_template.attributes.except(*excluded_attributes))
     end
 
+    context 'service with data fields' do
+      let(:service_template) do
+        JiraService.create!(
+          template: true,
+          active: true,
+          push_events: false,
+          url: 'http://jira.instance.com',
+          username: 'user',
+          password: 'secret'
+        )
+      end
+
+      it 'creates the service containing the template attributes' do
+        described_class.propagate(service_template)
+
+        excluded_attributes = %w[id project_id template created_at updated_at title description]
+        expect(project.jira_service.attributes.except(*excluded_attributes))
+          .to eq(service_template.attributes.except(*excluded_attributes))
+
+        excluded_attributes = %w[id service_id created_at updated_at]
+        expect(project.jira_service.data_fields.attributes.except(*excluded_attributes))
+          .to eq(service_template.data_fields.attributes.except(*excluded_attributes))
+      end
+    end
+
     describe 'bulk update', :use_sql_query_cache do
       let(:project_total) { 5 }
 
