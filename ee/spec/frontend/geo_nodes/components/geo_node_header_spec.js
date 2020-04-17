@@ -59,33 +59,23 @@ describe('GeoNodeHeader', () => {
           .catch(done.fail);
       });
 
-      it('returns `true` when Node details failed to load', done => {
-        vm.nodeDetailsFailed = true;
-        Vue.nextTick()
-          .then(() => {
-            expect(vm.showNodeStatusIcon).toBe(true);
-          })
-          .then(done)
-          .catch(done.fail);
-      });
-
-      it('returns `true` when Node details loaded and Node URL is non-HTTPS', done => {
-        vm.nodeDetailsLoading = false;
-        vm.nodeDetailsFailed = false;
-        vm.node.url = mockNode.url;
-        Vue.nextTick()
-          .then(() => {
-            expect(vm.showNodeStatusIcon).toBe(true);
-          })
-          .then(done)
-          .catch(done.fail);
-      });
-
       it('returns `false` when Node details loaded and Node URL is HTTPS', done => {
+        vm.nodeDetailsLoading = false;
         vm.node.url = 'https://127.0.0.1:3001/';
         Vue.nextTick()
           .then(() => {
             expect(vm.showNodeStatusIcon).toBe(false);
+          })
+          .then(done)
+          .catch(done.fail);
+      });
+
+      it('returns `true` when Node details loaded and Node URL is not HTTPS', done => {
+        vm.nodeDetailsLoading = false;
+        vm.node.url = 'http://127.0.0.1:3001/';
+        Vue.nextTick()
+          .then(() => {
+            expect(vm.showNodeStatusIcon).toBe(true);
           })
           .then(done)
           .catch(done.fail);
