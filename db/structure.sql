@@ -24,6 +24,35 @@ CREATE SEQUENCE public.abuse_reports_id_seq
 
 ALTER SEQUENCE public.abuse_reports_id_seq OWNED BY public.abuse_reports.id;
 
+CREATE TABLE public.alert_management_alerts (
+    id bigint NOT NULL,
+    title text NOT NULL,
+    description text,
+    service text,
+    monitoring_tool text,
+    host text,
+    fingerprint text,
+    severity integer DEFAULT 0 NOT NULL,
+    status integer DEFAULT 0 NOT NULL,
+    payload jsonb,
+    events integer DEFAULT 1 NOT NULL,
+    started_at timestamp with time zone,
+    ended_at timestamp with time zone,
+    issue_id bigint,
+    project_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+CREATE SEQUENCE public.alert_management_alerts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.alert_management_alerts_id_seq OWNED BY public.alert_management_alerts.id;
+
 CREATE TABLE public.alerts_service_data (
     id bigint NOT NULL,
     service_id integer NOT NULL,
@@ -7011,6 +7040,8 @@ ALTER SEQUENCE public.zoom_meetings_id_seq OWNED BY public.zoom_meetings.id;
 
 ALTER TABLE ONLY public.abuse_reports ALTER COLUMN id SET DEFAULT nextval('public.abuse_reports_id_seq'::regclass);
 
+ALTER TABLE ONLY public.alert_management_alerts ALTER COLUMN id SET DEFAULT nextval('public.alert_management_alerts_id_seq'::regclass);
+
 ALTER TABLE ONLY public.alerts_service_data ALTER COLUMN id SET DEFAULT nextval('public.alerts_service_data_id_seq'::regclass);
 
 ALTER TABLE ONLY public.allowed_email_domains ALTER COLUMN id SET DEFAULT nextval('public.allowed_email_domains_id_seq'::regclass);
@@ -7619,6 +7650,9 @@ ALTER TABLE ONLY public.zoom_meetings ALTER COLUMN id SET DEFAULT nextval('publi
 
 ALTER TABLE ONLY public.abuse_reports
     ADD CONSTRAINT abuse_reports_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.alert_management_alerts
+    ADD CONSTRAINT alert_management_alerts_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.alerts_service_data
     ADD CONSTRAINT alerts_service_data_pkey PRIMARY KEY (id);
@@ -8682,6 +8716,24 @@ CREATE UNIQUE INDEX idx_vulnerability_issue_links_on_vulnerability_id_and_issue_
 CREATE UNIQUE INDEX idx_vulnerability_issue_links_on_vulnerability_id_and_link_type ON public.vulnerability_issue_links USING btree (vulnerability_id, link_type) WHERE (link_type = 2);
 
 CREATE INDEX index_abuse_reports_on_user_id ON public.abuse_reports USING btree (user_id);
+
+CREATE INDEX index_alert_management_alerts_on_ended_at ON public.alert_management_alerts USING btree (ended_at);
+
+CREATE INDEX index_alert_management_alerts_on_events ON public.alert_management_alerts USING btree (events);
+
+CREATE INDEX index_alert_management_alerts_on_fingerprint ON public.alert_management_alerts USING btree (fingerprint);
+
+CREATE INDEX index_alert_management_alerts_on_issue_id ON public.alert_management_alerts USING btree (issue_id);
+
+CREATE INDEX index_alert_management_alerts_on_project_id ON public.alert_management_alerts USING btree (project_id);
+
+CREATE INDEX index_alert_management_alerts_on_severity ON public.alert_management_alerts USING btree (severity);
+
+CREATE INDEX index_alert_management_alerts_on_started_at ON public.alert_management_alerts USING btree (started_at);
+
+CREATE INDEX index_alert_management_alerts_on_status ON public.alert_management_alerts USING btree (status);
+
+CREATE INDEX index_alert_management_alerts_on_title ON public.alert_management_alerts USING btree (title);
 
 CREATE INDEX index_alerts_service_data_on_service_id ON public.alerts_service_data USING btree (service_id);
 
@@ -11261,6 +11313,9 @@ ALTER TABLE ONLY public.clusters_applications_runners
 ALTER TABLE ONLY public.service_desk_settings
     ADD CONSTRAINT fk_rails_223a296a85 FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.alert_management_alerts
+    ADD CONSTRAINT fk_rails_2358b75436 FOREIGN KEY (issue_id) REFERENCES public.issues(id);
+
 ALTER TABLE ONLY public.group_custom_attributes
     ADD CONSTRAINT fk_rails_246e0db83a FOREIGN KEY (group_id) REFERENCES public.namespaces(id) ON DELETE CASCADE;
 
@@ -11761,6 +11816,9 @@ ALTER TABLE ONLY public.analytics_language_trend_repository_languages
 
 ALTER TABLE ONLY public.badges
     ADD CONSTRAINT fk_rails_9df4a56538 FOREIGN KEY (group_id) REFERENCES public.namespaces(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.alert_management_alerts
+    ADD CONSTRAINT fk_rails_9e49e5c2b7 FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.clusters_applications_cert_managers
     ADD CONSTRAINT fk_rails_9e4f2cb4b2 FOREIGN KEY (cluster_id) REFERENCES public.clusters(id) ON DELETE CASCADE;
@@ -13253,5 +13311,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200415192656
 20200416120128
 20200416120354
+20200417044453
 \.
 

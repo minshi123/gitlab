@@ -13,8 +13,8 @@ class CreateAlertManagementAlerts < ActiveRecord::Migration[6.0]
 
       t.jsonb :payload
       t.integer :events, default: 1, null: false
-      t.datetime :started_at
-      t.datetime :ended_at
+      t.datetime_with_timezone :started_at
+      t.datetime_with_timezone :ended_at
 
       t.references :issue, foreign_key: true
       t.references :project, null: false, foreign_key: { on_delete: :cascade }
@@ -26,7 +26,7 @@ class CreateAlertManagementAlerts < ActiveRecord::Migration[6.0]
       t.index :status
       t.index :fingerprint
 
-      t.timestamps
+      t.timestamps_with_timezone
     end
   end
 end
