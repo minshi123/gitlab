@@ -1,0 +1,6 @@
+---
+title: Add metrics_users_starred_dashboards database relation to store users starred
+  metrics dashboard information
+merge_request:
+author:
+type: added
