@@ -29,6 +29,7 @@ class Packages::Package < ApplicationRecord
 
   validate :valid_conan_package_recipe, if: :conan?
   validate :valid_npm_package_name, if: :npm?
+  validate :valid_composer_global_name, if: :composer?
   validate :package_already_taken, if: :npm?
   validates :version, format: { with: Gitlab::Regex.semver_regex }, if: :npm?
   validates :name, format: { with: Gitlab::Regex.conan_recipe_component_regex }, if: :conan?
@@ -139,6 +140,12 @@ class Packages::Package < ApplicationRecord
                            .exists?
 
     errors.add(:base, _('Package recipe already exists')) if recipe_exists
+  end
+
+  def valid_composer_global_name
+    if Packages::Package.unscoped.where(name: name).where.not(project_id: project_id).count > 0
+      errors.add(:name, 'is already taken by another project')
+    end
   end
 
   def valid_npm_package_name
