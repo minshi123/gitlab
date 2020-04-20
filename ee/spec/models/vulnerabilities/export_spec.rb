@@ -6,7 +6,7 @@ describe Vulnerabilities::Export do
   it { is_expected.to define_enum_for(:format) }
 
   describe 'associations' do
-    it { is_expected.to belong_to(:project).required }
+    it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:author).class_name('User').required }
   end
 
@@ -63,6 +63,24 @@ describe Vulnerabilities::Export do
 
         it { is_expected.to have_attributes(status: 'failed', finished_at: Time.now) }
       end
+    end
+  end
+
+  describe '#exportable' do
+    subject { vulnerability_export.exportable }
+
+    context 'when the export has project assigned' do
+      let(:project) { build(:project) }
+      let(:vulnerability_export) { build(:vulnerability_export, project: project) }
+
+      it { is_expected.to eql(project) }
+    end
+
+    context 'when the export does not have project assigned' do
+      let(:author) { build(:user) }
+      let(:vulnerability_export) { build(:vulnerability_export, :user, author: author) }
+
+      it { is_expected.to eql(author) }
     end
   end
 

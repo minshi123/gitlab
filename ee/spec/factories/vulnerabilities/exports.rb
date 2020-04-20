@@ -33,5 +33,9 @@ FactoryBot.define do
       finished_at { Time.now }
       status { 'failed' }
     end
+
+    trait :user do
+      project { nil }
+    end
   end
 end
