@@ -5,6 +5,7 @@ FactoryBot.define do
   factory :alert_management_alert, class: 'AlertManagement::Alert' do
     project
     title { FFaker::Lorem.sentence }
+    started_at { Time.current }
 
     trait :with_issue do
       issue
