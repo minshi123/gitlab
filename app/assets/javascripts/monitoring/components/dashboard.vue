@@ -3,6 +3,7 @@ import { debounce, pickBy } from 'lodash';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import VueDraggable from 'vuedraggable';
 import {
+  GlButton,
   GlDeprecatedButton,
   GlDropdown,
   GlDropdownItem,
@@ -39,6 +40,7 @@ export default {
     VueDraggable,
     DashboardPanel,
     Icon,
+    GlButton,
     GlDeprecatedButton,
     GlDropdown,
     GlLoadingIcon,
@@ -212,8 +214,8 @@ export default {
       'showEmptyState',
       'useDashboardEndpoint',
       'allDashboards',
-      'additionalPanelTypesEnabled',
       'environmentsLoading',
+      'expandedPanel',
     ]),
     ...mapGetters('monitoringDashboard', ['getMetricStates', 'filteredEnvironments']),
     firstDashboard() {
@@ -243,6 +245,14 @@ export default {
     shouldShowEnvironmentsDropdownNoMatchedMsg() {
       return !this.environmentsLoading && this.filteredEnvironments.length === 0;
     },
+    panels() {
+      return this.dashboard.panelGroups.reduce((acc, group) => {
+        return acc.concat(group.panels);
+      }, []);
+    },
+    expandedPanelData() {
+      return this.panels.find(panel => panel.id === this.expandedPanel) ?? null;
+    },
   },
   created() {
     this.setInitialState({
@@ -255,6 +265,10 @@ export default {
       logsPath: this.logsPath,
       currentEnvironmentName: this.currentEnvironmentName,
     });
+    window.addEventListener('keyup', this.onKeyup);
+  },
+  destroyed() {
+    window.removeEventListener('keyup', this.onKeyup);
   },
   mounted() {
     if (!this.hasMetrics) {
@@ -273,6 +287,8 @@ export default {
       'setInitialState',
       'setPanelGroupMetrics',
       'filterEnvironments',
+      'setExpandedPanel',
+      'setNoExpandedPanel',
     ]),
     updatePanels(key, panels) {
       this.setPanelGroupMetrics({
@@ -365,6 +381,15 @@ export default {
         title: document.title,
       });
       this.selectedTimeRange = { start, end };
+    },
+    onKeyup(event) {
+      const { key } = event;
+      if (key === 'Esc' || key === 'Escape') {
+        this.setNoExpandedPanel();
+      }
+    },
+    onExpandPanel(panelId) {
+      this.setExpandedPanel(panelId);
     },
   },
   addMetric: {
@@ -541,59 +566,87 @@ export default {
     </div>
 
     <div v-if="!showEmptyState">
-      <graph-group
-        v-for="(groupData, index) in dashboard.panelGroups"
-        :key="`${groupData.group}.${groupData.priority}`"
-        :name="groupData.group"
-        :show-panels="showPanels"
-        :collapse-group="collapseGroup(groupData.key)"
+      <dashboard-panel
+        v-if="expandedPanelData"
+        :graph-data="expandedPanelData"
+        :alerts-endpoint="alertsEndpoint"
+        :height="600"
+        :prometheus-alerts-available="prometheusAlertsAvailable"
+        @timerangezoom="onTimeRangeZoom"
       >
-        <vue-draggable
-          v-if="!groupSingleEmptyState(groupData.key)"
-          :value="groupData.panels"
-          group="metrics-dashboard"
-          :component-data="{ attrs: { class: 'row mx-0 w-100' } }"
-          :disabled="!isRearrangingPanels"
-          @input="updatePanels(groupData.key, $event)"
-        >
-          <div
-            v-for="(graphData, graphIndex) in groupData.panels"
-            :key="`dashboard-panel-${graphIndex}`"
-            class="col-12 col-lg-6 px-2 mb-2 draggable"
-            :class="{ 'draggable-enabled': isRearrangingPanels }"
+        <template #header-before>
+          <gl-button
+            v-gl-tooltip
+            class="mr-3 my-3"
+            :title="s__('Metrics|Go back (Esc)')"
+            @click="setNoExpandedPanel()"
           >
-            <div class="position-relative draggable-panel js-draggable-panel">
-              <div
-                v-if="isRearrangingPanels"
-                class="draggable-remove js-draggable-remove p-2 w-100 position-absolute d-flex justify-content-end"
-                @click="removePanel(groupData.key, groupData.panels, graphIndex)"
-              >
-                <a class="mx-2 p-2 draggable-remove-link" :aria-label="__('Remove')">
-                  <icon name="close" />
-                </a>
-              </div>
+            <icon
+              name="arrow-left"
+              :aria-label="s__('Metrics|Go back (Esc)')"
+              class="text-secondary"
+              style="top: 0;"
+            />
+          </gl-button>
+        </template>
+      </dashboard-panel>
+      <div v-show="!expandedPanelData">
+        <graph-group
+          v-for="groupData in dashboard.panelGroups"
+          :key="`${groupData.group}.${groupData.priority}`"
+          :name="groupData.group"
+          :show-panels="showPanels"
+          :collapse-group="collapseGroup(groupData.key)"
+        >
+          <vue-draggable
+            v-if="!groupSingleEmptyState(groupData.key)"
+            :value="groupData.panels"
+            group="metrics-dashboard"
+            :component-data="{ attrs: { class: 'row mx-0 w-100' } }"
+            :disabled="!isRearrangingPanels"
+            @input="updatePanels(groupData.key, $event)"
+          >
+            <div
+              v-for="(graphData, graphIndex) in groupData.panels"
+              :key="`dashboard-panel-${graphIndex}`"
+              class="col-12 col-md-6 px-2 mb-2 draggable"
+              :class="{ 'draggable-enabled': isRearrangingPanels }"
+            >
+              <div class="position-relative draggable-panel js-draggable-panel">
+                <div
+                  v-if="isRearrangingPanels"
+                  class="draggable-remove js-draggable-remove p-2 w-100 position-absolute d-flex justify-content-end"
+                  @click="removePanel(groupData.key, groupData.panels, graphIndex)"
+                >
+                  <a class="mx-2 p-2 draggable-remove-link" :aria-label="__('Remove')">
+                    <icon name="close" />
+                  </a>
+                </div>
 
-              <dashboard-panel
-                :clipboard-text="generateLink(groupData.group, graphData.title, graphData.y_label)"
-                :graph-data="graphData"
-                :alerts-endpoint="alertsEndpoint"
-                :prometheus-alerts-available="prometheusAlertsAvailable"
-                :index="`${index}-${graphIndex}`"
-                @timerangezoom="onTimeRangeZoom"
-              />
+                <dashboard-panel
+                  :clipboard-text="
+                    generateLink(groupData.group, graphData.title, graphData.y_label)
+                  "
+                  :graph-data="graphData"
+                  :alerts-endpoint="alertsEndpoint"
+                  :prometheus-alerts-available="prometheusAlertsAvailable"
+                  @timerangezoom="onTimeRangeZoom"
+                  @expand="onExpandPanel(graphData.id)"
+                />
+              </div>
             </div>
+          </vue-draggable>
+          <div v-else class="py-5 col col-sm-10 col-md-8 col-lg-7 col-xl-6">
+            <group-empty-state
+              ref="empty-group"
+              :documentation-path="documentationPath"
+              :settings-path="settingsPath"
+              :selected-state="groupSingleEmptyState(groupData.key)"
+              :svg-path="emptyNoDataSmallSvgPath"
+            />
           </div>
-        </vue-draggable>
-        <div v-else class="py-5 col col-sm-10 col-md-8 col-lg-7 col-xl-6">
-          <group-empty-state
-            ref="empty-group"
-            :documentation-path="documentationPath"
-            :settings-path="settingsPath"
-            :selected-state="groupSingleEmptyState(groupData.key)"
-            :svg-path="emptyNoDataSmallSvgPath"
-          />
-        </div>
-      </graph-group>
+        </graph-group>
+      </div>
     </div>
     <empty-state
       v-else

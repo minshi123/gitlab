@@ -134,6 +134,8 @@ export default {
     metric.loading = false;
     metric.result = null;
   },
+
+  // Parameters and other information
   [types.SET_INITIAL_STATE](state, initialState = {}) {
     Object.assign(state, pick(initialState, initialStateKeys));
   },
@@ -162,5 +164,8 @@ export default {
   },
   [types.SET_ENVIRONMENTS_FILTER](state, searchTerm) {
     state.environmentsSearchTerm = searchTerm;
+  },
+  [types.SET_EXPANDED_PANEL](state, panelId) {
+    state.expandedPanel = panelId;
   },
 };
