@@ -277,6 +277,13 @@ module Gitlab
           results[:projects_jira_server_active] += counts[:server].count if counts[:server]
           results[:projects_jira_cloud_active] += counts[:cloud].count if counts[:cloud]
           results[:projects_jira_active] += services.size
+
+          finished_jira_imports = JiraImportState.finished
+          grouped_imports = finished_jira_imports.select(:project_id, 'sum(imported_issues_count) as imported_issues_count').group(:project_id)
+
+          results[:jira_imports] = finished_jira_imports.count
+          results[:projects_with_jira_import] = grouped_imports.length
+          results[:jira_imported_issues] = grouped_imports.inject(0) { |sum, ji| sum + ji.imported_issues_count}
         end
 
         results
