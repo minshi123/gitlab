@@ -10,6 +10,8 @@ import {
   npmSetupCommand,
   nugetInstallationCommand,
   nugetSetupCommand,
+  pypiPipCommand,
+  pypiSetupCommand,
 } from 'ee/packages/details/store/getters';
 import {
   conanPackage,
@@ -17,12 +19,14 @@ import {
   nugetPackage,
   mockPipelineInfo,
   mavenPackage as packageWithoutBuildInfo,
+  pypiPackage,
 } from '../../mock_data';
 import {
   generateMavenCommand,
   generateXmlCodeBlock,
   generateMavenSetupXml,
   registryUrl,
+  pypiSetupCommandStr,
 } from '../mock_data';
 import { generateConanRecipe } from 'ee/packages/details/utils';
 import { NpmManager } from 'ee/packages/details/constants';
@@ -36,6 +40,7 @@ describe('Getters PackageDetails Store', () => {
     mavenPath: registryUrl,
     npmPath: registryUrl,
     nugetPath: registryUrl,
+    pypiPath: registryUrl,
   };
 
   const setupState = (testState = {}) => {
@@ -60,6 +65,8 @@ describe('Getters PackageDetails Store', () => {
 
   const nugetInstallationCommandStr = `nuget install ${nugetPackage.name} -Source "GitLab"`;
   const nugetSetupCommandStr = `nuget source Add -Name "GitLab" -Source "${registryUrl}" -UserName <your_username> -Password <your_token>`;
+
+  const pypiPipCommandStr = `pip install ${pypiPackage.name} --index-url ${registryUrl}`;
 
   describe('packagePipeline', () => {
     it('should return the pipeline info when pipeline exists', () => {
@@ -87,6 +94,7 @@ describe('Getters PackageDetails Store', () => {
       ${packageWithoutBuildInfo} | ${'Maven'}
       ${npmPackage}              | ${'NPM'}
       ${nugetPackage}            | ${'NuGet'}
+      ${pypiPackage}             | ${'PyPi'}
     `(`package type`, ({ packageEntity, expectedResult }) => {
       beforeEach(() => setupState({ packageEntity }));
 
@@ -167,6 +175,20 @@ describe('Getters PackageDetails Store', () => {
       setupState({ packageEntity: nugetPackage });
 
       expect(nugetSetupCommand(state)).toEqual(nugetSetupCommandStr);
+    });
+  });
+
+  describe('pypi string getters', () => {
+    it('gets the correct pypiPipCommand', () => {
+      setupState({ packageEntity: pypiPackage });
+
+      expect(pypiPipCommand(state)).toEqual(pypiPipCommandStr);
+    });
+
+    it('gets the correct pypiSetupCommand', () => {
+      setupState({ pypiSetupPath: 'foo' });
+
+      expect(pypiSetupCommand(state)).toEqual(pypiSetupCommandStr);
     });
   });
 });

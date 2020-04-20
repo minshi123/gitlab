@@ -86,3 +86,12 @@ export const nugetInstallationCommand = ({ packageEntity }) =>
 
 export const nugetSetupCommand = ({ nugetPath }) =>
   `nuget source Add -Name "GitLab" -Source "${nugetPath}" -UserName <your_username> -Password <your_token>`;
+
+export const pypiPipCommand = ({ pypiPath, packageEntity }) =>
+  // eslint-disable-next-line @gitlab/require-i18n-strings
+  `pip install ${packageEntity.name} --index-url ${pypiPath}`;
+
+export const pypiSetupCommand = ({ pypiSetupPath }) => `[gitlab]
+repository = ${pypiSetupPath}
+username = __token__
+password = <your personal access token>`;

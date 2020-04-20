@@ -31,6 +31,7 @@ describe('Packages shared utils', () => {
       ${'maven'}  | ${'Maven'}
       ${'npm'}    | ${'NPM'}
       ${'nuget'}  | ${'NuGet'}
+      ${'pypi'}   | ${'PyPi'}
       ${'foo'}    | ${null}
     `(`package type`, ({ packageType, expectedResult }) => {
       it(`${packageType} should show as ${expectedResult}`, () => {

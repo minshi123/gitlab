@@ -14359,6 +14359,9 @@ msgstr ""
 msgid "PackageRegistry|Conan Command"
 msgstr ""
 
+msgid "PackageRegistry|Copy .pypirc content"
+msgstr ""
+
 msgid "PackageRegistry|Copy Conan Command"
 msgstr ""
 
@@ -14378,6 +14381,9 @@ msgid "PackageRegistry|Copy NuGet Command"
 msgstr ""
 
 msgid "PackageRegistry|Copy NuGet Setup Command"
+msgstr ""
+
+msgid "PackageRegistry|Copy Pip command"
 msgstr ""
 
 msgid "PackageRegistry|Copy and paste this inside your %{codeStart}pom.xml%{codeEnd} %{codeStart}dependencies%{codeEnd} block."
@@ -14413,6 +14419,12 @@ msgstr ""
 msgid "PackageRegistry|For more information on the NuGet registry, %{linkStart}see the documentation%{linkEnd}."
 msgstr ""
 
+msgid "PackageRegistry|For more information on the PyPi registry, %{linkStart}see the documentation%{linkEnd}."
+msgstr ""
+
+msgid "PackageRegistry|If you haven't already done so, you will need to add the below to your %{codeStart}.pypirc%{codeEnd} file."
+msgstr ""
+
 msgid "PackageRegistry|If you haven't already done so, you will need to add the below to your %{codeStart}pom.xml%{codeEnd} file."
 msgstr ""
 
@@ -14441,6 +14453,9 @@ msgid "PackageRegistry|NuGet"
 msgstr ""
 
 msgid "PackageRegistry|NuGet Command"
+msgstr ""
+
+msgid "PackageRegistry|Pip Command"
 msgstr ""
 
 msgid "PackageRegistry|Pipeline %{linkStart}%{linkEnd} triggered %{timestamp} by %{author}"
@@ -14501,6 +14516,9 @@ msgid "PackageType|NPM"
 msgstr ""
 
 msgid "PackageType|NuGet"
+msgstr ""
+
+msgid "PackageType|PyPi"
 msgstr ""
 
 msgid "Packages"
