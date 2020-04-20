@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 class CreateAlertManagementAlerts < ActiveRecord::Migration[6.0]
+  DOWNTIME = false
+
   def change
     create_table :alert_management_alerts do |t|
       t.text :title, null: false, limit: 200
@@ -8,12 +12,12 @@ class CreateAlertManagementAlerts < ActiveRecord::Migration[6.0]
       t.text :host, limit: 100
       t.text :fingerprint, limit: 40
 
-      t.integer :severity, default: 0, null: false
-      t.integer :status, default: 0, null: false
+      t.integer :severity, default: 0, null: false, limit: 2
+      t.integer :status, default: 0, null: false, limit: 2
 
       t.jsonb :payload
       t.integer :events, default: 1, null: false
-      t.datetime_with_timezone :started_at
+      t.datetime_with_timezone :started_at, null: false
       t.datetime_with_timezone :ended_at
 
       t.references :issue, foreign_key: true

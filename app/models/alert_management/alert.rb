@@ -12,10 +12,11 @@ module AlertManagement
     validates :service,         length: { maximum: 100 }
     validates :monitoring_tool, length: { maximum: 100 }
     validates :host,            length: { maximum: 100 }
-    validates :project,   presence: true
-    validates :events,    presence: true
-    validates :severity,  presence: true
-    validates :status,    presence: true
+    validates :project,         presence: true
+    validates :events,          presence: true
+    validates :severity,        presence: true
+    validates :status,          presence: true
+    validates :started_at,      presence: true
 
     enum severity: {
       critical: 0,
