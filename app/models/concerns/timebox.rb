@@ -11,6 +11,10 @@ module Timebox
   include Referable
   include StripAttribute
 
+  def self.timeboxes
+    ObjectSpace.each_object(Class).select { |c| c.included_modules.include?(self) }
+  end
+
   included do
     validates :group, presence: true, unless: :project
     validates :project, presence: true, unless: :group

@@ -225,8 +225,8 @@ class NotificationService
     relabeled_resource_email(merge_request, added_labels, current_user, :relabeled_merge_request_email)
   end
 
-  def removed_milestone_merge_request(merge_request, current_user)
-    removed_milestone_resource_email(merge_request, current_user, :removed_milestone_merge_request_email)
+  def removed_timebox_merge_request(merge_request, timebox, current_user)
+    removed_timebox_resource_email(merge_request, timebox.class.name, current_user, :removed_timebox_merge_request_email)
   end
 
   def changed_milestone_merge_request(merge_request, new_milestone, current_user)
@@ -586,15 +586,15 @@ class NotificationService
     end
   end
 
-  def removed_milestone_resource_email(target, current_user, method)
+  def removed_timebox_resource_email(target, timebox_type, current_user, method)
     recipients = NotificationRecipients::BuildService.build_recipients(
       target,
       current_user,
-      action: 'removed_milestone'
+      action: 'removed_timebox'
     )
 
     recipients.each do |recipient|
-      mailer.send(method, recipient.user.id, target.id, current_user.id).deliver_later
+      mailer.send(method, recipient.user.id, target.id, timebox_type, current_user.id).deliver_later
     end
   end
 

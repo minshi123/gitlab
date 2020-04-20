@@ -50,7 +50,7 @@ module MergeRequests
         merge_request.mark_as_unchecked
       end
 
-      handle_milestone_change(merge_request)
+      handle_timebox_change(merge_request)
 
       added_labels = merge_request.labels - old_labels
       if added_labels.present?
@@ -111,13 +111,19 @@ module MergeRequests
 
     private
 
-    def handle_milestone_change(merge_request)
-      return if skip_milestone_email
+    def handle_timebox_change(merge_request)
+      return if skip_timebox_email
 
-      return unless merge_request.previous_changes.include?('milestone_id')
+      attributes = Timebox.timeboxes.map do |timebox|
+        "#{timebox.name.downcase}_id"
+      end
 
-      if merge_request.milestone.nil?
-        notification_service.async.removed_milestone_merge_request(merge_request, current_user)
+      return unless (attributes & merge_request.previous_changes.keys).present?
+
+      binding.pry
+
+      if merge_request.milestone.nil? # TODO: how?
+        notification_service.async.removed_timebox_merge_request(merge_request, current_user)
       else
         notification_service.async.changed_milestone_merge_request(merge_request, merge_request.milestone, current_user)
       end
