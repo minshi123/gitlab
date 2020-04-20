@@ -30,8 +30,8 @@ CREATE TABLE public.alert_management_alerts (
     description text,
     service text,
     monitoring_tool text,
-    host text,
-    fingerprint text,
+    hosts text,
+    fingerprint bytea,
     severity smallint DEFAULT 0 NOT NULL,
     status smallint DEFAULT 0 NOT NULL,
     started_at timestamp with time zone NOT NULL,
@@ -42,7 +42,12 @@ CREATE TABLE public.alert_management_alerts (
     issue_id bigint,
     project_id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    CONSTRAINT check_2df3e2fdc1 CHECK ((char_length(monitoring_tool) <= 100)),
+    CONSTRAINT check_5e9e57cadb CHECK ((char_length(description) <= 1000)),
+    CONSTRAINT check_bac14dddde CHECK ((char_length(service) <= 100)),
+    CONSTRAINT check_d1d1c2d14c CHECK ((char_length(title) <= 200)),
+    CONSTRAINT check_e0c580e723 CHECK ((char_length(hosts) <= 255))
 );
 
 CREATE SEQUENCE public.alert_management_alerts_id_seq

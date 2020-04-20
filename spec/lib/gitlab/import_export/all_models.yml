@@ -39,6 +39,7 @@ issues:
 - related_vulnerabilities
 - user_mentions
 - system_note_metadata
+- alert_management_alert
 events:
 - author
 - project

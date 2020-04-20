@@ -19,7 +19,7 @@ describe AlertManagement::Alert do
     it { is_expected.to validate_length_of(:description).is_at_most(1000) }
     it { is_expected.to validate_length_of(:service).is_at_most(100) }
     it { is_expected.to validate_length_of(:monitoring_tool).is_at_most(100) }
-    it { is_expected.to validate_length_of(:host).is_at_most(100) }
+    it { is_expected.to validate_length_of(:hosts).is_at_most(255) }
   end
 
   describe 'enums' do

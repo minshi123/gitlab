@@ -3,6 +3,7 @@
 module AlertManagement
   class Alert < ApplicationRecord
     include AtomicInternalId
+    include ShaAttribute
 
     belongs_to :project
     belongs_to :issue, optional: true
@@ -10,11 +11,13 @@ module AlertManagement
 
     self.table_name = 'alert_management_alerts'
 
+    sha_attribute :fingerprint
+
     validates :title,           length: { maximum: 200 }, presence: true
     validates :description,     length: { maximum: 1000 }
     validates :service,         length: { maximum: 100 }
     validates :monitoring_tool, length: { maximum: 100 }
-    validates :host,            length: { maximum: 100 }
+    validates :hosts,           length: { maximum: 255 }
     validates :project,         presence: true
     validates :events,          presence: true
     validates :severity,        presence: true

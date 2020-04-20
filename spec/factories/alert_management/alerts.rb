@@ -24,7 +24,7 @@ FactoryBot.define do
     end
 
     trait :with_host do
-      host { FFaker::Internet.public_ip_v4_address }
+      hosts { FFaker::Internet.public_ip_v4_address }
     end
 
     trait :resolved do
