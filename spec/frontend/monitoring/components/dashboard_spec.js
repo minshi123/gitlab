@@ -216,6 +216,78 @@ describe('Dashboard', () => {
     });
   });
 
+  describe('single panel goes to "full screen" mode', () => {
+    it('sets a panel as expanded in full screen', () => {
+      createShallowWrapper({ hasMetrics: true });
+      setupStoreWithData(wrapper.vm.$store);
+
+      return wrapper.vm.$nextTick().then(() => {
+        const panel = wrapper.findAll(DashboardPanel).at(0);
+
+        jest.spyOn(store, 'dispatch');
+
+        panel.vm.$emit('expand');
+        expect(store.dispatch).toHaveBeenCalledWith(
+          'monitoringDashboard/setExpandedPanel',
+
+          metricsDashboardViewModel.panelGroups[0].panels[0].id,
+        );
+      });
+    });
+
+    describe('when a single panel is on "full screen"', () => {
+      beforeEach(() => {
+        createShallowWrapper({ hasMetrics: true });
+        setupStoreWithData(wrapper.vm.$store);
+        wrapper.vm.$store.commit(
+          `monitoringDashboard/${types.SET_EXPANDED_PANEL}`,
+          metricsDashboardViewModel.panelGroups[0].panels[0].id,
+        );
+      });
+
+      it('displays a single panel and others are hidden', () => {
+        return wrapper.vm.$nextTick().then(() => {
+          const panels = wrapper.findAll(DashboardPanel);
+          const visiblePanels = panels.filter(w => w.isVisible());
+          const expandedPanel = wrapper.find({ ref: 'expandedPanel' });
+
+          // v-show for hiding panels is more performant than v-if
+          // check for panels to simply be hidden.
+          expect(panels.length).toBe(metricsDashboardPanelCount + 1);
+          expect(expandedPanel.exists()).toBe(true);
+          expect(visiblePanels.length).toBe(1);
+        });
+      });
+
+      it('restores dashboard from full screen by clicking `back`', () => {
+        createShallowWrapper(
+          { hasMetrics: true },
+          {
+            stubs: {
+              DashboardPanel: {
+                template: `<div><slot name="header-before"/></div>`,
+              },
+            },
+          },
+        );
+        setupStoreWithData(wrapper.vm.$store);
+
+        return wrapper.vm.$nextTick().then(() => {
+          const backBtn = wrapper.find({ ref: 'backFullDashboardBtn' });
+          expect(backBtn.exists()).toBe(true);
+
+          jest.spyOn(store, 'dispatch');
+          backBtn.vm.$emit('click');
+
+          expect(store.dispatch).toHaveBeenCalledWith(
+            'monitoringDashboard/setNoExpandedPanel',
+            undefined,
+          );
+        });
+      });
+    });
+  });
+
   describe('when one of the metrics is missing', () => {
     beforeEach(() => {
       createShallowWrapper({ hasMetrics: true });

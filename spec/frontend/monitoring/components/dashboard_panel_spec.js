@@ -56,7 +56,7 @@ describe('Dashboard Panel', () => {
   const findTitle = () => wrapper.find({ ref: 'graphTitle' });
   const findContextualMenu = () => wrapper.find({ ref: 'contextualMenu' });
 
-  const createWrapper = props => {
+  const createWrapper = (props, options = {}) => {
     wrapper = shallowMount(DashboardPanel, {
       propsData: {
         graphData,
@@ -64,6 +64,7 @@ describe('Dashboard Panel', () => {
       },
       store,
       mocks,
+      ...options,
     });
   };
 
@@ -111,7 +112,7 @@ describe('Dashboard Panel', () => {
     });
   });
 
-  describe('when graph data is available', () => {
+  describe('When graphData is available', () => {
     beforeEach(() => {
       createWrapper();
     });
@@ -433,6 +434,39 @@ describe('Dashboard Panel', () => {
     it('it renders a time series chart with no errors', () => {
       expect(wrapper.find(MonitorTimeSeriesChart).isVueInstance()).toBe(true);
       expect(wrapper.find(MonitorTimeSeriesChart).exists()).toBe(true);
+    });
+  });
+
+  describe('Expand to full screen', () => {
+    const findExpandBtn = () => wrapper.find({ ref: 'expandBtn' });
+
+    describe('when it cannot be expanded to full screen', () => {
+      it('does not show the `expand` option', () => {
+        createWrapper();
+        expect(findExpandBtn().exists()).toBe(false);
+      });
+    });
+
+    describe('when it can be expanded to full screen', () => {
+      beforeEach(() => {
+        createWrapper(
+          {},
+          {
+            listeners: {
+              expand: jest.fn(),
+            },
+          },
+        );
+      });
+
+      it('shows the `expand` option', () => {
+        expect(findExpandBtn().exists()).toBe(true);
+      });
+
+      it('emits the `expand` event', () => {
+        findExpandBtn().vm.$emit('click');
+        expect(wrapper.emitted('expand')).toHaveLength(1);
+      });
     });
   });
 

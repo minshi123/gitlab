@@ -65,11 +65,6 @@ export default {
       type: Object,
       required: true,
     },
-    index: {
-      type: String,
-      required: false,
-      default: '',
-    },
     groupId: {
       type: String,
       required: false,
@@ -96,6 +91,7 @@ export default {
       showTitleTooltip: false,
       zoomedTimeRange: null,
       allAlerts: {},
+      expandBtnAvailable: Boolean(this.$listeners.expand),
     };
   },
   computed: {
@@ -231,6 +227,10 @@ export default {
         this.$delete(this.allAlerts, alertPath);
       }
     },
+
+    handleExpand() {
+      this.$emit('expand');
+    },
   },
   panelTypes,
 };
@@ -238,6 +238,7 @@ export default {
 <template>
   <div v-gl-resize-observer="onResize" class="prometheus-graph">
     <div class="d-flex align-items-center mr-3">
+      <slot name="header-before"></slot>
       <h5
         ref="graphTitle"
         class="prometheus-graph-title gl-font-size-large font-weight-bold text-truncate append-right-8"
@@ -250,7 +251,7 @@ export default {
       <alert-widget
         v-if="isContextualMenuShown && alertWidgetAvailable"
         class="mx-1"
-        :modal-id="`alert-modal-${index}`"
+        :modal-id="`alert-modal-${graphData.id}`"
         :alerts-endpoint="alertsEndpoint"
         :relevant-queries="graphData.metrics"
         :alerts-to-manage="getGraphAlerts(graphData.metrics)"
@@ -277,6 +278,9 @@ export default {
             <template slot="button-content">
               <gl-icon name="ellipsis_v" class="text-secondary" />
             </template>
+            <gl-dropdown-item v-if="expandBtnAvailable" ref="expandBtn" @click="handleExpand">
+              {{ s__('Metrics|View full screen') }}
+            </gl-dropdown-item>
             <gl-dropdown-item
               v-if="editCustomMetricLink"
               ref="editMetricLink"
@@ -312,7 +316,7 @@ export default {
             </gl-dropdown-item>
             <gl-dropdown-item
               v-if="alertWidgetAvailable"
-              v-gl-modal="`alert-modal-${index}`"
+              v-gl-modal="`alert-modal-${graphData.id}`"
               data-qa-selector="alert_widget_menu_item"
             >
               {{ __('Alerts') }}
@@ -325,22 +329,32 @@ export default {
     <monitor-single-stat-chart
       v-if="isPanelType($options.panelTypes.SINGLE_STAT) && graphDataHasResult"
       :graph-data="graphData"
+      v-bind="$attrs"
+      v-on="$listeners"
     />
     <monitor-heatmap-chart
       v-else-if="isPanelType($options.panelTypes.HEATMAP) && graphDataHasResult"
       :graph-data="graphData"
+      v-bind="$attrs"
+      v-on="$listeners"
     />
     <monitor-bar-chart
       v-else-if="isPanelType($options.panelTypes.BAR) && graphDataHasResult"
       :graph-data="graphData"
+      v-bind="$attrs"
+      v-on="$listeners"
     />
     <monitor-column-chart
       v-else-if="isPanelType($options.panelTypes.COLUMN) && graphDataHasResult"
       :graph-data="graphData"
+      v-bind="$attrs"
+      v-on="$listeners"
     />
     <monitor-stacked-column-chart
       v-else-if="isPanelType($options.panelTypes.STACKED_COLUMN) && graphDataHasResult"
       :graph-data="graphData"
+      v-bind="$attrs"
+      v-on="$listeners"
     />
     <component
       :is="timeChartComponent"
@@ -352,6 +366,8 @@ export default {
       :project-path="projectPath"
       :thresholds="getGraphAlertValues(graphData.metrics)"
       :group-id="groupId"
+      v-bind="$attrs"
+      v-on="$listeners"
       @datazoom="onDatazoom"
     />
     <monitor-empty-chart v-else v-bind="$attrs" v-on="$listeners" />
