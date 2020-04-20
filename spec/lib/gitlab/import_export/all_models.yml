@@ -481,6 +481,7 @@ project:
 - daily_report_results
 - jira_imports
 - compliance_framework_setting
+- alert_management_alerts
 award_emoji:
 - awardable
 - user
