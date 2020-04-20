@@ -37,6 +37,7 @@ CREATE TABLE public.alert_management_alerts (
     started_at timestamp with time zone NOT NULL,
     ended_at timestamp with time zone,
     events integer DEFAULT 1 NOT NULL,
+    iid integer NOT NULL,
     payload jsonb,
     issue_id bigint,
     project_id bigint NOT NULL,
@@ -8726,6 +8727,8 @@ CREATE INDEX index_alert_management_alerts_on_fingerprint ON public.alert_manage
 CREATE INDEX index_alert_management_alerts_on_issue_id ON public.alert_management_alerts USING btree (issue_id);
 
 CREATE INDEX index_alert_management_alerts_on_project_id ON public.alert_management_alerts USING btree (project_id);
+
+CREATE UNIQUE INDEX index_alert_management_alerts_on_project_id_and_iid ON public.alert_management_alerts USING btree (project_id, iid) WHERE (project_id IS NOT NULL);
 
 CREATE INDEX index_alert_management_alerts_on_severity ON public.alert_management_alerts USING btree (severity);
 

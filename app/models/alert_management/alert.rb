@@ -2,8 +2,11 @@
 
 module AlertManagement
   class Alert < ApplicationRecord
+    include AtomicInternalId
+
     belongs_to :project
     belongs_to :issue, optional: true
+    has_internal_id :iid, scope: :project, init: ->(s) { s.project.alert_management_alerts.maximum(:iid) }
 
     self.table_name = 'alert_management_alerts'
 
