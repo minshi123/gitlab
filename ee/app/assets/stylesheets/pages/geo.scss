@@ -12,6 +12,17 @@
   .geo-node-actions-container {
     flex-direction: column;
   }
+
+  .geo-replicable-filter-bar {
+    flex-direction: column;
+
+    > .gl-dropdown,
+    > .gl-search-box-by-type,
+    > .actions {
+      margin: 0.25rem 0;
+      width: 100%;
+    }
+  }
 }
 
 .project-card-errors {
@@ -25,5 +36,16 @@
         display: block;
       }
     }
+  }
+}
+
+.geo-replicable-filter-bar {
+  > .gl-dropdown,
+  > .gl-search-box-by-type {
+    flex: 1;
+  }
+
+  > .actions {
+    flex: 3;
   }
 }
