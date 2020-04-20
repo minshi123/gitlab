@@ -1835,8 +1835,8 @@ class Project < ApplicationRecord
   end
 
   # rubocop:disable Gitlab/RailsLogger
-  def add_export_job(current_user:, after_export_strategy: nil, params: {})
-    job_id = ProjectExportWorker.perform_async(current_user.id, self.id, after_export_strategy, params)
+  def add_export_job(current_user:, after_export_strategy: nil, params: {}, options: {})
+    job_id = ProjectExportWorker.perform_async(current_user.id, self.id, after_export_strategy, params, options)
 
     if job_id
       Rails.logger.info "Export job started for project ID #{self.id} with job ID #{job_id}"

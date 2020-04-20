@@ -2,6 +2,8 @@
 
 module API
   class ProjectExport < Grape::API
+    helpers Helpers::MeasurementHelpers
+
     helpers do
       def throttled?(action)
         rate_limiter.throttled?(action, scope: [current_user, action, user_project])
@@ -72,7 +74,8 @@ module API
         else
           user_project.add_export_job(current_user: current_user,
                                       after_export_strategy: export_strategy,
-                                      params: project_export_params)
+                                      params: project_export_params,
+                                      options: measurement_options(user_project.namespace))
         end
 
         accepted!
