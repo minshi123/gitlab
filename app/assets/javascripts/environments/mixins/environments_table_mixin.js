@@ -1,10 +1,32 @@
 export default {
-  methods: {
-    shouldShowCanaryCallout() {
-      return false;
+  props: {
+    canaryDeploymentFeatureId: {
+      type: String,
+      required: true,
     },
-    shouldRenderDeployBoard() {
-      return false;
+    showCanaryDeploymentCallout: {
+      type: Boolean,
+      required: true,
+    },
+    userCalloutsPath: {
+      type: String,
+      required: true,
+    },
+    lockPromotionSvgPath: {
+      type: String,
+      required: true,
+    },
+    helpCanaryDeploymentsPath: {
+      type: String,
+      required: true,
+    },
+  },
+  methods: {
+    shouldShowCanaryCallout(env) {
+      return env && env.showCanaryCallout && this.showCanaryDeploymentCallout;
+    },
+    shouldRenderDeployBoard(model) {
+      return model && model.hasDeployBoard && model.isDeployBoardVisible;
     },
   },
 };

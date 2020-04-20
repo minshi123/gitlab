@@ -4,7 +4,7 @@
  */
 import { GlLoadingIcon } from '@gitlab/ui';
 import { flow, reverse, sortBy } from 'lodash/fp';
-import environmentTableMixin from 'ee_else_ce/environments/mixins/environments_table_mixin';
+import environmentTableMixin from '../mixins/environments_table_mixin';
 import { s__ } from '~/locale';
 import EnvironmentItem from './environment_item.vue';
 
