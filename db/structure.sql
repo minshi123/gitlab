@@ -4552,6 +4552,11 @@ CREATE SEQUENCE public.packages_build_infos_id_seq
 
 ALTER SEQUENCE public.packages_build_infos_id_seq OWNED BY public.packages_build_infos.id;
 
+CREATE TABLE public.packages_composer_metadata (
+    package_id bigint NOT NULL,
+    target_sha bytea NOT NULL
+);
+
 CREATE TABLE public.packages_conan_file_metadata (
     id bigint NOT NULL,
     package_file_id bigint NOT NULL,
@@ -8496,6 +8501,9 @@ ALTER TABLE ONLY public.operations_user_lists
 ALTER TABLE ONLY public.packages_build_infos
     ADD CONSTRAINT packages_build_infos_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY public.packages_composer_metadata
+    ADD CONSTRAINT packages_composer_metadata_pkey PRIMARY KEY (package_id);
+
 ALTER TABLE ONLY public.packages_conan_file_metadata
     ADD CONSTRAINT packages_conan_file_metadata_pkey PRIMARY KEY (id);
 
@@ -12262,6 +12270,9 @@ ALTER TABLE ONLY public.ci_build_trace_sections
 ALTER TABLE ONLY public.clusters
     ADD CONSTRAINT fk_rails_ac3a663d79 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 
+ALTER TABLE ONLY public.packages_composer_metadata
+    ADD CONSTRAINT fk_rails_ad48c2e5bb FOREIGN KEY (package_id) REFERENCES public.packages_packages(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY public.analytics_cycle_analytics_group_stages
     ADD CONSTRAINT fk_rails_ae5da3409b FOREIGN KEY (group_id) REFERENCES public.namespaces(id) ON DELETE CASCADE;
 
@@ -13756,6 +13767,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200424135319
 20200427064130
 20200429015603
+20200429023324
 20200429181335
 20200429181955
 20200429182245

@@ -12,6 +12,7 @@ class Packages::Package < ApplicationRecord
   has_one :conan_metadatum, inverse_of: :package, class_name: 'Packages::Conan::Metadatum'
   has_one :pypi_metadatum, inverse_of: :package, class_name: 'Packages::Pypi::Metadatum'
   has_one :maven_metadatum, inverse_of: :package, class_name: 'Packages::Maven::Metadatum'
+  has_one :composer_metadatum, inverse_of: :package, class_name: 'Packages::Composer::Metadatum'
   has_one :build_info, inverse_of: :package
 
   accepts_nested_attributes_for :conan_metadatum
@@ -29,6 +30,7 @@ class Packages::Package < ApplicationRecord
 
   validate :valid_conan_package_recipe, if: :conan?
   validate :valid_npm_package_name, if: :npm?
+  validate :valid_composer_global_name, if: :composer?
   validate :package_already_taken, if: :npm?
   validates :version, format: { with: Gitlab::Regex.semver_regex }, if: -> { npm? || nuget? }
   validates :name, format: { with: Gitlab::Regex.conan_recipe_component_regex }, if: :conan?
@@ -151,6 +153,12 @@ class Packages::Package < ApplicationRecord
                            .exists?
 
     errors.add(:base, _('Package recipe already exists')) if recipe_exists
+  end
+
+  def valid_composer_global_name
+    if Packages::Package.unscoped.where(name: name).where.not(project_id: project_id).exists?
+      errors.add(:name, 'is already taken by another project')
+    end
   end
 
   def valid_npm_package_name
