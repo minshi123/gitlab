@@ -1,6 +1,6 @@
 <script>
 import { GlDeprecatedButton } from '@gitlab/ui';
-import envrionmentsAppMixin from 'ee_else_ce/environments/mixins/environments_app_mixin';
+import envrionmentsAppMixin from '../mixins/environments_app_mixin';
 import Flash from '~/flash';
 import { s__ } from '~/locale';
 import emptyState from './empty_state.vue';
@@ -54,13 +54,21 @@ export default {
 
   created() {
     eventHub.$on('toggleFolder', this.toggleFolder);
+    eventHub.$on('toggleDeployBoard', this.toggleDeployBoard);
   },
 
   beforeDestroy() {
     eventHub.$off('toggleFolder');
+    eventHub.$off('toggleDeployBoard');
   },
 
   methods: {
+    toggleDeployBoard(model) {
+      if (model) {
+        this.store.toggleDeployBoard(model.id);
+      }
+    },
+
     toggleFolder(folder) {
       this.store.toggleFolder(folder);
 

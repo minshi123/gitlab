@@ -26,7 +26,4 @@ export default {
       default: '',
     },
   },
-  metods: {
-    toggleDeployBoard() {},
-  },
 };
