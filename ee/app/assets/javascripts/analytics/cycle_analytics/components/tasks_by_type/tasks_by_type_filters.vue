@@ -33,6 +33,10 @@ export default {
       type: String,
       required: true,
     },
+    hasData: {
+      type: Boolean,
+      required: true,
+    },
   },
   computed: {
     subjectFilterOptions() {
@@ -42,6 +46,7 @@ export default {
       }));
     },
     selectedFiltersText() {
+      if (!this.hasData) return '';
       const { subjectFilter, selectedLabelIds } = this;
       const subjectFilterText = TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS[subjectFilter]
         ? TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS[subjectFilter]
