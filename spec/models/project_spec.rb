@@ -5972,6 +5972,127 @@ describe Project do
     end
   end
 
+  describe '#validate_jira_import_settings!' do
+    shared_examples 'raise jira import error' do |message|
+      it 'returns error' do
+        expect { subject } .to raise_error(Projects::ImportService::Error, message)
+      end
+    end
+
+    let_it_be(:project, reload: true) { create(:project) }
+
+    before do
+      WebMock.stub_request(:get, 'https://jira.example.com/rest/api/2/serverInfo')
+        .to_return(body: { url: 'http://url' }.to_json )
+    end
+
+    context 'without user param' do
+      subject { project.validate_jira_import_settings! }
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(jira_issue_import: false)
+        end
+
+        it_behaves_like 'raise jira import error', 'Jira import feature is disabled.'
+      end
+
+      context 'when feature flag is enabled' do
+        before do
+          stub_feature_flags(jira_issue_import: true)
+        end
+
+        context 'when Jira service was not setup' do
+          it_behaves_like 'raise jira import error', 'Jira integration not configured.'
+        end
+
+        context 'when Jira service exists' do
+          let!(:jira_service) { create(:jira_service, project: project, active: true) }
+
+          context 'when Jira connections is not valid' do
+            before do
+              WebMock.stub_request(:get, 'https://jira.example.com/rest/api/2/serverInfo')
+                .to_raise(JIRA::HTTPError.new(double(message: 'Some failure.')))
+            end
+
+            it_behaves_like 'raise jira import error', 'Unable to connect to the Jira. Please check your Jira integration configuration.'
+          end
+
+          context 'when Jira connections is valid' do
+            it 'does not return any error' do
+              expect { subject }.not_to raise_error
+            end
+          end
+        end
+      end
+    end
+
+    context 'with user param provided' do
+      let_it_be(:user)    { create(:user) }
+
+      subject { project.validate_jira_import_settings!(user: user) }
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(jira_issue_import: false)
+        end
+
+        it_behaves_like 'raise jira import error', 'Jira import feature is disabled.'
+      end
+
+      context 'when feature flag is enabled' do
+        before do
+          stub_feature_flags(jira_issue_import: true)
+        end
+
+        context 'when user does not have permissions to run the import' do
+          before do
+            create(:jira_service, project: project, active: true)
+
+            project.add_developer(user)
+          end
+
+          it_behaves_like 'raise jira import error', 'You do not have permissions to run the import.'
+        end
+
+        context 'when user has permission to run import' do
+          before do
+            project.add_maintainer(user)
+          end
+
+          context 'when Jira service was not setup' do
+            it_behaves_like 'raise jira import error', 'Jira integration not configured.'
+          end
+
+          context 'when Jira service exists' do
+            let!(:jira_service) { create(:jira_service, project: project, active: true) }
+
+            context 'when Jira connections is not valid' do
+              before do
+                WebMock.stub_request(:get, 'https://jira.example.com/rest/api/2/serverInfo')
+                  .to_raise(JIRA::HTTPError.new(double(message: 'Some failure.')))
+              end
+
+              it_behaves_like 'raise jira import error', 'Unable to connect to the Jira. Please check your Jira integration configuration.'
+            end
+
+            context 'when issues feature are disabled' do
+              let_it_be(:project, reload: true) { create(:project, :issues_disabled) }
+
+              it_behaves_like 'raise jira import error', 'Cannot import because issues are not available in this project.'
+            end
+
+            context 'when everythin is ok' do
+              it 'does not return any error' do
+                expect { subject }.not_to raise_error
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
   def finish_job(export_job)
     export_job.start
     export_job.finish

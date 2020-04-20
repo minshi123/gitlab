@@ -864,6 +864,7 @@ class Project < ApplicationRecord
   def validate_jira_import_settings!(user: nil)
     raise Projects::ImportService::Error, _('Jira import feature is disabled.') unless jira_issues_import_feature_flag_enabled?
     raise Projects::ImportService::Error, _('Jira integration not configured.') unless jira_service&.active?
+    raise Projects::ImportService::Error, _('Unable to connect to the Jira. Please check your Jira integration configuration.') unless jira_service.test(nil)[:success]
 
     return unless user
 
