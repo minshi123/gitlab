@@ -20,6 +20,20 @@ describe ScheduleBackfillPushRulesIdInProjects do
     expect(setting.push_rule_id).to eq(sample_rule.id)
   end
 
+  it 'adds global rule association to application settings when there is more than one recordwithout failing' do
+    application_settings = table(:application_settings)
+    application_settings.create!
+    setting = application_settings.create!
+    sample_rule = push_rules.create!(is_sample: true)
+
+    Sidekiq::Testing.fake! do
+      disable_migrations_output { migrate! }
+    end
+
+    setting.reload
+    expect(setting.push_rule_id).to eq(sample_rule.id)
+  end
+
   it 'schedules worker to migrate project push rules' do
     rule_1 = push_rules.create!
     rule_2 = push_rules.create!
