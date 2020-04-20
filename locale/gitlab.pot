@@ -5546,6 +5546,9 @@ msgstr ""
 msgid "ContainerRegistry|Docker tag expiration policy is %{toggleStatus}"
 msgstr ""
 
+msgid "ContainerRegistry|Docker tags with names matching this regex pattern will be preserved:"
+msgstr ""
+
 msgid "ContainerRegistry|Docker tags with names matching this regex pattern will expire:"
 msgstr ""
 
@@ -5678,6 +5681,9 @@ msgid "ContainerRegistry|This image repository is scheduled for deletion"
 msgstr ""
 
 msgid "ContainerRegistry|We are having trouble connecting to Docker, which could be due to an issue with your project name or path. %{docLinkStart}More Information%{docLinkEnd}"
+msgstr ""
+
+msgid "ContainerRegistry|Wildcards such as %{codeStart}.*-stable%{codeEnd} or %{codeStart}production/.*%{codeEnd} are supported"
 msgstr ""
 
 msgid "ContainerRegistry|Wildcards such as %{codeStart}.*-stable%{codeEnd} or %{codeStart}production/.*%{codeEnd} are supported.  To select all tags, use %{codeStart}.*%{codeEnd}"

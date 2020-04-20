@@ -40,7 +40,9 @@ export default {
       default: 'right',
     },
   },
-  nameRegexPlaceholder: '.*',
+  textAreaInvalidFeedback: s__(
+    'ContainerRegistry|The value of this input should be less than 255 characters',
+  ),
   selectList: [
     {
       name: 'expiration-policy-interval',
@@ -61,21 +63,56 @@ export default {
       optionKey: 'keepN',
     },
   ],
+  textAreaList: [
+    {
+      name: 'expiration-policy-name-matching',
+      label: s__(
+        'ContainerRegistry|Docker tags with names matching this regex pattern will expire:',
+      ),
+      model: 'name_regex',
+      placeholder: '.*',
+      stateVariable: 'nameRegexState',
+      description: s__(
+        'ContainerRegistry|Wildcards such as %{codeStart}.*-stable%{codeEnd} or %{codeStart}production/.*%{codeEnd} are supported.  To select all tags, use %{codeStart}.*%{codeEnd}',
+      ),
+    },
+    {
+      name: 'expiration-policy-keep-name',
+      label: s__(
+        'ContainerRegistry|Docker tags with names matching this regex pattern will be preserved:',
+      ),
+      model: 'name_regex_keep',
+      placeholder: null,
+      stateVariable: 'nameKeepRegexState',
+      description: s__(
+        'ContainerRegistry|Wildcards such as %{codeStart}.*-stable%{codeEnd} or %{codeStart}production/.*%{codeEnd} are supported',
+      ),
+    },
+  ],
   data() {
     return {
       uniqueId: uniqueId(),
     };
   },
   computed: {
-    ...mapComputedToEvent(['enabled', 'cadence', 'older_than', 'keep_n', 'name_regex'], 'value'),
+    ...mapComputedToEvent(
+      ['enabled', 'cadence', 'older_than', 'keep_n', 'name_regex', 'name_regex_keep'],
+      'value',
+    ),
     policyEnabledText() {
       return this.enabled ? __('enabled') : __('disabled');
     },
-    nameRegexState() {
-      return this.name_regex ? this.name_regex.length <= NAME_REGEX_LENGTH : null;
+    textAreaState() {
+      return {
+        nameRegexState: this.isRegexValid(this.name_regex),
+        nameKeepRegexState: this.isRegexValid(this.name_regex_keep),
+      };
     },
     fieldsValidity() {
-      return this.nameRegexState !== false;
+      return (
+        this.textAreaState.nameRegexState !== false &&
+        this.textAreaState.nameKeepRegexState !== false
+      );
     },
     isFormElementDisabled() {
       return !this.enabled || this.isLoading;
@@ -94,6 +131,9 @@ export default {
     },
   },
   methods: {
+    isRegexValid(value) {
+      return value ? value.length <= NAME_REGEX_LENGTH : null;
+    },
     idGenerator(id) {
       return `${id}_${this.uniqueId}`;
     },
@@ -157,35 +197,28 @@ export default {
     </gl-form-group>
 
     <gl-form-group
-      :id="idGenerator('expiration-policy-name-matching-group')"
+      v-for="textarea in $options.textAreaList"
+      :id="idGenerator(`${textarea.name}-group`)"
+      :key="textarea.name"
       :label-cols="labelCols"
       :label-align="labelAlign"
-      :label-for="idGenerator('expiration-policy-name-matching')"
-      :label="
-        s__('ContainerRegistry|Docker tags with names matching this regex pattern will expire:')
-      "
-      :state="nameRegexState"
-      :invalid-feedback="
-        s__('ContainerRegistry|The value of this input should be less than 255 characters')
-      "
+      :label-for="idGenerator(textarea.name)"
+      :label="textarea.label"
+      :state="textAreaState[textarea.stateVariable]"
+      :invalid-feedback="$options.textAreaInvalidFeedback"
     >
       <gl-form-textarea
-        :id="idGenerator('expiration-policy-name-matching')"
-        v-model="name_regex"
-        :placeholder="$options.nameRegexPlaceholder"
-        :state="nameRegexState"
+        :id="idGenerator(textarea.name)"
+        :value="value[textarea.model]"
+        :placeholder="textarea.placeholder"
+        :state="textAreaState[textarea.stateVariable]"
         :disabled="isFormElementDisabled"
         trim
+        @input="updateModel($event, textarea.model)"
       />
       <template #description>
         <span ref="regex-description">
-          <gl-sprintf
-            :message="
-              s__(
-                'ContainerRegistry|Wildcards such as %{codeStart}.*-stable%{codeEnd} or %{codeStart}production/.*%{codeEnd} are supported.  To select all tags, use %{codeStart}.*%{codeEnd}',
-              )
-            "
-          >
+          <gl-sprintf :message="textarea.description">
             <template #code="{content}">
               <code>{{ content }}</code>
             </template>
