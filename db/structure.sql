@@ -398,9 +398,9 @@ CREATE TABLE public.application_settings (
     npm_package_requests_forwarding boolean DEFAULT true NOT NULL,
     namespace_storage_size_limit bigint DEFAULT 0 NOT NULL,
     seat_link_enabled boolean DEFAULT true NOT NULL,
-    container_expiration_policies_enable_historic_entries boolean DEFAULT false NOT NULL,
     issues_create_limit integer DEFAULT 300 NOT NULL,
     push_rule_id bigint,
+    container_expiration_policies_enable_historic_entries boolean DEFAULT false NOT NULL,
     group_owners_can_manage_default_branch_protection boolean DEFAULT true NOT NULL
 );
 
@@ -2325,8 +2325,8 @@ CREATE TABLE public.epics (
     state_id smallint DEFAULT 1 NOT NULL,
     start_date_sourcing_epic_id integer,
     due_date_sourcing_epic_id integer,
-    confidential boolean DEFAULT false NOT NULL,
-    external_key character varying(255)
+    external_key character varying(255),
+    confidential boolean DEFAULT false NOT NULL
 );
 
 CREATE SEQUENCE public.epics_id_seq
@@ -13243,5 +13243,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200415192656
 20200416120128
 20200416120354
+20200420162730
 \.
 
