@@ -25,6 +25,12 @@ module API
       render_api_error!(e.message, 400)
     end
 
+    helpers do
+      def unauthorized_user_project
+        @unauthorized_user_project ||= find_project(params[:id]) || not_found!
+      end
+    end
+
     before do
       require_packages_enabled!
     end
@@ -74,11 +80,11 @@ module API
 
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       before do
-        unless ::Feature.enabled?(:composer_packages, authorized_user_project)
+        unless ::Feature.enabled?(:composer_packages, unauthorized_user_project)
           not_found!
         end
 
-        authorize_packages_feature!(authorized_user_project)
+        authorize_packages_feature!(unauthorized_user_project)
       end
 
       desc 'Composer packages endpoint for registering packages'
@@ -91,6 +97,14 @@ module API
       namespace ':id/packages/composer' do
         post do
           authorize_create_package!(authorized_user_project)
+
+          if params[:branch].present?
+            find_branch!(params[:branch])
+          elsif params[:tag].present?
+            find_tag!(params[:tag])
+          else
+            bad_request!
+          end
 
           created!
         end
