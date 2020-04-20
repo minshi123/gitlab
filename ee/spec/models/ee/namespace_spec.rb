@@ -1561,4 +1561,22 @@ describe Namespace do
       end
     end
   end
+
+  describe '#can_see_ci_minutes_warnings_for_user?' do
+    let_it_be(:user) { create(:user) }
+
+    subject { namespace.can_see_ci_minutes_warnings_for_user?(user) }
+
+    context 'when user has correct namespace permissions' do
+      before do
+        create(:ci_pipeline, user: user, project: create(:project, namespace: namespace))
+      end
+
+      it { is_expected.to be(true) }
+    end
+
+    context 'when user does not have correct namespace permissions' do
+      it { is_expected.to be(false) }
+    end
+  end
 end

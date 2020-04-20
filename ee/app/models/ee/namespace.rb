@@ -385,6 +385,10 @@ module EE
       ::Gitlab::CurrentSettings.elasticsearch_indexes_namespace?(self)
     end
 
+    def can_see_ci_minutes_warnings_for_user?(user)
+      all_pipelines.for_user(user).any?
+    end
+
     private
 
     def validate_shared_runner_minutes_support

@@ -3,7 +3,7 @@
 module Ci
   module Minutes
     class Threshold
-      include Gitlab::Allowable
+      include ::Gitlab::Utils::StrongMemoize
 
       def initialize(user, context_level)
         @context_level = context_level
@@ -23,11 +23,10 @@ module Ci
       attr_reader :user, :context_level
 
       def show_limit?
-        context_level.shared_runners_minutes_limit_enabled? && can_see_status?
-      end
-
-      def can_see_status?
-        context_level.is_a?(Namespace) || can?(user, :create_pipeline, context_level)
+        strong_memoize(:show_limit) do
+          context_level.shared_runners_minutes_limit_enabled? &&
+            context_level.can_see_ci_minutes_warnings_for_user?(user)
+        end
       end
     end
   end

@@ -106,7 +106,7 @@ describe Ci::Minutes::Threshold do
         threshold.warning_reached?
       end
 
-      context 'when project member' do
+      context 'when eligible to see warnings' do
         it_behaves_like 'queries for warning being reached' do
           before do
             group.add_developer(user)
@@ -114,7 +114,7 @@ describe Ci::Minutes::Threshold do
         end
       end
 
-      context 'when not a project member' do
+      context 'when not eligible to see warnings' do
         it_behaves_like 'cannot see if warning reached'
       end
     end
@@ -125,7 +125,7 @@ describe Ci::Minutes::Threshold do
         threshold.alert_reached?
       end
 
-      context 'when project member' do
+      context 'when eligible to see alerts' do
         it_behaves_like 'queries for alert being reached' do
           before do
             group.add_developer(user)
@@ -133,7 +133,7 @@ describe Ci::Minutes::Threshold do
         end
       end
 
-      context 'when not a project member' do
+      context 'when not eligible to see alerts' do
         it_behaves_like 'cannot see if alert reached'
       end
     end
@@ -146,14 +146,22 @@ describe Ci::Minutes::Threshold do
         threshold.warning_reached?
       end
 
-      context 'with a project that has runners enabled inside namespace' do
-        it_behaves_like 'queries for warning being reached'
+      context 'when eligible to see warnings' do
+        let!(:user_pipeline) { create(:ci_pipeline, user: user, project: project) }
+
+        context 'with a project that has runners enabled inside namespace' do
+          it_behaves_like 'queries for warning being reached'
+        end
+
+        context 'with no projects that have runners enabled inside namespace' do
+          it_behaves_like 'cannot see if warning reached' do
+            let(:shared_runners_enabled) { false }
+          end
+        end
       end
 
-      context 'with no projects that have runners enabled inside namespace' do
-        it_behaves_like 'cannot see if warning reached' do
-          let(:shared_runners_enabled) { false }
-        end
+      context 'when not eligible to see warnings' do
+        it_behaves_like 'cannot see if warning reached'
       end
     end
 
@@ -163,14 +171,33 @@ describe Ci::Minutes::Threshold do
         threshold.alert_reached?
       end
 
-      context 'with a project that has runners enabled inside namespace' do
-        it_behaves_like 'queries for alert being reached'
+      context 'when eligible to see warnings' do
+        let!(:user_pipeline) { create(:ci_pipeline, user: user, project: project) }
+
+        context 'with a project that has runners enabled inside namespace' do
+          it_behaves_like 'queries for alert being reached'
+        end
+
+        context 'with no projects that have runners enabled inside namespace' do
+          it_behaves_like 'cannot see if alert reached' do
+            let(:shared_runners_enabled) { false }
+          end
+        end
       end
 
-      context 'with no projects that have runners enabled inside namespace' do
-        it_behaves_like 'cannot see if alert reached' do
-          let(:shared_runners_enabled) { false }
-        end
+      context 'when not eligible to see warnings' do
+        it_behaves_like 'cannot see if warning reached'
+      end
+    end
+
+    context 'when we have already checked to see if we can show the limit' do
+      subject { described_class.new(user, injected_group) }
+
+      it 'does not do all the verification work again' do
+        expect(injected_group).to receive(:shared_runners_minutes_limit_enabled?).once
+
+        subject.warning_reached?
+        subject.alert_reached?
       end
     end
   end

@@ -750,6 +750,10 @@ module EE
       feature_available?(:jira_dev_panel_integration) && JiraConnectSubscription.for_project(self).exists?
     end
 
+    def can_see_ci_minutes_warnings_for_user?(user)
+      user.can?(:create_pipeline, self)
+    end
+
     private
 
     def group_hooks

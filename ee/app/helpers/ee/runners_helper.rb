@@ -36,8 +36,7 @@ module EE
         next unless project&.persisted? || namespace&.persisted?
 
         context = ::Ci::Minutes::Context.new(project, namespace)
-        threshold = ::Ci::Minutes::Threshold.new(current_user, context.level)
-        threshold.warning_reached? && context.namespace.all_pipelines.for_user(current_user).any?
+        ::Ci::Minutes::Threshold.new(current_user, context.level).warning_reached?
       end
     end
 
