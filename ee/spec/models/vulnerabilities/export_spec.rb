@@ -84,6 +84,42 @@ describe Vulnerabilities::Export do
     end
   end
 
+  describe '#exportable=' do
+    let(:vulnerability_export) { build(:vulnerability_export) }
+
+    subject(:set_exportable) { vulnerability_export.exportable = exportable }
+
+    context 'when the exportable is a Project' do
+      let(:exportable) { build(:project) }
+
+      it 'changes the exportable of the export to given project' do
+        expect {
+          set_exportable
+        }.to change { vulnerability_export.exportable }.to(exportable)
+      end
+    end
+
+    context 'when the exportable is a User' do
+      let(:exportable) { build(:user) }
+
+      it 'changes the exportable of the export to given user' do
+        expect {
+          set_exportable
+        }.to change { vulnerability_export.exportable }.to(exportable)
+      end
+    end
+
+    context 'when the exportable is a String' do
+      let(:exportable) { 'Foo' }
+
+      it 'raises an exception' do
+        expect {
+          set_exportable
+        }.to raise_error(RuntimeError)
+      end
+    end
+  end
+
   describe '#completed?' do
     context 'when status is created' do
       subject { build(:vulnerability_export, :created) }

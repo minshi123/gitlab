@@ -50,6 +50,18 @@ module Vulnerabilities
       project || author
     end
 
+    def exportable=(value)
+      case value
+      when Project
+        self.project = value
+      when User
+        self.project = nil
+        self.author = value
+      else
+        raise "Can not assign #{value.class} as exportable"
+      end
+    end
+
     def completed?
       finished? || failed?
     end
