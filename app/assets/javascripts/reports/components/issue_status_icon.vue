@@ -8,10 +8,10 @@ export default {
     Icon,
   },
   props: {
-    // failed || success
     status: {
       type: String,
       required: true,
+      validator: status => [STATUS_FAILED, STATUS_NEUTRAL, STATUS_SUCCESS].includes(status),
     },
     statusIconSize: {
       type: Number,
