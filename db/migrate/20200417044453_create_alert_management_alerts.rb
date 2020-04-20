@@ -15,10 +15,10 @@ class CreateAlertManagementAlerts < ActiveRecord::Migration[6.0]
       t.integer :severity, default: 0, null: false, limit: 2
       t.integer :status, default: 0, null: false, limit: 2
 
-      t.jsonb :payload
-      t.integer :events, default: 1, null: false
       t.datetime_with_timezone :started_at, null: false
       t.datetime_with_timezone :ended_at
+      t.integer :events, default: 1, null: false
+      t.jsonb :payload
 
       t.references :issue, foreign_key: true
       t.references :project, null: false, foreign_key: { on_delete: :cascade }
