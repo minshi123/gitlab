@@ -785,6 +785,11 @@ class Project < ApplicationRecord
     Feature.enabled?(:jira_issue_import, self, default_enabled: true)
   end
 
+  # LFS and hashed repository storage are required for using Design Management.
+  def design_management_enabled?
+    lfs_enabled? && hashed_storage?(:repository)
+  end
+
   def team
     @team ||= ProjectTeam.new(self)
   end

@@ -5972,6 +5972,28 @@ describe Project do
     end
   end
 
+  describe '#design_management_enabled?' do
+    let(:project) { build(:project) }
+
+    where(:lfs_enabled, :hashed_storage_enabled, :expectation) do
+      false | false | false
+      true  | false | false
+      false | true  | false
+      true  | true  | true
+    end
+
+    with_them do
+      before do
+        expect(project).to receive(:lfs_enabled?).and_return(lfs_enabled)
+        allow(project).to receive(:hashed_storage?).with(:repository).and_return(hashed_storage_enabled)
+      end
+
+      it do
+        expect(project.design_management_enabled?).to be(expectation)
+      end
+    end
+  end
+
   def finish_job(export_job)
     export_job.start
     export_job.finish

@@ -657,11 +657,6 @@ module EE
       super.presence || build_feature_usage
     end
 
-    # LFS and hashed repository storage are required for using Design Management.
-    def design_management_enabled?
-      lfs_enabled? && hashed_storage?(:repository)
-    end
-
     def design_repository
       strong_memoize(:design_repository) do
         DesignManagement::Repository.new(self)
