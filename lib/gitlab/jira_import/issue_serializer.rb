@@ -23,7 +23,8 @@ module Gitlab
           state_id: map_status(jira_issue.status.statusCategory),
           updated_at: jira_issue.updated,
           created_at: jira_issue.created,
-          author_id: project.creator_id # TODO: map actual author: https://gitlab.com/gitlab-org/gitlab/-/issues/210580
+          author_id: project.creator_id, # TODO: map actual author: https://gitlab.com/gitlab-org/gitlab/-/issues/210580
+          labels: map_labels
         }
       end
 
@@ -52,10 +53,22 @@ module Gitlab
         end
       end
 
+      def map_labels
+        return if fields['labels'].blank?
+
+        labels = LabelsFinder.new(nil, project: project, title: fields['labels'])
+          .execute(skip_authorization: true).to_a
+        labels_to_create = fields['labels'] - labels.map(&:name)
+        labels_to_create.each do |title|
+          labels << ProjectLabel.create!(project: project, title: title)
+        end
+
+        labels
+      end
+
       def add_metadata
         add_field(%w(issuetype name), 'Issue type')
         add_field(%w(priority name), 'Priority')
-        add_labels
         add_field('environment', 'Environment')
         add_field('duedate', 'Due date')
         add_parent
@@ -71,12 +84,6 @@ module Gitlab
         return if value.blank?
 
         metadata << "- #{field_label}: #{value}"
-      end
-
-      def add_labels
-        return if fields['labels'].blank?
-
-        metadata << "- Labels: #{fields['labels'].join(', ')}"
       end
 
       def add_parent

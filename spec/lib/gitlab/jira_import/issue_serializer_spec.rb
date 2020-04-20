@@ -4,7 +4,11 @@ require 'spec_helper'
 
 describe Gitlab::JiraImport::IssueSerializer do
   describe '#execute' do
-    let_it_be(:project) { create(:project) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:project_label) { create(:label, project: project, title: 'bug') }
+    let_it_be(:other_project_label) { create(:label, project: project, title: 'feature') }
+    let_it_be(:group_label) { create(:group_label, group: group, title: 'dev') }
 
     let(:iid) { 5 }
     let(:key) { 'PROJECT-5' }
@@ -21,7 +25,7 @@ describe Gitlab::JiraImport::IssueSerializer do
     let(:issue_type_field) { { 'name' => 'Task' } }
     let(:fix_versions_field) { [{ 'name' => '1.0' }, { 'name' => '1.1' }] }
     let(:priority_field) { { 'name' => 'Medium' } }
-    let(:labels_field) { %w(bug backend) }
+    let(:labels_field) { %w(bug dev backend frontend) }
     let(:environment_field) { 'staging' }
     let(:duedate_field) { '2020-03-01' }
 
@@ -70,7 +74,6 @@ describe Gitlab::JiraImport::IssueSerializer do
 
         - Issue type: Task
         - Priority: Medium
-        - Labels: bug, backend
         - Environment: staging
         - Due date: 2020-03-01
         - Parent issue: [FOO-2] parent issue FOO
@@ -88,8 +91,18 @@ describe Gitlab::JiraImport::IssueSerializer do
           state_id: 1,
           updated_at: updated_at,
           created_at: created_at,
-          author_id: project.creator_id
+          author_id: project.creator_id,
+          labels: [project_label, group_label] + Label.reorder(id: :asc).last(2)
         )
+      end
+
+      it 'creates all missing labels (on project level)' do
+        expect { subject }.to change { Label.count }.from(3).to(5)
+
+        created_label = Label.reorder(id: :desc).first
+
+        expect(created_label.project).to eq(project)
+        expect(created_label.title).to eq('frontend')
       end
 
       context 'when some metadata fields are missing' do
