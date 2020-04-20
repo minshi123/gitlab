@@ -7,11 +7,14 @@ module IncidentManagement
     queue_namespace :incident_management
     feature_category :incident_management
 
-    def perform(project_id, alert_payload)
+    def perform(project_id, alert_payload, am_alert_id = nil)
       project = find_project(project_id)
       return unless project
 
-      create_issue(project, alert_payload)
+      new_issue = create_issue(project, alert_payload)
+      return unless am_alert_id && new_issue.persisted?
+
+      link_issue_with_alert(am_alert_id, new_issue.id)
     end
 
     private
@@ -24,6 +27,13 @@ module IncidentManagement
       IncidentManagement::CreateIssueService
         .new(project, alert_payload)
         .execute
+    end
+
+    def link_issue_with_alert(alert_id, issue_id)
+      alert = AlertManagement::Alert.find_by_id(alert_id)
+      return unless alert
+
+      alert.update!(issue_id: issue_id)
     end
   end
 end
