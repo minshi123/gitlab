@@ -6,16 +6,16 @@ describe IncidentManagement::ProcessAlertWorker do
   let_it_be(:project) { create(:project) }
 
   describe '#perform' do
-    let(:alert) { :alert }
+    let(:alert_payload) { { alert: 'payload' } }
     let(:create_issue_service) { spy(:create_issue_service) }
 
-    subject { described_class.new.perform(project.id, alert) }
+    subject { described_class.new.perform(project.id, alert_payload) }
 
     it 'calls create issue service' do
       expect(Project).to receive(:find_by_id).and_call_original
 
       expect(IncidentManagement::CreateIssueService)
-        .to receive(:new).with(project, :alert)
+        .to receive(:new).with(project, alert_payload)
         .and_return(create_issue_service)
 
       expect(create_issue_service).to receive(:execute)
@@ -26,7 +26,7 @@ describe IncidentManagement::ProcessAlertWorker do
     context 'with invalid project' do
       let(:invalid_project_id) { 0 }
 
-      subject { described_class.new.perform(invalid_project_id, alert) }
+      subject { described_class.new.perform(invalid_project_id, alert_payload) }
 
       it 'does not create issues' do
         expect(Project).to receive(:find_by_id).and_call_original

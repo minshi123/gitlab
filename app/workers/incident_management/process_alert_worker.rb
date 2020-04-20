@@ -7,11 +7,11 @@ module IncidentManagement
     queue_namespace :incident_management
     feature_category :incident_management
 
-    def perform(project_id, alert)
+    def perform(project_id, alert_payload)
       project = find_project(project_id)
       return unless project
 
-      create_issue(project, alert)
+      create_issue(project, alert_payload)
     end
 
     private
@@ -20,9 +20,9 @@ module IncidentManagement
       Project.find_by_id(project_id)
     end
 
-    def create_issue(project, alert)
+    def create_issue(project, alert_payload)
       IncidentManagement::CreateIssueService
-        .new(project, alert)
+        .new(project, alert_payload)
         .execute
     end
   end
