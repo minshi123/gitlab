@@ -12,11 +12,11 @@ module Projects
         return forbidden unless alerts_service_activated?
         return unauthorized unless valid_token?(token)
 
-        result = create_alert
-        process_incident_issues if process_issues?
+        response = create_alert
+        process_incident_issues(response.payload) if process_issues?
         send_alert_email if send_email?
 
-        result
+        response
       rescue PAYLOAD_PARSER::BadPayloadError
         bad_request
       end
@@ -37,9 +37,9 @@ module Projects
         incident_management_setting.send_email?
       end
 
-      def process_incident_issues
+      def process_incident_issues(alert)
         IncidentManagement::ProcessAlertWorker
-          .perform_async(project.id, parsed_payload)
+          .perform_async(project.id, parsed_payload, alert.id)
       end
 
       def send_alert_email

@@ -16,7 +16,7 @@ describe Projects::Alerting::NotifyService do
     it 'processes issues' do
       expect(IncidentManagement::ProcessAlertWorker)
         .to receive(:perform_async)
-        .with(project.id, kind_of(Hash))
+        .with(project.id, kind_of(Hash), new_alert.id)
         .exactly(amount).times
 
       Sidekiq::Testing.inline! do
@@ -97,7 +97,7 @@ describe Projects::Alerting::NotifyService do
         let(:incident_management_setting) { double(send_email?: email_enabled, create_issue?: issue_enabled) }
         let(:email_enabled) { false }
         let(:issue_enabled) { false }
-        let(:new_alert) { instance_double(AlertManagement::Alert) }
+        let(:new_alert) { instance_double(AlertManagement::Alert, id: 503) }
         let(:create_alert_response) { ServiceResponse.success(payload: new_alert) }
 
         before do
