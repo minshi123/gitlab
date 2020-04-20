@@ -8,6 +8,7 @@ module API
 
     helpers Helpers::ProjectsHelpers
     helpers Helpers::FileUploadHelpers
+    helpers Helpers::MeasurementHelpers
 
     helpers do
       def import_params
@@ -20,6 +21,15 @@ module API
 
       def rate_limiter
         ::Gitlab::ApplicationRateLimiter
+      end
+
+      def measurement_options(namespace)
+        return {} unless Feature.enabled?(:measure_project_import, namespace)
+
+        {
+          measurement_logger: Gitlab::ImportExport::Project::Logger.build,
+          measurement_enabled: true
+        }
       end
     end
 
@@ -88,11 +98,12 @@ module API
                     end
 
         project_params = {
-            path: import_params[:path],
-            namespace_id: namespace.id,
-            name: import_params[:name],
-            file: import_params[:file],
-            overwrite: import_params[:overwrite]
+          path: import_params[:path],
+          namespace_id: namespace.id,
+          name: import_params[:name],
+          file: import_params[:file],
+          overwrite: import_params[:overwrite],
+          measurement_enabled: import_params.delete(:measurement_enabled)
         }
 
         override_params = import_params.delete(:override_params)
@@ -100,7 +111,7 @@ module API
 
         project = ::Projects::GitlabProjectsImportService.new(
           current_user, project_params, override_params
-        ).execute
+        ).execute(measurement_options(namespace))
 
         render_api_error!(project.errors.full_messages&.first, 400) unless project.saved?
 
