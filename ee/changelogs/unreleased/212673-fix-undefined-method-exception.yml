@@ -1,0 +1,5 @@
+---
+title: Fixes exception raised when viewing repository settings
+merge_request: 28879
+author:
+type: fixed
