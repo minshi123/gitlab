@@ -382,6 +382,8 @@ describe DesignManagement::Design do
 
   describe '#note_etag_key' do
     it 'returns a correct etag key' do
+      skip 'https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283'
+
       design = create(:design)
 
       expect(design.note_etag_key).to eq(
@@ -418,20 +420,22 @@ describe DesignManagement::Design do
   end
 
   describe '#after_note_changed' do
-    subject { build(:design) }
+    skip 'https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283' do
+      subject { build(:design) }
 
-    it 'calls #delete_cache on DesignUserNotesCountService' do
-      expect_next_instance_of(DesignManagement::DesignUserNotesCountService) do |service|
-        expect(service).to receive(:delete_cache)
+      it 'calls #delete_cache on DesignUserNotesCountService' do
+        expect_next_instance_of(DesignManagement::DesignUserNotesCountService) do |service|
+          expect(service).to receive(:delete_cache)
+        end
+
+        subject.after_note_changed(build(:note))
       end
 
-      subject.after_note_changed(build(:note))
-    end
+      it 'does not call #delete_cache on DesignUserNotesCountService when passed a system note' do
+        expect(DesignManagement::DesignUserNotesCountService).not_to receive(:new)
 
-    it 'does not call #delete_cache on DesignUserNotesCountService when passed a system note' do
-      expect(DesignManagement::DesignUserNotesCountService).not_to receive(:new)
-
-      subject.after_note_changed(build(:note, :system))
+        subject.after_note_changed(build(:note, :system))
+      end
     end
   end
 
