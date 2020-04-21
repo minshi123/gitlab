@@ -92,9 +92,18 @@ namespace :gitlab do
       Rake::Task[task_name].reenable
     end
 
+    desc 'This loads the schema_migrations table from the version files - it runs after db:structure:load'
+    task :load_schema_versions do |task_name|
+      Gitlab::Database::SchemaVersionFiles.new.load_all
+    end
+
     # Inform Rake that gitlab:schema:clean_structure_sql should be run every time rake db:structure:dump is run
     Rake::Task['db:structure:dump'].enhance do
       Rake::Task['gitlab:db:clean_structure_sql'].invoke
+    end
+
+    Rake::Task['db:structure:load'].enhance do
+      Rake::Task['gitlab:db:load_schema_versions'].invoke
     end
   end
 end
