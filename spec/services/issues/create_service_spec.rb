@@ -438,7 +438,7 @@ describe Issues::CreateService do
           end
 
           it 'marks the issue as spam' do
-            expect(issue).to be_spam
+            expect(issue).not_to be_spam
           end
 
           it 'marks the issue as needing reCAPTCHA' do
