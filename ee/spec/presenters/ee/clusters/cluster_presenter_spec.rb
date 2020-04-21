@@ -28,8 +28,19 @@ describe Clusters::ClusterPresenter do
           'empty-unable-to-connect-svg-path': match_asset_path('/assets/illustrations/monitoring/unable_to_connect.svg'),
           'settings-path': '',
           'project-path': '',
-          'tags-path': ''
+          'tags-path': '',
+          'alerts-endpoint': '/'
         )
+      end
+
+      context 'when prometheus_computed_alerts feature is disabled' do
+        before do
+          allow(::Feature).to receive(:enabled?).with(:prometheus_computed_alerts).and_return(false)
+        end
+
+        it 'alerts-endpoint is nil' do
+          expect(subject['alerts-endpoint']).to be_nil
+        end
       end
     end
 
