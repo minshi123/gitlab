@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe AlertManagement::CreateAlertService do
   let_it_be(:project) { create(:project, :repository, :private) }
-  let(:service) { described_class.new(project, create_alert_params) }
+  let(:service) { described_class.new(project, payload, payload_parser: Gitlab::Alerting::NotificationPayloadParser) }
 
   let(:payload) do
     {
@@ -16,8 +16,6 @@ describe AlertManagement::CreateAlertService do
       'some' => { 'extra' => { 'payload' => 'here' } }
     }
   end
-
-  let(:create_alert_params) { payload.merge(payload_parser: Gitlab::Alerting::NotificationPayloadParser) }
 
   subject(:create_alert) { service.execute }
 

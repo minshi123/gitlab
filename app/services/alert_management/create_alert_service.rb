@@ -2,9 +2,9 @@
 
 module AlertManagement
   class CreateAlertService < BaseService
-    def initialize(project, params)
-      @payload_parser = params.fetch(:payload_parser, :invalid_payload_parser)
-      @raw_payload = params.except(:payload_parser)
+    def initialize(project, params, payload_parser:)
+      @payload_parser = payload_parser
+      @raw_payload = params
       super(project, nil, params)
     end
 

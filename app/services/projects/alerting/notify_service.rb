@@ -26,11 +26,9 @@ module Projects
       delegate :alerts_service, :alerts_service_activated?, to: :project
 
       def create_alert
-        AlertManagement::CreateAlertService.new(project, create_alert_params).execute
-      end
-
-      def create_alert_params
-        params.to_h.merge(payload_parser: PAYLOAD_PARSER)
+        AlertManagement::CreateAlertService
+          .new(project, params.to_h, payload_parser: PAYLOAD_PARSER)
+          .execute
       end
 
       def send_email?

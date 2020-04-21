@@ -85,7 +85,7 @@ describe Projects::Alerting::NotifyService do
     before do
       allow(AlertManagement::CreateAlertService)
         .to receive(:new)
-        .with(project, payload_raw.merge(payload_parser: Gitlab::Alerting::NotificationPayloadParser))
+        .with(project, payload_raw, payload_parser: Gitlab::Alerting::NotificationPayloadParser)
         .and_return(create_alert_service)
     end
 
