@@ -42,7 +42,8 @@ describe('PypiInstallation', () => {
   });
 
   afterEach(() => {
-    if (wrapper) wrapper.destroy();
+    wrapper.destroy();
+    wrapper = null;
   });
 
   describe('installation commands', () => {
