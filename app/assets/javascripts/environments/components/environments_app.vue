@@ -88,9 +88,7 @@ export default {
 
   methods: {
     toggleDeployBoard(model) {
-      if (model) {
-        this.store.toggleDeployBoard(model.id);
-      }
+      this.store.toggleDeployBoard(model.id);
     },
 
     toggleFolder(folder) {
