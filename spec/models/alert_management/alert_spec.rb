@@ -19,7 +19,22 @@ describe AlertManagement::Alert do
     it { is_expected.to validate_length_of(:description).is_at_most(1000) }
     it { is_expected.to validate_length_of(:service).is_at_most(100) }
     it { is_expected.to validate_length_of(:monitoring_tool).is_at_most(100) }
-    it { is_expected.to validate_length_of(:hosts).is_at_most(255) }
+
+    describe 'hosts' do
+      subject(:alert) { build(:alert_management_alert, hosts: hosts) }
+
+      context 'over 255 total chars' do
+        let(:hosts) { ['111.111.111.111'] * 18 }
+
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'under 255 chars' do
+        let(:hosts) { ['111.111.111.111'] * 17 }
+
+        it { is_expected.to be_valid }
+      end
+    end
   end
 
   describe 'enums' do

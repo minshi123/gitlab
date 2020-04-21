@@ -26,28 +26,27 @@ ALTER SEQUENCE public.abuse_reports_id_seq OWNED BY public.abuse_reports.id;
 
 CREATE TABLE public.alert_management_alerts (
     id bigint NOT NULL,
-    title text NOT NULL,
-    description text,
-    service text,
-    monitoring_tool text,
-    hosts text,
-    fingerprint bytea,
-    severity smallint DEFAULT 0 NOT NULL,
-    status smallint DEFAULT 0 NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
     started_at timestamp with time zone NOT NULL,
     ended_at timestamp with time zone,
     events integer DEFAULT 1 NOT NULL,
     iid integer NOT NULL,
-    payload jsonb,
+    severity smallint DEFAULT 0 NOT NULL,
+    status smallint DEFAULT 0 NOT NULL,
+    fingerprint bytea,
     issue_id bigint,
     project_id bigint NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
+    title text NOT NULL,
+    description text,
+    service text,
+    monitoring_tool text,
+    hosts text[],
+    payload jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT check_2df3e2fdc1 CHECK ((char_length(monitoring_tool) <= 100)),
     CONSTRAINT check_5e9e57cadb CHECK ((char_length(description) <= 1000)),
     CONSTRAINT check_bac14dddde CHECK ((char_length(service) <= 100)),
-    CONSTRAINT check_d1d1c2d14c CHECK ((char_length(title) <= 200)),
-    CONSTRAINT check_e0c580e723 CHECK ((char_length(hosts) <= 255))
+    CONSTRAINT check_d1d1c2d14c CHECK ((char_length(title) <= 200))
 );
 
 CREATE SEQUENCE public.alert_management_alerts_id_seq
