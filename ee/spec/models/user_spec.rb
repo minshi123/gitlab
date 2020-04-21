@@ -559,6 +559,42 @@ describe User do
     end
   end
 
+  describe '#managed_by?' do
+    let(:group) { create :group }
+    let(:owner) { create :user }
+    let(:member1) { create :user }
+    let(:member2) { create :user }
+
+    before do
+      group.add_owner(owner)
+      group.add_developer(member1)
+      group.add_developer(member2)
+    end
+
+    context 'when not a group managed account' do
+      it 'false with any user' do
+        expect(member1.managed_by?(owner)).to be_falsey
+        expect(member1.managed_by?(member2)).to be_falsey
+      end
+    end
+
+    context 'when a group managed account' do
+      let(:group) { create :group_with_managed_accounts }
+
+      before do
+        member1.update(managing_group: group)
+      end
+
+      it 'true with group managed account owner' do
+        expect(member1.managed_by?(owner)).to be_truthy
+      end
+
+      it 'false with not a group managed account owner' do
+        expect(member1.managed_by?(member2)).to be_falsey
+      end
+    end
+  end
+
   describe '#password_required?' do
     context 'when user has managing group linked' do
       before do

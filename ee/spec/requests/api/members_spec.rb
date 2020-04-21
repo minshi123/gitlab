@@ -28,6 +28,32 @@ describe API::Members do
     end
   end
 
+  shared_examples 'group managed account members response for' do
+    context 'when group managed accounts is enabled' do
+      let(:group) { create :group_with_managed_accounts }
+      let(:member) { create(:user) }
+      let(:gma_member) { create(:user, managing_group: group) }
+
+      before do
+        stub_licensed_features(group_saml: true)
+        group.add_owner(owner)
+
+        source.add_maintainer(member)
+        source.add_maintainer(gma_member)
+
+        get api(url, owner)
+      end
+
+      it 'expose the group managed account members email address' do
+        expect(json_response).to include(a_hash_including('email' => gma_member.email))
+      end
+
+      it 'does not expose a regular members email address' do
+        expect(json_response).not_to include(a_hash_including('email' => member.email))
+      end
+    end
+  end
+
   describe 'GET /groups/:id/members' do
     it 'matches json schema' do
       get api("/groups/#{group.to_param}/members", owner)
@@ -82,6 +108,11 @@ describe API::Members do
       end
     end
 
+    it_behaves_like 'group managed account members response for' do
+      let(:url) { "/groups/#{group.to_param}/members" }
+      let(:source) { group }
+    end
+
     context 'with is_using_seat' do
       shared_examples 'seat information not included' do
         it 'returns a list of users that does not contain the is_using_seat attribute' do
@@ -115,6 +146,27 @@ describe API::Members do
         it_behaves_like 'seat information not included'
       end
     end
+  end
+
+  describe 'GET /groups/:id/members/all' do
+    let(:url) { "/groups/#{group.to_param}/members/all" }
+    let(:source) { group }
+
+    it_behaves_like 'group managed account members response for'
+  end
+
+  describe 'GET /projects/:id/members' do
+    let(:url) { "/projects/#{project.id}/members" }
+    let(:source) { project }
+
+    it_behaves_like 'group managed account members response for'
+  end
+
+  describe 'GET /projects/:id/members/all' do
+    let(:url) { "/projects/#{project.id}/members/all" }
+    let(:source) { project }
+
+    it_behaves_like 'group managed account members response for'
   end
 
   shared_examples 'POST /:source_type/:id/members' do |source_type|
