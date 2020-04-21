@@ -11,7 +11,8 @@ import { IMPORT_STATE } from '~/jira_import/utils';
 const mountComponent = ({
   isJiraConfigured = true,
   errorMessage = '',
-  showAlert = true,
+  selectedProject = 'MTG',
+  showAlert = false,
   status = IMPORT_STATE.NONE,
   loading = false,
   mutate = jest.fn(() => Promise.resolve()),
@@ -33,15 +34,32 @@ const mountComponent = ({
       return {
         errorMessage,
         showAlert,
+        selectedProject,
         jiraImportDetails: {
           status,
-          import: {
-            jiraProjectKey: 'MTG',
-            scheduledAt: '2020-04-08T12:17:25+00:00',
-            scheduledBy: {
-              name: 'Jane Doe',
+          imports: [
+            {
+              jiraProjectKey: 'MTG',
+              scheduledAt: '2020-04-08T10:11:12+00:00',
+              scheduledBy: {
+                name: 'John Doe',
+              },
             },
-          },
+            {
+              jiraProjectKey: 'MSJP',
+              scheduledAt: '2020-04-09T13:14:15+00:00',
+              scheduledBy: {
+                name: 'Jimmy Doe',
+              },
+            },
+            {
+              jiraProjectKey: 'MTG',
+              scheduledAt: '2020-04-09T16:17:18+00:00',
+              scheduledBy: {
+                name: 'Jane Doe',
+              },
+            },
+          ],
         },
       };
     },
@@ -159,6 +177,68 @@ describe('JiraImportApp', () => {
     });
   });
 
+  describe('import in progress screen', () => {
+    beforeEach(() => {
+      wrapper = mountComponent({ status: IMPORT_STATE.SCHEDULED });
+    });
+
+    it('shows the illustration', () => {
+      expect(getProgressComponent().attributes('illustration')).toBe(
+        'in-progress-illustration.svg',
+      );
+    });
+
+    it('shows the name of the most recent import initiator', () => {
+      expect(getProgressComponent().attributes('importinitiator')).toBe('Jane Doe');
+    });
+
+    it('shows the name of the most recent imported project', () => {
+      expect(getProgressComponent().attributes('importproject')).toBe('MTG');
+    });
+
+    it('shows the time of the most recent import', () => {
+      expect(getProgressComponent().attributes('importtime')).toBe('2020-04-09T16:17:18+00:00');
+    });
+
+    it('has the path to the issues page', () => {
+      expect(getProgressComponent().attributes('issuespath')).toBe(
+        'gitlab-org/gitlab-test/-/issues',
+      );
+    });
+  });
+
+  describe('jira import form screen', () => {
+    describe('when selected project has been imported before', () => {
+      beforeEach(() => {
+        wrapper = mountComponent();
+      });
+
+      it('shows jira-import::MTG-3 label since project MTG has been imported 2 time before', () => {
+        expect(getFormComponent().attributes('importlabel')).toBe('jira-import::MTG-3');
+      });
+
+      it('shows warning alert to explain project MTG has been imported 2 times before', () => {
+        expect(getAlert().text()).toBe(
+          'You have imported from this project 2 times before. Each new import will create duplicate issues.',
+        );
+      });
+    });
+
+    describe('when selected project has not been imported before', () => {
+      beforeEach(() => {
+        wrapper = mountComponent({ selectedProject: 'MJP' });
+      });
+
+      it('shows jira-import::MJP-1 label since project MJP has not been imported before', () => {
+        expect(getFormComponent().attributes('importlabel')).toBe('jira-import::MJP-1');
+      });
+
+      it('does not show warning alert since project MJP has not been imported before', () => {
+        expect(getAlert().exists()).toBe(false);
+      });
+    });
+  });
+
   describe('initiating a Jira import', () => {
     it('calls the mutation with the expected arguments', () => {
       const mutate = jest.fn(() => Promise.resolve());
@@ -200,6 +280,7 @@ describe('JiraImportApp', () => {
     wrapper = mountComponent({
       errorMessage: 'There was an error importing the Jira project.',
       showAlert: true,
+      selectedProject: null,
     });
 
     expect(getAlert().exists()).toBe(true);

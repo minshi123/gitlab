@@ -2,11 +2,15 @@ import { GlAvatar, GlButton, GlFormSelect, GlLabel } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import JiraImportForm from '~/jira_import/components/jira_import_form.vue';
 
+const importLabel = 'jira-import::MTG-1';
+const value = 'MTG';
+
 const mountComponent = ({ mountType } = {}) => {
   const mountFunction = mountType === 'mount' ? mount : shallowMount;
 
   return mountFunction(JiraImportForm, {
     propsData: {
+      importLabel,
       issuesPath: 'gitlab-org/gitlab-test/-/issues',
       jiraProjects: [
         {
@@ -22,6 +26,7 @@ const mountComponent = ({ mountType } = {}) => {
           value: 'MTG',
         },
       ],
+      value,
     },
   });
 };
@@ -63,7 +68,7 @@ describe('JiraImportForm', () => {
     });
 
     it('shows a label which will be applied to imported Jira projects', () => {
-      expect(wrapper.find(GlLabel).attributes('title')).toBe('jira-import::KEY-1');
+      expect(wrapper.find(GlLabel).attributes('title')).toBe(importLabel);
     });
 
     it('shows information to the user', () => {
@@ -112,15 +117,10 @@ describe('JiraImportForm', () => {
   });
 
   it('emits an "initiateJiraImport" event with the selected dropdown value when submitted', () => {
-    const selectedOption = 'MTG';
-
     wrapper = mountComponent();
-    wrapper.setData({
-      selectedOption,
-    });
 
     wrapper.find('form').trigger('submit');
 
-    expect(wrapper.emitted('initiateJiraImport')[0]).toEqual([selectedOption]);
+    expect(wrapper.emitted('initiateJiraImport')[0]).toEqual([value]);
   });
 });
