@@ -7,7 +7,8 @@ describe GitlabSchema.types['Query'] do
     expect(described_class).to have_graphql_fields(
       :design_management,
       :geo_node,
-      :vulnerabilities
+      :vulnerabilities,
+      :security_dashboard
     ).at_least
   end
 end

@@ -24,6 +24,11 @@ module EE
               resolver: Resolvers::Geo::GeoNodeResolver,
               description: 'Find a Geo node'
 
+        field :security_dashboard, ::Types::SecurityDashboardType,
+              null: true,
+              resolver: Resolvers::SecurityDashboardResolver,
+              description: 'Fields related to Instance Security Dashboard'
+
         def design_management
           DesignManagementObject.new(nil)
         end
