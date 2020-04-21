@@ -39,12 +39,12 @@ export default {
     helpCanaryDeploymentsPath: {
       type: String,
       required: false,
-      default: null,
+      default: '',
     },
     lockPromotionSvgPath: {
       type: String,
       required: false,
-      default: null,
+      default: '',
     },
     showCanaryDeploymentCallout: {
       type: Boolean,
@@ -54,7 +54,7 @@ export default {
     userCalloutsPath: {
       type: String,
       required: false,
-      default: null,
+      default: '',
     },
   },
   methods: {
