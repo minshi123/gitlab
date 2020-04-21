@@ -1,6 +1,5 @@
 <script>
 import { GlDeprecatedButton } from '@gitlab/ui';
-import envrionmentsAppMixin from '../mixins/environments_app_mixin';
 import Flash from '~/flash';
 import { s__ } from '~/locale';
 import emptyState from './empty_state.vue';
@@ -22,12 +21,17 @@ export default {
     DeleteEnvironmentModal,
   },
 
-  mixins: [CIPaginationMixin, environmentsMixin, envrionmentsAppMixin],
+  mixins: [CIPaginationMixin, environmentsMixin],
 
   props: {
     endpoint: {
       type: String,
       required: true,
+    },
+    canaryDeploymentFeatureId: {
+      type: String,
+      required: false,
+      default: '',
     },
     canCreateEnvironment: {
       type: Boolean,
@@ -41,11 +45,31 @@ export default {
       type: String,
       required: true,
     },
+    helpCanaryDeploymentsPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
     helpPagePath: {
       type: String,
       required: true,
     },
     deployBoardsHelpPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    lockPromotionSvgPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    showCanaryDeploymentCallout: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    userCalloutsPath: {
       type: String,
       required: false,
       default: '',
