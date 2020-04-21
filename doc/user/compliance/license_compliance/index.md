@@ -123,7 +123,7 @@ License Compliance can be configured using environment variables.
 | `LM_PYTHON_VERSION`    | no | Version of Python. If set to `3`, dependencies are installed using Python 3 instead of Python 2.7. |
 | `MAVEN_CLI_OPTS`       | no | Additional arguments for the mvn executable. If not supplied, defaults to `-DskipTests`. |
 | `PIP_INDEX_URL` | no | Base URL of Python Package Index (default: `https://pypi.org/simple/`). |
-| `SETUP_CMD`            | no | Custom setup for the dependency installation. (experimental) |
+| `SETUP_CMD`            | no | Custom setup for the dependency installation (experimental). |
 
 ### Installing custom dependencies
 
