@@ -1,5 +1,4 @@
 <script>
-import folderMixin from '../mixins/environments_folder_view_mixin';
 import environmentsMixin from '../mixins/environments_mixin';
 import CIPaginationMixin from '../../vue_shared/mixins/ci_pagination_api_mixin';
 import StopEnvironmentModal from '../components/stop_environment_modal.vue';
@@ -11,9 +10,14 @@ export default {
     DeleteEnvironmentModal,
   },
 
-  mixins: [environmentsMixin, CIPaginationMixin, folderMixin],
+  mixins: [environmentsMixin, CIPaginationMixin],
 
   props: {
+    canaryDeploymentFeatureId: {
+      type: String,
+      required: false,
+      default: '',
+    },
     endpoint: {
       type: String,
       required: true,
@@ -22,6 +26,11 @@ export default {
       type: String,
       required: true,
     },
+    helpCanaryDeploymentsPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
     cssContainerClass: {
       type: String,
       required: true,
@@ -29,6 +38,21 @@ export default {
     canReadEnvironment: {
       type: Boolean,
       required: true,
+    },
+    lockPromotionSvgPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    showCanaryDeploymentCallout: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    userCalloutsPath: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   methods: {
