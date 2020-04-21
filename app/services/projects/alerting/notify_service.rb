@@ -6,18 +6,18 @@ module Projects
       include Gitlab::Utils::StrongMemoize
       include IncidentManagement::Settings
 
-      PAYLOAD_PARSER = Gitlab::Alerting::NotificationPayloadParser
-
       def execute(token)
         return forbidden unless alerts_service_activated?
         return unauthorized unless valid_token?(token)
 
-        response = create_alert
-        process_incident_issues(response.payload) if process_issues?
+        alert = create_alert
+        return bad_request unless alert.persisted?
+
+        process_incident_issues(alert) if process_issues?
         send_alert_email if send_email?
 
-        response
-      rescue PAYLOAD_PARSER::BadPayloadError
+        ServiceResponse.success
+      rescue Gitlab::Alerting::NotificationPayloadParser::BadPayloadError
         bad_request
       end
 
@@ -25,10 +25,12 @@ module Projects
 
       delegate :alerts_service, :alerts_service_activated?, to: :project
 
+      def am_alert_params
+        AlertManagement::AlertParams.from_generic_alert(project: project, payload: params.to_h)
+      end
+
       def create_alert
-        AlertManagement::CreateAlertService
-          .new(project, params.to_h, payload_parser: PAYLOAD_PARSER)
-          .execute
+        AlertManagement::Alert.create(am_alert_params)
       end
 
       def send_email?
@@ -47,7 +49,7 @@ module Projects
       end
 
       def parsed_payload
-        PAYLOAD_PARSER.call(params.to_h)
+        Gitlab::Alerting::NotificationPayloadParser.call(params.to_h)
       end
 
       def valid_token?(token)

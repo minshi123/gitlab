@@ -12,8 +12,13 @@ describe Projects::Alerting::NotifyService do
 
   shared_examples 'processes incident issues' do |amount|
     let(:create_incident_service) { spy }
+    let(:new_alert) { instance_double(AlertManagement::Alert, id: 503, persisted?: true) }
 
     it 'processes issues' do
+      expect(AlertManagement::Alert)
+        .to receive(:create)
+        .and_return(new_alert)
+
       expect(IncidentManagement::ProcessAlertWorker)
         .to receive(:perform_async)
         .with(project.id, kind_of(Hash), new_alert.id)
@@ -59,11 +64,9 @@ describe Projects::Alerting::NotifyService do
     end
   end
 
-  shared_examples 'NotifyService does not call create alert service' do
-    it 'does not call AlertManagement::CreateAlertService' do
-      subject
-
-      expect(AlertManagement::CreateAlertService).not_to have_received(:new)
+  shared_examples 'NotifyService does not create alert' do
+    it 'does not create alert' do
+      expect { subject }.not_to change(AlertManagement::Alert, :count)
     end
   end
 
@@ -78,16 +81,8 @@ describe Projects::Alerting::NotifyService do
       }
     end
     let(:payload) { ActionController::Parameters.new(payload_raw).permit! }
-    let(:create_alert_service) { instance_double(AlertManagement::CreateAlertService) }
 
     subject { service.execute(token) }
-
-    before do
-      allow(AlertManagement::CreateAlertService)
-        .to receive(:new)
-        .with(project, payload_raw, payload_parser: Gitlab::Alerting::NotificationPayloadParser)
-        .and_return(create_alert_service)
-    end
 
     context 'with activated Alerts Service' do
       let!(:alerts_service) { create(:alerts_service, project: project) }
@@ -97,45 +92,40 @@ describe Projects::Alerting::NotifyService do
         let(:incident_management_setting) { double(send_email?: email_enabled, create_issue?: issue_enabled) }
         let(:email_enabled) { false }
         let(:issue_enabled) { false }
-        let(:new_alert) { instance_double(AlertManagement::Alert, id: 503) }
-        let(:create_alert_response) { ServiceResponse.success(payload: new_alert) }
 
         before do
           allow(service)
             .to receive(:incident_management_setting)
             .and_return(incident_management_setting)
-
-          allow(create_alert_service).to receive(:execute).and_return(create_alert_response)
         end
 
         context 'with valid payload' do
-          it 'calls create alert service' do
+          it 'creates AlertManagement::Alert' do
+            expect { subject }.to change(AlertManagement::Alert, :count).by(1)
+          end
+
+          it 'created alert has all data properly assigned' do
             subject
 
-            expect(create_alert_service).to have_received(:execute)
-          end
+            alert = AlertManagement::Alert.last
+            alert_attributes = alert.attributes.except('id', 'iid', 'created_at', 'updated_at')
 
-          it 'returns success' do
-            expect(subject).to be_success
-          end
-
-          it 'returns created alert' do
-            expect(subject.payload).to eq(new_alert)
-          end
-        end
-
-        context 'with invalid payload' do
-          let(:create_alert_response) { ServiceResponse.error(message: 'Bad request', http_status: :bad_request) }
-
-          it 'calls create alert service' do
-            subject
-
-            expect(create_alert_service).to have_received(:execute)
-          end
-
-          it 'returns bad request' do
-            expect(subject).to be_error
-            expect(subject.http_status).to eq(:bad_request)
+            expect(alert_attributes).to eq(
+              'project_id' => project.id,
+              'issue_id' => nil,
+              'fingerprint' => nil,
+              'title' => 'alert title',
+              'description' => nil,
+              'monitoring_tool' => nil,
+              'service' => nil,
+              'hosts' => [],
+              'payload' => payload_raw,
+              'severity' => 'critical',
+              'status' => 'triggered',
+              'events' => 1,
+              'started_at' => alert.started_at,
+              'ended_at' => nil
+            )
           end
         end
 
@@ -154,6 +144,7 @@ describe Projects::Alerting::NotifyService do
             end
 
             it_behaves_like 'does not process incident issues due to error', http_status: :bad_request
+            it_behaves_like 'NotifyService does not create alert'
           end
         end
 
@@ -166,14 +157,14 @@ describe Projects::Alerting::NotifyService do
 
       context 'with invalid token' do
         it_behaves_like 'does not process incident issues due to error', http_status: :unauthorized
-        it_behaves_like 'NotifyService does not call create alert service'
+        it_behaves_like 'NotifyService does not create alert'
       end
 
       context 'with deactivated Alerts Service' do
         let!(:alerts_service) { create(:alerts_service, :inactive, project: project) }
 
         it_behaves_like 'does not process incident issues due to error', http_status: :forbidden
-        it_behaves_like 'NotifyService does not call create alert service'
+        it_behaves_like 'NotifyService does not create alert'
       end
     end
   end
