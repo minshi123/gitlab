@@ -58,4 +58,33 @@ describe BillingPlansHelper do
       end
     end
   end
+
+  describe '#use_new_purchase_flow?' do
+    using RSpec::Parameterized::TableSyntax
+
+    %i[free_plan bronze_plan silver_plan gold_plan early_adopter_plan].each do |plan|
+      let_it_be(plan) { create(plan) }
+    end
+
+    where paid_signup: [true, false],
+          free_group_new_purchase: [true, false],
+          type: ['Group', ''],
+          plan: Plan::ALL_HOSTED_PLANS
+
+    with_them do
+      let_it_be(:user) { create(:user) }
+      let(:group) { create(:namespace, type: type) }
+
+      before do
+        allow(helper).to receive(:current_user).and_return(user)
+        allow(group).to receive(:actual_plan_name).and_return(plan)
+        stub_feature_flags paid_signup: paid_signup,
+                           free_group_new_purchase: free_group_new_purchase
+      end
+
+      subject { helper.use_new_purchase_flow?(group) }
+
+      it { is_expected.to be(paid_signup && free_group_new_purchase && type == 'Group' && plan == Plan::FREE) }
+    end
+  end
 end

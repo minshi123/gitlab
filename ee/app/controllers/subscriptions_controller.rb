@@ -32,6 +32,8 @@ class SubscriptionsController < ApplicationController
         store_location_for_user
         redirect_to new_user_registration_path(redirect_from: 'checkout')
       end
+    elsif current_user && Feature.enabled?(:free_group_new_purchase_flow, current_user)
+      # To be removed during this MR when :paid_signup_flow is cleaned up
     else
       redirect_to customer_portal_new_subscription_url
     end
