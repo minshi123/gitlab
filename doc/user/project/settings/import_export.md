@@ -24,7 +24,8 @@ To set up a project import/export:
 
 Note the following:
 
-- GitLab supports imports between versions. You can even import data from a newer version of GitLab.
+- GitLab supports imports between versions. However, imports from a newer version of GitLab are not supported.
+The Importing GitLab version must be greater than or equal to the Exporting GitLab version.
 - Imports will fail unless the import and export GitLab instances are
   compatible as described in the [Version history](#version-history).
 - Exports are stored in a temporary [shared directory](../../../development/shared_files.md)
