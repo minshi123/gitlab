@@ -15,7 +15,6 @@
     - .default-retry
     - .default-before_script
     - .assets-compile-cache
-    - .use-docker-in-docker
   image: registry.gitlab.com/gitlab-org/gitlab-build-images:ruby-2.6.5-git-2.26-lfs-2.9-chrome-73.0-node-12.x-yarn-1.21-graphicsmagick-1.3.34-docker-19.03.1
   stage: prepare
   variables:
@@ -36,8 +35,7 @@
       - assets-compile.log
       # We consume these files in GitLab UI for integration tests:
       # https://gitlab.com/gitlab-org/gitlab-ui/-/blob/e88493b3c855aea30bf60baee692a64606b0eb1e/.storybook/preview-head.pug#L1
-      - public/assets/application-*.css
-      - public/assets/application-*.css.gz
+      - public/assets/
     when: always
   script:
     - node --version
@@ -47,7 +45,6 @@
     # TODO: Change the image tag to be the MD5 of assets files and skip image building if the image exists
     # We'll also need to pass GITLAB_ASSETS_TAG to the trigerred omnibus-gitlab pipeline similarly to how we do it for trigerred CNG pipelines
     # https://gitlab.com/gitlab-org/gitlab/issues/208389
-    - time scripts/build_assets_image
     - scripts/clean-old-cached-assets
     - rm -f /etc/apt/sources.list.d/google*.list  # We don't need to update Chrome here
 
@@ -64,6 +61,25 @@ gitlab:assets:compile pull-cache:
     - .frontend:rules:gitlab-assets-compile-pull-cache
   cache:
     policy: pull
+
+.build-assets-image:
+  extends:
+    - .use-kaniko
+  stage: build-images
+  script:
+    - time scripts/build_assets_image
+
+build-assets-image pull-push-cache:
+  extends:
+    - .build-assets-image
+    - .frontend:rules:gitlab-assets-compile-pull-push-cache
+  needs: ["gitlab:assets:compile pull-push-cache"]
+
+build-assets-image pull-cache:
+  extends:
+    - .build-assets-image
+    - .frontend:rules:gitlab-assets-compile-pull-cache
+  needs: ["gitlab:assets:compile pull-cache"]
 
 .compile-assets-metadata:
   extends:
