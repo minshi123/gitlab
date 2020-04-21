@@ -380,8 +380,15 @@ describe DesignManagement::Design do
     end
   end
 
+  # TODO these tests are being temporarily skipped unless run in EE,
+  # as we are in the process of moving Design Management to FOSS in 13.0
+  # in steps. In the current step the routes have not yet been moved.
+  #
+  # See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283.
   describe '#note_etag_key' do
     it 'returns a correct etag key' do
+      skip 'See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283' unless Gitlab.ee?
+
       design = create(:design)
 
       expect(design.note_etag_key).to eq(
@@ -390,6 +397,13 @@ describe DesignManagement::Design do
     end
   end
 
+  # TODO these tests are being temporarily skipped unless run in EE,
+  # as we are in the process of moving Design Management to FOSS in 13.0
+  # in steps. In the current step the services have not yet been moved
+  # which includes `DesignUserNotesCountService`, which is invoked by
+  # #user_notes_count.
+  #
+  # See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283.
   describe '#user_notes_count', :use_clean_rails_memory_store_caching do
     let_it_be(:design) { create(:design, :with_file) }
 
@@ -398,12 +412,16 @@ describe DesignManagement::Design do
     # Note: Cache invalidation tests are in `design_user_notes_count_service_spec.rb`
 
     it 'returns a count of user-generated notes' do
+      skip 'See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283' unless Gitlab.ee?
+
       create(:diff_note_on_design, noteable: design)
 
       is_expected.to eq(1)
     end
 
     it 'does not count notes on other designs' do
+      skip 'See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283' unless Gitlab.ee?
+
       second_design = create(:design, :with_file)
       create(:diff_note_on_design, noteable: second_design)
 
@@ -411,16 +429,26 @@ describe DesignManagement::Design do
     end
 
     it 'does not count system notes' do
+      skip 'See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283' unless Gitlab.ee?
+
       create(:diff_note_on_design, system: true, noteable: design)
 
       is_expected.to eq(0)
     end
   end
 
+  # TODO these tests are being temporarily skipped unless run in EE,
+  # as we are in the process of moving Design Management to FOSS in 13.0
+  # in steps. In the current step the services have not yet been moved
+  # which includes `DesignUserNotesCountService`.
+  #
+  # See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283.
   describe '#after_note_changed' do
     subject { build(:design) }
 
     it 'calls #delete_cache on DesignUserNotesCountService' do
+      skip 'See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283' unless Gitlab.ee?
+
       expect_next_instance_of(DesignManagement::DesignUserNotesCountService) do |service|
         expect(service).to receive(:delete_cache)
       end
@@ -429,6 +457,8 @@ describe DesignManagement::Design do
     end
 
     it 'does not call #delete_cache on DesignUserNotesCountService when passed a system note' do
+      skip 'See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283' unless Gitlab.ee?
+
       expect(DesignManagement::DesignUserNotesCountService).not_to receive(:new)
 
       subject.after_note_changed(build(:note, :system))

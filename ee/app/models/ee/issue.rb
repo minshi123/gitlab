@@ -32,12 +32,6 @@ module EE
       has_one :epic_issue
       has_one :epic, through: :epic_issue
       belongs_to :promoted_to_epic, class_name: 'Epic'
-      has_many :designs, class_name: "DesignManagement::Design", inverse_of: :issue
-      has_many :design_versions, class_name: "DesignManagement::Version", inverse_of: :issue do
-        def most_recent
-          ordered.first
-        end
-      end
 
       has_and_belongs_to_many :self_managed_prometheus_alert_events, join_table: :issues_self_managed_prometheus_alert_events
       has_and_belongs_to_many :prometheus_alert_events, join_table: :issues_prometheus_alert_events
@@ -159,10 +153,6 @@ module EE
 
     def board_group
       @group ||= project.group
-    end
-
-    def design_collection
-      @design_collection ||= ::DesignManagement::DesignCollection.new(self)
     end
 
     def promoted?
