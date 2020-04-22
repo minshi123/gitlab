@@ -6,7 +6,6 @@ class Namespace::RootStorageSize
   end
 
   def above_size_limit?
-    return 0.6
     return false if limit == 0
 
     usage_ratio > 1

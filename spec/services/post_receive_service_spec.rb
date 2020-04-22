@@ -166,6 +166,16 @@ describe PostReceiveService do
         expect(subject).to include(build_alert_message(message))
       end
     end
+
+    context 'storage size limit alerts' do
+      it 'returns a warning' do
+        expect_next_instance_of(Namespace::RootStorageLimitAlert) do |alert|
+          expect(alert).to receive(:level).and_return(:warning)
+        end
+
+        # expect(subject).to include(build_alert_message("If you reach 100%"))
+      end
+    end
   end
 
   context 'with PersonalSnippet' do

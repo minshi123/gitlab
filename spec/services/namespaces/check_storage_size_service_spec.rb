@@ -47,6 +47,7 @@ describe Namespaces::CheckStorageSizeService, '#execute' do
       stub_feature_flags(namespace_storage_limit: { enabled: true, thing: root_group })
 
       expect(subject).to be_error
+      expect(subject.message).to be_present
     end
   end
 
@@ -54,48 +55,11 @@ describe Namespaces::CheckStorageSizeService, '#execute' do
     let(:limit) { 0 }
 
     it { is_expected.to be_success }
-
-    it 'does not respond with a payload' do
-      result = subject
-
-      expect(result.message).to be_nil
-      expect(result.payload).to be_empty
-    end
   end
 
-  context 'when current size is below threshold to show an alert' do
+  context 'when current size is below threshold' do
     let(:current_size) { 10.megabytes }
 
     it { is_expected.to be_success }
-  end
-
-  context 'when current size exceeds limit' do
-    it 'returns an error with a payload' do
-      result = subject
-      current_usage_message = result.payload[:current_usage_message]
-
-      expect(result).to be_error
-      expect(result.message).to include("#{root_group.name} is now read-only.")
-      expect(current_usage_message).to include("150%")
-      expect(current_usage_message).to include(root_group.name)
-      expect(current_usage_message).to include("150 MB of 100 MB")
-      expect(result.payload[:usage_ratio]).to eq(1.5)
-    end
-  end
-
-  context 'when current size is below limit but should show an alert' do
-    let(:current_size) { 50.megabytes }
-
-    it 'returns success with a payload' do
-      result = subject
-      current_usage_message = result.payload[:current_usage_message]
-
-      expect(result).to be_success
-      expect(result.message).to be_present
-      expect(current_usage_message).to include("50%")
-      expect(current_usage_message).to include(root_group.name)
-      expect(current_usage_message).to include("50 MB of 100 MB")
-      expect(result.payload[:usage_ratio]).to eq(0.5)
-    end
   end
 end
