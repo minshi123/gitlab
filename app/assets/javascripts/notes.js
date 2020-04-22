@@ -268,7 +268,7 @@ export default class Notes {
           originalText = $textarea.closest('form').data('originalNote');
           newText = $textarea.val();
           if (originalText !== newText) {
-            if (!window.confirm(__('Are you sure you want to cancel editing this comment?'))) {
+            if (!window.confirm(__('Are you sure you want to discard this comment?'))) {
               return;
             }
           }
