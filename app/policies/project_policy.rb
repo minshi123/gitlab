@@ -225,6 +225,7 @@ class ProjectPolicy < BasePolicy
     enable :update_sentry_issue
     enable :read_prometheus
     enable :read_metrics_dashboard_annotation
+    enable :read_alert_management_alerts
   end
 
   # We define `:public_user_access` separately because there are cases in gitlab-ee
