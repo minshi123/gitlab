@@ -104,6 +104,141 @@ type AdminSidekiqQueuesDeleteJobsPayload {
 }
 
 """
+Describes an alert from the projects Alert Management.
+"""
+type AlertManagementAlert {
+  """
+  Timestamp the alert ended
+  """
+  endedAt: Time
+
+  """
+  Number of events of this alert
+  """
+  eventCount: Int!
+
+  """
+  Internal ID of the alert
+  """
+  iid: ID!
+
+  """
+  Severity of the alert
+  """
+  severity: AlertManagementSeverity!
+
+  """
+  Timestamp the alert was raised
+  """
+  startedAt: Time!
+
+  """
+  Status of the alert
+  """
+  status: AlertManagementStatus!
+
+  """
+  Title of the alert
+  """
+  title: String!
+}
+
+"""
+The connection type for AlertManagementAlert.
+"""
+type AlertManagementAlertConnection {
+  """
+  A list of edges.
+  """
+  edges: [AlertManagementAlertEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [AlertManagementAlert]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type AlertManagementAlertEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: AlertManagementAlert
+}
+
+"""
+Alert severity values
+"""
+enum AlertManagementSeverity {
+  """
+  Critical severity
+  """
+  critical
+
+  """
+  High severity
+  """
+  high
+
+  """
+  Info severity
+  """
+  info
+
+  """
+  Low severity
+  """
+  low
+
+  """
+  Medium severity
+  """
+  medium
+
+  """
+  Unknown severity
+  """
+  unknown
+}
+
+"""
+Alert status values
+"""
+enum AlertManagementStatus {
+  """
+  Acknowledged status
+  """
+  acknowledged
+
+  """
+  Ignored status
+  """
+  ignored
+
+  """
+  Resolved status
+  """
+  resolved
+
+  """
+  Triggered status
+  """
+  triggered
+}
+
+"""
 An emoji awarded by a user.
 """
 type AwardEmoji {
@@ -6293,6 +6428,36 @@ enum PipelineStatusEnum {
 }
 
 type Project {
+  """
+  Alert Management alerts
+  """
+  alertManagementAlerts(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    IID of the alert. For example, "1"
+    """
+    iid: String
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+  ): AlertManagementAlertConnection
+
   """
   Indicates the archived status of the project
   """

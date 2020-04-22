@@ -20,8 +20,10 @@ module AlertManagement
     private
 
     def by_iid(collection)
-      collection = [collection.find_by_iid(params[:iid])] if params[:iid]
-      collection
+      return collection unless params[:iid]
+
+      found = collection.find_by_iid(params[:iid])
+      found ? [found] : AlertManagement::Alert.none
     end
 
     def authorized?
