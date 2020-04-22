@@ -12540,7 +12540,7 @@ msgstr ""
 msgid "Manage"
 msgstr ""
 
-msgid "Manage Git repositories with fine-grained access controls that keep your code secure. Perform code reviews and enhance collaboration with merge requests. Each project can also have an issue tracker and a wiki."
+msgid "GitLab is a single application for the entire software development lifecycle. From project planning and source code management to CI/CD, monitoring, and security."
 msgstr "Управляйте Git репозиториями используя детальные настройки доступа, которые защитят ваш код. Выполняйте проверку кода и улучшите взаимодействие вашей команды запросами на слияние. Для каждого проекта также доступны система обсуждений и Wiki."
 
 msgid "Manage Web IDE features"
@@ -14272,7 +14272,7 @@ msgstr "Открыть исходник"
 msgid "Open sidebar"
 msgstr ""
 
-msgid "Open source software to collaborate on code"
+msgid "A complete DevOps platform"
 msgstr "Открытое ПО для совместной работы над кодом"
 
 msgid "Open: %{openIssuesCount}"

@@ -12364,7 +12364,7 @@ msgstr "Cadena mal formada"
 msgid "Manage"
 msgstr "Administrar"
 
-msgid "Manage Git repositories with fine-grained access controls that keep your code secure. Perform code reviews and enhance collaboration with merge requests. Each project can also have an issue tracker and a wiki."
+msgid "GitLab is a single application for the entire software development lifecycle. From project planning and source code management to CI/CD, monitoring, and security."
 msgstr "Administre los repositorios de Git con controles de acceso detallados que mantienen su código seguro. Realice revisiones de código y mejore la colaboración con merge request. Cada proyecto también puede tener una herramienta de gestión de incidencias y un wiki."
 
 msgid "Manage Web IDE features"
@@ -14088,7 +14088,7 @@ msgstr "Abrir raw"
 msgid "Open sidebar"
 msgstr "Abrir barra lateral"
 
-msgid "Open source software to collaborate on code"
+msgid "A complete DevOps platform"
 msgstr "Software de código abierto para colaborar en el código"
 
 msgid "Open: %{openIssuesCount}"

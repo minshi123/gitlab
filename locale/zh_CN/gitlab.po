@@ -12276,7 +12276,7 @@ msgstr "字符串格式错误"
 msgid "Manage"
 msgstr "管理"
 
-msgid "Manage Git repositories with fine-grained access controls that keep your code secure. Perform code reviews and enhance collaboration with merge requests. Each project can also have an issue tracker and a wiki."
+msgid "GitLab is a single application for the entire software development lifecycle. From project planning and source code management to CI/CD, monitoring, and security."
 msgstr "通过细粒度的访问控制来管理Git仓库，确保您的代码安全。执行代码审查并通过合并请求的实现更紧密的开发协作。每个项目还可以配置议题跟踪和wiki。"
 
 msgid "Manage Web IDE features"
@@ -13996,7 +13996,7 @@ msgstr "打开原始文件"
 msgid "Open sidebar"
 msgstr "打开侧边栏"
 
-msgid "Open source software to collaborate on code"
+msgid "A complete DevOps platform"
 msgstr "用于代码开发协作的开源软件"
 
 msgid "Open: %{openIssuesCount}"
