@@ -17,8 +17,12 @@ class Projects::StaticSiteEditorController < Projects::ApplicationController
   private
 
   def assign_ref_and_path
-    @ref, @path = extract_ref(params[:id])
+    @ref, @path = extract_ref(path_without_vue_routes)
 
     render_404 if @ref.blank? || @path.blank?
+  end
+
+  def path_without_vue_routes
+    params[:id].split('/-/').first
   end
 end

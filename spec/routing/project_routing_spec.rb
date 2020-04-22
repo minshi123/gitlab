@@ -842,6 +842,7 @@ describe 'project routing' do
     it 'routes to static_site_editor#show', :aggregate_failures do
       expect(get('/gitlab/gitlabhq/-/sse/master/CONTRIBUTING.md')).to route_to('projects/static_site_editor#show', namespace_id: 'gitlab', project_id: 'gitlabhq', id: 'master/CONTRIBUTING.md')
       expect(get('/gitlab/gitlabhq/-/sse/master/README')).to route_to('projects/static_site_editor#show', namespace_id: 'gitlab', project_id: 'gitlabhq', id: 'master/README')
+      expect(get('/gitlab/gitlabhq/-/sse/master/README/-/unsupported')).to route_to('projects/static_site_editor#show', namespace_id: 'gitlab', project_id: 'gitlabhq', id: 'master/README/-/unsupported')
     end
   end
 
