@@ -15,6 +15,8 @@ describe AlertManagement::Alert do
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:started_at) }
 
+    it { is_expected.to validate_uniqueness_of(:fingerprint).scoped_to(:project) }
+
     it { is_expected.to validate_length_of(:title).is_at_most(200) }
     it { is_expected.to validate_length_of(:description).is_at_most(1000) }
     it { is_expected.to validate_length_of(:service).is_at_most(100) }

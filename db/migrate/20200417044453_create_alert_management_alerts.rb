@@ -17,16 +17,17 @@ class CreateAlertManagementAlerts < ActiveRecord::Migration[6.0]
       t.integer :severity, default: 0, null: false, limit: 2
       t.integer :status, default: 0, null: false, limit: 2
       t.binary :fingerprint
-      t.references :issue, foreign_key: true
-      t.references :project, null: false, foreign_key: { on_delete: :cascade }, index: false
+      t.bigint :issue_id, index: true
+      t.bigint :project_id
       t.text :title, null: false
       t.text :description
       t.text :service
       t.text :monitoring_tool
-      t.text :hosts, array: true # rubocop:disable Migration/AddLimitToTextColumns
+      t.text :hosts, array: true, null: false, default: [] # rubocop:disable Migration/AddLimitToTextColumns
       t.jsonb :payload, null: false, default: {}
 
       t.index %w(project_id iid), name: 'index_alert_management_alerts_on_project_id_and_iid', unique: true, using: :btree
+      t.index %w(project_id fingerprint), name: 'index_alert_management_alerts_on_project_id_and_fingerprint', unique: true, using: :btree
     end
 
     add_text_limit :alert_management_alerts, :title, 200

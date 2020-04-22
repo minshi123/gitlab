@@ -8724,6 +8724,8 @@ CREATE INDEX index_abuse_reports_on_user_id ON public.abuse_reports USING btree 
 
 CREATE INDEX index_alert_management_alerts_on_issue_id ON public.alert_management_alerts USING btree (issue_id);
 
+CREATE UNIQUE INDEX index_alert_management_alerts_on_project_id_and_fingerprint ON public.alert_management_alerts USING btree (project_id, fingerprint);
+
 CREATE UNIQUE INDEX index_alert_management_alerts_on_project_id_and_iid ON public.alert_management_alerts USING btree (project_id, iid);
 
 CREATE INDEX index_alerts_service_data_on_service_id ON public.alerts_service_data USING btree (service_id);
@@ -13303,5 +13305,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200416120128
 20200416120354
 20200417044453
+20200421233150
 \.
 

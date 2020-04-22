@@ -16,7 +16,7 @@ module AlertManagement
     HOSTS_MAX_LENGTH = 255
 
     validates :title,           length: { maximum: 200 }, presence: true
-    validates :description,     length: { maximum: 1000 }
+    validates :description,     length: { maximum: 1_000 }
     validates :service,         length: { maximum: 100 }
     validates :monitoring_tool, length: { maximum: 100 }
     validates :project,         presence: true
@@ -24,6 +24,7 @@ module AlertManagement
     validates :severity,        presence: true
     validates :status,          presence: true
     validates :started_at,      presence: true
+    validates :fingerprint,     uniqueness: { scope: :project }
     validate  :hosts_length
 
     enum severity: {
