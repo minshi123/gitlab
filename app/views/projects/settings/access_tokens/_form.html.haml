@@ -1,0 +1,27 @@
+%h5.prepend-top-0
+  = s_('Add a project access token')
+%p
+  = s_("Pick a name for the application, and we'll give you a unique project access token.")
+
+= form_for token, url: path, method: :post, html: { class: 'js-requires-input' } do |f|
+
+  = form_errors(token)
+
+  .row
+    .form-group.col-md-6
+      = f.label :name, _('Name'), class: 'label-bold'
+      = f.text_field :name, class: "form-control", required: true
+  .row
+    .form-group.col-md-6
+      = f.label :expires_at, _('Expires at'), class: 'label-bold'
+      .input-icon-wrapper
+        .js-project-access-tokens-expires-at
+          %expires-at-field
+            = f.text_field :expires_at, class: "form-control", placeholder: 'YYYY-MM-DD', autocomplete: 'off', data: { qa_selector: 'expiry_date_field' }
+
+  .form-group
+    = f.label :scopes, _('Scopes'), class: 'label-bold'
+    = render 'shared/tokens/scopes_form', prefix: 'project_access_token', token: token, scopes: scopes
+
+  .prepend-top-default
+    = f.submit s_('Create project access token'), class: "btn btn-success"

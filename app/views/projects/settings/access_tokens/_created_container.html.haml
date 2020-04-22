@@ -1,0 +1,15 @@
+- container_title = local_assigns.fetch(:container_title, _('Your new project access token'))
+- clipboard_button_title = local_assigns.fetch(:clipboard_button_title, _('Copy project access token'))
+
+%div
+  %h5.prepend-top-0
+    = container_title
+  .form-group
+    .input-group
+      = text_field_tag 'created-project-access-token', new_token_value, readonly: true, class: "form-control js-select-on-focus", 'aria-describedby' => "created-token-help-block"
+      %span.input-group-append
+        = clipboard_button(text: new_token_value, title: clipboard_button_title, placement: "left", class: "input-group-text btn-default btn-clipboard border")
+    %span#created-token-help-block.form-text.text-muted.text-danger
+      = _("Make sure you save it - you won't be able to access it again.")
+
+%hr
