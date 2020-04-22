@@ -95,6 +95,10 @@ describe ApplicationSetting do
     it { is_expected.not_to allow_value('three').for(:issues_create_limit) }
     it { is_expected.not_to allow_value(nil).for(:issues_create_limit) }
 
+    it { is_expected.to allow_value(0).for(:raw_blob_request_limit) }
+    it { is_expected.not_to allow_value('abc').for(:raw_blob_request_limit) }
+    it { is_expected.not_to allow_value(nil).for(:raw_blob_request_limit) }
+
     context 'grafana_url validations' do
       before do
         subject.instance_variable_set(:@parsed_grafana_url, nil)
