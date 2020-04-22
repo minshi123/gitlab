@@ -81,4 +81,88 @@ describe Gitlab::Analytics::CycleAnalytics::GroupStageTimeSummary do
       end
     end
   end
+
+  describe '#cycle_time' do
+    let(:created_at) { 6.days.ago }
+
+    context 'with `from` date' do
+      let(:from) { 7.days.ago }
+
+      before do
+        issue_1 = create(:closed_issue, project: project, closed_at: Time.now, created_at: created_at)
+        issue_2 = create(:closed_issue, project: project, closed_at: Time.now, created_at: created_at)
+        issue_3 = create(:closed_issue, project: project_2, closed_at: Time.now, created_at: created_at)
+
+        issue_1.metrics.update!(first_mentioned_in_commit_at: 1.day.ago)
+        issue_2.metrics.update!(first_mentioned_in_commit_at: 2.days.ago)
+        issue_3.metrics.update!(first_mentioned_in_commit_at: 4.days.ago)
+      end
+
+      it 'finds the cycle time of issues created after it' do
+        expect(subject.second[:value]).to eq('2.0')
+      end
+
+      context 'with subgroups' do
+        let(:subgroup) { create(:group, parent: group) }
+        let(:project_3) { create(:project, namespace: subgroup) }
+
+        before do
+          issue_4 = create(:closed_issue, created_at: created_at, closed_at: Time.now, project: project_3)
+          issue_5 = create(:closed_issue, created_at: created_at, closed_at: Time.now, project: project_3)
+
+          issue_4.metrics.update!(first_mentioned_in_commit_at: 3.days.ago)
+          issue_5.metrics.update!(first_mentioned_in_commit_at: 5.days.ago)
+        end
+
+        it 'finds the cycle time of issues from them' do
+          expect(subject.second[:value]).to eq('3.0')
+        end
+      end
+
+      context 'with projects specified in options' do
+        before do
+          issue_4 = create(:closed_issue, created_at: created_at, closed_at: Time.now, project: create(:project, namespace: group))
+          issue_4.metrics.update!(first_mentioned_in_commit_at: 3.days.ago)
+        end
+
+        subject { described_class.new(group, options: { from: from, current_user: user, projects: [project.id, project_2.id] }).data }
+
+        it 'finds the cycle time of issues from those projects' do
+          # Median of 1, 2, 4, not including new issue
+          expect(subject.second[:value]).to eq('2.0')
+        end
+      end
+
+      context 'when `from` and `to` parameters are provided' do
+        let(:from) { 5.days.ago }
+        let(:to) { 2.days.ago }
+        let(:created_at) { from }
+
+        it 'finds the cycle time of issues created between `from` and `to`' do
+          # Median of 1, 2, 4
+          expect(subject.second[:value]).to eq('2.0')
+        end
+      end
+    end
+
+    context 'with other projects' do
+      let(:from) { 4.days.ago }
+      let(:created_at) { from }
+
+      before do
+        issue_1 = create(:closed_issue, created_at: created_at, closed_at: Time.now, project: create(:project, namespace: create(:group)))
+        issue_2 = create(:closed_issue, created_at: created_at, closed_at: Time.now,  project: project)
+        issue_3 = create(:closed_issue, created_at: created_at, closed_at: Time.now,  project: project_2)
+
+        issue_1.metrics.update!(first_mentioned_in_commit_at: 1.day.ago)
+        issue_2.metrics.update!(first_mentioned_in_commit_at: 2.days.ago)
+        issue_3.metrics.update!(first_mentioned_in_commit_at: 3.days.ago)
+      end
+
+      it 'does not find the cycle time of issues from them' do
+        # Median of  2, 3, not including first issue
+        expect(subject.second[:value]).to eq('2.5')
+      end
+    end
+  end
 end
