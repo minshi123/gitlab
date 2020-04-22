@@ -33,7 +33,7 @@ scope format: false do
 
     scope constraints: { id: /[^\0]+/ } do
       scope controller: :static_site_editor do
-        get '/sse/*id', action: :show, as: :show_sse
+        get '/sse/*id/-/(*vueroute)', action: :show, as: :show_sse
       end
     end
   end
