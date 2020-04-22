@@ -5,7 +5,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import eventHub from '~/deploy_keys/eventhub';
 import deployKeysApp from '~/deploy_keys/components/app.vue';
-import actionBtn from '~/deploy_keys/components/action_btn.vue';
 import DeployKeysStore from '~/deploy_keys/store/';
 
 describe('Deploy keys app component', () => {
