@@ -70,15 +70,6 @@ describe Projects::StaticSiteEditorController do
               expect(response).to have_gitlab_http_status(:not_found)
             end
           end
-
-          context 'when path contains vue routes' do
-            let(:default_params) { super().merge(id: 'master/README.md/-/success') }
-
-            it 'correctly assigns ref and path' do
-              expect(assigns(:ref)).to eq('master')
-              expect(assigns(:path)).to eq('README.md')
-            end
-          end
         end
       end
     end
