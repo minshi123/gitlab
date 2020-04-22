@@ -205,6 +205,12 @@ module Types
           null: true,
           description: 'Project services',
           resolver: Resolvers::Projects::ServicesResolver
+
+    field :alert_management_alerts,
+          Types::AlertManagement::AlertType.connection_type,
+          null: true,
+          description: 'Alert Management alerts',
+          resolver: Resolvers::AlertManagementAlertResolver
   end
 end
 
