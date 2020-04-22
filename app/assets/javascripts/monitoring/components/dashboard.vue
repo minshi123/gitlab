@@ -265,6 +265,10 @@ export default {
       logsPath: this.logsPath,
       currentEnvironmentName: this.currentEnvironmentName,
     });
+    window.addEventListener('keyup', this.onKeyup);
+  },
+  destroyed() {
+    window.removeEventListener('keyup', this.onKeyup);
   },
   mounted() {
     if (!this.hasMetrics) {
@@ -377,6 +381,12 @@ export default {
         title: document.title,
       });
       this.selectedTimeRange = { start, end };
+    },
+    onKeyup(event) {
+      const { key } = event;
+      if (key === 'Esc' || key === 'Escape') {
+        this.setNoExpandedPanel();
+      }
     },
     onExpandPanel(panelId) {
       this.setExpandedPanel(panelId);
@@ -570,12 +580,12 @@ export default {
             ref="backFullDashboardBtn"
             v-gl-tooltip
             class="mr-3 my-3"
-            :title="s__('Metrics|Go back')"
+            :title="s__('Metrics|Go back (Esc)')"
             @click="setNoExpandedPanel()"
           >
             <icon
               name="arrow-left"
-              :aria-label="s__('Metrics|Go back')"
+              :aria-label="s__('Metrics|Go back (Esc)')"
               class="text-secondary"
               style="top: 0;"
             />

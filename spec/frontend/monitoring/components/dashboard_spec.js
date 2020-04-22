@@ -285,6 +285,38 @@ describe('Dashboard', () => {
           );
         });
       });
+
+      it('restores dashboard from full screen by typing `Esc`', () => {
+        createShallowWrapper({ hasMetrics: true });
+        setupStoreWithData(wrapper.vm.$store);
+
+        return wrapper.vm.$nextTick().then(() => {
+          jest.spyOn(store, 'dispatch');
+
+          window.dispatchEvent(new KeyboardEvent('keyup', { key: 'Esc' }));
+
+          expect(store.dispatch).toHaveBeenCalledWith(
+            `monitoringDashboard/setNoExpandedPanel`,
+            undefined,
+          );
+        });
+      });
+
+      it('restores dashboard from full screen by typing `Escape`', () => {
+        createShallowWrapper({ hasMetrics: true });
+        setupStoreWithData(wrapper.vm.$store);
+
+        return wrapper.vm.$nextTick().then(() => {
+          jest.spyOn(store, 'dispatch');
+
+          window.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
+
+          expect(store.dispatch).toHaveBeenCalledWith(
+            `monitoringDashboard/setNoExpandedPanel`,
+            undefined,
+          );
+        });
+      });
     });
   });
 
