@@ -15,6 +15,7 @@ describe('Vulnerability Footer', () => {
   let wrapper;
 
   const minimumProps = {
+    discussionsUrl: `/discussions`,
     solutionInfo: {
       hasDownload: false,
       hasMr: false,
@@ -63,6 +64,7 @@ describe('Vulnerability Footer', () => {
 
   afterEach(() => {
     wrapper.destroy();
+    wrapper = null;
     mockAxios.reset();
   });
 
