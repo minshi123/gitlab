@@ -3,7 +3,7 @@
 %p
   = s_("Pick a name for the application, and we'll give you a unique project access token.")
 
-= form_for token, url: path, method: :post, html: { class: 'js-requires-input' } do |f|
+= form_for token, as: :project_access_token, url: path, method: :post, html: { class: 'js-requires-input' } do |f|
 
   = form_errors(token)
 
