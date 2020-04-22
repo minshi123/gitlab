@@ -15,9 +15,7 @@ export default {
 <template>
   <div>
     <gl-datepicker :target="null" :min-date="new Date()">
-      <template #field>
-        <slot></slot>
-      </template>
+      <slot></slot>
     </gl-datepicker>
   </div>
 </template>
