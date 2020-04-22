@@ -18,16 +18,24 @@ describe Vulnerabilities::ExportPolicy do
     context 'with a user that is an author of vulnerability export' do
       let(:author) { user }
 
-      context 'when user has access to vulnerabilities from the project' do
-        before do
-          project.add_developer(user)
+      context 'when the exportable is a project' do
+        context 'when user has access to vulnerabilities from the project' do
+          before do
+            project.add_developer(user)
+          end
+
+          it { is_expected.to be_allowed(:read_vulnerability_export) }
         end
 
-        it { is_expected.to be_allowed(:read_vulnerability_export) }
+        context 'when user has no access to vulnerabilities from the project' do
+          it { is_expected.to be_disallowed(:read_vulnerability_export) }
+        end
       end
 
-      context 'when user has no access to vulnerabilities from the project' do
-        it { is_expected.to be_disallowed(:read_vulnerability_export) }
+      context 'when the exportable is a user' do
+        let(:vulnerability_export) { create(:vulnerability_export, :finished, :csv, :with_csv_file, project: nil, author: author) }
+
+        it { is_expected.to be_allowed(:read_vulnerability_export) }
       end
     end
 
