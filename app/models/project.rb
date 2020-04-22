@@ -1993,6 +1993,16 @@ class Project < ApplicationRecord
     end
   end
 
+  def ci_instance_variables_for(ref:)
+    cache_key = "ci_instance_variables_for:project:#{self&.id}:ref:#{ref}"
+
+    ::Gitlab::SafeRequestStore.fetch(cache_key) do
+      variables = Ci::InstanceVariable.all
+      variables = variables.unprotected unless protected_for?(ref)
+      variables
+    end
+  end
+
   def protected_for?(ref)
     raise Repository::AmbiguousRefError if repository.ambiguous_ref?(ref)
 
