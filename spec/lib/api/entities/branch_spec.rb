@@ -20,7 +20,8 @@ describe API::Entities::Branch do
         developers_can_push: false,
         developers_can_merge: false,
         can_push: false,
-        default: true
+        default: true,
+        web_url: "#{Gitlab.config.gitlab.url}/#{project.full_path}/-/tree/master"
       )
     end
   end
