@@ -15,12 +15,32 @@ describe AlertManagement::Alert do
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:started_at) }
 
-    it { is_expected.to validate_uniqueness_of(:fingerprint).scoped_to(:project) }
-
     it { is_expected.to validate_length_of(:title).is_at_most(200) }
     it { is_expected.to validate_length_of(:description).is_at_most(1000) }
     it { is_expected.to validate_length_of(:service).is_at_most(100) }
     it { is_expected.to validate_length_of(:monitoring_tool).is_at_most(100) }
+
+    describe 'fingerprint' do
+      let_it_be(:fingerprint) { 'fingerprint' }
+      let_it_be(:existing_alert) { create(:alert_management_alert, fingerprint: fingerprint) }
+      let(:new_alert) { build(:alert_management_alert, fingerprint: fingerprint, project: project) }
+
+      subject { new_alert }
+
+      context 'adding an alert with the same fingerprint' do
+        context 'same project' do
+          let(:project) { existing_alert.project }
+
+          it { is_expected.not_to be_valid }
+        end
+
+        context 'different project' do
+          let(:project) { create(:project) }
+
+          it { is_expected.to be_valid }
+        end
+      end
+    end
 
     describe 'hosts' do
       subject(:alert) { build(:alert_management_alert, hosts: hosts) }
