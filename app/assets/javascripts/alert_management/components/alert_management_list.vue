@@ -95,7 +95,7 @@ export default {
       </div>
 
       <gl-table
-        class="alerts-list mt-3"
+        class="mt-3"
         :items="alerts"
         :fields="$options.fields"
         :show-empty="true"

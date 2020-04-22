@@ -1,0 +1,25 @@
+.alert-management-list {
+  table {
+    color: #707070;
+
+    tr {
+      td,
+      th {
+        @include gl-p-4;
+      }
+
+      th {
+        background-color: transparent;
+        font-weight: $gl-font-weight-bold;
+        color: #666;
+        @include gl-border-b-1;
+        @include gl-border-b-solid;
+        border-color: #f2f2f2;
+      }
+
+      td {
+        @include gl-border-0;
+      }
+    }
+  }
+}
