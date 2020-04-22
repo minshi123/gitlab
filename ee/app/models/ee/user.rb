@@ -335,6 +335,10 @@ module EE
       filter == UserPreference::FEATURE_FILTER_EXPERIMENT
     end
 
+    def vulnerabilities
+      InstanceSecurityDashboard.new(self).vulnerabilities
+    end
+
     protected
 
     override :password_required?
