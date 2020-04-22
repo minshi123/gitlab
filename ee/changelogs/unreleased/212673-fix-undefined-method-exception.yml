@@ -1,5 +1,5 @@
 ---
-title: Fixes exception raised when viewing repository settings
+title: Fix repository settings page loading issues for some imported projects with pull mirroring
 merge_request: 28879
 author:
 type: fixed
