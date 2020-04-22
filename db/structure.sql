@@ -1032,6 +1032,28 @@ CREATE SEQUENCE public.ci_group_variables_id_seq
 
 ALTER SEQUENCE public.ci_group_variables_id_seq OWNED BY public.ci_group_variables.id;
 
+CREATE TABLE public.ci_instance_variables (
+    id bigint NOT NULL,
+    key text NOT NULL,
+    encrypted_value text,
+    encrypted_value_iv text,
+    variable_type smallint DEFAULT 1 NOT NULL,
+    masked boolean DEFAULT false,
+    protected boolean DEFAULT false,
+    CONSTRAINT check_07a45a5bcb CHECK ((char_length(encrypted_value_iv) <= 255)),
+    CONSTRAINT check_5aede12208 CHECK ((char_length(key) <= 255)),
+    CONSTRAINT check_5ebd0515a0 CHECK ((char_length(encrypted_value) <= 1024))
+);
+
+CREATE SEQUENCE public.ci_instance_variables_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.ci_instance_variables_id_seq OWNED BY public.ci_instance_variables.id;
+
 CREATE TABLE public.ci_job_artifacts (
     id integer NOT NULL,
     project_id integer NOT NULL,
@@ -7088,6 +7110,8 @@ ALTER TABLE ONLY public.ci_daily_report_results ALTER COLUMN id SET DEFAULT next
 
 ALTER TABLE ONLY public.ci_group_variables ALTER COLUMN id SET DEFAULT nextval('public.ci_group_variables_id_seq'::regclass);
 
+ALTER TABLE ONLY public.ci_instance_variables ALTER COLUMN id SET DEFAULT nextval('public.ci_instance_variables_id_seq'::regclass);
+
 ALTER TABLE ONLY public.ci_job_artifacts ALTER COLUMN id SET DEFAULT nextval('public.ci_job_artifacts_id_seq'::regclass);
 
 ALTER TABLE ONLY public.ci_job_variables ALTER COLUMN id SET DEFAULT nextval('public.ci_job_variables_id_seq'::regclass);
@@ -7739,6 +7763,9 @@ ALTER TABLE ONLY public.ci_daily_report_results
 
 ALTER TABLE ONLY public.ci_group_variables
     ADD CONSTRAINT ci_group_variables_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.ci_instance_variables
+    ADD CONSTRAINT ci_instance_variables_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.ci_job_artifacts
     ADD CONSTRAINT ci_job_artifacts_pkey PRIMARY KEY (id);
@@ -13269,5 +13296,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200416111111
 20200416120128
 20200416120354
+20200422091541
 \.
 
