@@ -32,6 +32,18 @@ class PostReceiveService
     broadcast_message = BroadcastMessage.current_banner_messages&.last&.message
     response.add_alert_message(broadcast_message)
 
+    storage_limit_alert = Namespaces::CheckStorageSizeService.new(project.namespace, user).payload[:alert]
+    if storage_limit_alert && storage_limit_alert.alert_level && storage_limit_alert.show_alert?
+      message =
+      alert_message = %q(
+      #{storage_limit_alert.alert_level.to_s.uppercase}
+
+      #{storage_limit_alert.current_usage_message}
+      #{storage_limit_alert.explanation_message}
+      )
+      response.add_alert_message(alert_message)
+    end
+
     response.add_merge_request_urls(merge_request_urls)
 
     # Neither User nor Project are guaranteed to be returned; an orphaned write deploy
