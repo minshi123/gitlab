@@ -40,6 +40,8 @@ module Gitlab
       end
 
       def get_parsed_data
+        return get_parsed_sectional_data if Feature.enabled?(:sectional_codeowners, default: false)
+
         parsed = {}
 
         data.lines.each do |line|
