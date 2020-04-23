@@ -290,7 +290,7 @@
         {
           "kind": "OBJECT",
           "name": "AlertManagementAlert",
-          "description": "Describes an alert from the projects Alert Management.",
+          "description": "Describes an alert from the project's Alert Management",
           "fields": [
             {
               "name": "endedAt",
@@ -313,13 +313,9 @@
 
               ],
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -377,13 +373,9 @@
 
               ],
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "ENUM",
-                  "name": "AlertManagementSeverity",
-                  "ofType": null
-                }
+                "kind": "ENUM",
+                "name": "AlertManagementSeverity",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -395,13 +387,9 @@
 
               ],
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Time",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "Time",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -413,13 +401,9 @@
 
               ],
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "ENUM",
-                  "name": "AlertManagementStatus",
-                  "ofType": null
-                }
+                "kind": "ENUM",
+                "name": "AlertManagementStatus",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -431,13 +415,9 @@
 
               ],
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -571,37 +551,37 @@
           "interfaces": null,
           "enumValues": [
             {
-              "name": "critical",
+              "name": "CRITICAL",
               "description": "Critical severity",
               "isDeprecated": false,
               "deprecationReason": null
             },
             {
-              "name": "high",
+              "name": "HIGH",
               "description": "High severity",
               "isDeprecated": false,
               "deprecationReason": null
             },
             {
-              "name": "medium",
+              "name": "MEDIUM",
               "description": "Medium severity",
               "isDeprecated": false,
               "deprecationReason": null
             },
             {
-              "name": "low",
+              "name": "LOW",
               "description": "Low severity",
               "isDeprecated": false,
               "deprecationReason": null
             },
             {
-              "name": "info",
+              "name": "INFO",
               "description": "Info severity",
               "isDeprecated": false,
               "deprecationReason": null
             },
             {
-              "name": "unknown",
+              "name": "UNKNOWN",
               "description": "Unknown severity",
               "isDeprecated": false,
               "deprecationReason": null
@@ -618,25 +598,25 @@
           "interfaces": null,
           "enumValues": [
             {
-              "name": "triggered",
+              "name": "TRIGGERED",
               "description": "Triggered status",
               "isDeprecated": false,
               "deprecationReason": null
             },
             {
-              "name": "acknowledged",
+              "name": "ACKNOWLEDGED",
               "description": "Acknowledged status",
               "isDeprecated": false,
               "deprecationReason": null
             },
             {
-              "name": "resolved",
+              "name": "RESOLVED",
               "description": "Resolved status",
               "isDeprecated": false,
               "deprecationReason": null
             },
             {
-              "name": "ignored",
+              "name": "IGNORED",
               "description": "Ignored status",
               "isDeprecated": false,
               "deprecationReason": null
@@ -19490,8 +19470,31 @@
           "description": null,
           "fields": [
             {
+              "name": "alertManagementAlert",
+              "description": "A single Alert Management alert of the project",
+              "args": [
+                {
+                  "name": "iid",
+                  "description": "IID of the alert. For example, \"1\"",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "AlertManagementAlert",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "alertManagementAlerts",
-              "description": "Alert Management alerts",
+              "description": "Alert Management alerts of the project",
               "args": [
                 {
                   "name": "iid",

@@ -104,7 +104,7 @@ type AdminSidekiqQueuesDeleteJobsPayload {
 }
 
 """
-Describes an alert from the projects Alert Management.
+Describes an alert from the project's Alert Management
 """
 type AlertManagementAlert {
   """
@@ -115,7 +115,7 @@ type AlertManagementAlert {
   """
   Number of events of this alert
   """
-  eventCount: Int!
+  eventCount: Int
 
   """
   Internal ID of the alert
@@ -135,22 +135,22 @@ type AlertManagementAlert {
   """
   Severity of the alert
   """
-  severity: AlertManagementSeverity!
+  severity: AlertManagementSeverity
 
   """
   Timestamp the alert was raised
   """
-  startedAt: Time!
+  startedAt: Time
 
   """
   Status of the alert
   """
-  status: AlertManagementStatus!
+  status: AlertManagementStatus
 
   """
   Title of the alert
   """
-  title: String!
+  title: String
 }
 
 """
@@ -195,32 +195,32 @@ enum AlertManagementSeverity {
   """
   Critical severity
   """
-  critical
+  CRITICAL
 
   """
   High severity
   """
-  high
+  HIGH
 
   """
   Info severity
   """
-  info
+  INFO
 
   """
   Low severity
   """
-  low
+  LOW
 
   """
   Medium severity
   """
-  medium
+  MEDIUM
 
   """
   Unknown severity
   """
-  unknown
+  UNKNOWN
 }
 
 """
@@ -230,22 +230,22 @@ enum AlertManagementStatus {
   """
   Acknowledged status
   """
-  acknowledged
+  ACKNOWLEDGED
 
   """
   Ignored status
   """
-  ignored
+  IGNORED
 
   """
   Resolved status
   """
-  resolved
+  RESOLVED
 
   """
   Triggered status
   """
-  triggered
+  TRIGGERED
 }
 
 """
@@ -6439,7 +6439,17 @@ enum PipelineStatusEnum {
 
 type Project {
   """
-  Alert Management alerts
+  A single Alert Management alert of the project
+  """
+  alertManagementAlert(
+    """
+    IID of the alert. For example, "1"
+    """
+    iid: String
+  ): AlertManagementAlert
+
+  """
+  Alert Management alerts of the project
   """
   alertManagementAlerts(
     """
