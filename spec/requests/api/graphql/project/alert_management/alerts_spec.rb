@@ -6,8 +6,8 @@ describe 'getting Alert Management Alerts' do
 
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:alert_1) { create(:alert_management_alert, project: project) }
-  let_it_be(:alert_2) { create(:alert_management_alert, project: project) }
+  let_it_be(:alert_1) { create(:alert_management_alert, :all_fields, project: project) }
+  let_it_be(:alert_2) { create(:alert_management_alert, :all_fields, project: project) }
 
   let(:fields) do
     <<~QUERY
@@ -51,24 +51,18 @@ describe 'getting Alert Management Alerts' do
       it_behaves_like 'a working graphql query'
 
       it { expect(alerts.size).to eq(2) }
-      it { expect(first_alert['iid']).to eql alert_2.iid.to_s }
-      it { expect(first_alert['title']).to eql alert_2.title }
-      it { expect(first_alert['severity']).to eql alert_2.severity }
-      it { expect(first_alert['status']).to eql alert_2.status }
-      it { expect(first_alert['monitoring_tool']).to eql alert_2.monitoring_tool }
-      it { expect(first_alert['service']).to eql alert_2.service }
-      it { expect(first_alert['eventCount']).to eql alert_2.events }
-
-      it do
-        expect(
-          first_alert['startedAt']
-        ).to eql alert_2.started_at.strftime('%Y-%m-%dT%H:%M:%SZ')
-      end
-
-      it do
-        expect(
-          first_alert['endedAt']
-        ).to eql alert_2.ended_at&.strftime('%Y-%m-%dT%H:%M:%SZ')
+      it 'returns the correct properties of the alert' do
+        expect(first_alert).to include(
+          'iid' => alert_2.iid.to_s,
+          'title' => alert_2.title,
+          'severity' => alert_2.severity.upcase,
+          'status' => alert_2.status.upcase,
+          'monitoringTool' => alert_2.monitoring_tool,
+          'service' => alert_2.service,
+          'eventCount' => alert_2.events,
+          'startedAt' => alert_2.started_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
+          'endedAt' => alert_2.ended_at.strftime('%Y-%m-%dT%H:%M:%SZ')
+        )
       end
 
       context 'with iid given' do
@@ -83,7 +77,7 @@ describe 'getting Alert Management Alerts' do
         it_behaves_like 'a working graphql query'
 
         it { expect(alerts.size).to eq(1) }
-        it { expect(first_alert['iid']).to eql alert_1.iid.to_s }
+        it { expect(first_alert['iid']).to eq(alert_1.iid.to_s) }
       end
     end
   end

@@ -6,12 +6,9 @@ module Types
       graphql_name 'AlertManagementSeverity'
       description 'Alert severity values'
 
-      value 'critical', 'Critical severity'
-      value 'high', 'High severity'
-      value 'medium', 'Medium severity'
-      value 'low', 'Low severity'
-      value 'info', 'Info severity'
-      value 'unknown', 'Unknown severity'
+      ::AlertManagement::Alert.severities.keys.each do |severity|
+        value severity.upcase, value: severity, description: "#{severity.titleize} severity"
+      end
     end
   end
 end

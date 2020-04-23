@@ -7,6 +7,7 @@ describe AlertManagement::AlertsFinder, '#execute' do
   let_it_be(:project) { create(:project) }
   let_it_be(:alert_1) { create(:alert_management_alert, project: project) }
   let_it_be(:alert_2) { create(:alert_management_alert, project: project) }
+  let_it_be(:alert_3) { create(:alert_management_alert) }
   let(:params) { {} }
 
   subject { described_class.new(current_user, project, params).execute }

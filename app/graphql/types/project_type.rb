@@ -209,8 +209,14 @@ module Types
     field :alert_management_alerts,
           Types::AlertManagement::AlertType.connection_type,
           null: true,
-          description: 'Alert Management alerts',
+          description: 'Alert Management alerts of the project',
           resolver: Resolvers::AlertManagementAlertResolver
+
+    field :alert_management_alert,
+          Types::AlertManagement::AlertType,
+          null: true,
+          description: 'A single Alert Management alert of the project',
+          resolver: Resolvers::AlertManagementAlertResolver.single
   end
 end
 

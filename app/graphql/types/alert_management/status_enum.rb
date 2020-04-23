@@ -6,10 +6,9 @@ module Types
       graphql_name 'AlertManagementStatus'
       description 'Alert status values'
 
-      value 'triggered', 'Triggered status'
-      value 'acknowledged', 'Acknowledged status'
-      value 'resolved', 'Resolved status'
-      value 'ignored', 'Ignored status'
+      ::AlertManagement::Alert.statuses.keys.each do |status|
+        value status.upcase, value: status, description: "#{status.titleize} status"
+      end
     end
   end
 end

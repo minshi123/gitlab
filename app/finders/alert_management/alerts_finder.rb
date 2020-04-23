@@ -2,8 +2,6 @@
 
 module AlertManagement
   class AlertsFinder
-    attr_reader :current_user, :project, :params
-
     def initialize(current_user, project, params)
       @current_user = current_user
       @project = project
@@ -19,11 +17,12 @@ module AlertManagement
 
     private
 
+    attr_reader :current_user, :project, :params
+
     def by_iid(collection)
       return collection unless params[:iid]
 
-      found = collection.find_by_iid(params[:iid])
-      found ? [found] : AlertManagement::Alert.none
+      collection.for_iid(params[:iid])
     end
 
     def authorized?

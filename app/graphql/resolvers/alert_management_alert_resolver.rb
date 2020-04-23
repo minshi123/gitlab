@@ -9,9 +9,10 @@ module Resolvers
     type Types::AlertManagement::AlertType, null: true
 
     def resolve(**args)
-      return AlertManagement::Alert.none if object.nil?
+      parent = object.respond_to?(:sync) ? object.sync : object
+      return AlertManagement::Alert.none if parent.nil?
 
-      AlertManagement::AlertsFinder.new(context[:current_user], object, args).execute
+      AlertManagement::AlertsFinder.new(context[:current_user], parent, args).execute
     end
   end
 end

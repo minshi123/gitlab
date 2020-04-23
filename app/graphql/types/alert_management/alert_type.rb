@@ -4,7 +4,7 @@ module Types
   module AlertManagement
     class AlertType < BaseObject
       graphql_name 'AlertManagementAlert'
-      description 'Describes an alert from the projects Alert Management.'
+      description "Describes an alert from the project's Alert Management"
 
       authorize :read_alert_management_alerts
 
@@ -15,17 +15,17 @@ module Types
 
       field :title,
             GraphQL::STRING_TYPE,
-            null: false,
+            null: true,
             description: 'Title of the alert'
 
       field :severity,
             AlertManagement::SeverityEnum,
-            null: false,
+            null: true,
             description: 'Severity of the alert'
 
       field :status,
             AlertManagement::StatusEnum,
-            null: false,
+            null: true,
             description: 'Status of the alert'
 
       field :service,
@@ -40,7 +40,7 @@ module Types
 
       field :started_at,
             Types::TimeType,
-            null: false,
+            null: true,
             description: 'Timestamp the alert was raised'
 
       field :ended_at,
@@ -50,7 +50,7 @@ module Types
 
       field :event_count,
             GraphQL::INT_TYPE,
-            null: false,
+            null: true,
             description: 'Number of events of this alert',
             method: :events
     end
