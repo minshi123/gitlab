@@ -15,7 +15,7 @@ describe('AlertManagementList', () => {
   const findAlertsTable = () => wrapper.find(GlTable);
   const findAlert = () => wrapper.find(GlAlert);
 
-  function mountComponent({ stubs = {} } = {}) {
+  function mountComponent({ stubs = {}, alertManagementEnabled = false } = {}) {
     wrapper = mount(AlertManagementList, {
       localVue,
       store,
@@ -23,7 +23,7 @@ describe('AlertManagementList', () => {
         indexPath: '/path',
         enableAlertManagementPath: '/link',
         emptyAlertSvgPath: 'illustration/path',
-        alertManagementEnabled: false,
+        alertManagementEnabled,
       },
       stubs: {
         ...stubChildren(AlertManagementList),
@@ -57,18 +57,14 @@ describe('AlertManagementList', () => {
   });
 
   describe('Alerts table', () => {
-    beforeEach(() => {
-      mountComponent();
-    });
-
     it('shows empty list', () => {
-      wrapper.setProps({
-        alertManagementEnabled: true,
-      });
       store.state.list = {
         alerts: [],
         loading: false,
       };
+
+      mountComponent({ alertManagementEnabled: true });
+
       return wrapper.vm.$nextTick().then(() => {
         expect(findAlertsTable().exists()).toBe(true);
         expect(findAlert().text()).toContain('No alerts available to display');
