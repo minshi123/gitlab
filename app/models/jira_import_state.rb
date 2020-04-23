@@ -46,7 +46,10 @@ class JiraImportState < ApplicationRecord
     after_transition initial: :scheduled do |state, _|
       state.run_after_commit do
         job_id = Gitlab::JiraImport::Stage::StartImportWorker.perform_async(project.id)
-        state.update(jid: job_id) if job_id
+        if job_id
+          state.update(jid: job_id)
+          state.update(scheduled_at: Time.now)
+        end
       end
     end
 
