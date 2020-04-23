@@ -83,6 +83,16 @@ class ProjectPolicy < BasePolicy
     project.merge_requests_allowing_push_to_user(user).any?
   end
 
+  desc "Deploy token with read_package_registry scope"
+  condition(:read_package_deploy_token) do
+    user.is_a?(ProjectDeployToken) && user.has_access_to?(project) && user.deploy_token.read_package_registry
+  end
+
+  desc "Deploy token with write_package_registry scope"
+  condition(:write_package_deploy_token) do
+    user.is_a?(ProjectDeployToken) && user.has_access_to?(project) && user.deploy_token.write_package_registry
+  end
+
   with_scope :subject
   condition(:forking_allowed) do
     @subject.feature_available?(:forking, @user)
@@ -481,6 +491,9 @@ class ProjectPolicy < BasePolicy
   end
 
   rule { admin }.enable :change_repository_storage
+
+  rule { read_package_deploy_token }.enable :read_package
+  rule { write_package_deploy_token }.enable :create_package
 
   private
 

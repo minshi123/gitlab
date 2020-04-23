@@ -11,6 +11,8 @@ describe API::MavenPackages do
   let_it_be(:jar_file) { package.package_files.with_file_name_like('%.jar').first }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
   let_it_be(:job) { create(:ci_build, user: user) }
+  let_it_be(:deploy_token) { create(:deploy_token, read_package_registry: true) }
+  let_it_be(:project_deploy_token) { create(:project_deploy_token, deploy_token: deploy_token, project: project) }
 
   let(:workhorse_token) { JWT.encode({ 'iss' => 'gitlab-workhorse' }, Gitlab::Workhorse.secret, 'HS256') }
   let(:headers) { { 'GitLab-Workhorse' => '1.0', Gitlab::Workhorse::INTERNAL_API_REQUEST_HEADER => workhorse_token } }
@@ -125,6 +127,13 @@ describe API::MavenPackages do
 
       it 'allows download with job token' do
         download_file(package_file.file_name, job_token: job.token)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response.media_type).to eq('application/octet-stream')
+      end
+
+      it 'allows download with deploy token' do
+        download_file(package_file.file_name, deploy_token: deploy_token.token)
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response.media_type).to eq('application/octet-stream')
