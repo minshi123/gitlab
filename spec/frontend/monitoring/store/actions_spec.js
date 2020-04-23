@@ -20,6 +20,8 @@ import {
   fetchPrometheusMetric,
   setInitialState,
   filterEnvironments,
+  setExpandedPanel,
+  setNoExpandedPanel,
   setGettingStartedEmptyState,
   duplicateSystemDashboard,
 } from '~/monitoring/stores/actions';
@@ -871,6 +873,42 @@ describe('Monitoring store actions', () => {
 
         done();
       });
+    });
+  });
+
+  describe('setExpandedPanel', () => {
+    let state;
+
+    beforeEach(() => {
+      state = storeState();
+    });
+
+    it('Sets a panel as expanded', () => {
+      return testAction(
+        setExpandedPanel,
+        'PANEL_ID',
+        state,
+        [{ type: types.SET_EXPANDED_PANEL, payload: 'PANEL_ID' }],
+        [],
+      );
+    });
+  });
+
+  describe('setNoExpandedPanel', () => {
+    let state;
+
+    beforeEach(() => {
+      state = storeState();
+    });
+
+    it('Sets a panel as expanded', () => {
+      return testAction(
+        setNoExpandedPanel,
+        undefined,
+        state,
+        [{ type: types.SET_EXPANDED_PANEL, payload: null }],
+        [],
+      );
     });
   });
 });
