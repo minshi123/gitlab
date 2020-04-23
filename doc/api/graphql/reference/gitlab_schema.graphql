@@ -123,6 +123,16 @@ type AlertManagementAlert {
   iid: ID!
 
   """
+  Monitoring tool the alert came from
+  """
+  monitoringTool: String
+
+  """
+  Service the alert came from
+  """
+  service: String
+
+  """
   Severity of the alert
   """
   severity: AlertManagementSeverity!

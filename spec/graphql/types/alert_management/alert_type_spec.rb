@@ -13,6 +13,8 @@ describe GitlabSchema.types['AlertManagementAlert'] do
       title
       severity
       status
+      service
+      monitoring_tool
       started_at
       ended_at
       event_count

@@ -45,6 +45,8 @@ Describes an alert from the projects Alert Management.
 | `endedAt` | Time | Timestamp the alert ended |
 | `eventCount` | Int! | Number of events of this alert |
 | `iid` | ID! | Internal ID of the alert |
+| `monitoringTool` | String | Monitoring tool the alert came from |
+| `service` | String | Service the alert came from |
 | `severity` | AlertManagementSeverity! | Severity of the alert |
 | `startedAt` | Time! | Timestamp the alert was raised |
 | `status` | AlertManagementStatus! | Status of the alert |

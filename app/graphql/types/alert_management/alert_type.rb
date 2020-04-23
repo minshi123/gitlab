@@ -8,9 +8,6 @@ module Types
 
       authorize :read_alert_management_alerts
 
-      # TODO
-      # present_using AlertManagementAlertPresenter
-
       field :iid,
             GraphQL::ID_TYPE,
             null: false,
@@ -30,6 +27,16 @@ module Types
             AlertManagement::StatusEnum,
             null: false,
             description: 'Status of the alert'
+
+      field :service,
+            GraphQL::STRING_TYPE,
+            null: true,
+            description: 'Service the alert came from'
+
+      field :monitoring_tool,
+            GraphQL::STRING_TYPE,
+            null: true,
+            description: 'Monitoring tool the alert came from'
 
       field :started_at,
             Types::TimeType,
