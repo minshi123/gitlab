@@ -54,6 +54,8 @@ exports[`PackageTitle renders with tags 1`] = `
      
     <!---->
      
+    <!---->
+     
     <div
       class="d-flex align-items-center append-right-default"
     >
@@ -115,6 +117,8 @@ exports[`PackageTitle renders without tags 1`] = `
         maven
       </span>
     </div>
+     
+    <!---->
      
     <!---->
      
