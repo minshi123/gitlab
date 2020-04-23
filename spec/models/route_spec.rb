@@ -62,6 +62,17 @@ describe Route do
     end
   end
 
+  describe '.source_of' do
+    let!(:group) { create(:group, path: 'test', name: 'test') }
+    let!(:project) { create(:group, path: 'foo', name: 'foo', parent: group) }
+
+    it 'returns source of matching route' do
+      expect(described_class.source_of('test')).to eq(group)
+      expect(described_class.source_of('test/foo')).to eq(project)
+      expect(described_class.source_of('test/bar')).to be_nil
+    end
+  end
+
   describe '#rename_descendants' do
     let!(:nested_group) { create(:group, path: 'test', name: 'test', parent: group) }
     let!(:deep_nested_group) { create(:group, path: 'foo', name: 'foo', parent: nested_group) }
