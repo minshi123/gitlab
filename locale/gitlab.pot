@@ -2420,9 +2420,6 @@ msgstr ""
 msgid "Are you sure that you want to unarchive this project?"
 msgstr ""
 
-msgid "Are you sure you want to cancel creating this comment?"
-msgstr ""
-
 msgid "Are you sure you want to cancel editing this comment?"
 msgstr ""
 
@@ -24229,6 +24226,9 @@ msgid "Your comment could not be submitted! Please check your network connection
 msgstr ""
 
 msgid "Your comment could not be updated! Please check your network connection and try again."
+msgstr ""
+
+msgid "Your comment will be discarded."
 msgstr ""
 
 msgid "Your custom stage '%{title}' was created"
