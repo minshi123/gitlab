@@ -10,7 +10,6 @@ localVue.use(Vuex);
 describe('AlertManagementList', () => {
   let wrapper;
   let store;
-  let state;
 
   const findAlertsTable = () => wrapper.find(GlTable);
   const findAlert = () => wrapper.find(GlAlert);
@@ -32,25 +31,25 @@ describe('AlertManagementList', () => {
     });
   }
 
+  beforeEach(() => {
+    store = new Vuex.Store({
+      modules: {
+        list: {
+          namespaced: true,
+        },
+      },
+    });
+    mountComponent();
+  });
+
   afterEach(() => {
     if (wrapper) {
       wrapper.destroy();
+      store = null;
     }
   });
 
   describe('alert management feature renders empty state', () => {
-    beforeEach(() => {
-      store = new Vuex.Store({
-        modules: {
-          list: {
-            namespaced: true,
-            state,
-          },
-        },
-      });
-      mountComponent();
-    });
-
     it('shows empty state', () => {
       expect(wrapper.find(GlEmptyState).exists()).toBe(true);
     });
