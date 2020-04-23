@@ -2391,9 +2391,8 @@ class Project < ApplicationRecord
     jira_imports.last
   end
 
-  override :after_wiki_activity
-  def after_wiki_activity
-    touch(:last_activity_at, :last_repository_updated_at)
+  def bots
+    users.where(user_type: :project_bot)
   end
 
   private
