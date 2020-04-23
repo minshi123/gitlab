@@ -230,8 +230,8 @@ export default {
           return;
         }
         event.preventDefault();
-        let filename = getFilename(event) || `design_${Date.now()}.png`;
-        if (filename === 'image.png') {
+        let filename = getFilename(event);
+        if (!filename || filename === 'image.png') {
           filename = `design_${Date.now()}.png`;
         }
         const newFile = new File([files[0]], filename);
