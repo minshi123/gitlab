@@ -2,10 +2,15 @@
 import { mapState } from 'vuex';
 import { GlEmptyState, GlButton, GlLoadingIcon, GlTable, GlAlert } from '@gitlab/ui';
 import { __ } from '~/locale';
+import getAlerts from '../graphql/queries/getAlerts.query.graphql';
 
 const tdClass = 'table-col d-flex';
 
 export default {
+  i18n: {
+    noAlertsMsg:  __('No alerts available to display. If you think you\'re seeing this message in error, refresh the page.'),
+    errorMsg: __('No alerts received from the configured endpoint. Confirm your endpoint\'s configuration details to ensure alerts appear.'),
+  },
   fields: [
     {
       key: 'severity',
@@ -66,15 +71,38 @@ export default {
       required: true,
     },
   },
+  apollo: {
+      alerts: {
+        query: getAlerts,
+        variables() {
+          return {
+            projectPath: this.indexPath,
+          }
+        },
+        error() {
+          this.errored = true;
+        }
+      },
+  },
   data() {
     return {
+      errored: false,
       isAlertDismissed: false,
+      isErrorAlertDismissed: false,
     };
   },
   computed: {
-    ...mapState('list', ['alerts', 'loading']),
+    // ...mapState('list', ['alerts', 'loading']),
     showNoAlertsMsg() {
-      return !this.alerts.length && !this.isAlertDismissed;
+      return this.alerts && !this.alerts.length && !this.isAlertDismissed;
+    },
+    showErrorMsg(){
+     // return this.errored && !this.isErrorAlertDismissed;
+      return false;
+    },
+    loading() {
+      // return this.$apollo.queries.alerts.loading;
+      return true;
     },
   },
 };
@@ -84,27 +112,27 @@ export default {
   <div>
     <div v-if="alertManagementEnabled" class="alert-management-list">
       <gl-alert v-if="showNoAlertsMsg" @dismiss="isAlertDismissed = true">
-        {{
-          __(
-            `No alerts available to display. If you think you're seeing this message in error, refresh the page.`,
-          )
-        }}
+        {{ $options.i18n.noAlertsMsg}}
       </gl-alert>
-      <div v-if="loading" class="py-3">
-        <gl-loading-icon size="md" />
-      </div>
+      <gl-alert v-if="showErrorMsg" @dismiss="isErrorAlertDismissed = true" variant="danger">
+        {{ $options.i18n.errorMsg}}
+      </gl-alert>
 
       <gl-table
         class="mt-3"
         :items="alerts"
         :fields="$options.fields"
         :show-empty="true"
+        :busy="loading"
         fixed
         stacked="sm"
         tbody-tr-class="table-row mb-4"
       >
         <template #empty>
           {{ __('No alerts to display.') }}
+        </template>
+        <template #table-busy>
+          <gl-loading-icon size="lg" color="dark" class="mt-3"/>
         </template>
       </gl-table>
     </div>
