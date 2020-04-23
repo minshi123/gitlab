@@ -13,9 +13,7 @@ export default {
 </script>
 
 <template>
-  <div>
-    <gl-datepicker :target="null" :min-date="new Date()">
-      <slot></slot>
-    </gl-datepicker>
-  </div>
+  <gl-datepicker :target="null" :min-date="new Date()">
+    <slot></slot>
+  </gl-datepicker>
 </template>
