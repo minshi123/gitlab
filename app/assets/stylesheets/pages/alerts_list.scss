@@ -1,6 +1,7 @@
+// these styles need to be deleted once GlTable component looks in GitLab same as in @gitlab/ui
 .alert-management-list {
   table {
-    color: #707070;
+    color: $gray-700;
 
     tr {
       td,
@@ -11,10 +12,10 @@
       th {
         background-color: transparent;
         font-weight: $gl-font-weight-bold;
-        color: #666;
+        color: $gl-gray-600;
         @include gl-border-b-1;
         @include gl-border-b-solid;
-        border-color: #f2f2f2;
+        border-color: $gray-100;
       }
 
       td {

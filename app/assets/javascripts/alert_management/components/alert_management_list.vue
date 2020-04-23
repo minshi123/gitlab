@@ -51,7 +51,7 @@ export default {
       type: String,
       required: true,
     },
-    // this should be required and coming form BE
+    // TODO: Handle alertManagementEnabled depending on resolution - https://gitlab.com/gitlab-org/gitlab/-/merge_requests/30024.
     alertManagementEnabled: {
       type: Boolean,
       required: false,

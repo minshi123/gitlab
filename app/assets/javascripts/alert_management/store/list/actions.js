@@ -7,5 +7,3 @@ export const setAlerts = ({ commit }, alerts) => {
 export const setLoading = ({ commit }, loading) => {
   commit(types.SET_LOADING, loading);
 };
-
-export default () => {};
