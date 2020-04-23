@@ -22,8 +22,9 @@ class Route < ApplicationRecord
   scope :for_routable, -> (routable) { where(source: routable) }
   scope :sort_by_path_length, -> { order('LENGTH(routes.path)', :path) }
 
-  def self.source_of(path)
-    find_by(path: path)&.source
+  def self.source_of(path, source_type: nil)
+    query = source_type.present? ? where(source_type: source_type) : all
+    query.find_by(path: path)&.source
   end
 
   def rename_descendants
