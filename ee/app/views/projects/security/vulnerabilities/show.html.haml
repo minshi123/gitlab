@@ -45,7 +45,7 @@
           %h3= _('Links')
           %ul
             - finding.links.each do |link|
-              %li= link_to link['url'], target: '_blank', rel: 'noopener noreferrer'
+              %li= link_to link['url'], link['url'], target: '_blank', rel: 'noopener noreferrer'
 
         - if finding.identifiers.any?
           %h3= _('Identifiers')
