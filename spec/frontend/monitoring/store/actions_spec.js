@@ -11,6 +11,7 @@ import { ENVIRONMENT_AVAILABLE_STATE } from '~/monitoring/constants';
 import store from '~/monitoring/stores';
 import * as types from '~/monitoring/stores/mutation_types';
 import {
+  fetchData,
   fetchDashboard,
   receiveMetricsDashboardSuccess,
   fetchDeploymentsData,
@@ -84,6 +85,57 @@ describe('Monitoring store actions', () => {
 
     commonUtils.backOff.mockReset();
     createFlash.mockReset();
+  });
+
+  describe('fetchData', () => {
+    it('dispatches fetchEnvironmentsData and fetchEnvironmentsData', () => {
+      const { state } = store;
+
+      return testAction(
+        fetchData,
+        null,
+        state,
+        [],
+        [{ type: 'fetchEnvironmentsData' }, { type: 'fetchDashboard' }],
+      );
+    });
+
+    it('dispatches when feature metricsDashboardAnnotations is on', () => {
+      const origGon = window.gon;
+      window.gon = { features: { metricsDashboardAnnotations: true } };
+
+      const { state } = store;
+
+      return testAction(
+        fetchData,
+        null,
+        state,
+        [],
+        [
+          { type: 'fetchEnvironmentsData' },
+          { type: 'fetchAnnotations' },
+          { type: 'fetchDashboard' },
+        ],
+      ).then(() => {
+        window.gon = origGon;
+      });
+    });
+
+    it('fetchData resolves with fetchDashboard result', () => {
+      const done = {};
+      jest.spyOn(store, 'dispatch').mockImplementation(action => {
+        // fetchData should not wait for all the dispatched actions to finish
+        // only fetchDashboard sets up the store so the component can continue
+        if (action === 'fetchDashboard') {
+          return Promise.resolve(done);
+        }
+        return null;
+      });
+
+      return fetchData(store).then(result => {
+        expect(result).toBe(done);
+      });
+    });
   });
 
   describe('fetchDeploymentsData', () => {
@@ -385,6 +437,21 @@ describe('Monitoring store actions', () => {
           },
         ],
       );
+    });
+
+    it('fetchDashboard only dispatches but does not wait for results', () => {
+      store.state.dashboardEndpoint = '/dashboard';
+      mock.onGet(store.state.dashboardEndpoint).reply(200, response);
+
+      jest.spyOn(store, 'dispatch').mockImplementation(() => {
+        // This promise never resolves, yet fetchDashboard should.
+        return new Promise(() => {});
+      });
+
+      return fetchDashboard(store).then(result => {
+        // fetchDashboard does not return results of other dispatched calls
+        expect(result).toBeUndefined();
+      });
     });
 
     describe('on failure', () => {

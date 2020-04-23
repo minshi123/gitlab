@@ -102,9 +102,16 @@ export const clearExpandedPanel = ({ commit }) => {
 
 // All Data
 
+/**
+ * Fetch all dashboard data, resolve with dashboard "skeleton"
+ * is loaded. Other data is loaded in parallel.
+ *
+ * @param {Object} store
+ * @returns A promise that resolves when the dashboard
+ * skeleton has been loaded.
+ */
 export const fetchData = ({ dispatch }) => {
   dispatch('fetchEnvironmentsData');
-  dispatch('fetchDashboard');
   /**
    * Annotations data is not yet fetched. This will be
    * ready after the BE piece is implemented.
@@ -113,6 +120,7 @@ export const fetchData = ({ dispatch }) => {
   if (isFeatureFlagEnabled('metricsDashboardAnnotations')) {
     dispatch('fetchAnnotations');
   }
+  return dispatch('fetchDashboard');
 };
 
 // Metrics dashboard
@@ -127,7 +135,9 @@ export const fetchDashboard = ({ state, commit, dispatch }) => {
 
   return backOffRequest(() => axios.get(state.dashboardEndpoint, { params }))
     .then(resp => resp.data)
-    .then(response => dispatch('receiveMetricsDashboardSuccess', { response }))
+    .then(response => {
+      dispatch('receiveMetricsDashboardSuccess', { response });
+    })
     .catch(error => {
       Sentry.captureException(error);
 

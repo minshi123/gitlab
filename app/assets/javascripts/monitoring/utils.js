@@ -1,3 +1,4 @@
+import { pickBy } from 'lodash';
 import { queryToObject, mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
 import {
   timeRangeParamNames,
@@ -130,6 +131,66 @@ export const timeRangeToUrl = (timeRange, url = window.location.href) => {
   const toUrl = removeTimeRangeParams(url);
   const params = timeRangeToParams(timeRange);
   return mergeUrlParams(params, toUrl);
+};
+
+/**
+ * Located a panel and its corresponding group given a (URL) search query.
+ *
+ * Params used to locate a panel are:
+ * - group: Group identifier
+ * - title: Panel title
+ * - y_label: Panel y_label
+ *
+ * @param {Object} dashboard - Dashboard reference from the Vuex store
+ * @param {String} search - URL location search query
+ * @returns {Object} payload - Payload for expanded panel to be displayed
+ * @returns {String} payload.group - Group where panel is located
+ * @returns {Object} payload.panel - Dashboard panel (graphData) reference
+ * @throws Will throw an error if Panel cannot be located.
+ */
+export const expandedPanelPayloadFromUrl = (dashboard, search = window.location.search) => {
+  const params = queryToObject(search);
+
+  // Search for the panel if any of the search params is identified
+  if (params.group || params.title || params.y_label) {
+    const panelGroup = dashboard.panelGroups.find(({ group }) => params.group === group);
+    const panel = panelGroup.panels.find(
+      // eslint-disable-next-line babel/camelcase
+      ({ y_label, title }) => y_label === params.y_label && title === params.title,
+    );
+
+    if (!panel) {
+      throw new Error('Panel could not be located with the given URL parameters.');
+    }
+    return { group: panelGroup.group, panel };
+  }
+  return null;
+};
+
+/**
+ * Convert panel information to a URL for the user to
+ * bookmark or share highlighting a specific panel.
+ *
+ * @param {String} dashboardPath - Dashboard path used as identifier
+ * @param {String} group - Group Identifier
+ * @param {?Object} panel - Panel object from the dashboard
+ * @param {?String} url - Base URL including current search params
+ * @returns Dashboard URL which expands a panel (chart)
+ */
+export const panelToUrl = (dashboardPath, group, panel, url = window.location.href) => {
+  if (!group || !panel) {
+    return null;
+  }
+  const params = pickBy(
+    {
+      dashboard: dashboardPath,
+      group,
+      title: panel.title,
+      y_label: panel.y_label,
+    },
+    value => value != null,
+  );
+  return mergeUrlParams(params, url);
 };
 
 /**

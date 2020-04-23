@@ -1,6 +1,7 @@
 import { shallowMount, mount } from '@vue/test-utils';
 import Tracking from '~/tracking';
 import { GlModal, GlDropdownItem, GlDeprecatedButton } from '@gitlab/ui';
+import { objectToQuery } from '~/lib/utils/url_utility';
 import VueDraggable from 'vuedraggable';
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
@@ -19,6 +20,9 @@ import * as types from '~/monitoring/stores/mutation_types';
 import { setupStoreWithDashboard, setMetricResult, setupStoreWithData } from '../store_utils';
 import { environmentData, dashboardGitResponse, propsData } from '../mock_data';
 import { metricsDashboardViewModel, metricsDashboardPanelCount } from '../fixture_data';
+import createFlash from '~/flash';
+
+jest.mock('~/flash');
 
 describe('Dashboard', () => {
   let store;
@@ -63,7 +67,6 @@ describe('Dashboard', () => {
 
   describe('no metrics are available yet', () => {
     beforeEach(() => {
-      jest.spyOn(store, 'dispatch');
       createShallowWrapper();
     });
 
@@ -145,6 +148,90 @@ describe('Dashboard', () => {
 
       return wrapper.vm.$nextTick().then(() => {
         expect(store.dispatch).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('when the URL contains a reference to a panel', () => {
+    let location;
+
+    const setSearch = search => {
+      window.location = { ...location, search };
+    };
+
+    // wait for both fetchData and setExpandedPanel to finish
+    const twoTicks = () => wrapper.vm.$nextTick().then(wrapper.vm.$nextTick());
+
+    beforeEach(() => {
+      location = window.location;
+      delete window.location;
+    });
+
+    afterEach(() => {
+      window.location = location;
+    });
+
+    it('when the URL points to a panel it expands', () => {
+      const panelGroup = metricsDashboardViewModel.panelGroups[0];
+      const panel = panelGroup.panels[0];
+
+      setSearch(
+        objectToQuery({
+          group: panelGroup.group,
+          title: panel.title,
+          y_label: panel.y_label,
+        }),
+      );
+
+      createMountedWrapper({ hasMetrics: true });
+      setupStoreWithData(wrapper.vm.$store);
+
+      return twoTicks().then(() => {
+        expect(store.dispatch).toHaveBeenCalledWith('monitoringDashboard/setExpandedPanel', {
+          group: panelGroup.group,
+          panel: expect.objectContaining({
+            title: panel.title,
+            y_label: panel.y_label,
+          }),
+        });
+      });
+    });
+
+    it('when the URL points to no panel', () => {
+      setSearch('');
+
+      createMountedWrapper({ hasMetrics: true });
+      setupStoreWithData(wrapper.vm.$store);
+
+      return twoTicks().then(() => {
+        expect(store.dispatch).not.toHaveBeenCalledWith(
+          'monitoringDashboard/setExpandedPanel',
+          expect.anything(),
+        );
+      });
+    });
+
+    it('when the URL points to an incorrect panel it shows an error', () => {
+      const panelGroup = metricsDashboardViewModel.panelGroups[0];
+      const panel = panelGroup.panels[0];
+
+      setSearch(
+        objectToQuery({
+          group: panelGroup.group,
+          title: 'incorrect',
+          y_label: panel.y_label,
+        }),
+      );
+
+      createMountedWrapper({ hasMetrics: true });
+      setupStoreWithData(wrapper.vm.$store);
+
+      return twoTicks().then(() => {
+        expect(createFlash).toHaveBeenCalled();
+        expect(store.dispatch).not.toHaveBeenCalledWith(
+          'monitoringDashboard/setExpandedPanel',
+          expect.anything(),
+        );
       });
     });
   });
