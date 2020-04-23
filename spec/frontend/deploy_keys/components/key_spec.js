@@ -8,15 +8,22 @@ describe('Deploy keys key', () => {
   let store;
 
   const data = getJSONFixture('deploy_keys/keys.json');
-  const createComponent = deployKey => {
+
+  const findTextAndTrim = selector =>
+    wrapper
+      .find(selector)
+      .text()
+      .trim();
+
+  const createComponent = propsData => {
     store = new DeployKeysStore();
     store.keys = data;
 
     wrapper = mount(key, {
       propsData: {
-        deployKey,
         store,
         endpoint: 'https://test.host/dummy/endpoint',
+        ...propsData,
       },
     });
   };
@@ -30,41 +37,35 @@ describe('Deploy keys key', () => {
     const deployKey = data.enabled_keys[0];
 
     it('renders the keys title', () => {
-      createComponent(deployKey);
+      createComponent({ deployKey });
 
-      expect(
-        wrapper
-          .find('.title')
-          .text()
-          .trim(),
-      ).toContain('My title');
+      expect(findTextAndTrim('.title')).toContain('My title');
     });
 
     it('renders human friendly formatted created date', () => {
-      createComponent(deployKey);
+      createComponent({ deployKey });
 
-      expect(
-        wrapper
-          .find('.key-created-at')
-          .text()
-          .trim(),
-      ).toBe(`${getTimeago().format(deployKey.created_at)}`);
+      expect(findTextAndTrim('.key-created-at')).toBe(
+        `${getTimeago().format(deployKey.created_at)}`,
+      );
     });
 
     it('shows pencil button for editing', () => {
-      createComponent(deployKey);
+      createComponent({ deployKey });
 
       expect(wrapper.find('.btn .ic-pencil')).toExist();
     });
 
     it('shows disable button when the project is not deletable', () => {
-      createComponent(deployKey);
+      createComponent({ deployKey });
 
       expect(wrapper.find('.btn .ic-cancel')).toExist();
     });
 
     it('shows remove button when the project is deletable', () => {
-      createComponent({ ...deployKey, destroyed_when_orphaned: true, almost_orphaned: true });
+      createComponent({
+        deployKey: { ...deployKey, destroyed_when_orphaned: true, almost_orphaned: true },
+      });
       expect(wrapper.find('.btn .ic-remove')).toExist();
     });
   });
@@ -74,7 +75,7 @@ describe('Deploy keys key', () => {
     const deployKeysProjects = [...deployKey.deploy_keys_projects];
     it('shows write access title when key has write access', () => {
       deployKeysProjects[0] = { ...deployKeysProjects[0], can_push: true };
-      createComponent({ ...deployKey, deploy_keys_projects: deployKeysProjects });
+      createComponent({ deployKey: { ...deployKey, deploy_keys_projects: deployKeysProjects } });
 
       expect(wrapper.find('.deploy-project-label').attributes('data-original-title')).toBe(
         'Write access allowed',
@@ -83,7 +84,7 @@ describe('Deploy keys key', () => {
 
     it('does not show write access title when key has write access', () => {
       deployKeysProjects[0] = { ...deployKeysProjects[0], can_push: false };
-      createComponent({ ...deployKey, deploy_keys_projects: deployKeysProjects });
+      createComponent({ deployKey: { ...deployKey, deploy_keys_projects: deployKeysProjects } });
 
       expect(wrapper.find('.deploy-project-label').attributes('data-original-title')).toBe(
         'Read access only',
@@ -91,7 +92,7 @@ describe('Deploy keys key', () => {
     });
 
     it('shows expandable button if more than two projects', () => {
-      createComponent(deployKey);
+      createComponent({ deployKey });
       const labels = wrapper.findAll('.deploy-project-label');
 
       expect(labels.length).toBe(2);
@@ -100,7 +101,7 @@ describe('Deploy keys key', () => {
     });
 
     it('expands all project labels after click', () => {
-      createComponent(deployKey);
+      createComponent({ deployKey });
       const { length } = deployKey.deploy_keys_projects;
       wrapper
         .findAll('.deploy-project-label')
@@ -117,7 +118,9 @@ describe('Deploy keys key', () => {
     });
 
     it('shows two projects', () => {
-      createComponent({ ...deployKey, deploy_keys_projects: [...deployKeysProjects].slice(0, 2) });
+      createComponent({
+        deployKey: { ...deployKey, deploy_keys_projects: [...deployKeysProjects].slice(0, 2) },
+      });
 
       const labels = wrapper.findAll('.deploy-project-label');
 
@@ -130,34 +133,23 @@ describe('Deploy keys key', () => {
     const deployKey = data.public_keys[0];
 
     it('renders deploy keys without any enabled projects', () => {
-      createComponent({ ...deployKey, deploy_keys_projects: [] });
+      createComponent({ deployKey: { ...deployKey, deploy_keys_projects: [] } });
 
-      expect(
-        wrapper
-          .find('.deploy-project-list')
-          .text()
-          .trim(),
-      ).toBe('None');
+      expect(findTextAndTrim('.deploy-project-list')).toBe('None');
     });
 
     it('shows enable button', () => {
-      createComponent(deployKey);
-      expect(
-        wrapper
-          .findAll('.btn')
-          .at(0)
-          .text()
-          .trim(),
-      ).toBe('Enable');
+      createComponent({ deployKey });
+      expect(findTextAndTrim('.btn')).toBe('Enable');
     });
 
     it('shows pencil button for editing', () => {
-      createComponent(deployKey);
+      createComponent({ deployKey });
       expect(wrapper.find('.btn .ic-pencil')).toExist();
     });
 
     it('shows disable button when key is enabled', () => {
-      createComponent(deployKey);
+      createComponent({ deployKey });
       store.keys.enabled_keys.push(deployKey);
 
       expect(wrapper.find('.btn .ic-cancel')).toExist();

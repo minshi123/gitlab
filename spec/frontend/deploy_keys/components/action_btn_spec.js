@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlLoadingIcon } from '@gitlab/ui';
 import eventHub from '~/deploy_keys/eventhub';
 import actionBtn from '~/deploy_keys/components/action_btn.vue';
 
@@ -6,6 +7,8 @@ describe('Deploy keys action btn', () => {
   const data = getJSONFixture('deploy_keys/keys.json');
   const deployKey = data.enabled_keys[0];
   let wrapper;
+
+  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
 
   beforeEach(() => {
     wrapper = shallowMount(actionBtn, {
@@ -37,7 +40,7 @@ describe('Deploy keys action btn', () => {
     wrapper.trigger('click');
 
     return wrapper.vm.$nextTick().then(() => {
-      expect(wrapper.vm.$el.querySelector('.fa')).toBeDefined();
+      expect(findLoadingIcon().exists()).toBe(true);
     });
   });
 
@@ -45,9 +48,7 @@ describe('Deploy keys action btn', () => {
     wrapper.trigger('click');
 
     return wrapper.vm.$nextTick().then(() => {
-      expect(wrapper.vm.$el.classList.contains('disabled')).toBeTruthy();
-
-      expect(wrapper.vm.$el.getAttribute('disabled')).toBe('disabled');
+      expect(wrapper.attributes('disabled')).toBe('disabled');
     });
   });
 });

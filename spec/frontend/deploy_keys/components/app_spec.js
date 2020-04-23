@@ -13,6 +13,13 @@ describe('Deploy keys app component', () => {
   let wrapper;
   let mock;
 
+  const findTextContent = selector => {
+    const element = wrapper.find(selector);
+
+    expect(element.exists()).toBe(true);
+    return element.text().trim();
+  };
+
   const mountComponent = (dataOverride = {}, methods) => {
     wrapper = mount(deployKeysApp, {
       propsData: {
@@ -51,35 +58,23 @@ describe('Deploy keys app component', () => {
     });
   });
 
-  it('renders the titles with keys count', () => {
+  it.each`
+    selector                                       | label                                 | count
+    ${'.js-deployKeys-tab-enabled_keys'}           | ${'Enabled deploy keys'}              | ${'enabled_keys'}
+    ${'.js-deployKeys-tab-available_project_keys'} | ${'Privately accessible deploy keys'} | ${'available_project_keys'}
+    ${'.js-deployKeys-tab-public_keys'}            | ${'Publicly accessible deploy keys'}  | ${'public_keys'}
+  `('$selector title is $label with keys count equal to $count', ({ selector, label, count }) => {
     return mountComponent().then(() => {
-      const textContent = selector => {
-        const element = wrapper.find(selector);
+      const element = wrapper.find(selector);
+      expect(element.exists()).toBe(true);
+      expect(element.text().trim()).toContain(label);
 
-        expect(element).not.toBeNull();
-        return element.text().trim();
-      };
-
-      expect(textContent('.js-deployKeys-tab-enabled_keys')).toContain('Enabled deploy keys');
-      expect(textContent('.js-deployKeys-tab-available_project_keys')).toContain(
-        'Privately accessible deploy keys',
-      );
-
-      expect(textContent('.js-deployKeys-tab-public_keys')).toContain(
-        'Publicly accessible deploy keys',
-      );
-
-      expect(textContent('.js-deployKeys-tab-enabled_keys .badge')).toBe(
-        `${defaultStore.keys.enabled_keys.length}`,
-      );
-
-      expect(textContent('.js-deployKeys-tab-available_project_keys .badge')).toBe(
-        `${defaultStore.keys.available_project_keys.length}`,
-      );
-
-      expect(textContent('.js-deployKeys-tab-public_keys .badge')).toBe(
-        `${defaultStore.keys.public_keys.length}`,
-      );
+      expect(
+        element
+          .find('.badge')
+          .text()
+          .trim(),
+      ).toBe(`${defaultStore.keys[count].length}`);
     });
   });
 
