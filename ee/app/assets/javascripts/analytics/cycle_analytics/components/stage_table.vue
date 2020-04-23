@@ -1,5 +1,4 @@
 <script>
-import { mapState } from 'vuex';
 import Sortable from 'sortablejs';
 import { GlTooltipDirective, GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
@@ -7,7 +6,6 @@ import StageNavItem from './stage_nav_item.vue';
 import StageEventList from './stage_event_list.vue';
 import StageTableHeader from './stage_table_header.vue';
 import AddStageButton from './add_stage_button.vue';
-import CustomStageForm from './custom_stage_form.vue';
 import { STAGE_ACTIONS } from '../constants';
 import { NO_DRAG_CLASS } from '../../shared/constants';
 import sortableDefaultOptions from '../../shared/mixins/sortable_default_options';
@@ -21,7 +19,6 @@ export default {
     StageNavItem,
     StageTableHeader,
     AddStageButton,
-    CustomStageForm,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -51,26 +48,9 @@ export default {
       type: Boolean,
       required: true,
     },
-    isEditingCustomStage: {
-      type: Boolean,
-      required: true,
-    },
-    isSavingCustomStage: {
-      type: Boolean,
-      required: true,
-    },
     currentStageEvents: {
       type: Array,
       required: true,
-    },
-    customStageFormEvents: {
-      type: Array,
-      required: true,
-    },
-    customStageFormErrors: {
-      type: Object,
-      required: false,
-      default: () => {},
     },
     noDataSvgPath: {
       type: String,
@@ -101,7 +81,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(['customStageFormInitialData']),
     stageEventsHeight() {
       return `${this.stageNavHeight}px`;
     },
@@ -222,19 +201,9 @@ export default {
           </ul>
         </nav>
         <div class="section stage-events" :style="{ height: stageEventsHeight }">
+          <slot name="table-content"></slot>
+          <slot>
           <gl-loading-icon v-if="isLoading" class="mt-4" size="md" />
-          <custom-stage-form
-            v-else-if="isCreatingCustomStage || isEditingCustomStage"
-            :events="customStageFormEvents"
-            :is-saving-custom-stage="isSavingCustomStage"
-            :initial-fields="customStageFormInitialData"
-            :is-editing-custom-stage="isEditingCustomStage"
-            :errors="customStageFormErrors"
-            @submit="$emit('submit', $event)"
-            @createStage="$emit($options.STAGE_ACTIONS.CREATE, $event)"
-            @updateStage="$emit($options.STAGE_ACTIONS.UPDATE, $event)"
-            @clearErrors="$emit('clearCustomStageFormErrors')"
-          />
           <template v-else>
             <stage-event-list
               v-if="shouldDisplayStage"
@@ -248,7 +217,7 @@ export default {
               :svg-path="noDataSvgPath"
             />
           </template>
-        </div>
+          </slot>
       </div>
     </div>
   </div>

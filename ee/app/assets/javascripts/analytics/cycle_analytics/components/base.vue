@@ -3,10 +3,11 @@ import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { featureAccessLevel } from '~/pages/projects/shared/permissions/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { PROJECTS_PER_PAGE } from '../constants';
+import { PROJECTS_PER_PAGE, STAGE_ACTIONS } from '../constants';
 import GroupsDropdownFilter from '../../shared/components/groups_dropdown_filter.vue';
 import ProjectsDropdownFilter from '../../shared/components/projects_dropdown_filter.vue';
 import { LAST_ACTIVITY_AT, DATE_RANGE_LIMIT } from '../../shared/constants';
+
 import DateRange from '../../shared/components/daterange.vue';
 import StageTable from './stage_table.vue';
 import DurationChart from './duration_chart.vue';
@@ -14,6 +15,7 @@ import TypeOfWorkCharts from './type_of_work_charts.vue';
 import UrlSyncMixin from '../../shared/mixins/url_sync_mixin';
 import { toYmd } from '../../shared/utils';
 import RecentActivityCard from './recent_activity_card.vue';
+import CustomStageForm from './custom_stage_form.vue';
 
 export default {
   name: 'CycleAnalytics',
@@ -27,6 +29,7 @@ export default {
     StageTable,
     TypeOfWorkCharts,
     RecentActivityCard,
+    CustomStageForm,
   },
   mixins: [glFeatureFlagsMixin(), UrlSyncMixin],
   props: {
@@ -68,6 +71,7 @@ export default {
       'endDate',
       'medians',
       'customStageFormErrors',
+      'customStageFormInitialData',
     ]),
     ...mapState('typeOfWork', [
       'isLoadingTasksByTypeChart',
@@ -207,6 +211,7 @@ export default {
     include_subgroups: true,
   },
   maxDateRange: DATE_RANGE_LIMIT,
+  STAGE_ACTIONS,
 };
 </script>
 <template>
@@ -292,26 +297,34 @@ export default {
             :medians="medians"
             :is-loading="isLoadingStage"
             :is-empty-stage="isEmptyStage"
-            :is-saving-custom-stage="isSavingCustomStage"
             :is-creating-custom-stage="isCreatingCustomStage"
-            :is-editing-custom-stage="isEditingCustomStage"
             :current-stage-events="currentStageEvents"
-            :custom-stage-form-events="customStageFormEvents"
-            :custom-stage-form-errors="customStageFormErrors"
             :no-data-svg-path="noDataSvgPath"
             :no-access-svg-path="noAccessSvgPath"
             :can-edit-stages="hasCustomizableCycleAnalytics"
             :custom-ordering="enableCustomOrdering"
-            @clearCustomStageFormErrors="clearCustomStageFormErrors"
             @selectStage="onStageSelect"
             @editStage="onShowEditStageForm"
             @showAddStageForm="onShowAddStageForm"
             @hideStage="onUpdateCustomStage"
             @removeStage="onRemoveStage"
-            @createStage="onCreateCustomStage"
-            @updateStage="onUpdateCustomStage"
             @reorderStage="onStageReorder"
-          />
+          >
+            <template #tableContent>
+              <custom-stage-form
+                v-if="isCreatingCustomStage || isEditingCustomStage"
+                :events="customStageFormEvents"
+                :is-saving-custom-stage="isSavingCustomStage"
+                :initial-fields="customStageFormInitialData"
+                :is-editing-custom-stage="isEditingCustomStage"
+                :errors="customStageFormErrors"
+                @submit="$emit('submit', $event)"
+                @createStage="$emit($options.STAGE_ACTIONS.CREATE, $event)"
+                @updateStage="$emit($options.STAGE_ACTIONS.UPDATE, $event)"
+                @clearErrors="$emit('clearCustomStageFormErrors')"
+              />
+            </template>
+          </stage-table>
         </div>
       </div>
       <duration-chart v-if="shouldDisplayDurationChart" class="mt-3" :stages="activeStages" />
