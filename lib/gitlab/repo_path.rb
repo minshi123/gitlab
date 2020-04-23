@@ -3,6 +3,7 @@
 module Gitlab
   module RepoPath
     NotFoundError = Class.new(StandardError)
+    ROUTE_LOOKUP_SOURCE_TYPES = %w{Namespace Project RedirectRoute}.freeze
 
     def self.parse(path)
       repo_path = path.sub(/\.git\z/, '').sub(%r{\A/}, '')
@@ -36,19 +37,21 @@ module Gitlab
 
         [snippet, snippet&.project, redirected_path]
       else
-        project, redirected_path = find_project(full_path)
+        project, redirected_path = find_project_or_group(full_path)
 
         [project, project, redirected_path]
       end
     end
 
-    def self.find_project(project_path)
-      return [nil, nil] if project_path.blank?
+    def self.find_project_or_group(path)
+      return [nil, nil] if path.blank?
 
-      project = Project.find_by_full_path(project_path, follow_redirects: true)
-      redirected_path = redirected?(project, project_path) ? project_path : nil
+      container = Route.source_of(path, source_type: ROUTE_LOOKUP_SOURCE_TYPES)
+      container = container.source if container.is_a?(RedirectRoute)
 
-      [project, redirected_path]
+      redirected_path = redirected?(container, path) ? path : nil
+
+      [container, redirected_path]
     end
 
     def self.redirected?(project, project_path)
@@ -62,7 +65,7 @@ module Gitlab
       return [nil, nil] if snippet_path.blank?
 
       snippet_id, project_path = extract_snippet_info(snippet_path)
-      project, redirected_path = find_project(project_path)
+      project, redirected_path = find_project_or_group(project_path)
 
       [Snippet.find_by_id_and_project(id: snippet_id, project: project), redirected_path]
     end

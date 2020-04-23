@@ -67,11 +67,11 @@ describe ::Gitlab::RepoPath do
     end
   end
 
-  describe '.find_project' do
+  describe '.find_project_or_group' do
     context 'when finding a project by its canonical path' do
       context 'when the cases match' do
         it 'returns the project and nil' do
-          expect(described_class.find_project(project.full_path)).to eq([project, nil])
+          expect(described_class.find_project_or_group(project.full_path)).to eq([project, nil])
         end
       end
 
@@ -81,14 +81,14 @@ describe ::Gitlab::RepoPath do
         # requests, we should accept wrongly-cased URLs because it is a pain to
         # block people's git operations and force them to update remote URLs.
         it 'returns the project and nil' do
-          expect(described_class.find_project(project.full_path.upcase)).to eq([project, nil])
+          expect(described_class.find_project_or_group(project.full_path.upcase)).to eq([project, nil])
         end
       end
     end
 
     context 'when finding a project via a redirect' do
       it 'returns the project and nil' do
-        expect(described_class.find_project(redirect.path)).to eq([project, redirect.path])
+        expect(described_class.find_project_or_group(redirect.path)).to eq([project, redirect.path])
       end
     end
   end
