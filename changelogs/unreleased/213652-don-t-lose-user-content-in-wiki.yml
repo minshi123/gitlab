@@ -1,5 +1,5 @@
 ---
-title: Do not lose user content in wiki
+title: Warn user before losing wiki content
 merge_request: 30037
 author:
 type: fixed
