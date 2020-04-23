@@ -25,6 +25,8 @@ module Gitlab
       PRIVATE_TOKEN_PARAM = :private_token
       JOB_TOKEN_HEADER = 'HTTP_JOB_TOKEN'.freeze
       JOB_TOKEN_PARAM = :job_token
+      DEPLOY_TOKEN_HEADER = 'HTTP_DEPLOY_TOKEN'.freeze
+      DEPLOY_TOKEN_USER_HEADER = 'HTTP_DEPLOY_TOKEN_USER'.freeze
       RUNNER_TOKEN_PARAM = :token
       RUNNER_JOB_TOKEN_PARAM = :token
 
@@ -99,6 +101,22 @@ module Gitlab
         validate_access_token!
 
         access_token.user || raise(UnauthorizedError)
+      end
+
+      # This returns a deploy token, not a user since a deploy token does not
+      # belong to a user.
+      def find_user_from_deploy_token
+        return unless route_authentication_setting[:deploy_token_allowed]
+
+        token = current_request.env[DEPLOY_TOKEN_HEADER].presence
+        username = current_request.env[DEPLOY_TOKEN_USER_HEADER].presence
+
+        return unless token && username
+
+        deploy_token = DeployToken.active.find_by_token(token)
+        return if username != deploy_token&.username
+
+        deploy_token
       end
 
       def find_runner_from_token

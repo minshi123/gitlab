@@ -65,7 +65,8 @@ module API
       end
 
       def find_user_from_sources
-        find_user_from_access_token ||
+        find_user_from_deploy_token ||
+          find_user_from_access_token ||
           find_user_from_job_token ||
           find_user_from_warden
       end
@@ -90,7 +91,7 @@ module API
       end
 
       def api_access_allowed?(user)
-        Gitlab::UserAccess.new(user).allowed? && user.can?(:access_api)
+        (Gitlab::UserAccess.new(user).allowed? || user.is_a?(DeployToken)) && user.can?(:access_api)
       end
 
       def api_access_denied_message(user)

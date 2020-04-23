@@ -522,7 +522,9 @@ class Project < ApplicationRecord
   def self.public_or_visible_to_user(user = nil, min_access_level = nil)
     min_access_level = nil if user&.admin?
 
-    if user
+    if user && user.is_a?(DeployToken)
+      user.projects
+    elsif user
       where('EXISTS (?) OR projects.visibility_level IN (?)',
             user.authorizations_for_projects(min_access_level: min_access_level),
             Gitlab::VisibilityLevel.levels_for_user(user))
