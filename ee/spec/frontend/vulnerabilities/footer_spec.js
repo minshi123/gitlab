@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import VulnerabilityFooter from 'ee/vulnerabilities/components/footer.vue';
 import HistoryEntry from 'ee/vulnerabilities/components/history_entry.vue';
+import VulnerabilitiesEventBus from 'ee/vulnerabilities/components/vulnerabilities_event_bus';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card.vue';
 import IssueNote from 'ee/vue_shared/security_reports/components/issue_note.vue';
 import { TEST_HOST } from 'helpers/test_constants';
@@ -66,6 +67,15 @@ describe('Vulnerability Footer', () => {
     wrapper.destroy();
     wrapper = null;
     mockAxios.reset();
+  });
+
+  describe('vulnerabilities event bus listener', () => {
+    it('on vulnerabilities event bus emit of VULNERABILITY_STATE_CHANGE, the discussion url is called', () => {
+      createWrapper();
+      jest.spyOn(axios, 'get');
+      VulnerabilitiesEventBus.$emit('VULNERABILITY_STATE_CHANGE');
+      expect(axios.get).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('solution card', () => {

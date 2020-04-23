@@ -46,9 +46,7 @@ export default {
   created() {
     this.fetchDiscussions();
 
-    VulnerabilitiesEventBus.$on('VULNERABILITY_STATE_CHANGE', () => {
-      this.fetchDiscussions();
-    });
+    VulnerabilitiesEventBus.$on('VULNERABILITY_STATE_CHANGE', this.fetchDiscussions);
   },
 
   methods: {
