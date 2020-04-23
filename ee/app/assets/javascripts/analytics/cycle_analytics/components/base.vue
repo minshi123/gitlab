@@ -310,17 +310,15 @@ export default {
             @removeStage="onRemoveStage"
             @reorderStage="onStageReorder"
           >
-            <template #tableContent>
+            <template v-if="isCreatingCustomStage || isEditingCustomStage" #tableContent>
               <custom-stage-form
-                v-if="isCreatingCustomStage || isEditingCustomStage"
                 :events="customStageFormEvents"
                 :is-saving-custom-stage="isSavingCustomStage"
                 :initial-fields="customStageFormInitialData"
                 :is-editing-custom-stage="isEditingCustomStage"
                 :errors="customStageFormErrors"
-                @submit="$emit('submit', $event)"
-                @createStage="$emit($options.STAGE_ACTIONS.CREATE, $event)"
-                @updateStage="$emit($options.STAGE_ACTIONS.UPDATE, $event)"
+                @createStage="onCreateCustomStage"
+                @updateStage="onUpdateCustomStage"
                 @clearErrors="$emit('clearCustomStageFormErrors')"
               />
             </template>

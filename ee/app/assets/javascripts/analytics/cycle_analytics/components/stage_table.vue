@@ -1,4 +1,5 @@
 <script>
+import { mapState } from 'vuex';
 import Sortable from 'sortablejs';
 import { GlTooltipDirective, GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
@@ -6,6 +7,7 @@ import StageNavItem from './stage_nav_item.vue';
 import StageEventList from './stage_event_list.vue';
 import StageTableHeader from './stage_table_header.vue';
 import AddStageButton from './add_stage_button.vue';
+import CustomStageForm from './custom_stage_form.vue';
 import { STAGE_ACTIONS } from '../constants';
 import { NO_DRAG_CLASS } from '../../shared/constants';
 import sortableDefaultOptions from '../../shared/mixins/sortable_default_options';
@@ -19,6 +21,7 @@ export default {
     StageNavItem,
     StageTableHeader,
     AddStageButton,
+    CustomStageForm,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -81,6 +84,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['customStageFormInitialData']),
     stageEventsHeight() {
       return `${this.stageNavHeight}px`;
     },
@@ -201,8 +205,6 @@ export default {
           </ul>
         </nav>
         <div class="section stage-events" :style="{ height: stageEventsHeight }">
-          <slot name="table-content"></slot>
-          <slot>
           <gl-loading-icon v-if="isLoading" class="mt-4" size="md" />
           <template v-else>
             <stage-event-list
@@ -217,7 +219,8 @@ export default {
               :svg-path="noDataSvgPath"
             />
           </template>
-          </slot>
+          <slot #stage-content></slot>
+        </div>
       </div>
     </div>
   </div>
