@@ -27,6 +27,9 @@ RSpec.shared_examples 'PATCH #update updates variables' do
       protected: 'false' }
   end
 
+  let(:variables_scope) { owner.variables }
+  let(:file_variables_scope) { owner.variables.file }
+
   context 'with invalid new variable parameters' do
     let(:variables_attributes) do
       [
@@ -40,7 +43,7 @@ RSpec.shared_examples 'PATCH #update updates variables' do
     end
 
     it 'does not create the new variable' do
-      expect { subject }.not_to change { owner.variables.count }
+      expect { subject }.not_to change { variables_scope.count }
     end
 
     it 'returns a bad request response' do
@@ -63,7 +66,7 @@ RSpec.shared_examples 'PATCH #update updates variables' do
     end
 
     it 'does not create the new variable' do
-      expect { subject }.not_to change { owner.variables.count }
+      expect { subject }.not_to change { variables_scope.count }
     end
 
     it 'returns a bad request response' do
@@ -86,7 +89,7 @@ RSpec.shared_examples 'PATCH #update updates variables' do
     end
 
     it 'creates the new variable' do
-      expect { subject }.to change { owner.variables.count }.by(1)
+      expect { subject }.to change { variables_scope.count }.by(1)
     end
 
     it 'returns a successful response' do
@@ -106,7 +109,7 @@ RSpec.shared_examples 'PATCH #update updates variables' do
     let(:variables_attributes) { [variable_attributes.merge(_destroy: 'true')] }
 
     it 'destroys the variable' do
-      expect { subject }.to change { owner.variables.count }.by(-1)
+      expect { subject }.to change { variables_scope.count }.by(-1)
       expect { variable.reload }.to raise_error ActiveRecord::RecordNotFound
     end
 
@@ -131,7 +134,7 @@ RSpec.shared_examples 'PATCH #update updates variables' do
     end
 
     it 'creates new variable of type file' do
-      expect { subject }.to change { owner.variables.file.count }.by(1)
+      expect { subject }.to change { file_variables_scope.count }.by(1)
     end
   end
 end
