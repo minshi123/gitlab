@@ -1,9 +1,10 @@
 import Vue from 'vue';
-import StaticSiteEditor from './components/static_site_editor.vue';
+import App from './components/app.vue';
 import createStore from './store';
+import createRouter from './router';
 
 const initStaticSiteEditor = el => {
-  const { projectId, path: sourcePath, returnUrl } = el.dataset;
+  const { projectId, path: sourcePath, returnUrl, baseUrl } = el.dataset;
   const isSupportedContent = 'isSupportedContent' in el.dataset;
 
   const store = createStore({
@@ -15,15 +16,17 @@ const initStaticSiteEditor = el => {
       username: window.gon.current_username,
     },
   });
+  const router = createRouter(baseUrl);
 
   return new Vue({
     el,
     store,
+    router,
     components: {
-      StaticSiteEditor,
+      App,
     },
     render(createElement) {
-      return createElement('static-site-editor', StaticSiteEditor);
+      return createElement('app');
     },
   });
 };
