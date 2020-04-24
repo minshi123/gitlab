@@ -13,13 +13,15 @@ describe 'Global elastic search', :elastic, :sidekiq_inline do
     sign_in(user)
   end
 
-  shared_examples 'an efficient database result' do
+  shared_examples 'an efficient database result' do |skip_cached|
+    let(:skip_cached) { skip_cached }
+
     it 'avoids N+1 database queries' do
       create(object, *creation_traits, creation_args)
 
       ensure_elasticsearch_index!
 
-      control_count = ActiveRecord::QueryRecorder.new { visit path }.count
+      control_count = ActiveRecord::QueryRecorder.new(skip_cached: skip_cached) { visit path }.count
       expect(page).to have_css('.search-results') # Confirm there are search results to prevent false positives
 
       create_list(object, 10, *creation_traits, creation_args)
@@ -28,7 +30,12 @@ describe 'Global elastic search', :elastic, :sidekiq_inline do
 
       control_count = control_count + (10 * query_count_multiplier) + 1
 
-      expect { visit path }.not_to exceed_query_limit(control_count)
+      if skip_cached
+        expect { visit path }.not_to exceed_query_limit(control_count)
+      else
+        expect { visit path }.not_to exceed_all_query_limit(control_count)
+      end
+
       expect(page).to have_css('.search-results') # Confirm there are search results to prevent false positives
     end
   end
@@ -42,7 +49,7 @@ describe 'Global elastic search', :elastic, :sidekiq_inline do
       let(:path) { search_path(search: 'initial', scope: 'issues') }
       let(:query_count_multiplier) { 0 }
 
-      it_behaves_like 'an efficient database result'
+      it_behaves_like 'an efficient database result', true
     end
 
     context 'searching projects' do
@@ -54,7 +61,7 @@ describe 'Global elastic search', :elastic, :sidekiq_inline do
       # https://gitlab.com/gitlab-org/gitlab/issues/34457
       let(:query_count_multiplier) { 4 }
 
-      it_behaves_like 'an efficient database result'
+      it_behaves_like 'an efficient database result', false
     end
 
     context 'searching merge requests' do
@@ -64,7 +71,7 @@ describe 'Global elastic search', :elastic, :sidekiq_inline do
       let(:path) { search_path(search: '*', scope: 'merge_requests') }
       let(:query_count_multiplier) { 0 }
 
-      it_behaves_like 'an efficient database result'
+      it_behaves_like 'an efficient database result', true
     end
 
     context 'searching milestones' do
@@ -73,7 +80,7 @@ describe 'Global elastic search', :elastic, :sidekiq_inline do
       let(:path) { search_path(search: '*', scope: 'milestones') }
       let(:query_count_multiplier) { 0 }
 
-      it_behaves_like 'an efficient database result'
+      it_behaves_like 'an efficient database result', true
     end
   end
 
