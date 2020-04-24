@@ -50,19 +50,47 @@ describe ProjectImportState, type: :model do
           expect(project).to receive(:use_elasticsearch?).and_return(true)
         end
 
+        context 'when project is a mirror' do
+          let(:import_state) { create(:import_state, :mirror, :started, :repository) }
+
+          before do
+            expect(::Gitlab::Mirror).to receive(:decrement_capacity).with(project.id).and_return(true)
+          end
+
+          context 'no index status' do
+            it 'schedules a full index of the repository' do
+              expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id, nil)
+
+              import_state.finish
+            end
+          end
+
+          context 'with index status' do
+            let(:index_status) { IndexStatus.create!(project: project, indexed_at: Time.now, last_commit: 'foo', last_wiki_commit: 'bar') }
+
+            it 'schedules a progressive index of the repository' do
+              expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id, index_status.last_commit)
+
+              import_state.finish
+            end
+          end
+        end
+
         context 'no index status' do
           it 'schedules a full index of the repository' do
             expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id, nil)
+            expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id, nil, nil, true)
 
             import_state.finish
           end
         end
 
         context 'with index status' do
-          let(:index_status) { IndexStatus.create!(project: project, indexed_at: Time.now, last_commit: 'foo') }
+          let(:index_status) { IndexStatus.create!(project: project, indexed_at: Time.now, last_commit: 'foo', last_wiki_commit: 'bar') }
 
           it 'schedules a progressive index of the repository' do
             expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id, index_status.last_commit)
+            expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id, index_status.last_wiki_commit, nil, true)
 
             import_state.finish
           end

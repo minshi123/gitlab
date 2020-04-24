@@ -63,6 +63,11 @@ module EE
             state.run_after_commit do
               last_indexed_commit = state.project.index_status&.last_commit
               ElasticCommitIndexerWorker.perform_async(state.project_id, last_indexed_commit)
+
+              unless state.mirror?
+                last_wiki_indexed_commit = state.project.index_status&.last_wiki_commit
+                ElasticCommitIndexerWorker.perform_async(state.project.id, last_wiki_indexed_commit, nil, true)
+              end
             end
           end
         end
