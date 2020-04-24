@@ -15,7 +15,7 @@
     - export GOPATH=$CI_PROJECT_DIR/.go
     - mkdir -p $GOPATH
     - source scripts/utils.sh
-    - source scripts/prepare_build.sh
+    - time source scripts/prepare_build.sh
     - date
 
 # Jobs that only need to pull cache

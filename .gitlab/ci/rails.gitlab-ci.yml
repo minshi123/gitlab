@@ -14,14 +14,16 @@
     - .rails-job-base
   stage: prepare
   script:
-    - bundle exec ruby -Ispec -e 'require "spec_helper" ; TestEnv.init'
-    - scripts/gitaly-test-build  # Do not use 'bundle exec' here
+    - time bundle exec ruby -Ispec -e 'require "spec_helper" ; TestEnv.init'
+    - time scripts/gitaly-test-build  # Do not use 'bundle exec' here
+    - exit 1
   artifacts:
     expire_in: 7d
     paths:
       - tmp/tests
       - config/secrets.yml
       - vendor/gitaly-ruby
+    when: always
   cache:
     policy: pull-push
 
