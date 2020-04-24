@@ -78,12 +78,18 @@ export default {
     },
     design: {
       query: getDesignQuery,
-      fetchPolicy: fetchPolicies.NETWORK_ONLY,
+      // We want to see cached design version if we have one, and fetch newer version on the background to update discussions
+      fetchPolicy: fetchPolicies.CACHE_AND_NETWORK,
       variables() {
         return this.designVariables;
       },
       update: data => extractDesign(data),
-      result({ data }) {
+      result({ data, loading }) {
+        // On the initial load with cache-and-network policy data is undefined until loadins is true
+        // To prevent throwing an error, we don't perform any logic until loading is true
+        if (loading) {
+          return;
+        }
         if (!data) {
           this.onQueryError(DESIGN_NOT_FOUND_ERROR);
         }
@@ -98,7 +104,9 @@ export default {
   },
   computed: {
     isLoading() {
-      return this.$apollo.queries.design.loading;
+      // We only want to show spinner on initial design load (when opened from a deep link to design)
+      // If we already have cached a design, loading shouldn't be indicated to user
+      return this.$apollo.queries.design.loading && !this.design.filename;
     },
     discussions() {
       return extractDiscussions(this.design.discussions);
