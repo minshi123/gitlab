@@ -44,7 +44,15 @@ module Projects
           auto_devops_help_page_path: help_page_path('topics/autodevops/index'),
           features: features.to_json,
           help_page_path: help_page_path('user/application_security/index'),
-          latest_pipeline_path: latest_pipeline_path
+          latest_pipeline_path: latest_pipeline_path,
+          auto_fix_enabled: {
+            dependency_scanning: false,
+            container_scanning: false
+          }.to_json,
+          auto_fix_help_path: '/', # TODO: need real link
+          auto_fix_user_path: '/', # TODO: need real link
+          container_scanning_help_path: help_page_path(SCAN_DOCS[:container_scanning]),
+          dependency_scanning_help_path: help_page_path(SCAN_DOCS[:dependency_scanning]),
         }
       end
 

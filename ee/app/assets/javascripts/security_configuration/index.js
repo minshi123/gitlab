@@ -9,6 +9,11 @@ export default function init() {
     features,
     helpPagePath,
     latestPipelinePath,
+    autoFixEnabled,
+    autoFixHelpPath,
+    autoFixUserPath,
+    containerScanningHelpPath,
+    dependencyScanningHelpPath,
   } = el.dataset;
 
   return new Vue({
@@ -24,6 +29,11 @@ export default function init() {
           features: JSON.parse(features),
           helpPagePath,
           latestPipelinePath,
+          autoFixEnabled: JSON.parse(autoFixEnabled),
+          autoFixHelpPath,
+          autoFixUserPath,
+          containerScanningHelpPath,
+          dependencyScanningHelpPath,
         },
       });
     },

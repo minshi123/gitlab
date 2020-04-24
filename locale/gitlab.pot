@@ -434,6 +434,9 @@ msgstr ""
 msgid "%{screenreaderOnlyStart}Keyboard shorcuts%{screenreaderOnlyEnd} Enabled"
 msgstr ""
 
+msgid "%{securityBotLinkStart}GitLab Security Bot%{securityBotLinkEnd} is the author of the auto-created merge request. %{moreInfoLinkStart}More information%{moreInfoLinkEnd}."
+msgstr ""
+
 msgid "%{service_title} %{message}."
 msgstr ""
 
@@ -2838,6 +2841,9 @@ msgstr ""
 msgid "Automatic certificate management using Let's Encrypt"
 msgstr ""
 
+msgid "Automatically create merge requests for vulnerabilities that have fixes available."
+msgstr ""
+
 msgid "Automatically marked as default internal user"
 msgstr ""
 
@@ -2851,6 +2857,9 @@ msgid "Autosave|Note"
 msgstr ""
 
 msgid "Available"
+msgstr ""
+
+msgid "Available for dependency and container scanning"
 msgstr ""
 
 msgid "Available group Runners: %{runners}"
@@ -14174,6 +14183,9 @@ msgstr ""
 msgid "Onboarding"
 msgstr ""
 
+msgid "Once %{containerScanningLinkStart}Container Scanning%{containerScanningLinkEnd} and/or %{dependencyScanningLinkStart}Dependency Scanning%{dependencyScanningLinkEnd} are configured, settings will default to opt-in. %{securityBotLinkStart}GitLab Security Bot%{securityBotLinkEnd} will be the author of the auto-created merge request. %{moreInfoLinkStart}More information%{moreInfoLinkEnd}."
+msgstr ""
+
 msgid "Once imported, repositories can be mirrored over SSH. Read more %{link_start}here%{link_end}."
 msgstr ""
 
@@ -20048,7 +20060,13 @@ msgstr ""
 msgid "Suggest code changes which can be immediately applied in one click. Try it out!"
 msgstr ""
 
+msgid "Suggested Solutions"
+msgstr ""
+
 msgid "Suggested change"
+msgstr ""
+
+msgid "Suggested solutions help link"
 msgstr ""
 
 msgid "SuggestedColors|Bright green"
