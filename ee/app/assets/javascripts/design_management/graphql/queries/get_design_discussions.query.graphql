@@ -1,0 +1,31 @@
+#import "../fragments/designNote.fragment.graphql"
+
+query getDesignDiscussions($fullPath: ID!, $iid: String!, $atVersion: ID, $filenames: [String!]) {
+  project(fullPath: $fullPath) {
+    id
+    issue(iid: $iid) {
+      designCollection {
+        designs(atVersion: $atVersion, filenames: $filenames) {
+          edges {
+            node {
+              discussions {
+                nodes {
+                  id
+                  replyId
+                  notes {
+                    nodes {
+                      ...DesignNote
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+

@@ -1,4 +1,3 @@
-#import "./designNote.fragment.graphql"
 #import "./designList.fragment.graphql"
 #import "./diffRefs.fragment.graphql"
 
@@ -8,16 +7,5 @@ fragment DesignItem on Design {
   fullPath
   diffRefs {
     ...DesignDiffRefs
-  }
-  discussions {
-    nodes {
-      id
-      replyId
-      notes {
-        nodes {
-          ...DesignNote
-        }
-      }
-    }
   }
 }
