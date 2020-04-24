@@ -1,5 +1,3 @@
-import $ from 'jquery';
-import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
 import { getSelector, dismiss, inserted } from '~/feature_highlight/feature_highlight_helper';
 import { togglePopover } from '~/shared/popover';
@@ -16,22 +14,16 @@ describe('feature highlight helper', () => {
   });
 
   describe('dismiss', () => {
-    let mock;
     const context = {
       hide: () => {},
       attr: () => '/-/callouts/dismiss',
     };
 
     beforeEach(() => {
-      mock = new MockAdapter(axios);
       jest.spyOn(axios, 'post').mockResolvedValue();
       jest.spyOn(togglePopover, 'call').mockImplementation(() => {});
       jest.spyOn(context, 'hide').mockImplementation(() => {});
       dismiss.call(context);
-    });
-
-    afterEach(() => {
-      mock.restore();
     });
 
     it('calls persistent dismissal endpoint', () => {
