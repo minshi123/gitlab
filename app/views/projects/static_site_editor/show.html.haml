@@ -1,1 +1,3 @@
-#static-site-editor{ data: @config.payload }
+- data = @config.payload.merge({ base_url: namespace_project_show_sse_vue_path() })
+
+#static-site-editor{ data: data }
