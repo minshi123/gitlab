@@ -53,13 +53,7 @@ const addDiscussionCommentToStore = (store, createNote, query, queryVariables, d
 
   const design = extractDesign(data);
   const currentDiscussion = extractCurrentDiscussion(design.discussions, discussionId);
-  currentDiscussion.node.notes.edges = [
-    ...currentDiscussion.node.notes.edges,
-    {
-      __typename: 'NoteEdge',
-      node: createNote.note,
-    },
-  ];
+  currentDiscussion.notes.nodes = [...currentDiscussion.notes.nodes, createNote.note];
 
   design.notesCount += 1;
   if (
