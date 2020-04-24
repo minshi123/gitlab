@@ -455,6 +455,25 @@ describe API::Issues do
         it_behaves_like 'labeled issues with labels and label_name params'
       end
 
+      context 'with archived projects' do
+        let(:archived_project) { create(:project, :public, :archived, creator_id: user.id, namespace: group) }
+        let!(:archived_issue) { create(:issue, author: user, assignees: [user], project: archived_project)}
+
+        it 'returns only non archived projects issues' do
+          get api(base_url, user)
+
+          expect_paginated_array_response([group_closed_issue.id, group_confidential_issue.id, group_issue.id])
+        end
+
+        it 'returns issues from archived projects if non_archived it set to false' do
+          get api(base_url, user), params: { non_archived: false }
+
+          expect_paginated_array_response(
+            [archived_issue.id, group_closed_issue.id, group_confidential_issue.id, group_issue.id]
+          )
+        end
+      end
+
       it 'returns an array of issues found by iids' do
         get api(base_url, user), params: { iids: [group_issue.iid] }
 
