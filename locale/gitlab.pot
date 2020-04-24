@@ -23263,6 +23263,9 @@ msgstr ""
 msgid "VulnerabilityManagement|Resolved %{timeago} by %{user}"
 msgstr ""
 
+msgid "VulnerabilityManagement|Something went wrong while fetching latest comments. Please try again later."
+msgstr ""
+
 msgid "VulnerabilityManagement|Something went wrong while trying to delete the comment. Please try again later."
 msgstr ""
 
