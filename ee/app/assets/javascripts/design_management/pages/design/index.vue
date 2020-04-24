@@ -13,7 +13,6 @@ import DesignScaler from '../../components/design_scaler.vue';
 import Participants from '~/sidebar/components/participants/participants.vue';
 import DesignPresentation from '../../components/design_presentation.vue';
 import getDesignQuery from '../../graphql/queries/getDesign.query.graphql';
-import getDesignDiscussionsQuery from '../../graphql/queries/get_design_discussions.query.graphql';
 import appDataQuery from '../../graphql/queries/appData.query.graphql';
 import createImageDiffNoteMutation from '../../graphql/mutations/createImageDiffNote.mutation.graphql';
 import updateImageDiffNoteMutation from '../../graphql/mutations/updateImageDiffNote.mutation.graphql';
@@ -79,6 +78,7 @@ export default {
     },
     design: {
       query: getDesignQuery,
+      fetchPolicy: fetchPolicies.NETWORK_ONLY,
       variables() {
         return this.designVariables;
       },
@@ -95,31 +95,13 @@ export default {
         this.onQueryError(DESIGN_NOT_FOUND_ERROR);
       },
     },
-    discussions: {
-      query: getDesignDiscussionsQuery,
-      fetchPolicy: fetchPolicies.NETWORK_ONLY,
-      variables() {
-        return this.designVariables;
-      },
-      update: data =>
-        extractDiscussions(data.project.issue.designCollection.designs.edges[0].node.discussions),
-      // TODO: change to discussions error
-      result({ data }) {
-        if (!data) {
-          this.onQueryError(DESIGN_NOT_FOUND_ERROR);
-        }
-        if (this.$route.query.version && !this.hasValidVersion) {
-          this.onQueryError(DESIGN_NOT_EXIST_ERROR);
-        }
-      },
-      error() {
-        this.onQueryError(DESIGN_NOT_FOUND_ERROR);
-      },
-    },
   },
   computed: {
     isLoading() {
       return this.$apollo.queries.design.loading;
+    },
+    discussions() {
+      return extractDiscussions(this.design.discussions);
     },
     discussionParticipants() {
       return extractParticipants(this.design.issue.participants);
