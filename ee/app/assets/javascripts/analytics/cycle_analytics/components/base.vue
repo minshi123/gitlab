@@ -15,6 +15,7 @@ import TypeOfWorkCharts from './type_of_work_charts.vue';
 import UrlSyncMixin from '../../shared/mixins/url_sync_mixin';
 import { toYmd } from '../../shared/utils';
 import RecentActivityCard from './recent_activity_card.vue';
+import StageTableNav from './stage_table_nav.vue';
 import CustomStageForm from './custom_stage_form.vue';
 
 export default {
@@ -30,6 +31,7 @@ export default {
     TypeOfWorkCharts,
     RecentActivityCard,
     CustomStageForm,
+    StageTableNav,
   },
   mixins: [glFeatureFlagsMixin(), UrlSyncMixin],
   props: {
@@ -87,6 +89,7 @@ export default {
       'selectedProjectIds',
       'enableCustomOrdering',
       'cycleAnalyticsRequestParams',
+      'customStageFormActive',
     ]),
     ...mapGetters('typeOfWork', ['tasksByTypeChartData']),
     shouldRenderEmptyState() {
@@ -270,7 +273,6 @@ export default {
         v-if="hasNoAccessError"
         class="js-empty-state"
         :title="__('You don’t have access to Value Stream Analytics for this group')"
-        :svg-path="noAccessSvgPath"
         :description="
           __(
             'Only \'Reporter\' roles and above on tiers Premium / Silver and above can see Value Stream Analytics.',
@@ -293,24 +295,30 @@ export default {
             :key="stageCount"
             class="js-stage-table"
             :current-stage="selectedStage"
-            :stages="activeStages"
-            :medians="medians"
             :is-loading="isLoadingStage"
             :is-empty-stage="isEmptyStage"
-            :is-creating-custom-stage="isCreatingCustomStage"
+            :custom-stage-form-active="customStageFormActive"
             :current-stage-events="currentStageEvents"
             :no-data-svg-path="noDataSvgPath"
-            :no-access-svg-path="noAccessSvgPath"
-            :can-edit-stages="hasCustomizableCycleAnalytics"
-            :custom-ordering="enableCustomOrdering"
-            @selectStage="onStageSelect"
-            @editStage="onShowEditStageForm"
-            @showAddStageForm="onShowAddStageForm"
-            @hideStage="onUpdateCustomStage"
-            @removeStage="onRemoveStage"
-            @reorderStage="onStageReorder"
           >
-            <template v-if="isCreatingCustomStage || isEditingCustomStage">
+            <template #nav>
+              <stage-table-nav
+                :current-stage="selectedStage"
+                :stages="activeStages"
+                :medians="medians"
+                :is-creating-custom-stage="isCreatingCustomStage"
+                :custom-stage-form-active="customStageFormActive"
+                :can-edit-stages="hasCustomizableCycleAnalytics"
+                :custom-ordering="enableCustomOrdering"
+                @reorderStage="onStageReorder"
+                @selectStage="onStageSelect"
+                @editStage="onShowEditStageForm"
+                @showAddStageForm="onShowAddStageForm"
+                @hideStage="onUpdateCustomStage"
+                @removeStage="onRemoveStage"
+              />
+            </template>
+            <template v-if="customStageFormActive" #content>
               <custom-stage-form
                 :events="customStageFormEvents"
                 :is-saving-custom-stage="isSavingCustomStage"
