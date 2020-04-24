@@ -22,7 +22,7 @@ module EE
         next unless project&.persisted? || namespace&.persisted?
 
         context = ::Ci::Minutes::Context.new(current_user, project, namespace)
-        ::Ci::Minutes::Notification.new(context).warning_reached?
+        ::Ci::Minutes::Notification.new(context).show?
       end
     end
   end

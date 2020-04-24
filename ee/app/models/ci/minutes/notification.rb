@@ -3,8 +3,6 @@
 module Ci
   module Minutes
     class Notification
-      include ::Gitlab::Utils::StrongMemoize
-
       attr_reader :message
 
       PERCENTAGES = {
@@ -25,22 +23,12 @@ module Ci
         true if notification_level
       end
 
-      def warning_reached?
-        show_limit? && context.shared_runners_remaining_minutes_below_threshold?
-      end
-
-      def alert_reached?
-        show_limit? && context.shared_runners_minutes_used?
-      end
-
       private
 
       attr_reader :context, :notification_level
 
       def show_limit?
-        strong_memoize(:show_limit) do
-          context.shared_runners_minutes_limit_enabled? && context.can_see_status?
-        end
+        context.shared_runners_minutes_limit_enabled? && context.can_see_status?
       end
 
       def set_notifications

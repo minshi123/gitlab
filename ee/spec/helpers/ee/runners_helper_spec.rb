@@ -15,7 +15,7 @@ describe EE::RunnersHelper do
     let(:show_warning) { true }
     let(:context_level) { project }
     let(:context) { double('Ci::Minutes::Context', namespace: namespace) }
-    let(:threshold) { double('Ci::Minutes::Notification', warning_reached?: show_warning) }
+    let(:threshold) { double('Ci::Minutes::Notification', show?: show_warning) }
 
     before do
       allow(::Ci::Minutes::Context).to receive(:new).and_return(context)
@@ -53,7 +53,7 @@ describe EE::RunnersHelper do
 
           context 'when show_ci_minutes_notification_dot? has been called before' do
             it 'does not do all the notification and query work again' do
-              expect(threshold).not_to receive(:warning_reached?)
+              expect(threshold).not_to receive(:show?)
               expect(project).to receive(:persisted?).once
 
               helper.show_ci_minutes_notification_dot?(project, namespace)
@@ -71,7 +71,7 @@ describe EE::RunnersHelper do
 
         context 'when show_ci_minutes_notification_dot? has been called before' do
           it 'does not do all the notification and query work again' do
-            expect(threshold).to receive(:warning_reached?).once
+            expect(threshold).to receive(:show?).once
             expect(project).to receive(:persisted?).once
 
             helper.show_ci_minutes_notification_dot?(project, namespace)

@@ -19,12 +19,11 @@ describe Ci::Minutes::Notification do
       context 'when usage has reached a notification level' do
         before do
           group.shared_runners_minutes_limit = 10
-          allow(group).to receive(:shared_runners_remaining_minutes).and_return(2)
         end
 
         context 'when over the limit' do
           before do
-            group.last_ci_minutes_usage_notification_level = 30
+            allow(group).to receive(:shared_runners_remaining_minutes).and_return(2)
           end
 
           it { is_expected.to be_truthy }
@@ -32,7 +31,7 @@ describe Ci::Minutes::Notification do
 
         context 'when right at the limit for notification' do
           before do
-            group.last_ci_minutes_usage_notification_level = 20
+            allow(group).to receive(:shared_runners_remaining_minutes).and_return(3)
           end
 
           it { is_expected.to be_truthy }
@@ -50,15 +49,7 @@ describe Ci::Minutes::Notification do
 
         it { is_expected.to be_falsey }
       end
-    end
-  end
 
-  shared_examples 'queries for alert being reached' do
-    context 'without limit' do
-      it { is_expected.to be_falsey }
-    end
-
-    context 'when limit is defined' do
       context 'when usage has exceeded the limit' do
         let(:group) { create(:group, :with_used_build_minutes_limit) }
 
@@ -81,7 +72,6 @@ describe Ci::Minutes::Notification do
 
   shared_examples 'cannot see if warning reached' do
     before do
-      group.last_ci_minutes_usage_notification_level = 30
       group.shared_runners_minutes_limit = 10
       allow(group).to receive(:shared_runners_remaining_minutes).and_return(2)
     end
@@ -91,7 +81,7 @@ describe Ci::Minutes::Notification do
     end
   end
 
-  shared_examples 'cannot see if alert reached' do
+  shared_examples 'cannot see if danger reached' do
     let(:group) { create(:group, :with_used_build_minutes_limit) }
 
     context 'when usage has reached an alert level' do
@@ -102,14 +92,14 @@ describe Ci::Minutes::Notification do
   context 'when at project level' do
     let(:context) { ::Ci::Minutes::Context.new(user, injected_project, nil) }
 
-    describe '#warning_reached?' do
+    describe '#show?' do
       subject do
         threshold = described_class.new(context)
-        threshold.warning_reached?
+        threshold.show?
       end
 
       context 'when eligible to see warnings' do
-        it_behaves_like 'queries for warning being reached' do
+        it_behaves_like 'queries for notifications' do
           before do
             group.add_developer(user)
           end
@@ -120,41 +110,22 @@ describe Ci::Minutes::Notification do
         it_behaves_like 'cannot see if warning reached'
       end
     end
-
-    describe '#alert_reached?' do
-      subject do
-        threshold = described_class.new(context)
-        threshold.alert_reached?
-      end
-
-      context 'when eligible to see alerts' do
-        it_behaves_like 'queries for alert being reached' do
-          before do
-            group.add_developer(user)
-          end
-        end
-      end
-
-      context 'when not eligible to see alerts' do
-        it_behaves_like 'cannot see if alert reached'
-      end
-    end
   end
 
   context 'when at namespace level' do
     let(:context) { ::Ci::Minutes::Context.new(user, nil, injected_group) }
 
-    describe '#warning_reached?' do
+    describe '#show?' do
       subject do
         threshold = described_class.new(context)
-        threshold.warning_reached?
+        threshold.show?
       end
 
       context 'when eligible to see warnings' do
         let!(:user_pipeline) { create(:ci_pipeline, user: user, project: project) }
 
         context 'with a project that has runners enabled inside namespace' do
-          it_behaves_like 'queries for warning being reached'
+          it_behaves_like 'queries for notifications'
         end
 
         context 'with no projects that have runners enabled inside namespace' do
@@ -166,42 +137,6 @@ describe Ci::Minutes::Notification do
 
       context 'when not eligible to see warnings' do
         it_behaves_like 'cannot see if warning reached'
-      end
-    end
-
-    describe '#alert_reached?' do
-      subject do
-        threshold = described_class.new(context)
-        threshold.alert_reached?
-      end
-
-      context 'when eligible to see warnings' do
-        let!(:user_pipeline) { create(:ci_pipeline, user: user, project: project) }
-
-        context 'with a project that has runners enabled inside namespace' do
-          it_behaves_like 'queries for alert being reached'
-        end
-
-        context 'with no projects that have runners enabled inside namespace' do
-          it_behaves_like 'cannot see if alert reached' do
-            let(:shared_runners_enabled) { false }
-          end
-        end
-      end
-
-      context 'when not eligible to see warnings' do
-        it_behaves_like 'cannot see if warning reached'
-      end
-    end
-
-    context 'when we have already checked to see if we can show the limit' do
-      subject { described_class.new(context) }
-
-      it 'does not do all the verification work again' do
-        expect(context).to receive(:shared_runners_minutes_limit_enabled?).once
-
-        subject.warning_reached?
-        subject.alert_reached?
       end
     end
   end
