@@ -484,6 +484,16 @@ describe('Monitoring store actions', () => {
       );
       expect(commit).toHaveBeenCalledWith(types.SET_ALL_DASHBOARDS, dashboardGitResponse);
     });
+
+    it('sets the document title', () => {
+      const response = metricsDashboardResponse;
+      response.all_dashboards = dashboardGitResponse;
+      state.currentDashboard = dashboardGitResponse[0].path
+
+      receiveMetricsDashboardSuccess({ state, commit, dispatch }, { response });
+
+      expect(document.title.startsWith(dashboardGitResponse[0].display_name)).toEqual(true);
+    });
   });
   describe('fetchDashboardData', () => {
     let commit;

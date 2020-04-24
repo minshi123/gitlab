@@ -143,12 +143,15 @@ export const fetchDashboard = ({ state, commit, dispatch }) => {
 export const requestMetricsDashboard = ({ commit }) => {
   commit(types.REQUEST_METRICS_DASHBOARD);
 };
-export const receiveMetricsDashboardSuccess = ({ commit, dispatch }, { response }) => {
+export const receiveMetricsDashboardSuccess = ({ state, commit, dispatch }, { response }) => {
   const { all_dashboards, dashboard, metrics_data } = response;
 
   commit(types.SET_ALL_DASHBOARDS, all_dashboards);
   commit(types.RECEIVE_METRICS_DASHBOARD_SUCCESS, dashboard);
   commit(types.SET_ENDPOINTS, convertObjectPropsToCamelCase(metrics_data));
+
+  const dashboardDisplayName = all_dashboards.find(d => d.path === state.currentDashboard).display_name
+  document.title = [dashboardDisplayName, document.title].join(' · ');
 
   return dispatch('fetchDashboardData');
 };

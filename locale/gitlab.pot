@@ -13001,9 +13001,6 @@ msgstr ""
 msgid "Metrics and profiling"
 msgstr ""
 
-msgid "Metrics for environment"
-msgstr ""
-
 msgid "Metrics::Dashboard::Annotation|Annotation can't belong to both a cluster and an environment at the same time"
 msgstr ""
 

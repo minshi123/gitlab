@@ -6,7 +6,7 @@ module Metrics
   module Dashboard
     class SystemDashboardService < ::Metrics::Dashboard::PredefinedDashboardService
       DASHBOARD_PATH = 'config/prometheus/common_metrics.yml'
-      DASHBOARD_NAME = 'Default'
+      DASHBOARD_NAME = 'Default dashboard'
 
       SEQUENCE = [
         STAGES::CommonMetricsInserter,
