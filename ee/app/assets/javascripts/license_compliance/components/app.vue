@@ -17,6 +17,8 @@ import PipelineInfo from './pipeline_info.vue';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
+import { doesHashExistInUrl } from '~/lib/utils/url_utility';
+
 export default {
   name: 'LicenseComplianceApp',
   components: {
@@ -73,6 +75,9 @@ export default {
   },
   methods: {
     ...mapActions(LICENSE_LIST, ['fetchLicenses']),
+    shouldSetTabActive(tabName) {
+      return doesHashExistInUrl(tabName);
+    },
   },
 };
 </script>
@@ -120,8 +125,15 @@ export default {
 
     <!-- TODO: Remove feature flag -->
     <template v-if="hasLicensePolicyList">
-      <gl-tabs v-model="tabIndex" content-class="pt-0">
-        <gl-tab>
+      <!-- TODO: change the naming of the active class-->
+      <gl-tabs
+        ref="licenses"
+        :active="shouldSetTabActive('licenses')"
+        v-model="tabIndex"
+        content-class="pt-0"
+        active-tab-class="active-license-tabs"
+      >
+        <gl-tab ref="licenses">
           <template #title>
             {{ s__('Licenses|Detected in Project') }}
             <gl-badge pill>{{ licenseCount }}</gl-badge>
@@ -130,7 +142,7 @@ export default {
           <detected-licenses-table />
         </gl-tab>
 
-        <gl-tab>
+        <gl-tab ref="policies" :active="shouldSetTabActive('policies')">
           <template #title>
             {{ s__('Licenses|Policies') }}
             <gl-badge pill>{{ policyCount }}</gl-badge>
