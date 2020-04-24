@@ -23,7 +23,7 @@ module Resolvers
     def project_finder_params(params)
       {
         without_deleted: true,
-        non_public: params[:membership].presence,
+        non_public: params[:membership],
         search: params[:search].presence
       }.compact
     end
