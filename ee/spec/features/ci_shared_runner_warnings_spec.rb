@@ -29,11 +29,12 @@ describe 'CI shared runner limits' do
     end
 
     context 'when limit is defined' do
-      before do
-        stub_const("EE::Namespace::CI_USAGE_ALERT_LEVELS", [30, 5])
-      end
-
       context 'when usage has reached a notification level' do
+        let(:message) do
+          "Group #{group.name} has 30% or less Shared Runner Pipeline minutes remaining. " \
+          "Once it runs out, no new jobs or pipelines in its projects will run."
+        end
+
         before do
           group.update(last_ci_minutes_usage_notification_level: 30, shared_runners_minutes_limit: 10)
           allow_any_instance_of(EE::Namespace).to receive(:shared_runners_remaining_minutes).and_return(2)
@@ -41,26 +42,31 @@ describe 'CI shared runner limits' do
 
         it 'displays a warning message on pipelines page' do
           visit_project_pipelines
-          expect_quota_exceeded_alert("#{group.name} has less than 30% of CI minutes available.")
+          expect_quota_exceeded_alert(message)
         end
 
         it 'displays a warning message on project homepage' do
           visit_project_home
-          expect_quota_exceeded_alert("#{group.name} has less than 30% of CI minutes available.")
+
+          expect_quota_exceeded_alert(message)
         end
       end
 
       context 'when limit is exceeded' do
         let(:group) { create(:group, :with_used_build_minutes_limit) }
+        let(:message) do
+          "Group #{group.name} has exceeded its pipeline minutes quota. " \
+          "Unless you buy additional pipeline minutes, no new jobs or pipelines in its projects will run."
+        end
 
         it 'displays a warning message on project homepage' do
           visit_project_home
-          expect_quota_exceeded_alert("#{group.name} has exceeded its pipeline minutes quota.")
+          expect_quota_exceeded_alert(message)
         end
 
         it 'displays a warning message on pipelines page' do
           visit_project_pipelines
-          expect_quota_exceeded_alert("#{group.name} has exceeded its pipeline minutes quota.")
+          expect_quota_exceeded_alert(message)
         end
       end
 

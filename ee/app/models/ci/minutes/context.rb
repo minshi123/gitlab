@@ -3,11 +3,11 @@
 module Ci
   module Minutes
     class Context
-      attr_reader :namespace
-
       delegate :shared_runners_remaining_minutes_below_threshold?,
                :shared_runners_minutes_used?,
                :shared_runners_minutes_limit_enabled?, to: :level
+      delegate :name, to: :namespace, prefix: true
+      delegate :last_ci_minutes_usage_notification_level, to: :namespace
 
       def initialize(user, project, namespace)
         @user = user
@@ -26,7 +26,7 @@ module Ci
 
       private
 
-      attr_reader :project, :user, :level
+      attr_reader :project, :user, :level, :namespace
     end
   end
 end
