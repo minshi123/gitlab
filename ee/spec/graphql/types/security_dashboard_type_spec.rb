@@ -35,12 +35,12 @@ describe GitlabSchema.types['SecurityDashboard'] do
       )
     end
 
+    let(:projects) { subject.dig('data', 'securityDashboard', 'projects') }
+
     context 'when user is not logged in' do
       let(:current_user) { nil }
 
       it 'is a nil' do
-        projects = subject.dig('data', 'securityDashboard', 'projects')
-
         expect(projects).to be_nil
       end
     end
@@ -49,7 +49,7 @@ describe GitlabSchema.types['SecurityDashboard'] do
       let(:current_user) { user }
 
       it 'is a list of projects configured for instance security dashboard' do
-        project_ids = subject.dig('data', 'securityDashboard', 'projects', 'nodes').pluck('id')
+        project_ids = projects['nodes'].pluck('id')
 
         expect(project_ids).to eq [GitlabSchema.id_from_object(project).to_s]
       end
