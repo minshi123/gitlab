@@ -21,8 +21,8 @@ module Mutations
                    .execute(branch, ref)
 
         {
-          branch: (OpenStruct.new(name: branch) unless ref == 'unknown'),
-          errors: []
+          branch: (result[:branch] if result[:status] == :success),
+          errors: Array.wrap(result[:message])
         }
       end
 

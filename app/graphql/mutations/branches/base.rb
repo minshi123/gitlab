@@ -15,14 +15,6 @@ module Mutations
             Types::BranchType,
             null: true,
             description: "The branch after mutation"
-
-      authorize :update_issue
-
-      private
-
-      def find_object(project_path:, iid:)
-        resolve_issuable(type: :issue, parent_path: project_path, iid: iid)
-      end
     end
   end
 end
