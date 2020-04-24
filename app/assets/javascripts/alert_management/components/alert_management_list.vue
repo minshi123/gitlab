@@ -1,9 +1,11 @@
 <script>
 import { GlEmptyState, GlButton, GlLoadingIcon, GlTable, GlAlert } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import getAlerts from '../graphql/queries/getAlerts.query.graphql';
 
-const tdClass = 'table-col d-flex';
+const mock = require('./alerts.json');
+
 
 export default {
   i18n: {
@@ -18,33 +20,29 @@ export default {
     {
       key: 'severity',
       label: s__('AlertManagement|Severity'),
-      tdClass,
     },
     {
-      key: 'start_time',
-      label: s__('AlertManagement|Start Time'),
-      tdClass,
+      key: 'started_at',
+      label: s__('AlertManagement|Start time'),
     },
     {
-      key: 'end_time',
-      label: s__('AlertManagement|End Time'),
-      tdClass,
+      key: 'ended_at',
+      label: s__('AlertManagement|End time'),
     },
     {
-      key: 'alert',
+      key: 'title',
       label: s__('AlertManagement|Alert'),
       thClass: 'w-30p',
-      tdClass,
     },
     {
-      key: 'events',
+      key: 'event_count',
       label: s__('AlertManagement|Events'),
-      tdClass,
+      thClass: 'w-auto',
+      tdClass: 'text-right',
     },
     {
       key: 'status',
       label: s__('AlertManagement|Status'),
-      tdClass,
     },
   ],
   components: {
@@ -53,6 +51,7 @@ export default {
     GlLoadingIcon,
     GlTable,
     GlAlert,
+    TimeAgo,
   },
   props: {
     indexPath: {
@@ -74,7 +73,7 @@ export default {
       required: true,
     },
   },
-  apollo: {
+/*  apollo: {
     alerts: {
       query: getAlerts,
       variables() {
@@ -86,10 +85,10 @@ export default {
         this.errored = true;
       },
     },
-  },
+  },*/
   data() {
     return {
-      alerts: null,
+      alerts: mock.alerts,
       errored: false,
       isAlertDismissed: false,
       isErrorAlertDismissed: false,
@@ -103,7 +102,8 @@ export default {
       return this.errored && !this.isErrorAlertDismissed;
     },
     loading() {
-      return this.$apollo.queries.alerts.loading;
+      // return this.$apollo.queries.alerts.loading;
+      return false;
     },
   },
 };
@@ -127,11 +127,23 @@ export default {
         :busy="loading"
         fixed
         stacked="sm"
-        tbody-tr-class="table-row mb-4"
       >
+        <template #cell(started_at)="{ item }">
+          <time-ago :time="item.started_at"/>
+        </template>
+
+        <template #cell(ended_at)="{ item }">
+          <time-ago :time="item.ended_at"/>
+        </template>
+
+        <template #cell(title)="{ item }">
+          <div class="gl-max-w-full text-truncate">{{item.title}}</div>
+        </template>
+
         <template #empty>
           {{ s__('AlertManagement|No alerts to display.') }}
         </template>
+
         <template #table-busy>
           <gl-loading-icon size="lg" color="dark" class="mt-3" />
         </template>
