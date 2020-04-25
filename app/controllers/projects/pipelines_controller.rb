@@ -93,6 +93,10 @@ class Projects::PipelinesController < Projects::ApplicationController
     render_show
   end
 
+  def dag
+    render_show
+  end
+
   def failures
     if @pipeline.failed_builds.present?
       render_show

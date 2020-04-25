@@ -11,9 +11,8 @@
         = _('Jobs')
         %span.badge.badge-pill.js-builds-counter= pipeline.total_size
     - if dag_pipeline_tab_enabled
-      %li.js-builds-tab-link
-        -# TODO: Update this path to link to the proper URL
-        = link_to builds_project_pipeline_path(@project, @pipeline), data: { target: '#js-tab-dag', action: 'dag', toggle: 'tab' }, class: 'builds-tab' do
+      %li.js-dag-tab-link
+        = link_to dag_project_pipeline_path(@project, @pipeline), data: { target: '#js-tab-dag', action: 'dag', toggle: 'tab' }, class: 'dag-tab' do
           = _('DAG')
     - if @pipeline.failed_builds.present?
       %li.js-failures-tab-link
@@ -81,7 +80,8 @@
                     %code.bash.js-build-output
                       = build_summary(build)
 
-  #js-tab-dag
+  - if dag_pipeline_tab_enabled
+    #js-tab-dag.tab-pane
 
   #js-tab-tests.tab-pane
     #js-pipeline-tests-detail
