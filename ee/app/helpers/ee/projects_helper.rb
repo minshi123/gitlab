@@ -32,7 +32,7 @@ module EE
       nav_tabs += get_project_security_nav_tabs(project, current_user)
 
       if ::Gitlab.config.packages.enabled &&
-          project.feature_available?(:packages) &&
+          ::Gitlab.ee? &&
           can?(current_user, :read_package, project)
         nav_tabs << :packages
       end
@@ -73,7 +73,7 @@ module EE
     override :project_permissions_panel_data
     def project_permissions_panel_data(project)
       super.merge(
-        packagesAvailable: ::Gitlab.config.packages.enabled && project.feature_available?(:packages),
+        packagesAvailable: ::Gitlab.config.packages.enabled && ::Gitlab.ee?,
         packagesHelpPath: help_page_path('user/packages/index')
       )
     end

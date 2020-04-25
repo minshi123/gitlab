@@ -45,6 +45,17 @@ RSpec.describe 'Group navbar' do
   end
 
   before do
+    # FIXME: remove this after packages move to core
+    if ::Gitlab.ee?
+      insert_after_nav_item(
+        _('Kubernetes'),
+        new_nav_item: {
+          nav_item: _('Packages & Registries'),
+          nav_sub_items: [_('Package Registry')]
+        }
+      )
+    end
+
     stub_feature_flags(group_push_rules: false)
     stub_feature_flags(group_iterations: false)
     group.add_maintainer(user)
@@ -61,13 +72,22 @@ RSpec.describe 'Group navbar' do
     before do
       stub_config(registry: { enabled: true })
 
-      insert_after_nav_item(
-        _('Kubernetes'),
-        new_nav_item: {
-          nav_item: _('Packages & Registries'),
-          nav_sub_items: [_('Container Registry')]
-        }
-      )
+      if ::Gitlab.ee?
+        insert_after_sub_nav_item(
+          _('Package Registry'),
+          within: _('Packages & Registries'),
+          new_sub_nav_item_name: _('Container Registry')
+        )
+      else
+        insert_after_nav_item(
+          _('Kubernetes'),
+          new_nav_item: {
+            nav_item: _('Packages & Registries'),
+            nav_sub_items: [_('Container Registry')]
+          }
+        )
+      end
+
       visit group_path(group)
     end
 

@@ -16,6 +16,16 @@ RSpec.describe 'Project navbar' do
 
     project.add_maintainer(user)
     sign_in(user)
+
+    if ::Gitlab.ee?
+      insert_after_nav_item(
+        _('Operations'),
+        new_nav_item: {
+          nav_item: _('Packages & Registries'),
+          nav_sub_items: [_('Package Registry')]
+        }
+      )
+    end
   end
 
   it_behaves_like 'verified navigation bar' do
@@ -60,13 +70,22 @@ RSpec.describe 'Project navbar' do
     before do
       stub_config(registry: { enabled: true })
 
-      insert_after_nav_item(
-        _('Operations'),
-        new_nav_item: {
-          nav_item: _('Packages & Registries'),
-          nav_sub_items: [_('Container Registry')]
-        }
-      )
+      if ::Gitlab.ee?
+        insert_after_sub_nav_item(
+          _('Package Registry'),
+          within: _('Packages & Registries'),
+          new_sub_nav_item_name: _('Container Registry')
+        )
+      else
+        insert_after_nav_item(
+          _('Operations'),
+          new_nav_item: {
+            nav_item: _('Packages & Registries'),
+            nav_sub_items: [_('Container Registry')]
+          }
+        )
+      end
+
       visit project_path(project)
     end
 

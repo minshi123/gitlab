@@ -13,7 +13,7 @@ module Resolvers
     private
 
     def packages_available?(object, user)
-      ::Gitlab.config.packages.enabled && object.feature_available?(:packages)
+      ::Gitlab.config.packages.enabled
     end
   end
 end
