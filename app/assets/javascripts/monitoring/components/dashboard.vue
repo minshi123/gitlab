@@ -31,7 +31,13 @@ import GroupEmptyState from './group_empty_state.vue';
 import DashboardsDropdown from './dashboards_dropdown.vue';
 
 import TrackEventDirective from '~/vue_shared/directives/track_event';
-import { getAddMetricTrackingOptions, timeRangeToUrl, timeRangeFromUrl } from '../utils';
+import {
+  getAddMetricTrackingOptions,
+  timeRangeToUrl,
+  timeRangeFromUrl,
+  generatePanelUrl,
+  panelIdFromUrl,
+} from '../utils';
 import { metricStates } from '../constants';
 import { defaultTimeRange, timeRanges } from '~/vue_shared/constants';
 
@@ -260,7 +266,17 @@ export default {
       this.setGettingStartedEmptyState();
     } else {
       this.setTimeRange(this.selectedTimeRange);
-      this.fetchData();
+      this.fetchData()
+        .then(() => {
+          const panelId = panelIdFromUrl(this.dashboard);
+          console.log('fetchData done! setting expanded panel', panelId);
+          if (panelId) {
+            this.setExpandedPanel(panelId);
+          }
+        })
+        .catch(e => {
+          // TODO WHAT DO?
+        });
     }
   },
   methods: {
@@ -300,11 +316,9 @@ export default {
       // As a fallback, switch to default time range instead
       this.selectedTimeRange = defaultTimeRange;
     },
-
-    generateLink(group, title, yLabel) {
-      const dashboard = this.currentDashboard || this.firstDashboard.path;
-      const params = pickBy({ dashboard, group, title, y_label: yLabel }, value => value != null);
-      return mergeUrlParams(params, window.location.href);
+    generatePanelLink(groupKey, panel) {
+      const dashboardPath = this.currentDashboard || this.firstDashboard.path;
+      return generatePanelUrl(dashboardPath, groupKey, panel);
     },
     hideAddMetricModal() {
       this.$refs.addMetricModal.hide();
@@ -611,9 +625,7 @@ export default {
                 </div>
 
                 <dashboard-panel
-                  :clipboard-text="
-                    generateLink(groupData.group, graphData.title, graphData.y_label)
-                  "
+                  :clipboard-text="generatePanelLink(groupData.group, graphData)"
                   :graph-data="graphData"
                   :alerts-endpoint="alertsEndpoint"
                   :prometheus-alerts-available="prometheusAlertsAvailable"

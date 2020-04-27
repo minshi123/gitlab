@@ -1,3 +1,4 @@
+import { pickBy } from 'lodash';
 import { queryToObject, mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
 import {
   timeRangeParamNames,
@@ -110,6 +111,55 @@ export const graphDataValidatorForAnomalyValues = graphData => {
 export const timeRangeFromUrl = (search = window.location.search) => {
   const params = queryToObject(search);
   return timeRangeFromParams(params);
+};
+
+/**
+ * TODO Document
+ * @param {*} dashboardPath
+ * @param {*} groupKey
+ * @param {*} panel
+ * @param {*} url
+ */
+export const generatePanelUrl = (dashboardPath, groupKey, panel, url = window.location.href) => {
+  const { y_label, title } = panel;
+  const params = pickBy(
+    { dashboard: dashboardPath, group: groupKey, title, y_label },
+    value => value != null,
+  );
+  return mergeUrlParams(params, url);
+};
+
+/**
+ * TODO Document
+ * TODO Make clever!?!?
+ * @param {*} url
+ */
+export const panelIdFromUrl = (dashboardObj, search = window.location.search) => {
+  const params = queryToObject(search);
+
+  const groupObj = dashboardObj.panelGroups.find(({ group }) => params.group === group);
+  if (!groupObj) {
+    // TODO Throw? Show alert?
+  }
+
+  const panelObj = groupObj.panels.find(({ y_label, title }) => {
+    console.log(
+      y_label,
+      params.y_label,
+      title,
+      params.title,
+      y_label === params.y_label && title === params.title,
+    );
+    return y_label === params.y_label && title === params.title;
+  });
+  debugger;
+  if (!panelObj) {
+    debugger;
+    // TODO Throw? Show alert?
+  }
+  console.log('Panel found!', panelObj);
+
+  return panelObj.id;
 };
 
 /**

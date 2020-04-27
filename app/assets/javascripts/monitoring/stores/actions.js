@@ -89,8 +89,20 @@ export const setShowErrorBanner = ({ commit }, enabled) => {
   commit(types.SET_SHOW_ERROR_BANNER, enabled);
 };
 
-export const setExpandedPanel = ({ commit }, panelId) => {
+export const setExpandedPanel = ({ commit, dispatch, state }, panelId) => {
   commit(types.SET_EXPANDED_PANEL, panelId);
+
+  const defaultQueryParams = prometheusMetricQueryParams(state.timeRange);
+
+  // TODO Cache or memoize (or add to getters?)
+  const allpanels = state.dashboard.panelGroups.reduce((acc, { panels }) => acc.concat(panels), []);
+  const panel = allpanels.find(({ id }) => id === state.expandedPanel);
+  if (!panel) {
+    return null;
+  }
+  // END TODO
+
+  return dispatch('fetchPanelData', panel, defaultQueryParams);
 };
 
 export const setNoExpandedPanel = ({ commit }) => {
@@ -101,7 +113,6 @@ export const setNoExpandedPanel = ({ commit }) => {
 
 export const fetchData = ({ dispatch }) => {
   dispatch('fetchEnvironmentsData');
-  dispatch('fetchDashboard');
   /**
    * Annotations data is not yet fetched. This will be
    * ready after the BE piece is implemented.
@@ -110,6 +121,7 @@ export const fetchData = ({ dispatch }) => {
   if (isFeatureFlagEnabled('metricsDashboardAnnotations')) {
     dispatch('fetchAnnotations');
   }
+  return dispatch('fetchDashboard');
 };
 
 // Metrics dashboard
@@ -124,7 +136,9 @@ export const fetchDashboard = ({ state, commit, dispatch }) => {
 
   return backOffRequest(() => axios.get(state.dashboardEndpoint, { params }))
     .then(resp => resp.data)
-    .then(response => dispatch('receiveMetricsDashboardSuccess', { response }))
+    .then(response => {
+      dispatch('receiveMetricsDashboardSuccess', { response });
+    })
     .catch(error => {
       Sentry.captureException(error);
 
@@ -183,9 +197,10 @@ export const fetchDashboardData = ({ state, dispatch, getters }) => {
   const promises = [];
   state.dashboard.panelGroups.forEach(group => {
     group.panels.forEach(panel => {
-      panel.metrics.forEach(metric => {
-        promises.push(dispatch('fetchPrometheusMetric', { metric, defaultQueryParams }));
-      });
+      // panel.metrics.forEach(metric => {
+      //   promises.push(dispatch('fetchPrometheusMetric', { metric, defaultQueryParams }));
+      // });
+      return dispatch('fetchPanelData', { panel, defaultQueryParams });
     });
   });
 
@@ -200,6 +215,14 @@ export const fetchDashboardData = ({ state, dispatch, getters }) => {
     .catch(() => {
       createFlash(s__(`Metrics|There was an error while retrieving metrics`), 'warning');
     });
+};
+
+export const fetchPanelData = ({ dispatch }, { panel, defaultQueryParams }) => {
+  const promises = [];
+  panel.metrics.forEach(metric => {
+    promises.push(dispatch('fetchPrometheusMetric', { metric, defaultQueryParams }));
+  });
+  return promises;
 };
 
 /**
