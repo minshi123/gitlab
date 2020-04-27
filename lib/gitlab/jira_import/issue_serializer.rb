@@ -3,11 +3,12 @@
 module Gitlab
   module JiraImport
     class IssueSerializer
-      attr_reader :jira_issue, :project, :params, :formatter
+      attr_reader :jira_issue, :project, :import_owner_id, :params, :formatter
 
-      def initialize(project, jira_issue, params = {})
+      def initialize(project, jira_issue, import_owner_id, params = {})
         @jira_issue = jira_issue
         @project = project
+        @import_owner_id = import_owner_id
         @params = params
         @formatter = Gitlab::ImportFormatter.new
       end
@@ -21,7 +22,7 @@ module Gitlab
           state_id: map_status(jira_issue.status.statusCategory),
           updated_at: jira_issue.updated,
           created_at: jira_issue.created,
-          author_id: project.creator_id, # TODO: map actual author: https://gitlab.com/gitlab-org/gitlab/-/issues/210580
+          author_id: import_owner_id, # TODO: map actual author: https://gitlab.com/gitlab-org/gitlab/-/issues/210580
           label_ids: label_ids
         }
       end

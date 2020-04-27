@@ -9,6 +9,7 @@ describe Gitlab::JiraImport::IssueSerializer do
     let_it_be(:project_label) { create(:label, project: project, title: 'bug') }
     let_it_be(:other_project_label) { create(:label, project: project, title: 'feature') }
     let_it_be(:group_label) { create(:group_label, group: group, title: 'dev') }
+    let_it_be(:current_user) { create(:user) }
 
     let(:iid) { 5 }
     let(:key) { 'PROJECT-5' }
@@ -50,7 +51,7 @@ describe Gitlab::JiraImport::IssueSerializer do
 
     let(:params) { { iid: iid } }
 
-    subject { described_class.new(project, jira_issue, params).execute }
+    subject { described_class.new(project, jira_issue, current_user.id, params).execute }
 
     let(:expected_description) do
       <<~MD
@@ -79,7 +80,7 @@ describe Gitlab::JiraImport::IssueSerializer do
           state_id: 1,
           updated_at: updated_at,
           created_at: created_at,
-          author_id: project.creator_id,
+          author_id: current_user.id,
           label_ids: [project_label.id, group_label.id] + Label.reorder(id: :asc).last(2).pluck(:id)
         )
       end
