@@ -26,7 +26,6 @@ const initStaticSiteEditor = el => {
       username,
     },
   });
-  const router = createRouter(baseUrl);
   const apolloProvider = createApolloProvider({
     isSupportedContent: parseBoolean(isSupportedContent),
     project: `${namespace}/${project}`,
@@ -34,6 +33,7 @@ const initStaticSiteEditor = el => {
     sourcePath,
     username,
   });
+  const router = createRouter(baseUrl, store);
 
   return new Vue({
     el,

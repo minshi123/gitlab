@@ -4,7 +4,7 @@ import { GlSkeletonLoader } from '@gitlab/ui';
 
 import createState from '~/static_site_editor/store/state';
 
-import { SUCCESS_ROUTE_NAME } from '~/static_site_editor/router/constants';
+import { SUCCESS_ROUTE } from '~/static_site_editor/router/constants';
 
 import Home from '~/static_site_editor/pages/home.vue';
 import RichContentEditor from '~/vue_shared/components/rich_content_editor/rich_content_editor.vue';
@@ -68,18 +68,23 @@ describe('static_site_editor/pages/home', () => {
     };
   };
 
-  const buildWrapper = (data = { isSupportedContent: true }) => {
+  const buildWrapper = (data = {}) => {
     wrapper = shallowMount(Home, {
       localVue,
       store,
       provide: {
         glFeatures: { richContentEditor: true },
       },
-      data() {
-        return data;
-      },
       mocks: {
         $router: router,
+      },
+      data() {
+        return {
+          appData: {
+            isSupportedContent: true,
+          },
+          ...data,
+        };
       },
     });
   };
@@ -245,7 +250,7 @@ describe('static_site_editor/pages/home', () => {
     findPublishToolbar().vm.$emit('submit');
 
     return wrapper.vm.$nextTick().then(() => {
-      expect(router.push).toHaveBeenCalledWith({ name: SUCCESS_ROUTE_NAME });
+      expect(router.push).toHaveBeenCalledWith(SUCCESS_ROUTE);
     });
   });
 });

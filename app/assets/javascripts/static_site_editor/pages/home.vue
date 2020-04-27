@@ -4,7 +4,7 @@ import { GlSkeletonLoader } from '@gitlab/ui';
 
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
-import { SUCCESS_ROUTE_NAME } from '../router/constants';
+import { SUCCESS_ROUTE } from '../router/constants';
 
 import EditArea from '../components/edit_area.vue';
 import RichContentEditor from '~/vue_shared/components/rich_content_editor/rich_content_editor.vue';
@@ -78,7 +78,7 @@ export default {
   methods: {
     ...mapActions(['loadContent', 'setContent', 'submitChanges', 'dismissSubmitChangesError']),
     submit() {
-      return this.submitChanges().then(() => this.$router.push({ name: SUCCESS_ROUTE_NAME }));
+      return this.submitChanges().then(() => this.$router.push(SUCCESS_ROUTE));
     },
   },
 };
