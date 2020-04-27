@@ -1,0 +1,5 @@
+---
+title: Fix markdown preview styling for Web IDE dark theme
+merge_request: 30477
+author:
+type: added
