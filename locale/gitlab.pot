@@ -9680,6 +9680,9 @@ msgstr ""
 msgid "Geo|All"
 msgstr ""
 
+msgid "Geo|All %{replicable_type}"
+msgstr ""
+
 msgid "Geo|All projects"
 msgstr ""
 
@@ -25461,6 +25464,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "project avatar"
+msgstr ""
+
+msgid "projects"
 msgstr ""
 
 msgid "push to your repository, create pipelines, create issues or add comments. To reduce storage capacity, delete unused repositories, artifacts, wikis, issues, and pipelines."

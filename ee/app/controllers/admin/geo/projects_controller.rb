@@ -20,6 +20,8 @@ class Admin::Geo::ProjectsController < Admin::Geo::ApplicationController
     if params[:name]
       @registries = @registries.with_search(params[:name])
     end
+
+    @actions = [{ title: s_('Geo|Resync all'), action_path: resync_all_admin_geo_projects_path, action_method: :post }, { title: s_('Geo|Reverify all'), action_path: reverify_all_admin_geo_projects_path, method: :post }]
   end
 
   def destroy
