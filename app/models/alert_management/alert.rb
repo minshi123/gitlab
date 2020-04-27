@@ -43,14 +43,6 @@ module AlertManagement
       ignored: 3
     }
 
-    def fingerprint=(value)
-      if value.blank?
-        super(nil)
-      else
-        super(Digest::SHA1.hexdigest(value.to_s))
-      end
-    end
-
     private
 
     def hosts_length

@@ -71,49 +71,4 @@ describe AlertManagement::Alert do
     it { is_expected.to define_enum_for(:severity).with_values(severity_values) }
     it { is_expected.to define_enum_for(:status).with_values(status_values) }
   end
-
-  describe 'fingerprint setter' do
-    let(:alert) { build(:alert_management_alert) }
-
-    subject(:set_fingerprint) { alert.fingerprint = fingerprint }
-
-    let(:fingerprint) { 'test' }
-
-    it 'sets to the SHA1 of the value' do
-      expect { set_fingerprint }
-        .to change { alert.fingerprint }
-        .from(nil)
-        .to(Digest::SHA1.hexdigest(fingerprint))
-    end
-
-    describe 'testing length of 40' do
-      where(:input) do
-        [
-          'test',
-          'another test',
-          'a' * 1000,
-          12345
-        ]
-      end
-
-      with_them do
-        let(:fingerprint) { input }
-
-        it 'sets the fingerprint to 40 chars' do
-          set_fingerprint
-          expect(alert.fingerprint.size).to eq(40)
-        end
-      end
-    end
-
-    context 'blank value given' do
-      let(:fingerprint) { '' }
-
-      it 'does not set the fingerprint' do
-        expect { set_fingerprint }
-          .not_to change { alert.fingerprint }
-          .from(nil)
-      end
-    end
-  end
 end
