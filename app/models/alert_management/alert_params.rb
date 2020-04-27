@@ -17,5 +17,18 @@ module AlertManagement
         started_at: parsed_payload['startsAt']
       }
     end
+
+    def self.from_prometheus_alert(project:, parsed_alert:)
+      {
+        project_id: project.id,
+        title: parsed_alert.title,
+        description: parsed_alert.description,
+        monitoring_tool: 'Prometheus',
+        payload: parsed_alert.payload,
+        started_at: parsed_alert.starts_at,
+        ended_at: parsed_alert.ends_at,
+        fingerprint: parsed_alert.gitlab_fingerprint
+      }
+    end
   end
 end
