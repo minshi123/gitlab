@@ -71,4 +71,34 @@ describe AlertManagement::Alert do
     it { is_expected.to define_enum_for(:severity).with_values(severity_values) }
     it { is_expected.to define_enum_for(:status).with_values(status_values) }
   end
+
+  describe '#resolve' do
+    let!(:ended_at) { Time.current }
+
+    subject { alert.resolve(ended_at: ended_at) }
+
+    context 'when alert already resolved' do
+      let(:alert) { create(:alert_management_alert, :resolved) }
+
+      it 'does not change the alert status' do
+        expect { subject }.not_to change { alert.status }
+      end
+
+      it 'does not change the alert ended_at' do
+        expect { subject }.not_to change { alert.ended_at }
+      end
+    end
+
+    context 'when alert is not resolved' do
+      let(:alert) { create(:alert_management_alert) }
+
+      it 'changes alert status to "resolved"' do
+        expect { subject }.to change { alert.status }.to("resolved")
+      end
+
+      it 'changes ended_at' do
+        expect { subject }.to change { alert.ended_at }.to(ended_at)
+      end
+    end
+  end
 end

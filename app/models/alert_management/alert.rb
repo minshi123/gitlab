@@ -43,6 +43,12 @@ module AlertManagement
       ignored: 3
     }
 
+    def resolve(ended_at:)
+      return if resolved?
+
+      update(status: :resolved, ended_at: ended_at)
+    end
+
     private
 
     def hosts_length
