@@ -1,35 +1,24 @@
 # frozen_string_literal: true
 
 module Geo
-  class RegistrySyncWorker < Geo::Scheduler::Secondary::SchedulerWorker # rubocop:disable Scalability/IdempotentWorker
+  class RegistrySyncWorker < Geo::Scheduler::Secondary::SchedulerWorker
     # rubocop:disable Scalability/CronWorkerContext
     # This worker does not perform work scoped to a context
     include CronjobQueue
     # rubocop:enable Scalability/CronWorkerContext
-    prepend Reenqueuer
 
-    LEASE_TIMEOUT = 20.minutes
+    LEASE_TIMEOUT = 10.minute
 
     private
-
-    # Cannot utilise backoff because there are no events currently being
-    # generated for uploads, LFS objects or CI job artifacts so we need to rely
-    # upon expensive DB queries to be executed in order to determine if there's
-    # work to do.
-    #
-    # Overrides Geo::Scheduler::SchedulerWorker#should_apply_backoff?
-    def should_apply_backoff?
-      false
-    end
 
     def max_capacity
       current_node.files_max_capacity
     end
 
-    def schedule_job(replicable, record_id)
-      job_id = ::Geo::EventWorker.perform_async(replicable, :created, model_record_id: record_id)
+    def schedule_job(replicable_name, record_id)
+      job_id = ::Geo::EventWorker.perform_async(replicable_name, :created, model_record_id: record_id)
 
-      { id: record_id, type: replicable, job_id: job_id } if job_id
+      { id: record_id, type: replicable_name, job_id: job_id } if job_id
     end
 
     # Pools for new resources to be transferred
@@ -62,27 +51,23 @@ module Geo
     #
     # @return [Array] job arguments of low priority resources
     def find_low_priority_jobs(batch_size:)
-      jobs = job_finders.reduce([]) do |jobs, job_finder|
-        jobs << job_finder.find_failed_jobs(batch_size: batch_size)
-        jobs << job_finder.find_synced_missing_on_primary_jobs(batch_size: batch_size)
-      end
+      []
+      # jobs = job_finders.reduce([]) do |jobs, job_finder|
+      #   jobs << job_finder.find_failed_jobs(batch_size: batch_size)
+      #   jobs << job_finder.find_synced_missing_on_primary_jobs(batch_size: batch_size)
+      # end
 
-      take_batch(*jobs, batch_size: batch_size)
+      # take_batch(*jobs, batch_size: batch_size)
     end
 
     def job_finders
       [
-        Geo::FileDownloadDispatchWorker::AttachmentJobFinder.new(scheduled_file_ids(Gitlab::Geo::Replication::USER_UPLOADS_OBJECT_TYPES)),
-        Geo::FileDownloadDispatchWorker::LfsObjectJobFinder.new(scheduled_file_ids(:lfs)),
-        Geo::FileDownloadDispatchWorker::JobArtifactJobFinder.new(scheduled_file_ids(:job_artifact))
+        Geo::RegistrySyncWorker::PackageFileJobFinder.new(scheduled_ids(:package_file))
       ]
     end
 
-    def scheduled_file_ids(file_types)
-      file_types = Array(file_types)
-      file_types = file_types.map(&:to_s)
-
-      scheduled_jobs.select { |data| file_types.include?(data[:type].to_s) }.map { |data| data[:id] }
+    def scheduled_ids(replicable_name)
+      scheduled_jobs.select { |data| replicable_name == data[:type]) }.map { |data| data[:id] }
     end
 
     def lease_timeout
