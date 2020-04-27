@@ -350,7 +350,6 @@ export default {
             v-if="sast.newIssues.length || sast.resolvedIssues.length"
             :unresolved-issues="sast.newIssues"
             :resolved-issues="sast.resolvedIssues"
-            :all-issues="sast.allIssues"
             :component="$options.componentNames.SecurityIssueBody"
             class="js-sast-issue-list report-block-group-list"
           />
@@ -367,6 +366,7 @@ export default {
 
           <issues-list
             v-if="dependencyScanning.newIssues.length || dependencyScanning.resolvedIssues.length"
+            :show-report-section-status-icon="false"
             :unresolved-issues="dependencyScanning.newIssues"
             :resolved-issues="dependencyScanning.resolvedIssues"
             :component="$options.componentNames.SecurityIssueBody"
@@ -416,6 +416,7 @@ export default {
 
           <issues-list
             v-if="dast.newIssues.length || dast.resolvedIssues.length"
+            :show-report-section-status-icon="false"
             :unresolved-issues="dast.newIssues"
             :resolved-issues="dast.resolvedIssues"
             :component="$options.componentNames.SecurityIssueBody"
