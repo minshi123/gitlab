@@ -2,9 +2,10 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { GlSkeletonLoader } from '@gitlab/ui';
 
+import { SUCCESS_ROUTE_NAME } from '../router/constants';
+
 import EditArea from '../components/edit_area.vue';
 import EditHeader from '../components/edit_header.vue';
-import SavedChangesMessage from '../components/saved_changes_message.vue';
 import PublishToolbar from '../components/publish_toolbar.vue';
 import InvalidContentMessage from '../components/invalid_content_message.vue';
 import SubmitChangesError from '../components/submit_changes_error.vue';
@@ -15,7 +16,6 @@ export default {
     EditHeader,
     InvalidContentMessage,
     GlSkeletonLoader,
-    SavedChangesMessage,
     PublishToolbar,
     SubmitChangesError,
   },
@@ -29,7 +29,6 @@ export default {
       'returnUrl',
       'title',
       'submitChangesError',
-      'savedContentMeta',
     ]),
     ...mapGetters(['contentChanged']),
   },
@@ -40,22 +39,16 @@ export default {
   },
   methods: {
     ...mapActions(['loadContent', 'setContent', 'submitChanges', 'dismissSubmitChangesError']),
+    submit() {
+      return this.submitChanges().then(() => this.$router.push({ name: SUCCESS_ROUTE_NAME }));
+    },
   },
 };
 </script>
 <template>
   <div class="d-flex justify-content-center h-100 pt-2">
-    <!-- Success view -->
-    <saved-changes-message
-      v-if="savedContentMeta"
-      :branch="savedContentMeta.branch"
-      :commit="savedContentMeta.commit"
-      :merge-request="savedContentMeta.mergeRequest"
-      :return-url="returnUrl"
-    />
-
     <!-- Main view -->
-    <template v-else-if="isSupportedContent">
+    <template v-if="isSupportedContent">
       <div v-if="isLoadingContent" class="w-50 h-50">
         <gl-skeleton-loader :width="500" :height="102">
           <rect width="500" height="16" rx="4" />
@@ -84,7 +77,7 @@ export default {
           :return-url="returnUrl"
           :saveable="contentChanged"
           :saving-changes="isSavingChanges"
-          @submit="submitChanges"
+          @submit="submit"
         />
       </div>
     </template>

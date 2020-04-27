@@ -4,21 +4,16 @@ import { GlSkeletonLoader } from '@gitlab/ui';
 
 import createState from '~/static_site_editor/store/state';
 
+import { SUCCESS_ROUTE_NAME } from '~/static_site_editor/router/constants';
+
 import Index from '~/static_site_editor/pages/index.vue';
 import EditArea from '~/static_site_editor/components/edit_area.vue';
 import EditHeader from '~/static_site_editor/components/edit_header.vue';
 import InvalidContentMessage from '~/static_site_editor/components/invalid_content_message.vue';
 import PublishToolbar from '~/static_site_editor/components/publish_toolbar.vue';
 import SubmitChangesError from '~/static_site_editor/components/submit_changes_error.vue';
-import SavedChangesMessage from '~/static_site_editor/components/saved_changes_message.vue';
 
-import {
-  returnUrl,
-  sourceContent,
-  sourceContentTitle,
-  savedContentMeta,
-  submitChangesError,
-} from '../mock_data';
+import { sourceContent, sourceContentTitle, submitChangesError } from '../mock_data';
 
 const localVue = createLocalVue();
 
@@ -31,6 +26,7 @@ describe('static_site_editor/pages/index', () => {
   let setContentActionMock;
   let submitChangesActionMock;
   let dismissSubmitChangesErrorActionMock;
+  let router;
 
   const buildStore = ({ initialState, getters } = {}) => {
     loadContentActionMock = jest.fn();
@@ -67,10 +63,19 @@ describe('static_site_editor/pages/index', () => {
     });
   };
 
+  const buildRouter = () => {
+    router = {
+      push: jest.fn(),
+    };
+  };
+
   const buildWrapper = () => {
     wrapper = shallowMount(Index, {
       localVue,
       store,
+      mocks: {
+        $router: router,
+      },
     });
   };
 
@@ -80,26 +85,15 @@ describe('static_site_editor/pages/index', () => {
   const findPublishToolbar = () => wrapper.find(PublishToolbar);
   const findSkeletonLoader = () => wrapper.find(GlSkeletonLoader);
   const findSubmitChangesError = () => wrapper.find(SubmitChangesError);
-  const findSavedChangesMessage = () => wrapper.find(SavedChangesMessage);
 
   beforeEach(() => {
+    buildRouter();
     buildStore();
     buildWrapper();
   });
 
   afterEach(() => {
     wrapper.destroy();
-  });
-
-  it('renders the saved changes message when changes are submitted successfully', () => {
-    buildStore({ initialState: { returnUrl, savedContentMeta } });
-    buildWrapper();
-
-    expect(findSavedChangesMessage().exists()).toBe(true);
-    expect(findSavedChangesMessage().props()).toEqual({
-      returnUrl,
-      ...savedContentMeta,
-    });
   });
 
   describe('when content is not loaded', () => {
@@ -113,10 +107,6 @@ describe('static_site_editor/pages/index', () => {
 
     it('does not render toolbar', () => {
       expect(findPublishToolbar().exists()).toBe(false);
-    });
-
-    it('does not render saved changes message', () => {
-      expect(findSavedChangesMessage().exists()).toBe(false);
     });
   });
 
@@ -243,5 +233,15 @@ describe('static_site_editor/pages/index', () => {
     findPublishToolbar().vm.$emit('submit');
 
     expect(submitChangesActionMock).toHaveBeenCalled();
+  });
+
+  it('pushes success route when submitting changes succeeds', () => {
+    buildContentLoadedStore();
+    buildWrapper();
+    findPublishToolbar().vm.$emit('submit');
+
+    return wrapper.vm.$nextTick().then(() => {
+      expect(router.push).toHaveBeenCalledWith({ name: SUCCESS_ROUTE_NAME });
+    });
   });
 });
