@@ -1,8 +1,9 @@
 import { createLocalVue, mount } from '@vue/test-utils';
-import { GlEmptyState, GlTable, GlAlert } from '@gitlab/ui';
+import { GlEmptyState, GlTable, GlAlert, GlIcon } from '@gitlab/ui';
 import Vuex from 'vuex';
 import stubChildren from 'helpers/stub_children';
 import AlertManagementList from '~/alert_management/components/alert_management_list.vue';
+import AlertList from './list_mock.json';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -67,6 +68,29 @@ describe('AlertManagementList', () => {
       return wrapper.vm.$nextTick().then(() => {
         expect(findAlertsTable().exists()).toBe(true);
         expect(findAlert().text()).toContain('No alerts available to display');
+      });
+    });
+
+    it('shows correct severity icons', () => {
+      store.state.list = {
+        alerts: AlertList,
+        loading: false,
+      };
+
+      mountComponent({
+        alertManagementEnabled: true,
+        stubs: {
+          GlTable: false,
+        },
+      });
+
+      return wrapper.vm.$nextTick().then(() => {
+        expect(wrapper.find(GlTable).exists()).toBe(true);
+        expect(
+          findAlertsTable()
+            .find(GlIcon)
+            .classes('icon-critical'),
+        ).toBe(true);
       });
     });
   });

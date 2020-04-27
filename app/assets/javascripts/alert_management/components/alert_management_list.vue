@@ -1,9 +1,9 @@
 <script>
 import { mapState } from 'vuex';
-import { GlEmptyState, GlButton, GlLoadingIcon, GlTable, GlAlert } from '@gitlab/ui';
+import { GlEmptyState, GlButton, GlLoadingIcon, GlTable, GlAlert, GlIcon } from '@gitlab/ui';
 import { __ } from '~/locale';
 
-const tdClass = 'table-col d-flex';
+const tdClass = 'table-col d-flex d-md-table-cell align-items-center';
 
 export default {
   fields: [
@@ -45,6 +45,7 @@ export default {
     GlLoadingIcon,
     GlTable,
     GlAlert,
+    GlIcon,
   },
   props: {
     indexPath: {
@@ -100,9 +101,19 @@ export default {
         :fields="$options.fields"
         :show-empty="true"
         fixed
-        stacked="sm"
-        tbody-tr-class="table-row mb-4"
+        stacked="md"
+        tbody-tr-class="table-row mb-4 border-bottom"
       >
+        <template #cell(severity)="alerts">
+          <div class="d-inline-flex align-items-center justify-content-between">
+            <gl-icon
+              class="mr-2"
+              :name="`severity-${alerts.item.severity.toLowerCase()}`"
+              :class="`icon-${alerts.item.severity.toLowerCase()}`"
+            />
+            {{ alerts.item.severity }}
+          </div>
+        </template>
         <template #empty>
           {{ __('No alerts to display.') }}
         </template>

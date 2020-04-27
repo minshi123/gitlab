@@ -1,0 +1,26 @@
+[
+  {
+    "severity":"Critical",
+    "start_time":"5 minutes ago",
+    "end_time":"5 minutes ago",
+    "alert":"Comdex is <0.84 for 5 minutes",
+    "events":6,
+    "status":null
+  },
+  {
+    "severity":"High",
+    "start_time":"5 minutes ago",
+    "end_time":"5 minutes ago",
+    "alert":"Comdex is <0.84 for 5 minutes",
+    "events":6,
+    "status":null
+  },
+  {
+    "severity":"Low",
+    "start_time":"5 minutes ago",
+    "end_time":"5 minutes ago",
+    "alert":"Comdex is <0.84 for 5 minutes",
+    "events":6,
+    "status":null
+  }
+]
