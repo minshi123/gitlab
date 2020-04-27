@@ -74,6 +74,8 @@ module Gitlab
           return run_block
         end
 
+        disable_idle_in_transaction_timeout! # This is needed so we can have longer sleeps
+
         begin
           run_block_with_transaction
         rescue ActiveRecord::LockWaitTimeout
@@ -152,6 +154,10 @@ module Gitlab
 
       def current_sleep_time_in_seconds
         timing_configuration[current_iteration - 1][1].to_f
+      end
+
+      def disable_idle_in_transaction_timeout!
+        execute("SET LOCAL idle_in_transaction_session_timeout TO '0'")
       end
     end
   end
