@@ -70,7 +70,7 @@ module Issuable
         entity_key = new_entity.class.name.underscore.foreign_key
 
         copy_events(ResourceMilestoneEvent.table_name, original_entity.resource_milestone_events) do |event|
-          matching_destination_milestone = matching_milestone(event.milestone.title)
+          matching_destination_milestone = matching_milestone(event.milestone_title)
 
           if matching_destination_milestone.present?
             event.attributes

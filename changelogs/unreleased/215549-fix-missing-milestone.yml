@@ -1,0 +1,5 @@
+---
+title: Fix AttributesRewriter for resource milestone events with missing milestones
+merge_request: 30475
+author:
+type: fixed

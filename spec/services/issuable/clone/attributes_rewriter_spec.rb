@@ -89,7 +89,7 @@ describe Issuable::Clone::AttributesRewriter do
 
         create_event(milestone1_project1)
         create_event(milestone2_project1)
-        create_event(milestone1_project1, 'remove')
+        create_event(nil, 'remove')
         create_event(milestone3_project1)
       end
 
@@ -97,11 +97,10 @@ describe Issuable::Clone::AttributesRewriter do
         subject.execute
 
         new_issue_milestone_events = new_issue.reload.resource_milestone_events
-        expect(new_issue_milestone_events.count).to eq(3)
+        expect(new_issue_milestone_events.count).to eq(2)
 
         expect_milestone_event(new_issue_milestone_events.first, milestone: milestone1_project2, action: 'add', state: 'opened')
         expect_milestone_event(new_issue_milestone_events.second, milestone: milestone2_project2, action: 'add', state: 'opened')
-        expect_milestone_event(new_issue_milestone_events.third, milestone: milestone1_project2, action: 'remove', state: 'opened')
       end
 
       def create_event(milestone, action = 'add')
