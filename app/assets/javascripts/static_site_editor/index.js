@@ -16,7 +16,7 @@ const initStaticSiteEditor = el => {
       username: window.gon.current_username,
     },
   });
-  const router = createRouter(baseUrl);
+  const router = createRouter(baseUrl, store);
 
   return new Vue({
     el,
