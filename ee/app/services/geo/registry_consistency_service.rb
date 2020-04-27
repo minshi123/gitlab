@@ -18,11 +18,17 @@ module Geo
       range = next_range!
       return unless range
 
-      created_in_range = create_missing_in_range(range)
+      untracked, unused = find_registry_differences(range)
+
+      created_in_range  = create_untracked_in_range(range, untracked)
+      log_created(range, untracked, created_in_range)
+
+      deleted_in_range  = delete_unused_in_range(range, unused)
+      log_deleted(range, unused, deleted_in_range)
+
       created_above = create_missing_above(end_of_batch: range.last)
 
-      created_in_range.any? ||
-        created_above.any?
+      created_in_range.any? || deleted_in_range.any? || created_above.any?
     rescue => e
       log_error("Error while backfilling #{registry_class}", e)
 
@@ -41,15 +47,17 @@ module Geo
     end
 
     # @return [Array] the list of IDs of created records
-    def create_missing_in_range(range)
-      untracked, _ = find_registry_differences(range)
+    def create_untracked_in_range(untracked)
       return [] if untracked.empty?
 
-      created = registry_class.insert_for_model_ids(untracked)
+      registry_class.insert_for_model_ids(untracked)
+    end
 
-      log_created(range, untracked, created)
+    # @return [Array] the list of IDs of deleted records
+    def delete_unused_in_range(delete_unused_in_range)
+      return [] if delete_unused_in_range.empty?
 
-      created
+      registry_class.delete_for_model_ids(delete_unused_in_range)
     end
 
     def find_registry_differences(range)
@@ -65,7 +73,7 @@ module Geo
     # This is not needed for replicables that have already implemented
     # create events.
     #
-    # @param [Integer] the last ID of the batch processed in create_missing_in_range
+    # @param [Integer] the last ID of the batch processed in create_untracked_in_range
     # @return [Array] the list of IDs of created records
     def create_missing_above(end_of_batch:)
       return [] if registry_class.has_create_events?
@@ -81,7 +89,7 @@ module Geo
       start = last_id - batch_size + 1
       finish = last_id
 
-      create_missing_in_range(start..finish)
+      create_untracked_in_range(start..finish)
     end
 
     # Returns true when LoopingBatcher will soon return ranges near the end of
@@ -101,6 +109,19 @@ module Geo
           finish: range.last,
           created: created.length,
           failed_to_create: untracked.length - created.length
+        }
+      )
+    end
+
+    def log_deleted(range, unused, created)
+      log_info(
+        "Deleted registry entries",
+        {
+          registry_class: registry_class.name,
+          start: range.first,
+          finish: range.last,
+          deleted: deleted.length,
+          failed_to_delete: unused.length - deleted.length
         }
       )
     end
