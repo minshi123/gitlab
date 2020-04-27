@@ -7,9 +7,17 @@ module Geo
     include CronjobQueue
     # rubocop:enable Scalability/CronWorkerContext
 
+    idempotent!
+
     LEASE_TIMEOUT = 10.minute
 
     private
+
+    def perform
+      return unless Feature.enabled?(:geo_self_service_framework)
+
+      super
+    end
 
     def max_capacity
       current_node.files_max_capacity
