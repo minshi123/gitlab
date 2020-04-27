@@ -11,5 +11,9 @@ module Geo
     def self.model
       ::Packages::PackageFile
     end
+
+    def self.finder_class
+      ::Geo::RegistrySyncWorker::PackageFileJobFinder
+    end
   end
 end

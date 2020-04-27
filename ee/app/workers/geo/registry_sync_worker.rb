@@ -59,13 +59,12 @@ module Geo
     #
     # @return [Array] job arguments of low priority resources
     def find_low_priority_jobs(batch_size:)
-      []
-      # jobs = job_finders.reduce([]) do |jobs, job_finder|
-      #   jobs << job_finder.find_failed_jobs(batch_size: batch_size)
-      #   jobs << job_finder.find_synced_missing_on_primary_jobs(batch_size: batch_size)
-      # end
+      jobs = job_finders.reduce([]) do |jobs, job_finder|
+        jobs << job_finder.find_failed_jobs(batch_size: batch_size)
+        jobs << job_finder.find_synced_missing_on_primary_jobs(batch_size: batch_size)
+      end
 
-      # take_batch(*jobs, batch_size: batch_size)
+      take_batch(*jobs, batch_size: batch_size)
     end
 
     def job_finders
@@ -75,11 +74,15 @@ module Geo
     end
 
     def scheduled_ids(replicable_name)
-      scheduled_jobs.select { |data| replicable_name == data[:type]) }.map { |data| data[:id] }
+      scheduled_jobs.select { |data| replicable_name == data[:type] }.map { |data| data[:id] }
     end
 
     def lease_timeout
       LEASE_TIMEOUT
+    end
+
+    def job_finder_classes
+      Gitlab::Geo::ReplicableModel.replicators.map { |replicator_name| replicator_name.constantize.finder_class }
     end
   end
 end
