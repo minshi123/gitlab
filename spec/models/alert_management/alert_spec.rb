@@ -72,6 +72,26 @@ describe AlertManagement::Alert do
     it { is_expected.to define_enum_for(:status).with_values(status_values) }
   end
 
+  describe '#trigger' do
+    subject { alert.trigger }
+
+    context 'when alert is in triggered state' do
+      let(:alert) { create(:alert_management_alert) }
+
+      it 'does not change the alert status' do
+        expect { subject }.not_to change { alert.status }
+      end
+    end
+
+    context 'when alert not in triggered state' do
+      let(:alert) { create(:alert_management_alert, :resolved) }
+
+      it 'changes the alert status to triggered' do
+        expect { subject }.to change { alert.status }.to('triggered')
+      end
+    end
+  end
+
   describe '#resolve' do
     let!(:ended_at) { Time.current }
 
@@ -93,7 +113,7 @@ describe AlertManagement::Alert do
       let(:alert) { create(:alert_management_alert) }
 
       it 'changes alert status to "resolved"' do
-        expect { subject }.to change { alert.status }.to("resolved")
+        expect { subject }.to change { alert.status }.to('resolved')
       end
 
       it 'changes ended_at' do

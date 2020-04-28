@@ -43,6 +43,12 @@ module AlertManagement
       ignored: 3
     }
 
+    def trigger
+      return if triggered?
+
+      update(status: :triggered)
+    end
+
     def resolve(ended_at:)
       return if resolved?
 
