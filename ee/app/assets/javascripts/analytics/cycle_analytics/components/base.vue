@@ -246,6 +246,7 @@ export default {
         v-if="hasNoAccessError"
         class="js-empty-state"
         :title="__('You don’t have access to Value Stream Analytics for this group')"
+        :svg-path="noAccessSvgPath"
         :description="
           __(
             'Only \'Reporter\' roles and above on tiers Premium / Silver and above can see Value Stream Analytics.',
