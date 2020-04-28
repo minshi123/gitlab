@@ -23368,7 +23368,7 @@ msgstr ""
 msgid "Vulnerability|Project"
 msgstr ""
 
-msgid "Vulnerability|Scanner Name"
+msgid "Vulnerability|Scanner Provider"
 msgstr ""
 
 msgid "Vulnerability|Scanner Type"
