@@ -15,14 +15,12 @@ export default {
       required: true,
     },
   },
-  computed: {
-    markdown() {
-      return this.$refs.editor.invoke('getMarkdown');
-    },
-  },
   methods: {
     onContentChanged() {
-      this.$emit('input', this.markdown);
+      this.$emit('input', this.getMarkdown());
+    },
+    getMarkdown() {
+      return this.$refs.editor.invoke('getMarkdown');
     },
   },
 };

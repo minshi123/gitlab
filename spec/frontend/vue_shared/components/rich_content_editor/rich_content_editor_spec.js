@@ -19,7 +19,7 @@ describe('Rich Content Editor', () => {
     });
 
     it('renders the correct content', () => {
-      expect(findEditor().props().initialValue).toEqual(value);
+      expect(findEditor().props().initialValue).toBe(value);
     });
   });
 
