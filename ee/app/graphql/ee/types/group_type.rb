@@ -21,6 +21,10 @@ module EE
               max_page_size: 2000,
               resolver: ::Resolvers::EpicsResolver
 
+        field :sprints, ::Types::SprintType.connection_type, null: true,
+              description: 'Find sprints',
+              resolver: ::Resolvers::SprintResolver
+
         field :timelogs, ::Types::TimelogType.connection_type, null: false,
               description: 'Time logged in issues by group members',
               complexity: 5,
