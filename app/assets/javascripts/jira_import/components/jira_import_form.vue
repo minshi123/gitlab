@@ -1,11 +1,12 @@
 <script>
-import { GlAvatar, GlButton, GlFormGroup, GlFormSelect, GlLabel } from '@gitlab/ui';
+import { GlAvatar, GlButton, GlFormCheckbox, GlFormGroup, GlFormSelect, GlLabel } from '@gitlab/ui';
 
 export default {
   name: 'JiraImportForm',
   components: {
     GlAvatar,
     GlButton,
+    GlFormCheckbox,
     GlFormGroup,
     GlFormSelect,
     GlLabel,
@@ -26,6 +27,8 @@ export default {
     return {
       selectedOption: null,
       selectState: null,
+      isCheckboxSelected: false,
+      shouldShowCheckboxError: false,
     };
   },
   methods: {
@@ -36,6 +39,12 @@ export default {
       } else {
         this.hideValidationError();
         this.$emit('initiateJiraImport', this.selectedOption);
+      }
+
+      if (this.isCheckboxSelected) {
+        this.shouldShowCheckboxError = false;
+      } else {
+        this.shouldShowCheckboxError = true;
       }
     },
     hideValidationError() {
@@ -82,6 +91,24 @@ export default {
           title="jira-import::KEY-1"
           scoped
         />
+      </gl-form-group>
+
+      <gl-form-group
+        class="row align-items-center"
+        :label="__('Can create and assign users')"
+        label-cols-sm="2"
+        label-for="jira-project-checkbox"
+      >
+        <gl-form-checkbox id="jira-project-checkbox" v-model="isCheckboxSelected" class="mb-2" />
+        <div
+          class="invalid-feedback mb-2"
+          :class="{ 'd-block': shouldShowCheckboxError }"
+          role="alert"
+          aria-atomic="true"
+          aria-live="assertive"
+        >
+          {{ __('You must confirm you can create and assign users to proceed') }}
+        </div>
       </gl-form-group>
 
       <hr />
