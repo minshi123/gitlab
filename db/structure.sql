@@ -288,7 +288,6 @@ CREATE TABLE public.application_settings (
     geo_status_timeout integer DEFAULT 10,
     uuid character varying,
     polling_interval_multiplier numeric DEFAULT 1.0 NOT NULL,
-    elasticsearch_experimental_indexer boolean,
     cached_markdown_version integer,
     check_namespace_plan boolean DEFAULT false NOT NULL,
     mirror_max_delay integer DEFAULT 300 NOT NULL,
@@ -438,7 +437,8 @@ CREATE TABLE public.application_settings (
     container_expiration_policies_enable_historic_entries boolean DEFAULT false NOT NULL,
     issues_create_limit integer DEFAULT 300 NOT NULL,
     push_rule_id bigint,
-    group_owners_can_manage_default_branch_protection boolean DEFAULT true NOT NULL
+    group_owners_can_manage_default_branch_protection boolean DEFAULT true NOT NULL,
+    elasticsearch_pause_indexing boolean DEFAULT false NOT NULL
 );
 
 CREATE SEQUENCE public.application_settings_id_seq
@@ -2367,8 +2367,8 @@ CREATE TABLE public.epics (
     state_id smallint DEFAULT 1 NOT NULL,
     start_date_sourcing_epic_id integer,
     due_date_sourcing_epic_id integer,
-    confidential boolean DEFAULT false NOT NULL,
-    external_key character varying(255)
+    external_key character varying(255),
+    confidential boolean DEFAULT false NOT NULL
 );
 
 CREATE SEQUENCE public.epics_id_seq
@@ -4569,12 +4569,12 @@ CREATE TABLE public.packages_package_files (
     file_sha1 bytea,
     file_name character varying NOT NULL,
     file text NOT NULL,
-    file_sha256 bytea,
     verification_retry_at timestamp with time zone,
     verified_at timestamp with time zone,
     verification_checksum character varying(255),
     verification_failure character varying(255),
-    verification_retry_count integer
+    verification_retry_count integer,
+    file_sha256 bytea
 );
 
 CREATE SEQUENCE public.packages_package_files_id_seq
@@ -6143,9 +6143,9 @@ ALTER SEQUENCE public.sprints_id_seq OWNED BY public.sprints.id;
 
 CREATE TABLE public.status_page_published_incidents (
     id bigint NOT NULL,
-    issue_id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    issue_id bigint NOT NULL
 );
 
 CREATE SEQUENCE public.status_page_published_incidents_id_seq
@@ -8776,8 +8776,6 @@ CREATE INDEX commit_id_and_note_id_index ON public.commit_user_mentions USING bt
 CREATE UNIQUE INDEX design_management_designs_versions_uniqueness ON public.design_management_designs_versions USING btree (design_id, version_id);
 
 CREATE INDEX design_user_mentions_on_design_id_and_note_id_index ON public.design_user_mentions USING btree (design_id, note_id);
-
-CREATE INDEX dev_index_route_on_path_trigram ON public.routes USING gin (path public.gin_trgm_ops);
 
 CREATE UNIQUE INDEX epic_user_mentions_on_epic_id_and_note_id_index ON public.epic_user_mentions USING btree (epic_id, note_id);
 
@@ -13499,6 +13497,9 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200406132529
 20200406135648
 20200406141452
+20200406165950
+20200406171857
+20200406172135
 20200406192059
 20200406193427
 20200407094005
@@ -13561,5 +13562,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200423101529
 20200424050250
 20200427064130
+20200428134356
+20200428140959
 \.
 
