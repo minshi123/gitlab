@@ -10,9 +10,6 @@ describe 'Commit > User view commits', :js do
   let(:commit) { project.commit }
 
   before do
-    project.add_maintainer(user)
-    sign_in(user)
-
     visit project_commits_path(project)
   end
 
