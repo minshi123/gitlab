@@ -6,6 +6,7 @@ import { GlColumnChart, GlChartLegend } from '@gitlab/ui/dist/charts';
 import { s__ } from '~/locale';
 import { getMonthNames } from '~/lib/utils/datetime_utility';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
+import IssuesAnalyticsTable from './issues_analytics_table.vue';
 
 export default {
   components: {
@@ -13,6 +14,7 @@ export default {
     GlEmptyState,
     GlColumnChart,
     GlChartLegend,
+    IssuesAnalyticsTable,
   },
   props: {
     endpoint: {
@@ -43,6 +45,7 @@ export default {
           color: '#1F78D1',
         },
       ],
+      issues: [],
     };
   },
   computed: {
@@ -137,6 +140,10 @@ export default {
         })
         .catch(() => {});
     },
+    onChartItemClicked({ params: { data } }) {
+      // const columnTitle = data[0];
+      // this will be used for filtering data on the table
+    },
   },
 };
 </script>
@@ -155,6 +162,7 @@ export default {
         :x-axis-title="s__('IssuesAnalytics|Last 12 months') + ' (' + chartDateRange + ')'"
         x-axis-type="category"
         @created="onCreated"
+        @chartItemClicked="onChartItemClicked"
       />
       <div class="d-flex">
         <gl-chart-legend v-if="chart" :chart="chart" :series-info="seriesInfo" />
@@ -165,6 +173,8 @@ export default {
         </div>
       </div>
     </div>
+
+    <issues-analytics-table :issues="issues" />
 
     <gl-empty-state
       v-if="showFiltersEmptyState"

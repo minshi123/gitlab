@@ -11528,6 +11528,30 @@ msgstr ""
 msgid "Issue weight"
 msgstr ""
 
+msgid "IssueAnalytics|Age"
+msgstr ""
+
+msgid "IssueAnalytics|Assignees"
+msgstr ""
+
+msgid "IssueAnalytics|Due date"
+msgstr ""
+
+msgid "IssueAnalytics|Issue"
+msgstr ""
+
+msgid "IssueAnalytics|Milestone"
+msgstr ""
+
+msgid "IssueAnalytics|Opened by"
+msgstr ""
+
+msgid "IssueAnalytics|Status"
+msgstr ""
+
+msgid "IssueAnalytics|Weight"
+msgstr ""
+
 msgid "IssueBoards|Board"
 msgstr ""
 
