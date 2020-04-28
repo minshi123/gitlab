@@ -112,7 +112,7 @@ export default {
 
       this.isLoading = true;
       // eslint-disable-next-line promise/catch-or-return
-      this.fetchGroups({
+      return this.fetchGroups({
         page,
         filterGroupsBy,
         sortBy,
@@ -127,7 +127,7 @@ export default {
       this.isLoading = true;
 
       // eslint-disable-next-line promise/catch-or-return
-      this.fetchGroups({
+      return this.fetchGroups({
         page,
         filterGroupsBy,
         sortBy,
