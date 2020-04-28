@@ -1,5 +1,5 @@
 ---
-# Checks for use of some of the top misused terms at GitLab.
+# Warns against using common shorthand for terms.
 #
 # For a list of all options, see https://errata-ai.github.io/vale/styles/
 extends: substitution
