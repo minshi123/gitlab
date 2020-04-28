@@ -9713,9 +9713,6 @@ msgstr ""
 msgid "Geo|%{name} is scheduled for re-verify"
 msgstr ""
 
-msgid "Geo|All"
-msgstr ""
-
 msgid "Geo|All %{replicable_type}"
 msgstr ""
 
@@ -25711,6 +25708,9 @@ msgid "updated %{timeAgo}"
 msgstr ""
 
 msgid "updated %{time_ago}"
+msgstr ""
+
+msgid "uploads"
 msgstr ""
 
 msgid "user avatar"
