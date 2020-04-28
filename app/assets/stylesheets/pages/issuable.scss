@@ -71,6 +71,11 @@
   .emoji-block {
     padding: $gl-padding-4 0;
 
+    .row {
+      justify-content: space-between;
+      margin: 0px;
+    }
+
     @include media-breakpoint-down(md) {
       padding: $gl-padding-8 0;
     }
