@@ -13,8 +13,6 @@ RSpec.shared_examples 'an object with email-formated attributes' do |*attributes
         info@example.com
         info+test@example.com
         o'reilly@example.com
-        mailto:test@example.com
-        lol!'+=?><#$%^&*()@gmail.com
       ].each do |valid_email|
         context "with a value of '#{valid_email}'" do
           let(:email_value) { valid_email }
@@ -30,6 +28,10 @@ RSpec.shared_examples 'an object with email-formated attributes' do |*attributes
       %w[
         foobar
         test@test@example.com
+        test.test.@example.com
+        .test.test@example.com
+        mailto:test@example.com
+        lol!'+=?><#$%^&*()@gmail.com
       ].each do |invalid_email|
         context "with a value of '#{invalid_email}'" do
           let(:email_value) { invalid_email }

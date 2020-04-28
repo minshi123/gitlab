@@ -6,7 +6,8 @@ class Email < ApplicationRecord
 
   belongs_to :user, optional: false
 
-  validates :email, presence: true, uniqueness: true, devise_email: true
+  validates :email, presence: true, uniqueness: true
+  validate :email_format
   validate :unique_email, if: ->(email) { email.email_changed? }
 
   scope :confirmed, -> { where.not(confirmed_at: nil) }
@@ -28,6 +29,10 @@ class Email < ApplicationRecord
 
   def accept_pending_invitations!
     user.accept_pending_invitations!
+  end
+
+  def email_format
+    self.errors.add(:email, I18n.t(:invalid, scope: 'valid_email.validations.email')) unless ValidateEmail.valid?(self.email)
   end
 
   # once email is confirmed, update the gpg signatures
