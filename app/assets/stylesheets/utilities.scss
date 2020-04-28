@@ -126,3 +126,8 @@
 .gl-word-break-all { @include gl-word-break-all; }
 .gl-line-height-inherit { line-height: inherit; }
 .gl-text-align-inherit { text-align: inherit; }
+
+.prepend-append-default {
+  margin-left: $gl-padding;
+  margin-right: $gl-padding;
+}
