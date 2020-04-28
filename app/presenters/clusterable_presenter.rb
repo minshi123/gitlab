@@ -25,6 +25,10 @@ class ClusterablePresenter < Gitlab::View::Presenter::Delegated
     polymorphic_path([clusterable, :clusters])
   end
 
+  def cluster_group_clusters_path
+    polymorphic_path([clusterable, :clusters], action: :cluster_group)
+  end
+
   def new_path(options = {})
     new_polymorphic_path([clusterable, :cluster], options)
   end

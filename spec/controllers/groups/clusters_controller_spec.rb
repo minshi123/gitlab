@@ -84,6 +84,63 @@ describe Groups::ClustersController do
     end
   end
 
+  describe 'GET cluster_group' do
+    def go(params = {})
+      get :cluster_group, params: params.reverse_merge(group_id: group)
+    end
+
+    describe 'functionality' do
+      context 'when group has one or more clusters' do
+        let(:group) { create(:group) }
+
+        let!(:enabled_cluster) do
+          create(:cluster, :provided_by_gcp, cluster_type: :group_type, groups: [group])
+        end
+
+        let!(:disabled_cluster) do
+          create(:cluster, :disabled, :provided_by_gcp, :production_environment, cluster_type: :group_type, groups: [group])
+        end
+
+        it 'lists available clusters' do
+          go(format: :json)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to match_response_schema('cluster_group_status')
+        end
+
+        context 'when page is specified' do
+          let(:last_page) { group.clusters.page.total_pages }
+
+          before do
+            create_list(:cluster, 30, :provided_by_gcp, :production_environment, cluster_type: :group_type, groups: [group])
+          end
+
+          it 'loads cluster from associated page' do
+            expect(last_page).to be > 1
+
+            go(page: last_page, format: :json)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(JSON.parse(response.body)['current_page']).to eq(last_page)
+          end
+        end
+      end
+    end
+
+    describe 'security' do
+      let(:cluster) { create(:cluster, :provided_by_gcp, cluster_type: :group_type, groups: [group]) }
+
+      it { expect { go(format: :json) }.to be_allowed_for(:admin) }
+      it { expect { go(format: :json) }.to be_allowed_for(:owner).of(group) }
+      it { expect { go(format: :json) }.to be_allowed_for(:maintainer).of(group) }
+      it { expect { go(format: :json) }.to be_denied_for(:developer).of(group) }
+      it { expect { go(format: :json) }.to be_denied_for(:reporter).of(group) }
+      it { expect { go(format: :json) }.to be_denied_for(:guest).of(group) }
+      it { expect { go(format: :json) }.to be_denied_for(:user) }
+      it { expect { go(format: :json) }.to be_denied_for(:external) }
+    end
+  end
+
   describe 'GET new' do
     def go(provider: 'gcp')
       get :new, params: { group_id: group, provider: provider }

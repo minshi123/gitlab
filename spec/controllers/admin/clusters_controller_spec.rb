@@ -72,6 +72,55 @@ describe Admin::ClustersController do
     end
   end
 
+  describe 'GET #cluster_group' do
+    def cluster_group(params = {})
+      get :cluster_group, params: params
+    end
+
+    describe 'functionality' do
+      context 'when instance has one or more clusters' do
+        let!(:enabled_cluster) do
+          create(:cluster, :provided_by_gcp, :instance)
+        end
+
+        let!(:disabled_cluster) do
+          create(:cluster, :disabled, :provided_by_gcp, :production_environment, :instance)
+        end
+
+        it 'lists available clusters with serializer' do
+          cluster_group(format: :json)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to match_response_schema('cluster_group_status')
+        end
+
+        context 'when page is specified' do
+          let(:last_page) { Clusters::Cluster.instance_type.page.total_pages }
+
+          before do
+            create_list(:cluster, 30, :provided_by_gcp, :production_environment, :instance)
+          end
+
+          it 'loads clusters from associated page' do
+            expect(last_page).to be > 1
+            cluster_group(page: last_page, format: :json)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(JSON.parse(response.body)['current_page']).to eq(last_page)
+          end
+        end
+      end
+    end
+
+    describe 'security' do
+      let(:cluster) { create(:cluster, :provided_by_gcp, :instance) }
+
+      it { expect { cluster_group(format: :json) }.to be_allowed_for(:admin) }
+      it { expect { cluster_group(format: :json)}.to be_denied_for(:user) }
+      it { expect { cluster_group(format: :json) }.to be_denied_for(:external) }
+    end
+  end
+
   describe 'GET #new' do
     def get_new(provider: 'gcp')
       get :new, params: { provider: provider }

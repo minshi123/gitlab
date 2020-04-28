@@ -81,6 +81,63 @@ describe Projects::ClustersController do
     end
   end
 
+  describe 'GET cluster_group' do
+    def go(params = {})
+      get :cluster_group, params: params.reverse_merge(namespace_id: project.namespace.to_param, project_id: project)
+    end
+
+    describe 'functionality' do
+      context 'when project has one or more clusters' do
+        let!(:enabled_cluster) { create(:cluster, :provided_by_gcp, projects: [project]) }
+        let!(:disabled_cluster) { create(:cluster, :disabled, :provided_by_gcp, :production_environment, projects: [project]) }
+
+        it 'lists available clusters' do
+          go(format: :json)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to match_response_schema('cluster_group_status')
+        end
+
+        context 'when page is specified' do
+          let(:last_page) { project.clusters.page.total_pages }
+
+          before do
+            create_list(:cluster, 30, :provided_by_gcp, :production_environment, projects: [project])
+          end
+
+          it 'loads clusters from associated page' do
+            expect(last_page).to be > 1
+
+            go(page: last_page, format: :json)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(JSON.parse(response.body)['current_page']).to eq(last_page)
+          end
+        end
+      end
+
+      describe 'security' do
+        let(:cluster) { create(:cluster, :provided_by_gcp, projects: [project]) }
+
+        it 'is allowed for admin when admin mode enabled', :enable_admin_mode do
+          expect { go(format: :json) }.to be_allowed_for(:admin)
+        end
+
+        it 'is disabled for admin when admin mode disabled' do
+          expect { go(format: :json) }.to be_denied_for(:admin)
+        end
+
+        it { expect { go(format: :json) }.to be_allowed_for(:owner).of(project) }
+        it { expect { go(format: :json) }.to be_allowed_for(:maintainer).of(project) }
+        it { expect { go(format: :json) }.to be_denied_for(:developer).of(project) }
+        it { expect { go(format: :json) }.to be_denied_for(:reporter).of(project) }
+        it { expect { go(format: :json) }.to be_denied_for(:guest).of(project) }
+        it { expect { go(format: :json) }.to be_denied_for(:user) }
+        it { expect { go(format: :json) }.to be_denied_for(:external) }
+      end
+    end
+  end
+
   describe 'GET new' do
     def go(provider: 'gcp')
       get :new, params: {

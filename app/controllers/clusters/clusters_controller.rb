@@ -18,6 +18,16 @@ class Clusters::ClustersController < Clusters::BaseController
   STATUS_POLLING_INTERVAL = 10_000
 
   def index
+    # These queires will be removed once all views are updated to use cluster_group method
+    finder = ClusterAncestorsFinder.new(clusterable.subject, current_user)
+    clusters = finder.execute
+
+    @clusters = Kaminari.paginate_array(clusters).page(params[:page]).per(20)
+
+    @has_ancestor_clusters = finder.has_ancestor_clusters?
+  end
+
+  def cluster_group
     finder = ClusterAncestorsFinder.new(clusterable.subject, current_user)
     clusters = finder.execute
 
@@ -29,9 +39,24 @@ class Clusters::ClustersController < Clusters::BaseController
     # supported, but the number of clusters are fairly low currently.
     #
     # See https://gitlab.com/gitlab-org/gitlab-foss/issues/55260 also.
-    @clusters = Kaminari.paginate_array(clusters).page(params[:page]).per(20)
+    paginated_clusters = Kaminari.paginate_array(clusters).page(params[:page]).per(20)
 
-    @has_ancestor_clusters = finder.has_ancestor_clusters?
+    has_ancestor_clusters = finder.has_ancestor_clusters?
+
+    respond_to do |format|
+      format.json do
+        serializer = ClusterSerializer.new(current_user: current_user)
+
+        render json: {
+          clusters: serializer.with_pagination(request, response).represent_group(paginated_clusters),
+          current_page: paginated_clusters.current_page,
+          has_ancestor_clusters: has_ancestor_clusters,
+          per_page: paginated_clusters.limit_value,
+          total_count: paginated_clusters.total_count,
+          total_pages: paginated_clusters.total_pages
+        }
+      end
+    end
   end
 
   def new
