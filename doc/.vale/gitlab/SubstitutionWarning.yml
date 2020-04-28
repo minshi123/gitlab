@@ -1,5 +1,6 @@
 ---
 # Warns against using common shorthand for terms.
+# For substitutions flagged as errors, see Substitutions.yml
 #
 # For a list of all options, see https://errata-ai.github.io/vale/styles/
 extends: substitution
