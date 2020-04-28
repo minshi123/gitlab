@@ -184,7 +184,7 @@ describe API::Projects do
       subject { get api("/projects/#{project.id}", user) }
 
       let(:project) do
-        create(:project, :public, archived: true, marked_for_deletion_at: 1.day.ago, deleting_user: user)
+        create(:project, :public, archived: true, marked_for_deletion_on: 1.day.ago, deleting_user: user)
       end
 
       describe 'marked_for_deletion_at attribute' do
