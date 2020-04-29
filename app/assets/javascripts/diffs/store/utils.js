@@ -303,6 +303,48 @@ function prepareLine(line) {
   }
 }
 
+export function prepareRawLineForFile( { line, diffViewType, diffFile = {}, index = 0 } = {} ){
+  /*
+    This function is separate from the function below - "prepareDiffFileLines"
+    because it's intended to be used on lines loaded outside  the "context"
+    of a diff.
+
+    For example, when loading the diff for a renamed file, the API response
+    is basically JUST the lines, nothing else. Not even highlighted versus
+    parallel, or a line_code.
+
+    In addition, the diff file itself doesn't have either of those line types
+    either, so we can't assume the function below would work.
+
+    Basically, this function does a similar thing to `prepareDiffFileLines`,
+    But without any of the assumptions baked into that function.
+
+    This should be cleaned up as part of the effort around flattening our data
+    ==> https://gitlab.com/groups/gitlab-org/-/epics/2852#note_304803402
+  */
+  const lineNumber = index + 1;
+  const cleanLine = {
+    ...line,
+    line_code: `${diffFile.file_hash}_${lineNumber}_${lineNumber}`,
+    new_line: lineNumber,
+    old_line: lineNumber
+  };
+  let preppedLine;
+
+  prepareLine( cleanLine ); // WARNING: In-Place Mutations!
+  preppedLine = cleanLine;
+
+  if( diffViewType === PARALLEL_DIFF_VIEW_TYPE ){
+    preppedLine = {
+      left: { ...cleanLine },
+      right: { ...cleanLine },
+      line_code: cleanLine.line_code
+    };
+  }
+
+  return preppedLine;
+}
+
 function prepareDiffFileLines(file) {
   const inlineLines = file.highlighted_diff_lines;
   const parallelLines = file.parallel_diff_lines;

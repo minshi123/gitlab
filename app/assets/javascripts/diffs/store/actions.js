@@ -16,6 +16,7 @@ import {
   idleCallback,
   allDiscussionWrappersExpanded,
   prepareDiffData,
+  prepareRawLineForFile,
 } from './utils';
 import * as types from './mutation_types';
 import {
@@ -559,7 +560,10 @@ export const setExpandedDiffLines = ({ commit, state }, { file, data }) => {
     lines: expandedDiffLines[hiddenDiffLinesKey],
   });
 
+  console.log( expandedDiffLines );
+
   if (expandedDiffLines[currentDiffLinesKey].length > MAX_RENDERING_DIFF_LINES) {
+    console.log( "collapsing" );
     let index = START_RENDERING_INDEX;
     commit(types.SET_CURRENT_VIEW_DIFF_FILE_LINES, {
       filePath: file.file_path,
@@ -626,6 +630,37 @@ export const toggleFullDiff = ({ dispatch, getters, state }, filePath) => {
     dispatch('fetchFullDiff', file);
   }
 };
+
+export function switchToFullDiffFromRenamedFile( { commit, dispatch, state }, { diffFile } ){
+  axios
+    .get( diffFile.context_lines_path, {
+      params: {
+        full: true,
+        from_merge_request: true,
+      },
+    })
+    .then(({ data }) => {
+      const lines = data
+        .map(( line, index ) => prepareRawLineForFile( {
+          diffViewType: state.diffViewType,
+          line,
+          diffFile,
+          index,
+        } ));
+
+      commit(types.SET_DIFF_FILE_VIEWER, {
+        filePath: diffFile.file_path,
+        viewer: {
+          ...diffFile.alternate_viewer,
+          collapsed: false
+        }
+      });
+      commit(types.SET_CURRENT_VIEW_DIFF_FILE_LINES, { filePath: diffFile.file_path, lines });
+
+      dispatch('startRenderDiffsQueue');
+    } )
+    .catch( () => dispatch('receiveFullDiffError', diffFile.file_path) );
+}
 
 export const setFileCollapsed = ({ commit }, { filePath, collapsed }) =>
   commit(types.SET_FILE_COLLAPSED, { filePath, collapsed });
