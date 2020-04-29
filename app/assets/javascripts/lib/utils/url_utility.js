@@ -85,6 +85,7 @@ export function mergeUrlParams(params, url) {
   Object.assign(merged, params);
 
   const query = Object.keys(merged)
+    .filter(key => merged[key] !== null)
     .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(merged[key])}`)
     .join('&');
 

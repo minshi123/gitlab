@@ -171,25 +171,30 @@ export const expandedPanelPayloadFromUrl = (dashboard, search = window.location.
  * Convert panel information to a URL for the user to
  * bookmark or share highlighting a specific panel.
  *
+ * If no group/panel is set, the dashboard URL is returned.
+ *
  * @param {String} dashboardPath - Dashboard path used as identifier
- * @param {String} group - Group Identifier
+ * @param {?String} group - Group Identifier
  * @param {?Object} panel - Panel object from the dashboard
  * @param {?String} url - Base URL including current search params
  * @returns Dashboard URL which expands a panel (chart)
  */
 export const panelToUrl = (dashboardPath, group, panel, url = window.location.href) => {
-  if (!group || !panel) {
-    return null;
+  const params = {};
+
+  params.dashboard = dashboardPath || null;
+
+  if (group && panel) {
+    params.group = group;
+    params.title = panel.title;
+    params.y_label = panel.y_label;
+  } else {
+    // Remove existing parameters if any
+    params.group = null;
+    params.title = null;
+    params.y_label = null;
   }
-  const params = pickBy(
-    {
-      dashboard: dashboardPath,
-      group,
-      title: panel.title,
-      y_label: panel.y_label,
-    },
-    value => value != null,
-  );
+
   return mergeUrlParams(params, url);
 };
 
