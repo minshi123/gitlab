@@ -31,7 +31,12 @@ module Gitlab
         when 'issues'
           eager_load(issues, page, eager: { project: [:route, :namespace] })
         when 'merge_requests'
-          eager_load(merge_requests, page, eager: { target_project: [:route, :namespace] })
+          eager_load(merge_requests, page, eager: [:author, :assignees, :labels, :unresolved_notes, :timelogs,
+                                                   :latest_merge_request_diff, milestone: [:project],
+                                                   metrics: [:latest_closed_by, :merged_by],
+                                                   target_project: [:route, { namespace: :route }],
+                                                   source_project: [:route, { namespace: :route }],
+                                                   head_pipeline: [:project]])
         when 'milestones'
           eager_load(milestones, page, eager: { project: [:route, :namespace] })
         when 'notes'
