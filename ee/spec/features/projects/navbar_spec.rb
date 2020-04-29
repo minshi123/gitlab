@@ -74,14 +74,10 @@ describe 'Project navbar' do
       allow(Gitlab.config.packages).to receive(:enabled).and_return(true)
       stub_licensed_features(packages: true)
 
-      insert_after_nav_item(
-        _('Operations'),
-        new_nav_item: {
-          nav_item: _('Packages'),
-          nav_sub_items: [
-            _('List')
-          ]
-        }
+      insert_before_sub_nav_item(
+        _('Container Registry'),
+        within: _('Packages & Registries'),
+        new_sub_nav_item_name: _('Package Registry')
       )
 
       visit project_path(project)
