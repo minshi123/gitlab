@@ -15,17 +15,14 @@ describe WikiPages::CreateService do
     }
   end
 
-  subject(:service) { described_class.new(project, user, opts) }
-
-  before do
-    project.add_developer(user)
-  end
+  subject(:service) { described_class.new(container: project, current_user: user, params: opts) }
 
   describe '#execute' do
     it 'creates wiki page with valid attributes' do
       page = service.execute
 
       expect(page).to be_valid
+      expect(page).to be_persisted
       expect(page.title).to eq(opts[:title])
       expect(page.content).to eq(opts[:content])
       expect(page.format).to eq(opts[:format].to_sym)

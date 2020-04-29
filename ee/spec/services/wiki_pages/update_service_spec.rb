@@ -15,11 +15,7 @@ describe WikiPages::UpdateService do
     }
   end
 
-  subject(:service) { described_class.new(project, user, opts) }
-
-  before do
-    project.add_maintainer(user)
-  end
+  subject(:service) { described_class.new(container: project, current_user: user, params: opts) }
 
   describe '#execute' do
     it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node' do

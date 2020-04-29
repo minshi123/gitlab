@@ -7,11 +7,7 @@ describe WikiPages::DestroyService do
   let(:user) { create(:user) }
   let(:page) { create(:wiki_page) }
 
-  subject(:service) { described_class.new(project, user) }
-
-  before do
-    project.add_developer(user)
-  end
+  subject(:service) { described_class.new(container: project, current_user: user) }
 
   describe '#execute' do
     it 'executes webhooks' do

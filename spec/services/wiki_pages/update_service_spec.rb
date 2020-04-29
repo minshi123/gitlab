@@ -17,11 +17,7 @@ describe WikiPages::UpdateService do
     }
   end
 
-  subject(:service) { described_class.new(project, user, opts) }
-
-  before do
-    project.add_developer(user)
-  end
+  subject(:service) { described_class.new(container: project, current_user: user, params: opts) }
 
   describe '#execute' do
     it 'updates the wiki page' do
