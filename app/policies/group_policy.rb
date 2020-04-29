@@ -74,6 +74,7 @@ class GroupPolicy < BasePolicy
 
   rule { can?(:read_group) }.policy do
     enable :read_milestone
+    enable :read_sprint
     enable :read_list
     enable :read_label
     enable :read_board
@@ -83,6 +84,7 @@ class GroupPolicy < BasePolicy
 
   rule { developer }.policy do
     enable :admin_milestone
+    enable :admin_sprint
     enable :read_package
     enable :create_metrics_dashboard_annotation
     enable :delete_metrics_dashboard_annotation
@@ -131,6 +133,7 @@ class GroupPolicy < BasePolicy
     enable :read_group_boards
     enable :read_group_labels
     enable :read_group_milestones
+    enable :read_group_sprints
     enable :read_group_merge_requests
   end
 

@@ -40,7 +40,7 @@ module Gitlab
             end
 
             if order_list.count > 2
-              raise ArgumentError.new('A maximum of 2 ordering fields are allowed')
+              # raise ArgumentError.new('A maximum of 2 ordering fields are allowed')
             end
 
             # make sure the last ordering field is non-nullable

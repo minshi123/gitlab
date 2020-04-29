@@ -9,6 +9,7 @@ class ProjectPolicy < BasePolicy
     merge_request
     label
     milestone
+    sprint
     snippet
     wiki
     note
@@ -185,6 +186,7 @@ class ProjectPolicy < BasePolicy
     enable :read_issue
     enable :read_label
     enable :read_milestone
+    enable :read_sprint
     enable :read_snippet
     enable :read_project_member
     enable :read_note
@@ -257,6 +259,7 @@ class ProjectPolicy < BasePolicy
     enable :admin_board
     enable :admin_merge_request
     enable :admin_milestone
+    enable :admin_sprint
     enable :update_merge_request
     enable :reopen_merge_request
     enable :create_commit_status
@@ -361,6 +364,7 @@ class ProjectPolicy < BasePolicy
   rule { issues_disabled & merge_requests_disabled }.policy do
     prevent(*create_read_update_admin_destroy(:label))
     prevent(*create_read_update_admin_destroy(:milestone))
+    prevent(*create_read_update_admin_destroy(:sprint))
   end
 
   rule { snippets_disabled }.policy do
@@ -417,6 +421,7 @@ class ProjectPolicy < BasePolicy
     enable :read_wiki
     enable :read_label
     enable :read_milestone
+    enable :read_sprint
     enable :read_snippet
     enable :read_project_member
     enable :read_merge_request

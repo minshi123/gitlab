@@ -23,9 +23,9 @@ module Resolvers
 
     def sprints_finder_params(args)
       {
-          state: args[:state] || 'all',
-          start_date: args[:start_date],
-          end_date: args[:end_date]
+        state: args[:state] || 'all',
+        start_date: args[:start_date],
+        end_date: args[:end_date]
       }.merge(parent_id_parameter)
     end
 
