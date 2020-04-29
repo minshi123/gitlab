@@ -381,11 +381,10 @@ other environments.
 ## Currently supported languages
 
 Note that not all buildpacks support Auto Test yet, as it's a relatively new
-enhancement. All of Heroku's [officially supported
-languages](https://devcenter.heroku.com/articles/heroku-ci#supported-languages)
-support buildpacks, and some third-party buildpacks as well (such as Go, Node, Java, PHP,
-Python, Ruby, Gradle, Scala, and Elixir) all support Auto Test, but notably the
-multi-buildpack does not.
+enhancement. All of Heroku's
+[officially supported languages](https://devcenter.heroku.com/articles/heroku-ci#supported-languages)
+support Auto Test. The languages supported by Heroku's Herokuish buildpacks all
+support Auto Test, but notably the multi-buildpack does not.
 
 As of GitLab 10.0, the supported buildpacks are:
 
@@ -440,7 +439,7 @@ spec:
 
 ### Unable to select a buildpack
 
-Ato Build and Auto Test may fail to detect your language or framework with the
+Auto Build and Auto Test may fail to detect your language or framework with the
 following error:
 
 ```plaintext
