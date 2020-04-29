@@ -104,6 +104,7 @@ export const receiveCycleAnalyticsDataSuccess = ({ commit, dispatch }) => {
 };
 
 export const receiveCycleAnalyticsDataError = ({ commit }, error) => {
+  console.log('error', error);
   const { status = null } = error; // non api errors thrown wont have a status field
   commit(types.RECEIVE_CYCLE_ANALYTICS_DATA_ERROR, status);
 
@@ -151,7 +152,7 @@ export const fetchGroupStagesAndEvents = ({ state, dispatch, getters }) => {
   dispatch('requestGroupStages');
   dispatch('customStages/setStageEvents', []);
 
-  return Api.cycleAnalyticsGroupStages(fullPath, {
+  return Api.cycleAnalyticsGroupStagesAndEvents(fullPath, {
     start_date: created_after,
     project_ids,
   })
@@ -173,7 +174,7 @@ export const receiveUpdateStageSuccess = ({ commit, dispatch }, updatedData) => 
   createFlash(__('Stage data updated'), 'notice');
 
   return Promise.all([
-    dispatch('fetchGroupStages'),
+    dispatch('fetchGroupStagesAndEvents'),
     dispatch('setSelectedStage', updatedData),
   ]).catch(() => {
     createFlash(__('There was a problem refreshing the data, please try again'));
