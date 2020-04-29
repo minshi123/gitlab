@@ -30,11 +30,13 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     push_frontend_feature_flag(:accessibility_merge_request_widget, @project)
   end
 
+  before_action :discussions, :render_404
+
   before_action do
     push_frontend_feature_flag(:vue_issuable_sidebar, @project.group)
   end
 
-  around_action :allow_gitaly_ref_name_caching, only: [:index, :show, :discussions]
+  around_action :allow_gitaly_ref_name_caching, only: [:index, :show]
 
   def index
     @merge_requests = @issuables
@@ -263,12 +265,6 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     head :ok
   rescue MergeRequest::RebaseLockTimeout => e
     render json: { merge_error: e.message }, status: :conflict
-  end
-
-  def discussions
-    merge_request.discussions_diffs.load_highlight
-
-    super
   end
 
   protected
