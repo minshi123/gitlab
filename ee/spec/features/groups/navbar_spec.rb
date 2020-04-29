@@ -141,4 +141,21 @@ describe 'Group navbar' do
 
     it_behaves_like 'verified navigation bar'
   end
+
+  context 'when packages are available' do
+    before do
+      allow(Gitlab.config.packages).to receive(:enabled).and_return(true)
+      stub_licensed_features(packages: true)
+
+      insert_before_sub_nav_item(
+        _('Container Registry'),
+        within: _('Packages & Registries'),
+        new_sub_nav_item_name: _('Package Registry')
+      )
+
+      visit group_path(group)
+    end
+
+    it_behaves_like 'verified navigation bar'
+  end
 end

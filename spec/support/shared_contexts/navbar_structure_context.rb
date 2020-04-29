@@ -162,6 +162,12 @@ RSpec.shared_context 'group navbar structure' do
         nav_item: _('Kubernetes'),
         nav_sub_items: []
       },
+      {
+        nav_item: _('Packages & Registries'),
+        nav_sub_items: [
+          _('Container Registry')
+        ]
+      },
       (analytics_nav_item if Gitlab.ee?),
       {
         nav_item: _('Members'),
