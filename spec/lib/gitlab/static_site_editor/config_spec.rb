@@ -24,8 +24,15 @@ describe Gitlab::StaticSiteEditor::Config do
         project: 'project',
         project_id: project.id,
         return_url: 'http://example.com',
-        is_supported_content: true
+        is_supported_content: true,
+        base_url: '/namespace/project/-/sse/master%2FREADME.md'
       )
+    end
+
+    context 'when file path is nested' do
+      let(:file_path) { 'lib/README.md' }
+
+      it { is_expected.to include(base_url: '/namespace/project/-/sse/master%2Flib%2FREADME.md') }
     end
 
     context 'when branch is not master' do
