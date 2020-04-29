@@ -1,4 +1,6 @@
 <script>
+import { ApolloMutation } from 'vue-apollo';
+import updateNoteMutation from '../../graphql/mutations/update_note.mutation.graphql';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
 import TimelineEntryItem from '~/vue_shared/components/notes/timeline_entry_item.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
@@ -11,6 +13,7 @@ export default {
     TimelineEntryItem,
     TimeAgoTooltip,
     DesignReplyForm,
+    ApolloMutation,
   },
   props: {
     note: {
@@ -39,6 +42,12 @@ export default {
     isNoteLinked() {
       return this.$route.hash === `#note_${this.noteAnchorId}`;
     },
+    mutationPayload() {
+      return {
+        id: this.note.id,
+        body: this.noteText,
+      };
+    },
   },
   mounted() {
     if (this.isNoteLinked) {
@@ -48,12 +57,10 @@ export default {
   methods: {
     hideForm() {
       this.isEditing = false;
-    },
-    submitForm() {
-      console.log('submitted');
-      this.isEditing = false;
+      this.noteText = this.note.body;
     },
   },
+  updateNoteMutation,
 };
 </script>
 
@@ -92,14 +99,24 @@ export default {
       data-qa-selector="note_content"
       v-html="note.bodyHtml"
     ></div>
-    <design-reply-form
+    <apollo-mutation
       v-else
-      v-model="noteText"
-      :is-saving="false"
-      :button-text="__('Save comment')"
-      :markdown-preview-path="markdownPreviewPath"
-      @submitForm="submitForm"
-      @cancelForm="hideForm"
-    />
+      v-slot="{ mutate, loading }"
+      :mutation="$options.updateNoteMutation"
+      :variables="{
+        input: mutationPayload,
+      }"
+      @done="hideForm"
+      @error="$emit('error', $event)"
+    >
+      <design-reply-form
+        v-model="noteText"
+        :is-saving="loading"
+        :button-text="__('Save comment')"
+        :markdown-preview-path="markdownPreviewPath"
+        @submitForm="mutate"
+        @cancelForm="hideForm"
+      />
+    </apollo-mutation>
   </timeline-entry-item>
 </template>

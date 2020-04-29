@@ -108,6 +108,7 @@ export default {
         :key="note.id"
         :note="note"
         :markdown-preview-path="markdownPreviewPath"
+        @error="onError"
       />
       <div class="reply-wrapper">
         <reply-placeholder

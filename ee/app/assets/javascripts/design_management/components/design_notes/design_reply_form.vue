@@ -28,6 +28,11 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      formText: this.value,
+    };
+  },
   computed: {
     hasValue() {
       return this.value.trim().length > 0;
@@ -41,7 +46,7 @@ export default {
       if (this.hasValue) this.$emit('submitForm');
     },
     cancelComment() {
-      if (this.hasValue) {
+      if (this.hasValue && this.formText !== this.value) {
         this.$refs.cancelCommentModal.show();
       } else {
         this.$emit('cancelForm');
