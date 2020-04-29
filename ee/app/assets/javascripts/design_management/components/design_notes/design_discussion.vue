@@ -103,7 +103,12 @@ export default {
       class="design-discussion bordered-box position-relative"
       data-qa-selector="design_discussion_content"
     >
-      <design-note v-for="note in discussion.notes" :key="note.id" :note="note" />
+      <design-note
+        v-for="note in discussion.notes"
+        :key="note.id"
+        :note="note"
+        :markdown-preview-path="markdownPreviewPath"
+      />
       <div class="reply-wrapper">
         <reply-placeholder
           v-if="!isFormRendered"
@@ -125,6 +130,7 @@ export default {
           <design-reply-form
             v-model="discussionComment"
             :is-saving="loading"
+            :button-text="__('Comment')"
             :markdown-preview-path="markdownPreviewPath"
             @submitForm="mutate"
             @cancelForm="hideForm"

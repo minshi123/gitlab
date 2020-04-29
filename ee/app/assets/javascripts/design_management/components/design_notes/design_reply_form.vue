@@ -23,6 +23,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    buttonText: {
+      type: String,
+      required: true,
+    },
   },
   computed: {
     hasValue() {
@@ -85,7 +89,7 @@ export default {
         data-qa-selector="save_comment_button"
         @click="$emit('submitForm')"
       >
-        {{ __('Comment') }}
+        {{ buttonText }}
       </gl-deprecated-button>
       <gl-deprecated-button ref="cancelButton" @click="cancelComment">{{
         __('Cancel')
