@@ -7,11 +7,13 @@ export default {
   },
   [types.SHOW_CREATE_FORM](state) {
     state.isCreatingCustomStage = true;
+    state.isEditingCustomStage = false;
     state.formInitialData = null;
     state.formErrors = null;
   },
   [types.SHOW_EDIT_FORM](state, initialData) {
     state.isEditingCustomStage = true;
+    state.isCreatingCustomStage = false;
     state.formInitialData = initialData;
     state.formErrors = null;
   },
@@ -26,7 +28,7 @@ export default {
   },
   [types.REQUEST_CREATE_STAGE](state) {
     state.isSavingCustomStage = true;
-    state.formErrors = {};
+    state.formErrors = null;
   },
   [types.RECEIVE_CREATE_STAGE_ERROR](state, { errors = null } = {}) {
     state.isSavingCustomStage = false;

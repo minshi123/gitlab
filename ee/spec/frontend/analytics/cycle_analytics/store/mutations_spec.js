@@ -13,8 +13,8 @@ import {
   totalStage,
   startDate,
   endDate,
-  customizableStagesAndEvents,
   selectedProjects,
+  customizableStagesAndEvents,
 } from '../mock_data';
 
 let state = null;
@@ -29,43 +29,21 @@ describe('Cycle analytics mutations', () => {
   });
 
   it.each`
-    mutation                                       | stateKey                        | value
-    ${types.HIDE_CUSTOM_STAGE_FORM}                | ${'isCreatingCustomStage'}      | ${false}
-    ${types.HIDE_CUSTOM_STAGE_FORM}                | ${'isEditingCustomStage'}       | ${false}
-    ${types.HIDE_CUSTOM_STAGE_FORM}                | ${'customStageFormErrors'}      | ${null}
-    ${types.HIDE_CUSTOM_STAGE_FORM}                | ${'customStageFormInitialData'} | ${null}
-    ${types.SHOW_CUSTOM_STAGE_FORM}                | ${'isCreatingCustomStage'}      | ${true}
-    ${types.SHOW_CUSTOM_STAGE_FORM}                | ${'isEditingCustomStage'}       | ${false}
-    ${types.SHOW_CUSTOM_STAGE_FORM}                | ${'customStageFormErrors'}      | ${null}
-    ${types.SHOW_EDIT_CUSTOM_STAGE_FORM}           | ${'isEditingCustomStage'}       | ${true}
-    ${types.SHOW_EDIT_CUSTOM_STAGE_FORM}           | ${'isCreatingCustomStage'}      | ${false}
-    ${types.SHOW_EDIT_CUSTOM_STAGE_FORM}           | ${'customStageFormErrors'}      | ${null}
-    ${types.REQUEST_STAGE_DATA}                    | ${'isLoadingStage'}             | ${true}
-    ${types.RECEIVE_STAGE_DATA_ERROR}              | ${'isEmptyStage'}               | ${true}
-    ${types.RECEIVE_STAGE_DATA_ERROR}              | ${'isLoadingStage'}             | ${false}
-    ${types.REQUEST_CYCLE_ANALYTICS_DATA}          | ${'isLoading'}                  | ${true}
-    ${types.RECEIVE_GROUP_STAGES_AND_EVENTS_ERROR} | ${'stages'}                     | ${[]}
-    ${types.REQUEST_GROUP_STAGES_AND_EVENTS}       | ${'stages'}                     | ${[]}
-    ${types.RECEIVE_GROUP_STAGES_AND_EVENTS_ERROR} | ${'customStageFormEvents'}      | ${[]}
-    ${types.REQUEST_GROUP_STAGES_AND_EVENTS}       | ${'customStageFormEvents'}      | ${[]}
-    ${types.REQUEST_CREATE_CUSTOM_STAGE}           | ${'isSavingCustomStage'}        | ${true}
-    ${types.RECEIVE_CREATE_CUSTOM_STAGE_SUCCESS}   | ${'isSavingCustomStage'}        | ${false}
-    ${types.RECEIVE_CREATE_CUSTOM_STAGE_ERROR}     | ${'isSavingCustomStage'}        | ${false}
-    ${types.RECEIVE_CREATE_CUSTOM_STAGE_ERROR}     | ${'customStageFormErrors'}      | ${{}}
-    ${types.REQUEST_UPDATE_STAGE}                  | ${'isLoading'}                  | ${true}
-    ${types.REQUEST_UPDATE_STAGE}                  | ${'isSavingCustomStage'}        | ${true}
-    ${types.REQUEST_UPDATE_STAGE}                  | ${'customStageFormErrors'}      | ${null}
-    ${types.RECEIVE_UPDATE_STAGE_SUCCESS}          | ${'isLoading'}                  | ${false}
-    ${types.RECEIVE_UPDATE_STAGE_SUCCESS}          | ${'isSavingCustomStage'}        | ${false}
-    ${types.RECEIVE_UPDATE_STAGE_SUCCESS}          | ${'isEditingCustomStage'}       | ${false}
-    ${types.RECEIVE_UPDATE_STAGE_SUCCESS}          | ${'customStageFormErrors'}      | ${null}
-    ${types.RECEIVE_UPDATE_STAGE_ERROR}            | ${'isLoading'}                  | ${false}
-    ${types.RECEIVE_UPDATE_STAGE_ERROR}            | ${'isSavingCustomStage'}        | ${false}
-    ${types.REQUEST_REMOVE_STAGE}                  | ${'isLoading'}                  | ${true}
-    ${types.RECEIVE_REMOVE_STAGE_RESPONSE}         | ${'isLoading'}                  | ${false}
-    ${types.REQUEST_STAGE_MEDIANS}                 | ${'medians'}                    | ${{}}
-    ${types.RECEIVE_STAGE_MEDIANS_ERROR}           | ${'medians'}                    | ${{}}
-    ${types.INITIALIZE_CYCLE_ANALYTICS_SUCCESS}    | ${'isLoading'}                  | ${false}
+    mutation                                    | stateKey            | value
+    ${types.REQUEST_STAGE_DATA}                 | ${'isLoadingStage'} | ${true}
+    ${types.RECEIVE_STAGE_DATA_ERROR}           | ${'isEmptyStage'}   | ${true}
+    ${types.RECEIVE_STAGE_DATA_ERROR}           | ${'isLoadingStage'} | ${false}
+    ${types.REQUEST_CYCLE_ANALYTICS_DATA}       | ${'isLoading'}      | ${true}
+    ${types.RECEIVE_GROUP_STAGES_ERROR}         | ${'stages'}         | ${[]}
+    ${types.REQUEST_GROUP_STAGES_AND_EVENTS}    | ${'stages'}         | ${[]}
+    ${types.REQUEST_UPDATE_STAGE}               | ${'isLoading'}      | ${true}
+    ${types.RECEIVE_UPDATE_STAGE_SUCCESS}       | ${'isLoading'}      | ${false}
+    ${types.RECEIVE_UPDATE_STAGE_ERROR}         | ${'isLoading'}      | ${false}
+    ${types.REQUEST_REMOVE_STAGE}               | ${'isLoading'}      | ${true}
+    ${types.RECEIVE_REMOVE_STAGE_RESPONSE}      | ${'isLoading'}      | ${false}
+    ${types.REQUEST_STAGE_MEDIANS}              | ${'medians'}        | ${{}}
+    ${types.RECEIVE_STAGE_MEDIANS_ERROR}        | ${'medians'}        | ${{}}
+    ${types.INITIALIZE_CYCLE_ANALYTICS_SUCCESS} | ${'isLoading'}      | ${false}
   `('$mutation will set $stateKey=$value', ({ mutation, stateKey, value }) => {
     mutations[mutation](state);
 
@@ -117,18 +95,6 @@ describe('Cycle analytics mutations', () => {
     });
   });
 
-  describe(`types.RECEIVE_UPDATE_STAGE_ERROR`, () => {
-    const mockFormError = { errors: { start_identifier: ['Cant be blank'] } };
-    it('will set customStageFormErrors', () => {
-      state = {};
-      mutations[types.RECEIVE_UPDATE_STAGE_ERROR](state, mockFormError);
-
-      expect(state.customStageFormErrors).toEqual(
-        convertObjectPropsToCamelCase(mockFormError.errors),
-      );
-    });
-  });
-
   describe(`${types.RECEIVE_CYCLE_ANALYTICS_DATA_SUCCESS}`, () => {
     it('will set isLoading=false and errorCode=null', () => {
       mutations[types.RECEIVE_CYCLE_ANALYTICS_DATA_SUCCESS](state, {
@@ -141,13 +107,11 @@ describe('Cycle analytics mutations', () => {
     });
   });
 
-  describe(`${types.RECEIVE_GROUP_STAGES_AND_EVENTS_SUCCESS}`, () => {
+  describe(`${types.RECEIVE_GROUP_STAGES_SUCCESS}`, () => {
+    const { stages } = customizableStagesAndEvents;
     describe('with data', () => {
       beforeEach(() => {
-        mutations[types.RECEIVE_GROUP_STAGES_AND_EVENTS_SUCCESS](
-          state,
-          customizableStagesAndEvents,
-        );
+        mutations[types.RECEIVE_GROUP_STAGES_SUCCESS](state, stages);
       });
 
       it('will convert the stats object to stages', () => {
