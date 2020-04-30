@@ -11,7 +11,6 @@
 #   options:
 #     only_owned: boolean
 #     only_shared: boolean
-#     limit: integer
 #   params:
 #     sort: string
 #     visibility_level: int
@@ -21,8 +20,6 @@
 #     non_archived: boolean
 #
 class GroupProjectsFinder < ProjectsFinder
-  DEFAULT_PROJECTS_LIMIT = 100
-
   attr_reader :group, :options
 
   def initialize(group:, params: {}, options: {}, current_user: nil, project_ids_relation: nil)
@@ -35,18 +32,7 @@ class GroupProjectsFinder < ProjectsFinder
     @options = options
   end
 
-  def execute
-    collection = super
-    limit(collection)
-  end
-
   private
-
-  def limit(collection)
-    limit = options[:limit]
-
-    limit.present? ? collection.with_limit(limit) : collection
-  end
 
   def init_collection
     projects = if current_user

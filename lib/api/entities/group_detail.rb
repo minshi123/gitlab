@@ -8,7 +8,7 @@ module API
         projects = GroupProjectsFinder.new(
           group: group,
           current_user: options[:current_user],
-          options: { only_owned: true, limit: projects_limit }
+          options: { only_owned: true }
         ).execute
 
         Entities::Project.prepare_relation(projects)
@@ -18,18 +18,10 @@ module API
         projects = GroupProjectsFinder.new(
           group: group,
           current_user: options[:current_user],
-          options: { only_shared: true, limit: projects_limit }
+          options: { only_shared: true }
         ).execute
 
         Entities::Project.prepare_relation(projects)
-      end
-
-      def projects_limit
-        if ::Feature.enabled?(:limit_projects_in_groups_api, default_enabled: true)
-          GroupProjectsFinder::DEFAULT_PROJECTS_LIMIT
-        else
-          nil
-        end
       end
     end
   end
