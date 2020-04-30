@@ -6,10 +6,10 @@ import {
   GlIcon,
   GlButton,
   GlDeprecatedButton,
-  GlDropdown,
-  GlDropdownItem,
-  GlDropdownHeader,
-  GlDropdownDivider,
+  GlNewDropdown,
+  GlNewDropdownItem,
+  GlNewDropdownHeader,
+  GlNewDropdownDivider,
   GlModal,
   GlLoadingIcon,
   GlSearchBoxByType,
@@ -43,11 +43,11 @@ export default {
     GlIcon,
     GlButton,
     GlDeprecatedButton,
-    GlDropdown,
+    GlNewDropdown,
+    GlNewDropdownItem,
+    GlNewDropdownHeader,
+    GlNewDropdownDivider,
     GlLoadingIcon,
-    GlDropdownItem,
-    GlDropdownHeader,
-    GlDropdownDivider,
     GlSearchBoxByType,
     GlModal,
     CustomMetricsFormFields,
@@ -402,7 +402,7 @@ export default {
       </div>
 
       <div class="mb-2 pr-2 d-flex d-sm-block">
-        <gl-dropdown
+        <gl-new-dropdown
           id="monitor-environments-dropdown"
           ref="monitorEnvironmentsDropdown"
           class="flex-grow-1"
@@ -412,10 +412,10 @@ export default {
           :text="currentEnvironmentName"
         >
           <div class="d-flex flex-column overflow-hidden">
-            <gl-dropdown-header class="monitor-environment-dropdown-header text-center">
+            <gl-new-dropdown-header class="monitor-environment-dropdown-header text-center">
               {{ __('Environment') }}
-            </gl-dropdown-header>
-            <gl-dropdown-divider />
+            </gl-new-dropdown-header>
+            <gl-new-dropdown-divider />
             <gl-search-box-by-type
               ref="monitorEnvironmentsDropdownSearch"
               class="m-2"
@@ -427,13 +427,13 @@ export default {
               :inline="true"
             />
             <div v-else class="flex-fill overflow-auto">
-              <gl-dropdown-item
+              <gl-new-dropdown-item
                 v-for="environment in filteredEnvironments"
                 :key="environment.id"
-                :active="environment.name === currentEnvironmentName"
-                active-class="is-active"
+                is-check-item
+                :is-checked="environment.name === currentEnvironmentName"
                 :href="environment.metrics_path"
-                >{{ environment.name }}</gl-dropdown-item
+                >{{ environment.name }}</gl-new-dropdown-item
               >
             </div>
             <div
@@ -444,7 +444,7 @@ export default {
               {{ __('No matching results') }}
             </div>
           </div>
-        </gl-dropdown>
+        </gl-new-dropdown>
       </div>
 
       <div class="mb-2 pr-2 d-flex d-sm-block">
@@ -452,6 +452,7 @@ export default {
           ref="dateTimePicker"
           class="flex-grow-1 show-last-dropdown"
           data-qa-selector="show_last_dropdown"
+          use-new-dropdown
           :value="selectedTimeRange"
           :options="timeRanges"
           @input="onDateTimePickerInput"

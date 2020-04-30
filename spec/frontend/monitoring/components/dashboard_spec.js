@@ -1,6 +1,6 @@
 import { shallowMount, mount } from '@vue/test-utils';
 import Tracking from '~/tracking';
-import { GlModal, GlDropdownItem, GlDeprecatedButton } from '@gitlab/ui';
+import { GlModal, GlNewDropdownItem, GlDeprecatedButton } from '@gitlab/ui';
 import VueDraggable from 'vuedraggable';
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
@@ -26,7 +26,8 @@ describe('Dashboard', () => {
   let mock;
 
   const findEnvironmentsDropdown = () => wrapper.find({ ref: 'monitorEnvironmentsDropdown' });
-  const findAllEnvironmentsDropdownItems = () => findEnvironmentsDropdown().findAll(GlDropdownItem);
+  const findAllEnvironmentsDropdownItems = () =>
+    findEnvironmentsDropdown().findAll(GlNewDropdownItem);
   const setSearchTerm = searchTerm => {
     wrapper.vm.$store.commit(`monitoringDashboard/${types.SET_ENVIRONMENTS_FILTER}`, searchTerm);
   };
@@ -151,7 +152,7 @@ describe('Dashboard', () => {
 
   describe('when all requests have been commited by the store', () => {
     beforeEach(() => {
-      createMountedWrapper({ hasMetrics: true });
+      createShallowWrapper({ hasMetrics: true });
 
       setupStoreWithData(wrapper.vm.$store);
 
@@ -172,7 +173,7 @@ describe('Dashboard', () => {
 
     it('renders the environments dropdown with a single active element', () => {
       const activeItem = findAllEnvironmentsDropdownItems().wrappers.filter(itemWrapper =>
-        itemWrapper.find('.active').exists(),
+        itemWrapper.props('isChecked'),
       );
 
       expect(activeItem.length).toBe(1);

@@ -13,6 +13,11 @@
   .form-group {
     margin-bottom: map-get($spacing-scale, 3);
   }
+
+  // TODO Remove this once gitlab-ui css is integrated
+  .gl-visibility-hidden {
+    visibility: hidden;
+  }
 }
 
 .draggable {
@@ -65,10 +70,18 @@
     }
   }
 
-  .show-last-dropdown {
+  .gl-new-dropdown {
     // same as in .dropdown-menu-toggle
     // see app/assets/stylesheets/framework/dropdowns.scss
     width: 160px;
+  }
+
+  .btn {
+    // Migration to new buttons is pending,
+    // in the meantime all buttons' height is force here 
+    height: 30px;
+    padding-top: 5px;
+    padding-bottom: 5px;
   }
 }
 
