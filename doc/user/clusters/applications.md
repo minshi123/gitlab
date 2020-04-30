@@ -1013,11 +1013,11 @@ In addition, the following variables must be specified using [CI variables](../.
 
 | CI Variable                            | Description                                                                                                                                                         |
 |:---------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `JUPYTERHUB_PROXY_SECRET_TOKEN`        | Secure string used for signing communications from the hub. See[`proxy.secretToken`](https://zero-to-jupyterhub.readthedocs.io/en/stable/reference/reference.html?#proxy-secrettoken).             |
-| `JUPYTERHUB_COOKIE_SECRET`             | Secure string used for signing secure cookies. See [`hub.cookieSecret`](https://zero-to-jupyterhub.readthedocs.io/en/stable/reference/reference.html?#hub-cookiesecret).               |
+| `JUPYTERHUB_PROXY_SECRET_TOKEN`        | Secure string used for signing communications from the hub. See[`proxy.secretToken`](https://zero-to-jupyterhub.readthedocs.io/en/stable/reference/reference.html#proxy-secrettoken).             |
+| `JUPYTERHUB_COOKIE_SECRET`             | Secure string used for signing secure cookies. See [`hub.cookieSecret`](https://zero-to-jupyterhub.readthedocs.io/en/stable/reference/reference.html#hub-cookiesecret).               |
 | `JUPYTERHUB_HOST`                      | Hostname used for the installation. For example, `jupyter.gitlab.example.com`.                                                                                      |
 | `JUPYTERHUB_GITLAB_HOST`               | Hostname of the GitLab instance used for authentication. For example, `gitlab.example.com`.                                                                         |
-| `JUPYTERHUB_AUTH_CRYPTO_KEY`           | A 32-byte encryption key used to set [`auth.state.cryptoKey`](https://zero-to-jupyterhub.readthedocs.io/en/stable/reference/reference.html?#auth-state-cryptokey). |
+| `JUPYTERHUB_AUTH_CRYPTO_KEY`           | A 32-byte encryption key used to set [`auth.state.cryptoKey`](https://zero-to-jupyterhub.readthedocs.io/en/stable/reference/reference.html#auth-state-cryptokey). |
 | `JUPYTERHUB_AUTH_GITLAB_CLIENT_ID`     | "Application ID" for the OAuth Application.                                                                                                                         |
 | `JUPYTERHUB_AUTH_GITLAB_CLIENT_SECRET` | "Secret" for the OAuth Application.                                                                                                                                 |
 
