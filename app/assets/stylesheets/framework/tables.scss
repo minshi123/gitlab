@@ -6,6 +6,7 @@
 table {
   &.table {
     margin-bottom: $gl-padding;
+    @include gl-text-gray-700;
 
     .dropdown-menu a {
       text-decoration: none;
@@ -32,8 +33,8 @@ table {
       }
 
       th {
-        background-color: $gray-light;
-        font-weight: $gl-font-weight-normal;
+        @include gl-bg-gray-100;
+        @include gl-font-weight-bold;
         border-bottom: 0;
 
         &.wide {
