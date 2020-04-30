@@ -38,6 +38,22 @@ RSpec.shared_examples 'reference links for status page' do
     end
   end
 
+  shared_examples 'username anonymization' do
+    let(:anonymized_name) { 'Incident Responder' }
+
+    context 'with username' do
+      let(:reference) { project.creator }
+
+      it 'redacts username' do
+        aggregate_failures do
+          expect(value).to include(anonymized_name)
+          expect(value).not_to include('<a ')
+          expect(value).not_to include(%{title="#{reference.name}"})
+        end
+      end
+    end
+  end
+
   context 'with public project' do
     let(:project_visibility) { Project::PUBLIC }
 
@@ -52,6 +68,8 @@ RSpec.shared_examples 'reference links for status page' do
 
       include_examples 'plain reference'
     end
+
+    include_examples 'username anonymization'
   end
 
   context 'with private project' do
@@ -62,5 +80,7 @@ RSpec.shared_examples 'reference links for status page' do
 
       include_examples 'plain reference'
     end
+
+    include_examples 'username anonymization'
   end
 end
