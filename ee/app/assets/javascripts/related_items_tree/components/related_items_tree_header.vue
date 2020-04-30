@@ -1,7 +1,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 
-import { GlDeprecatedButton, GlTooltip, GlIcon } from '@gitlab/ui';
+import { GlTooltip, GlIcon } from '@gitlab/ui';
 
 import { issuableTypesMap } from 'ee/related_issues/constants';
 
@@ -10,7 +10,6 @@ import EpicHealthStatus from './epic_health_status.vue';
 
 export default {
   components: {
-    GlDeprecatedButton,
     GlTooltip,
     GlIcon,
     EpicHealthStatus,
@@ -26,7 +25,19 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['toggleAddItemForm', 'toggleCreateEpicForm', 'setItemInputValue']),
+    ...mapActions([
+      'handleShowAddIssueForm',
+      'toggleCreateIssueForm',
+      'toggleAddItemForm',
+      'toggleCreateEpicForm',
+      'setItemInputValue',
+    ]),
+    handleShowAddIssueForm() {
+      this.toggleAddItemForm({ toggleState: true, issuableType: issuableTypesMap.ISSUE });
+    },
+    handleShowCreateIssueForm() {
+      this.toggleCreateIssueForm({ toggleState: true });
+    },
     showAddEpicForm() {
       this.toggleAddItemForm({
         issuableType: issuableTypesMap.EPIC,
@@ -92,19 +103,13 @@ export default {
       <template v-if="parentItem.userPermissions.adminEpic">
         <epic-actions-split-button
           v-if="allowSubEpics"
+          :allow-sub-epics="allowSubEpics"
           class="qa-add-epics-button mb-2 mb-sm-0"
+          @showAddIssueForm="handleShowAddIssueForm"
+          @showCreateIssueForm="handleShowCreateIssueForm"
           @showAddEpicForm="showAddEpicForm"
           @showCreateEpicForm="showCreateEpicForm"
         />
-
-        <slot name="issueActions">
-          <gl-deprecated-button
-            class="ml-1 js-add-issues-button qa-add-issues-button"
-            size="sm"
-            @click="showAddIssueForm"
-            >{{ __('Add an issue') }}</gl-deprecated-button
-          >
-        </slot>
       </template>
     </div>
   </div>
