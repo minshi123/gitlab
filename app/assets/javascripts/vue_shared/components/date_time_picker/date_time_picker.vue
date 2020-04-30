@@ -1,5 +1,12 @@
 <script>
-import { GlDeprecatedButton, GlDropdown, GlDropdownItem, GlFormGroup } from '@gitlab/ui';
+import {
+  GlDeprecatedButton,
+  GlDropdown,
+  GlDropdownItem,
+  GlNewDropdown,
+  GlNewDropdownItem,
+  GlFormGroup,
+} from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
 
 import { convertToFixedRange, isEqualTimeRanges, findTimeRange } from '~/lib/utils/datetime_range';
@@ -29,8 +36,6 @@ export default {
     DateTimePickerInput,
     GlFormGroup,
     GlDeprecatedButton,
-    GlDropdown,
-    GlDropdownItem,
   },
   props: {
     value: {
@@ -48,12 +53,19 @@ export default {
       required: false,
       default: true,
     },
+    useNewDropdown: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
       timeRange: this.value,
       startDate: '',
       endDate: '',
+      myDropdown: this.useNewDropdown ? GlNewDropdown : GlDropdown,
+      myDropdownItem: this.useNewDropdown ? GlNewDropdownItem : GlDropdownItem,
     };
   },
   computed: {
@@ -162,7 +174,8 @@ export default {
     placement="top"
     class="d-inline-block"
   >
-    <gl-dropdown
+    <component
+      :is="myDropdown"
       :text="timeWindowText"
       v-bind="$attrs"
       class="date-time-picker w-100"
@@ -206,7 +219,8 @@ export default {
             <span class="gl-pl-5-deprecated-no-really-do-not-use-me">{{ __('Quick range') }}</span>
           </template>
 
-          <gl-dropdown-item
+          <component
+            :is="myDropdownItem"
             v-for="(option, index) in options"
             :key="index"
             :active="isOptionActive(option)"
@@ -219,9 +233,9 @@ export default {
               :class="{ invisible: !isOptionActive(option) }"
             />
             {{ option.label }}
-          </gl-dropdown-item>
+          </component>
         </gl-form-group>
       </div>
-    </gl-dropdown>
+    </component>
   </tooltip-on-truncate>
 </template>
