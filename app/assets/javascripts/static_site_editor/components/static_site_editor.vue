@@ -9,6 +9,8 @@ import PublishToolbar from './publish_toolbar.vue';
 import InvalidContentMessage from './invalid_content_message.vue';
 import SubmitChangesError from './submit_changes_error.vue';
 
+import isSupportedContentQuery from '../graphql/is_supported_content.query.graphql';
+
 export default {
   components: {
     EditArea,
@@ -19,13 +21,17 @@ export default {
     PublishToolbar,
     SubmitChangesError,
   },
+  apollo: {
+    isSupportedContent: {
+      query: isSupportedContentQuery,
+    },
+  },
   computed: {
     ...mapState([
       'content',
       'isLoadingContent',
       'isSavingChanges',
       'isContentLoaded',
-      'isSupportedContent',
       'returnUrl',
       'title',
       'submitChangesError',

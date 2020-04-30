@@ -40,7 +40,6 @@ describe('StaticSiteEditor', () => {
 
     store = new Vuex.Store({
       state: createState({
-        isSupportedContent: true,
         ...initialState,
       }),
       getters: {
@@ -67,10 +66,13 @@ describe('StaticSiteEditor', () => {
     });
   };
 
-  const buildWrapper = () => {
+  const buildWrapper = (data = { isSupportedContent: true }) => {
     wrapper = shallowMount(StaticSiteEditor, {
       localVue,
       store,
+      data() {
+        return data;
+      },
     });
   };
 
@@ -191,8 +193,7 @@ describe('StaticSiteEditor', () => {
   });
 
   it('displays invalid content message when content is not supported', () => {
-    buildStore({ initialState: { isSupportedContent: false } });
-    buildWrapper();
+    buildWrapper({ isSupportedContent: false });
 
     expect(findInvalidContentMessage().exists()).toBe(true);
   });
