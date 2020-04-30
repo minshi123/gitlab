@@ -152,7 +152,7 @@ You can explore other popular projects available on GitLab. To explore projects:
 1. Click **Explore Projects**.
 
 GitLab displays a list of projects, sorted by last updated date. To view
-projects with the most [stars](#star-a-project), click **Most starred**. To view
+projects with the most [stars](#star-a-project), click **Most stars**. To view
 projects with the largest number of notes in the past month, click **Trending**.
 
 ## Project settings
