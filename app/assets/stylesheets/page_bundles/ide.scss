@@ -890,7 +890,7 @@ $ide-commit-header-height: 48px;
 
   .multi-file-commit-panel-inner {
     width: 350px;
-    padding: $grid-size $gl-padding;
+    padding: $grid-size 0;
     background-color: $white;
     border-left: 1px solid $white-dark;
   }
@@ -924,6 +924,7 @@ $ide-commit-header-height: 48px;
 .ide-pipeline-list {
   flex: 1;
   overflow: auto;
+  padding: 0 $gl-padding;
 }
 
 .ide-pipeline-header {

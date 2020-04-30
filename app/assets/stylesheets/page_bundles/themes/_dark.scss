@@ -27,6 +27,9 @@
   $btn-disabled-border: rgba(223, 223, 223, 0.24);
   $btn-disabled-color: rgba(145, 145, 145, 0.48);
 
+  $dropdown-background: #404040;
+  $dropdown-hover-background: #525252;
+
   a {
     color: $link-color;
   }
@@ -49,8 +52,16 @@
   textarea,
   .md-area.is-focused,
   .ide-entry-dropdown-toggle,
-  .nav-links:not(.quick-links) li:not(.md-header-toolbar) a:hover {
+  .nav-links:not(.quick-links) li:not(.md-header-toolbar) a,
+  .nav-links:not(.quick-links) li:not(.md-header-toolbar) a:hover,
+  .nav-links:not(.quick-links) li:not(.md-header-toolbar) a.active .badge.badge-pill,
+  .nav-links:not(.quick-links) li:not(.md-header-toolbar) a:hover .badge.badge-pill,
+  .badge.badge-pill {
     color: $text-color;
+  }
+
+  .card-header .badge.badge-pill {
+    background-color: $dropdown-hover-background;
   }
 
   .modal-body {
@@ -59,7 +70,7 @@
 
   .dropdown-menu-toggle svg,
   .dropdown-menu-toggle svg:hover,
-  .ide-tree-header svg,
+  .ide-tree-header:not(.ide-pipeline-header) svg,
   .file-row .file-row-icon svg,
   .file-row:hover .file-row-icon svg {
     fill: $text-color;
@@ -98,8 +109,14 @@
   .ide-commit-editor-header,
   .ide-file-templates,
   .ide-entry-dropdown-toggle,
-  .ide-staged-action-btn {
+  .ide-staged-action-btn,
+  .badge.badge-pill,
+  .card-header {
     background-color: $background;
+  }
+
+  .nav-links:not(.quick-links) li:not(.md-header-toolbar) a:hover {
+    border-color: $dropdown-hover-background;
   }
 
   .ide-sidebar-link:hover {
@@ -118,7 +135,8 @@
   .ide-sidebar-link.active::after,
   .ide-right-sidebar .multi-file-commit-panel-inner,
   .common-note-form .md-area,
-  .ide-commit-message-field {
+  .ide-commit-message-field,
+  .card {
     background-color: $highlight-background;
   }
 
@@ -137,7 +155,10 @@
   .multi-file-tabs li,
   .ide-status-bar,
   .ide-commit-editor-header,
-  .ide-file-templates {
+  .ide-file-templates,
+  .card,
+  .card-header,
+  .ide-job-item:not(:last-child) {
     border-color: $border-color;
   }
 
@@ -147,7 +168,8 @@
   .multi-file-commit-form > form,
   .multi-file-commit-form hr,
   .ide-commit-list-container.is-first,
-  .multi-file-commit-form .nav-links:not(.quick-links) {
+  .multi-file-commit-form .nav-links:not(.quick-links),
+  .ide-pipeline-list .nav-links:not(.quick-links) {
     border-color: $background;
   }
 
@@ -169,7 +191,8 @@
     }
   }
 
-  .nav-links li.active a {
+  .nav-links li.active a,
+  .nav-links li a.active {
     border-color: $highlight-accent;
     color: $text-color;
   }
