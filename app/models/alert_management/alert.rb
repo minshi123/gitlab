@@ -45,6 +45,37 @@ module AlertManagement
 
     scope :for_iid, -> (iid) { where(iid: iid) }
 
+    # Sorting
+    scope :order_start_time_asc, -> {  }
+    scope :order_start_time_desc, -> {  }
+    scope :order_end_time_asc, -> {  }
+    scope :order_end_time_desc, -> {  }
+    scope :order_events_count_asc, -> {  }
+    scope :order_events_count_desc, -> {  }
+    scope :order_severity_asc, -> {  }
+    scope :order_severity_desc, -> {  }
+    scope :order_status_asc, -> {  }
+    scope :order_status_desc, -> {  }
+
+    def self.sort_by_attribute(method)
+      return all
+      # TODO
+      # case.to_s
+      # when 'start_time_asc'     then order_start_time_asc
+      # when 'start_time_desc'    then order_start_time_desc
+      # when 'end_time_asc'       then order_end_time_asc
+      # when 'end_time_desc'      then order_end_time_desc
+      # when 'events_count_asc'   then order_events_count_asc
+      # when 'events_count_desc'  then order_events_count_desc
+      # when 'severity_asc'       then order_severity_asc
+      # when 'severity_desc'      then order_severity_desc
+      # when 'status_asc'         then order_status_asc
+      # when 'status_desc'        then order_status_desc
+      # else
+      #   super
+      # end
+    end
+
     def fingerprint=(value)
       if value.blank?
         super(nil)
