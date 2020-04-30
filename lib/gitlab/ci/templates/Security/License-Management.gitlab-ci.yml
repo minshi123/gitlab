@@ -7,7 +7,7 @@ license_management:
   script:
     - |
       echo "Sorry for failing your pipeline!
-      With 12.8 we have deprecated the License-Management.gitlab.ci.yml.
+      As of GitLab 13.0, we have removed the License-Management.gitlab.ci.yml template (deprecated since GitLab 12.8).
       Please replace it with the License-Scanning.gitlab-ci.yml template instead.
       For more details visit
       https://docs.gitlab.com/ee/user/compliance/license_compliance/#migration-from-license_management-to-license_scanning"
