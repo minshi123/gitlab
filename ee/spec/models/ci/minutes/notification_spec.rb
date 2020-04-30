@@ -124,7 +124,6 @@ describe Ci::Minutes::Notification do
             threshold.show?
           end
         end
-
         it_behaves_like 'has notifications' do
           subject { described_class.new(user, injected_project, nil) }
         end
