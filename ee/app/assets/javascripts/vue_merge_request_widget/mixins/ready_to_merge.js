@@ -18,7 +18,7 @@ export default {
           !this.shouldShowMergeControls ||
           this.isMakingRequest ||
           this.isApprovalNeeded ||
-          this.mr.preventMerge,
+          !this.mr.isApproved,
       );
     },
     mergeDisabledText() {

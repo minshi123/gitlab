@@ -5,12 +5,12 @@ export const MERGE_DISABLED_TEXT = __('You can only merge once the items above a
 export default {
   computed: {
     isMergeButtonDisabled() {
-      const { commitMessage } = this;
+      const { commitMessage, mr } = this;
       return Boolean(
         !commitMessage.length ||
           !this.shouldShowMergeControls ||
           this.isMakingRequest ||
-          this.mr.preventMerge,
+          !mr.isApproved,
       );
     },
     mergeDisabledText() {
