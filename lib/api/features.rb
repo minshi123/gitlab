@@ -16,6 +16,15 @@ module API
         end
       end
 
+      def gate_key(params)
+        case params[:key]
+        when 'percentage_of_actors'
+          :percentage_of_actors
+        else
+          :percentage_of_time
+        end
+      end
+
       def gate_targets(params)
         Feature::Target.new(params).targets
       end
@@ -49,6 +58,7 @@ module API
         feature = Feature.get(params[:name])
         targets = gate_targets(params)
         value = gate_value(params)
+        key = gate_key(params)
 
         case value
         when true
@@ -64,7 +74,11 @@ module API
             feature.disable
           end
         else
-          feature.enable_percentage_of_time(value)
+          if key == :percentage_of_actors
+            feature.enable_percentage_of_actors(value)
+          else
+            feature.enable_percentage_of_time(value)
+          end
         end
 
         present feature, with: Entities::Feature, current_user: current_user
