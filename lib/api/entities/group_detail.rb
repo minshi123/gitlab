@@ -4,7 +4,9 @@ module API
   module Entities
     class GroupDetail < Group
       expose :runners_token, if: lambda { |group, options| options[:user_can_admin_group] }
-      expose :projects, using: Entities::Project do |group, options|
+
+      expose :projects, if: lambda { |_, _| expose_projects_in_groups_api? },
+        using: Entities::Project do |group, options|
         projects = GroupProjectsFinder.new(
           group: group,
           current_user: options[:current_user],
@@ -14,7 +16,8 @@ module API
         Entities::Project.prepare_relation(projects)
       end
 
-      expose :shared_projects, using: Entities::Project do |group, options|
+      expose :shared_projects, if: lambda { |_, _| expose_projects_in_groups_api? },
+        using: Entities::Project do |group, options|
         projects = GroupProjectsFinder.new(
           group: group,
           current_user: options[:current_user],
@@ -30,6 +33,10 @@ module API
         else
           nil
         end
+      end
+
+      def expose_projects_in_groups_api?
+        ::Feature.enabled?(:expose_projects_in_groups_api)
       end
     end
   end
