@@ -98,22 +98,44 @@ describe('URL utility', () => {
       expect(urlUtils.mergeUrlParams({ w: 1 }, 'https://host/path#frag')).toBe(
         'https://host/path?w=1#frag',
       );
-
       expect(urlUtils.mergeUrlParams({ w: 1 }, 'https://h/p?k1=v1#frag')).toBe(
         'https://h/p?k1=v1&w=1#frag',
       );
-    });
-
-    it('updates w', () => {
-      expect(urlUtils.mergeUrlParams({ w: 1 }, '?k1=v1&w=0#frag')).toBe('?k1=v1&w=1#frag');
     });
 
     it('adds multiple params', () => {
       expect(urlUtils.mergeUrlParams({ a: 1, b: 2, c: 3 }, '#frag')).toBe('?a=1&b=2&c=3#frag');
     });
 
+    it('updates w', () => {
+      expect(urlUtils.mergeUrlParams({ w: 2 }, '/path?w=1#frag')).toBe('/path?w=2#frag');
+      expect(urlUtils.mergeUrlParams({ w: 2 }, 'https://host/path?w=1')).toBe(
+        'https://host/path?w=2',
+      );
+    });
+
+    it('removes null w', () => {
+      expect(urlUtils.mergeUrlParams({ w: null }, '?w=1#frag')).toBe('#frag');
+      expect(urlUtils.mergeUrlParams({ w: null }, '/path?w=1#frag')).toBe('/path#frag');
+      expect(urlUtils.mergeUrlParams({ w: null }, 'https://host/path?w=1')).toBe(
+        'https://host/path',
+      );
+      expect(urlUtils.mergeUrlParams({ w: null }, 'https://host/path?w=1#frag')).toBe(
+        'https://host/path#frag',
+      );
+      expect(urlUtils.mergeUrlParams({ w: null }, 'https://h/p?k1=v1&w=1#frag')).toBe(
+        'https://h/p?k1=v1#frag',
+      );
+    });
+
     it('adds and updates encoded params', () => {
       expect(urlUtils.mergeUrlParams({ a: '&', q: '?' }, '?a=%23#frag')).toBe('?a=%26&q=%3F#frag');
+    });
+
+    it('adds and updates encoded param names', () => {
+      expect(urlUtils.mergeUrlParams({ 'a name': 1 }, '')).toBe('?a%20name=1');
+      expect(urlUtils.mergeUrlParams({ 'a name': 2 }, '?a%20name=1')).toBe('?a%20name=2');
+      expect(urlUtils.mergeUrlParams({ 'a name': null }, '?a%20name=1')).toBe('');
     });
 
     it('treats "+" as "%20"', () => {
