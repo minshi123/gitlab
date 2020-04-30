@@ -48,16 +48,7 @@ export default {
       trackLabel: 'congratulate_first_pipeline',
     };
   },
-  computed: {
-    tracking() {
-      return {
-        label: this.trackLabel,
-        property: this.humanAccess,
-      };
-    },
-  },
   mounted() {
-    this.track();
     this.disableModalFromRenderingAgain();
   },
   methods: {
@@ -73,6 +64,9 @@ export default {
     size="sm"
     :title="$options.modalTitle"
     modal-id="success-pipeline-modal-id-not-used"
+    data-track-event="render"
+    :data-track-property="humanAccess"
+    :data-track-label="trackLabel"
   >
     <p>
       {{ $options.bodyMessage }}
