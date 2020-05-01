@@ -8,7 +8,7 @@
 namespace :gitlab do
   namespace :import_export do
     desc 'GitLab | Import/Export | EXPERIMENTAL | Export large project archives'
-    task :export, [:username, :namespace_path, :project_path, :archive_path, :measurement_enabled] => :gitlab_environment do |_t, args|
+    task :export, [:username, :namespace_path, :project_path, :archive_path] => :gitlab_environment do |_t, args|
       # Load it here to avoid polluting Rake tasks with Sidekiq test warnings
       require 'sidekiq/testing'
 
@@ -17,6 +17,7 @@ namespace :gitlab do
       begin
         warn_user_is_not_gitlab
 
+        Gitlab::Utils::Measuring.logger = logger
         if ENV['EXPORT_DEBUG'].present?
           ActiveRecord::Base.logger = logger
           logger.level = Logger::DEBUG
@@ -29,7 +30,6 @@ namespace :gitlab do
           project_path:   args.project_path,
           username:       args.username,
           file_path:      args.archive_path,
-          measurement_enabled: Gitlab::Utils.to_boolean(args.measurement_enabled),
           logger: logger
         )
 

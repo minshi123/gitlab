@@ -4,6 +4,12 @@ module Projects
   class ImportService < BaseService
     Error = Class.new(StandardError)
 
+    def initialize(*args)
+      super
+
+      self.measuring = ::Feature.enabled?(:measure_project_import_service, project.namespace)
+    end
+
     # Returns true if this importer is supposed to perform its work in the
     # background.
     #
@@ -14,7 +20,7 @@ module Projects
       has_importer? && !!importer_class.try(:async?)
     end
 
-    def execute
+    def safe_execute
       add_repository_to_project
 
       download_lfs_objects
@@ -35,6 +41,16 @@ module Projects
     end
 
     private
+
+    def base_log_data
+      {
+        class: self.class.name,
+        current_user: current_user.name,
+        project_full_path: project.full_path,
+        import_type: "#{project.import_type}",
+        file_path: project.import_source
+      }
+    end
 
     def add_repository_to_project
       if project.external_import? && !unknown_url?

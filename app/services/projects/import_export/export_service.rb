@@ -3,20 +3,20 @@
 module Projects
   module ImportExport
     class ExportService < BaseService
-      def execute(after_export_strategy = nil, options = {})
+      def initialize(*args)
+        super
+
+        @shared = project.import_export_shared
+        @measuring = ::Feature.enabled?(:measure_project_export_service, project.namespace)
+      end
+
+      def safe_execute(after_export_strategy = nil)
         unless project.template_source? || can?(current_user, :admin_project, project)
           raise ::Gitlab::ImportExport::Error.permission_error(current_user, project)
         end
 
-        @shared = project.import_export_shared
-
-        measurement_enabled = !!options[:measurement_enabled]
-        measurement_logger = options[:measurement_logger]
-
-        ::Gitlab::Utils::Measuring.execute_with(measurement_enabled, measurement_logger, base_log_data) do
-          save_all!
-          execute_after_export_action(after_export_strategy)
-        end
+        save_all!
+        execute_after_export_action(after_export_strategy)
       ensure
         cleanup
       end

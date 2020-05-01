@@ -10,9 +10,10 @@ module Projects
       @initialize_with_readme = Gitlab::Utils.to_boolean(@params.delete(:initialize_with_readme))
       @import_data            = @params.delete(:import_data)
       @relations_block        = @params.delete(:relations_block)
+      @measuring              = ::Feature.enabled?(:measure_project_create_service, Namespace.find_by_id(params[:namespace_id]) || current_user.namespace)
     end
 
-    def execute
+    def safe_execute
       if create_from_template?
         return ::Projects::CreateFromTemplateService.new(current_user, params).execute
       end
@@ -203,6 +204,14 @@ module Projects
     end
 
     private
+
+    def base_log_data
+      {
+        class: self.class.name,
+        current_user: current_user.name,
+        project_full_path: @params[:path]
+      }
+    end
 
     def create_from_template?
       @params[:template_name].present? || @params[:template_project_id].present?

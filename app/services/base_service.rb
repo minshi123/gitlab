@@ -2,6 +2,7 @@
 
 class BaseService
   include Gitlab::Allowable
+  include Gitlab::Measurable
 
   attr_accessor :project, :current_user, :params
 

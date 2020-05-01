@@ -16,7 +16,7 @@ module Gitlab
 
           with_export do
             ::Projects::ImportExport::ExportService.new(project, current_user)
-              .execute(Gitlab::ImportExport::AfterExportStrategies::MoveFileStrategy.new(archive_path: file_path), measurement_options)
+              .execute(Gitlab::ImportExport::AfterExportStrategies::MoveFileStrategy.new(archive_path: file_path))
           end
 
           success('Done!')

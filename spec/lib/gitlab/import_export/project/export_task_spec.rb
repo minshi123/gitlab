@@ -39,8 +39,6 @@ describe Gitlab::ImportExport::Project::ExportTask do
 
       expect(File).to exist(file_path)
     end
-
-    it_behaves_like 'measurable'
   end
 
   context 'when project is not found' do

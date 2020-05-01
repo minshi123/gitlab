@@ -489,6 +489,20 @@ describe Projects::CreateService, '#execute' do
     end
   end
 
+  it_behaves_like 'measurable service', :measure_project_create_service do
+    let(:base_log_data) do
+      {
+        class: Projects::CreateService.name,
+        current_user: user.name,
+        project_full_path: opts[:path]
+      }
+    end
+
+    after do
+      create_project(user, opts)
+    end
+  end
+
   def create_project(user, opts)
     Projects::CreateService.new(user, opts).execute
   end

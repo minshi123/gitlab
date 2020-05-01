@@ -74,8 +74,6 @@ describe Gitlab::ImportExport::Project::ImportTask, :request_store do
 
       subject
     end
-
-    it_behaves_like 'measurable'
   end
 
   context 'when project import is invalid' do
