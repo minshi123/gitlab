@@ -176,13 +176,6 @@ export const setLinks = ({ commit }, links) => commit(types.SET_LINKS, links);
 export const setErrorMessage = ({ commit }, errorMessage) =>
   commit(types.SET_ERROR_MESSAGE, errorMessage);
 
-export const openNewEntryModal = ({ commit }, { type, path = '' }) => {
-  commit(types.OPEN_NEW_ENTRY_MODAL, { type, path });
-
-  // open the modal manually so we don't mess around with dropdown/rows
-  $('#ide-new-entry').modal('show');
-};
-
 export const deleteEntry = ({ commit, dispatch, state }, path) => {
   const entry = state.entries[path];
   const { prevPath, prevName, prevParentPath } = entry;

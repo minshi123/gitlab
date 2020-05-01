@@ -3,12 +3,14 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import IdeTreeList from './ide_tree_list.vue';
 import Upload from './new_dropdown/upload.vue';
 import NewEntryButton from './new_dropdown/button.vue';
+import NewModal from './new_dropdown/modal.vue';
 
 export default {
   components: {
     Upload,
     IdeTreeList,
     NewEntryButton,
+    NewModal,
   },
   computed: {
     ...mapState(['currentBranchId']),
@@ -26,7 +28,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['updateViewer', 'openNewEntryModal', 'createTempEntry', 'resetOpenFiles']),
+    ...mapActions(['updateViewer', 'createTempEntry', 'resetOpenFiles']),
+    createNewItem(type, path) {
+      this.$refs.newModal.open(type, path);
+    },
   },
 };
 </script>
@@ -41,7 +46,7 @@ export default {
           :show-label="false"
           class="d-flex border-0 p-0 mr-3 qa-new-file"
           icon="doc-new"
-          @click="openNewEntryModal({ type: 'blob' })"
+          @click="createNewItem('blob')"
         />
         <upload
           :show-label="false"
@@ -54,9 +59,10 @@ export default {
           :show-label="false"
           class="d-flex border-0 p-0"
           icon="folder-new"
-          @click="openNewEntryModal({ type: 'tree' })"
+          @click="createNewItem('tree')"
         />
       </div>
+      <new-modal ref="newModal" />
     </template>
   </ide-tree-list>
 </template>
