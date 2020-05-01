@@ -1,11 +1,12 @@
 <script>
 import { mapActions, mapState } from 'vuex';
-import { GlDropdown, GlDropdownItem, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlDropdown, GlDropdownItem, GlLoadingIcon } from '@gitlab/ui';
 import InsightsPage from './insights_page.vue';
 import InsightsConfigWarning from './insights_config_warning.vue';
 
 export default {
   components: {
+    GlAlert,
     GlLoadingIcon,
     InsightsPage,
     InsightsConfigWarning,
@@ -21,6 +22,10 @@ export default {
       type: String,
       required: true,
     },
+    notice: {
+      type: String,
+      default: "",
+    }
   },
   computed: {
     ...mapState('insights', [
@@ -33,7 +38,7 @@ export default {
     pages() {
       const { configData, activeTab } = this;
 
-      if (!configData) {
+      if (!configData || this.allItemsAreFilteredOut) {
         return [];
       }
 
@@ -53,6 +58,9 @@ export default {
         scope: key,
         isActive: this.activeTab === key,
       }));
+    },
+    allItemsAreFilteredOut() {
+      return !this.configLoading && Object.keys(this.configData || {}).length == 0;
     },
     configPresent() {
       return !this.configLoading && this.configData != null;
@@ -88,6 +96,11 @@ export default {
     <div v-if="configLoading" class="insights-config-loading text-center">
       <gl-loading-icon :inline="true" size="lg" />
     </div>
+    <div v-else-if="this.allItemsAreFilteredOut" class="insights-wrapper">
+      <gl-alert>
+        {{s__('Insights|This project is completely filtered out in the insights.yml file (see the projects.only config for more information).')}}
+      </gl-alert>
+    </div>
     <div v-else-if="configPresent" class="insights-wrapper">
       <gl-dropdown
         class="js-insights-dropdown w-100"
@@ -105,6 +118,9 @@ export default {
           >{{ page.name }}</gl-dropdown-item
         >
       </gl-dropdown>
+      <gl-alert v-if="this.notice != ''">
+        {{this.notice}}
+      </gl-alert>
       <insights-page :query-endpoint="queryEndpoint" :page-config="activePage" />
     </div>
     <insights-config-warning
