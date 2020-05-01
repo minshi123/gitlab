@@ -724,6 +724,87 @@ Rails migration example:
 add_column_with_default(:projects, :foo, :integer, default: 10, limit: 8)
 ```
 
+## Strings and the Text column type
+
+When adding new columns that will be used to store strings or other textual information:
+1. We always use the `text` data type instead of the `string` data type.
+1. `text` columns should always have a limit set by using the `add_text_limit` migration helper.
+
+The `text` data type can not be defined with a limit, so `add_text_limit` is enforcing that by adding a [check constraint](https://www.postgresql.org/docs/11/ddl-constraints.html) on the column and then validating it at a followup step.
+
+Adding a check constraint requires an exclusive lock while the `ALTER TABLE` runs. As we don't want the exclusive lock to be held for the duration of a transaction, `add_text_limit` must always run in a migration with `disable_ddl_transaction!`.
+
+Both in the case of creating a new table and adding a new column to an existing table, we want to have each `add_text_limit` as a separate migration.
+
+The rational behind that is the following: because we disable the transaction wrapping for the whole migration with `disable_ddl_transaction!`, if we encounter a failure after creating the new table or adding the new column, there is no way to re-run the migration without first manually dropping the table or the new column; having each update that adds a constraint on its own migration allows us to only replay the failed migrations.
+
+Example of adding two text columns to a new table:
+
+**20200501000001_create_table_migration.rb**
+```ruby
+class CreateTableMigration < ActiveRecord::Migration[6.0]
+  DOWNTIME = false
+
+  def change
+    create_table :test_text_limits do |t|
+      t.text :name
+      t.text :notes
+    end
+  end
+end
+```
+
+**20200501000002_first_text_limit_migration.rb**
+```ruby
+class FirstTextLimitMigration < ActiveRecord::Migration[6.0]
+  include Gitlab::Database::MigrationHelpers
+  DOWNTIME = false
+
+  disable_ddl_transaction!
+
+  def up
+    # This will add the constraint and validate it immediately (no data in the table)
+    add_text_limit :test_text_limits, :name, 128
+  end
+
+  def down
+    # Down is required as `add_text_limit` is not reversible
+    remove_text_limit :test_text_limits, :name
+  end
+end
+```
+
+**20200501000003_second_text_limit_migration.rb**
+```ruby
+class SecondTextLimitMigration < ActiveRecord::Migration[6.0]
+  include Gitlab::Database::MigrationHelpers
+  DOWNTIME = false
+
+  disable_ddl_transaction!
+
+  def up
+    add_text_limit :test_text_limits, :notes, 1024
+  end
+
+  def down
+    remove_text_limit :test_text_limits, :notes
+  end
+end
+```
+
+Additionally, `add_text_limit` has the option to not validate the limit check constraint when it runs (`validate: false`). This is useful when we add a limit to an existing `text` column:
+1. Add limit to an existing text column (without validation) in a regular migration.
+1. Add a data migration to fix or clean up existing records (i.e. ones with a length greater than the new limit).
+1. Validate the text limit with a migration in the next release.
+
+You can read more about adding [a text limit to an existing column](database/add_text_limit_to_existing_column.md).
+
+Background info:
+
+The reason we always want to use `text` instead of `string` is that `string` columns have the disadvantage that if you want to update their limit, you have to run an `ALTER TABLE ...` command, which requires an `EXCLUSIVE LOCK` on the table.
+
+On the other hand, texts are [more or less equivalent to strings](https://www.depesz.com/2010/03/02/charx-vs-varcharx-vs-varchar-vs-text/) in Postgres, while having the additional advantage that adding a limit on an existing column or updating their limit does not require the very costly `EXCLUSIVE LOCK`. We can just update the constraint with the valid option off and we can afterwards validate it at a later step. Either validating at a later time or after adding the constraint, `VALIDATE CONSTRAINT` requires only a `SHARE UPDATE EXCLUSIVE LOCK`, which only conflicts with other validations and index creation while it allows reads and writes.
+
 ## Timestamp column type
 
 By default, Rails uses the `timestamp` data type that stores timestamp data
