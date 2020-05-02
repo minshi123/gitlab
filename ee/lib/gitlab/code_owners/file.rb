@@ -41,7 +41,7 @@ module Gitlab
       end
 
       def get_parsed_data
-        if Feature.enabled?(:sectional_codeowners, @project, default_enabled: false)
+        if sectional_codeowners?
           return get_parsed_sectional_data
         end
 
@@ -123,6 +123,10 @@ module Gitlab
         flags = ::File::FNM_DOTMATCH | ::File::FNM_PATHNAME
 
         ::File.fnmatch?(pattern, path, flags)
+      end
+
+      def sectional_codeowners?
+        Feature.enabled?(:sectional_codeowners, @project, default_enabled: false)
       end
     end
   end
