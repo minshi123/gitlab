@@ -9,7 +9,7 @@ module Gitlab
       end
 
       def parsed_data
-        @parsed_data ||= get_parsed_data
+        @parsed_data ||= sectional_codeowners? ? get_parsed_sectional_data : get_parsed_data
       end
 
       def empty?
@@ -41,10 +41,6 @@ module Gitlab
       end
 
       def get_parsed_data
-        if sectional_codeowners?
-          return get_parsed_sectional_data
-        end
-
         parsed = {}
 
         data.lines.each do |line|
