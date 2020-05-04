@@ -72,6 +72,7 @@ module API
           requires :sha256, type: String, desc: 'The PyPi package sha256 check sum'
         end
 
+        route_setting :authentication, deploy_token_allowed: true
         get 'files/:sha256/*file_identifier' do
           project = unauthorized_user_project
 
@@ -92,6 +93,7 @@ module API
 
         # An Api entry point but returns an HTML file instead of JSON.
         # PyPi simple API returns the package descriptor as a simple HTML file.
+        route_setting :authentication, deploy_token_allowed: true
         get 'simple/*package_name', format: :txt do
           authorize_read_package!(authorized_user_project)
 
@@ -119,6 +121,7 @@ module API
           optional :sha256_digest, type: String
         end
 
+        route_setting :authentication, deploy_token_allowed: true
         post do
           authorize_upload!(authorized_user_project)
 
@@ -133,6 +136,7 @@ module API
           forbidden!
         end
 
+        route_setting :authentication, deploy_token_allowed: true
         post 'authorize' do
           authorize_workhorse!(subject: authorized_user_project, has_length: false)
         end
