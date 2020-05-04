@@ -58,6 +58,13 @@ describe Packages::GroupPackagesFinder do
 
         it { is_expected.not_to include(package_without_version) }
       end
+
+      context 'with package_name' do
+        let_it_be(:params) { { package_name: 'maven' } }
+        let!(:named_package) { create(:maven_package, project: project, name: 'maven') }
+
+        it { is_expected.to eq([named_package]) }
+      end
     end
 
     context 'group has package of all types' do
