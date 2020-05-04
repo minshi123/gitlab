@@ -47,8 +47,8 @@ describe API::PypiPackages do
         end
 
         with_them do
-          let(:token) { user_token ? personal_access_token.token : 'wrong' }
-          let(:headers) { user_role == :anonymous ? {} : build_basic_auth_header(user.username, token) }
+          let(:token) { user_token ? deploy_token.token : 'wrong' }
+          let(:headers) { user_role == :anonymous ? {} : build_basic_auth_header(deploy_token.username, token) }
 
           subject { get api(url), headers: headers }
 
