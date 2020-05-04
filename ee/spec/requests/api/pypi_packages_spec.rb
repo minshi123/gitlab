@@ -47,8 +47,8 @@ describe API::PypiPackages do
         end
 
         with_them do
-          let(:token) { user_token ? deploy_token.token : 'wrong' }
-          let(:headers) { user_role == :anonymous ? {} : build_basic_auth_header(deploy_token.username, token) }
+          let(:token) { user_token ? personal_access_token.token : 'wrong' }
+          let(:headers) { user_role == :anonymous ? {} : build_basic_auth_header(user.username, token) }
 
           subject { get api(url), headers: headers }
 
@@ -59,6 +59,8 @@ describe API::PypiPackages do
           it_behaves_like params[:shared_examples_name], params[:user_role], params[:expected_status], params[:member]
         end
       end
+
+      it_behaves_like 'works with deploy token authentication'
 
       it_behaves_like 'rejects PyPI access with unknown project id'
     end
@@ -115,6 +117,8 @@ describe API::PypiPackages do
           it_behaves_like params[:shared_examples_name], params[:user_role], params[:expected_status], params[:member]
         end
       end
+
+      it_behaves_like 'works with deploy token authentication'
 
       it_behaves_like 'rejects PyPI access with unknown project id'
     end
@@ -201,6 +205,8 @@ describe API::PypiPackages do
       it_behaves_like 'rejects PyPI access with unknown project id'
     end
 
+    it_behaves_like 'works with deploy token authentication'
+
     it_behaves_like 'rejects PyPI packages access with packages features disabled'
   end
 
@@ -254,6 +260,8 @@ describe API::PypiPackages do
           it_behaves_like params[:shared_examples_name], params[:user_role], params[:expected_status], params[:member]
         end
       end
+
+      it_behaves_like 'works with deploy token authentication'
 
       it_behaves_like 'rejects PyPI access with unknown project id'
     end

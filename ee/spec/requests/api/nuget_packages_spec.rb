@@ -59,6 +59,8 @@ describe API::NugetPackages do
         end
       end
 
+      it_behaves_like 'works with deploy token authentication'
+
       it_behaves_like 'rejects nuget access with unknown project id'
 
       it_behaves_like 'rejects nuget access with invalid project id'
@@ -116,6 +118,8 @@ describe API::NugetPackages do
           it_behaves_like params[:shared_examples_name], params[:user_role], params[:expected_status], params[:member]
         end
       end
+
+      it_behaves_like 'works with deploy token authentication'
 
       it_behaves_like 'rejects nuget access with unknown project id'
 
@@ -188,6 +192,8 @@ describe API::NugetPackages do
         end
       end
 
+      it_behaves_like 'works with deploy token authentication'
+
       it_behaves_like 'rejects nuget access with unknown project id'
 
       it_behaves_like 'rejects nuget access with invalid project id'
@@ -244,6 +250,8 @@ describe API::NugetPackages do
 
           it_behaves_like params[:shared_examples_name], params[:user_role], params[:expected_status], params[:member]
         end
+
+        it_behaves_like 'works with deploy token authentication'
 
         it_behaves_like 'rejects nuget access with unknown project id'
 
@@ -303,6 +311,8 @@ describe API::NugetPackages do
           it_behaves_like params[:shared_examples_name], params[:user_role], params[:expected_status], params[:member]
         end
       end
+
+      it_behaves_like 'works with deploy token authentication'
 
       context 'with invalid package name' do
         let_it_be(:package_name) { 'Unkown' }
@@ -364,6 +374,8 @@ describe API::NugetPackages do
         end
       end
 
+      it_behaves_like 'works with deploy token authentication'
+
       it_behaves_like 'rejects nuget access with unknown project id'
 
       it_behaves_like 'rejects nuget access with invalid project id'
@@ -422,6 +434,8 @@ describe API::NugetPackages do
           it_behaves_like params[:shared_examples_name], params[:user_role], params[:expected_status], params[:member]
         end
       end
+
+      it_behaves_like 'works with deploy token authentication'
 
       it_behaves_like 'rejects nuget access with unknown project id'
 
@@ -488,6 +502,8 @@ describe API::NugetPackages do
           it_behaves_like params[:shared_examples_name], params[:user_role], params[:expected_status], params[:member]
         end
       end
+
+      it_behaves_like 'works with deploy token authentication'
 
       it_behaves_like 'rejects nuget access with unknown project id'
 
