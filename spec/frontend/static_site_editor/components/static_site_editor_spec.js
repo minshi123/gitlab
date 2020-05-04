@@ -5,7 +5,7 @@ import { GlSkeletonLoader } from '@gitlab/ui';
 import createState from '~/static_site_editor/store/state';
 
 import StaticSiteEditor from '~/static_site_editor/components/static_site_editor.vue';
-import EditArea from '~/static_site_editor/components/edit_area.vue';
+import RichContentEditor from '~/vue_shared/components/rich_content_editor/rich_content_editor.vue';
 import EditHeader from '~/static_site_editor/components/edit_header.vue';
 import InvalidContentMessage from '~/static_site_editor/components/invalid_content_message.vue';
 import PublishToolbar from '~/static_site_editor/components/publish_toolbar.vue';
@@ -74,7 +74,7 @@ describe('StaticSiteEditor', () => {
     });
   };
 
-  const findEditArea = () => wrapper.find(EditArea);
+  const findRichContentEditor = () => wrapper.find(RichContentEditor);
   const findEditHeader = () => wrapper.find(EditHeader);
   const findInvalidContentMessage = () => wrapper.find(InvalidContentMessage);
   const findPublishToolbar = () => wrapper.find(PublishToolbar);
@@ -103,8 +103,8 @@ describe('StaticSiteEditor', () => {
   });
 
   describe('when content is not loaded', () => {
-    it('does not render edit area', () => {
-      expect(findEditArea().exists()).toBe(false);
+    it('does not render rich content editor', () => {
+      expect(findRichContentEditor().exists()).toBe(false);
     });
 
     it('does not render edit header', () => {
@@ -129,8 +129,8 @@ describe('StaticSiteEditor', () => {
       buildWrapper();
     });
 
-    it('renders the edit area', () => {
-      expect(findEditArea().exists()).toBe(true);
+    it('renders the rich content editor', () => {
+      expect(findRichContentEditor().exists()).toBe(true);
     });
 
     it('renders the edit header', () => {
@@ -141,8 +141,8 @@ describe('StaticSiteEditor', () => {
       expect(findSkeletonLoader().exists()).toBe(false);
     });
 
-    it('passes page content to edit area', () => {
-      expect(findEditArea().props('value')).toBe(content);
+    it('passes page content to the rich content editor', () => {
+      expect(findRichContentEditor().props('value')).toBe(content);
     });
 
     it('passes page title to edit header', () => {
@@ -228,11 +228,11 @@ describe('StaticSiteEditor', () => {
     expect(loadContentActionMock).toHaveBeenCalled();
   });
 
-  it('dispatches setContent action when edit area emits input event', () => {
+  it('dispatches setContent action when rich content editor emits input event', () => {
     buildContentLoadedStore();
     buildWrapper();
 
-    findEditArea().vm.$emit('input', sourceContent);
+    findRichContentEditor().vm.$emit('input', sourceContent);
 
     expect(setContentActionMock).toHaveBeenCalledWith(expect.anything(), sourceContent, undefined);
   });

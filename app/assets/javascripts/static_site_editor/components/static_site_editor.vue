@@ -2,7 +2,7 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { GlSkeletonLoader } from '@gitlab/ui';
 
-import EditArea from './edit_area.vue';
+import RichContentEditor from '~/vue_shared/components/rich_content_editor/rich_content_editor.vue';
 import EditHeader from './edit_header.vue';
 import SavedChangesMessage from './saved_changes_message.vue';
 import PublishToolbar from './publish_toolbar.vue';
@@ -11,7 +11,7 @@ import SubmitChangesError from './submit_changes_error.vue';
 
 export default {
   components: {
-    EditArea,
+    RichContentEditor,
     EditHeader,
     InvalidContentMessage,
     GlSkeletonLoader,
@@ -76,8 +76,8 @@ export default {
           @dismiss="dismissSubmitChangesError"
         />
         <edit-header class="w-75 align-self-center py-2" :title="title" />
-        <edit-area
-          class="w-75 h-100 shadow-none align-self-center"
+        <rich-content-editor
+          class="w-75 h-100 align-self-center"
           :value="content"
           @input="setContent"
         />
