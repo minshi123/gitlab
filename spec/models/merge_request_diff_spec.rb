@@ -126,17 +126,24 @@ describe MergeRequestDiff do
   end
 
   describe '#migrate_files_to_external_storage!' do
+    let(:uploader) { ExternalDiffUploader }
+    let(:store) { uploader::Store::REMOTE }
     let(:diff) { create(:merge_request).merge_request_diff }
+
+    before do
+      stub_external_diffs_object_storage(uploader, direct_upload: true)
+    end
 
     it 'converts from in-database to external storage' do
       expect(diff).not_to be_stored_externally
 
       stub_external_diffs_setting(enabled: true)
-      expect(diff).to receive(:save!)
+      expect(diff).to receive(:save!).and_call_original
 
       diff.migrate_files_to_external_storage!
 
       expect(diff).to be_stored_externally
+      expect(diff.external_diff_store).to eq(store)
     end
 
     it 'does nothing with an external diff' do
