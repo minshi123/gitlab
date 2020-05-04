@@ -144,6 +144,14 @@ module Noteable
       target_id: id
     )
   end
+
+  def after_note_created(_note)
+    # no-op
+  end
+
+  def after_note_destroyed(_note)
+    # no-op
+  end
 end
 
 Noteable.extend(Noteable::ClassMethods)
