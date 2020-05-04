@@ -7,6 +7,7 @@ import Disposable from './common/disposable';
 import ModelManager from './common/model_manager';
 import editorOptions, { defaultEditorOptions } from './editor_options';
 import { themes } from './themes';
+import { languages, registerLanguage } from './languages';
 import keymap from './keymap.json';
 import { clearDomElement } from '~/editor/utils';
 
@@ -14,6 +15,10 @@ function setupThemes() {
   themes.forEach(theme => {
     monacoEditor.defineTheme(theme.name, theme.data);
   });
+}
+
+function registerLanguages() {
+  languages.forEach(registerLanguage);
 }
 
 export default class Editor {
@@ -37,6 +42,7 @@ export default class Editor {
     };
 
     setupThemes();
+    registerLanguages();
 
     this.debouncedUpdate = debounce(() => {
       this.updateDimensions();
