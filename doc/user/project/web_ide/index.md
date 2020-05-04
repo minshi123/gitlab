@@ -104,13 +104,14 @@ different branch.
 
 ## Live Preview
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/19764) in [GitLab Core](https://about.gitlab.com/pricing/) 11.2.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/19764) in [GitLab Core](https://about.gitlab.com/pricing/) 11.2.
+> - [Renamed](https://gitlab.com/gitlab-org/gitlab/-/issues/213853) from _Client Side Evaluation_ to _Live Preview_ in GitLab 13.0.
 
 You can use the Web IDE to preview JavaScript projects right in the browser.
 This feature uses CodeSandbox to compile and bundle the JavaScript used to
 preview the web application.
 
-![Web IDE Live Preview](img/live_preview.png)
+![Web IDE Live Preview](img/live_preview_v13_0.png)
 
 Additionally, for public projects an **Open in CodeSandbox** button is available
 to transfer the contents of the project into a public CodeSandbox project to
@@ -122,7 +123,7 @@ The Live Preview feature needs to be enabled in the GitLab instances
 admin settings. Live Preview is enabled for all projects on
 GitLab.com
 
-![Admin Live Preview setting](img/admin_live_preview.png)
+![Admin Live Preview setting](img/admin_live_preview_v13_0.png)
 
 Once you have done that, you can preview projects with a `package.json` file and
 a `main` entry point inside the Web IDE. An example `package.json` is shown
