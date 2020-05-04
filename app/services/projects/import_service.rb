@@ -20,7 +20,7 @@ module Projects
       has_importer? && !!importer_class.try(:async?)
     end
 
-    def safe_execute
+    def service_execute
       add_repository_to_project
 
       download_lfs_objects
@@ -43,13 +43,7 @@ module Projects
     private
 
     def base_log_data
-      {
-        class: self.class.name,
-        current_user: current_user.name,
-        project_full_path: project.full_path,
-        import_type: "#{project.import_type}",
-        file_path: project.import_source
-      }
+      super.merge(import_type: project.import_type, file_path: project.import_source)
     end
 
     def add_repository_to_project

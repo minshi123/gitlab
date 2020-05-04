@@ -3,7 +3,7 @@
 # Export project to archive
 #
 # @example
-#   bundle exec rake "gitlab:import_export:export[root, root, project_to_export, /path/to/file.tar.gz, true]"
+#   bundle exec rake "gitlab:import_export:export[root, root, project_to_export, /path/to/file.tar.gz]"
 #
 namespace :gitlab do
   namespace :import_export do
@@ -17,8 +17,8 @@ namespace :gitlab do
       begin
         warn_user_is_not_gitlab
 
-        Gitlab::Utils::Measuring.logger = logger
         if ENV['EXPORT_DEBUG'].present?
+          Gitlab::Utils::Measuring.logger = logger
           ActiveRecord::Base.logger = logger
           logger.level = Logger::DEBUG
         else

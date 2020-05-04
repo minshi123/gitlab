@@ -73,4 +73,11 @@ class BaseService
     pass_back[:status] = :success
     pass_back
   end
+
+  def base_log_data
+    super.merge(
+      current_user: current_user&.name,
+      project_full_path: project&.full_path
+    )
+  end
 end

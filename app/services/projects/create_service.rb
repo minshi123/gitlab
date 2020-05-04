@@ -13,7 +13,7 @@ module Projects
       @measuring              = ::Feature.enabled?(:measure_project_create_service, Namespace.find_by_id(params[:namespace_id]) || current_user.namespace)
     end
 
-    def safe_execute
+    def service_execute
       if create_from_template?
         return ::Projects::CreateFromTemplateService.new(current_user, params).execute
       end
@@ -206,11 +206,7 @@ module Projects
     private
 
     def base_log_data
-      {
-        class: self.class.name,
-        current_user: current_user.name,
-        project_full_path: @params[:path]
-      }
+      super.merge(project_full_path: @params[:path])
     end
 
     def create_from_template?

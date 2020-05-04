@@ -2,10 +2,10 @@
 
 module Gitlab
   module Services
-      class Logger < ::Gitlab::JsonLogger
-        def self.file_name_noext
-          'service_measurement'
-        end
+    class Logger < ::Gitlab::JsonLogger
+      def self.file_name_noext
+        'service_measurement'
       end
+    end
   end
 end

@@ -21,8 +21,8 @@ namespace :gitlab do
       begin
         warn_user_is_not_gitlab
 
-        Gitlab::Utils::Measuring.logger = logger
         if ENV['IMPORT_DEBUG'].present?
+          Gitlab::Utils::Measuring.logger = logger
           ActiveRecord::Base.logger = logger
           logger.level = Logger::DEBUG
         else

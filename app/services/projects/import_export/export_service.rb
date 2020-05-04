@@ -10,7 +10,7 @@ module Projects
         @measuring = ::Feature.enabled?(:measure_project_export_service, project.namespace)
       end
 
-      def safe_execute(after_export_strategy = nil)
+      def service_execute(after_export_strategy = nil)
         unless project.template_source? || can?(current_user, :admin_project, project)
           raise ::Gitlab::ImportExport::Error.permission_error(current_user, project)
         end
@@ -26,12 +26,7 @@ module Projects
       attr_accessor :shared
 
       def base_log_data
-        {
-          class: self.class.name,
-          current_user: current_user.name,
-          project_full_path: project.full_path,
-          file_path: shared.export_path
-        }
+        super.merge(file_path: shared.export_path)
       end
 
       def execute_after_export_action(after_export_strategy)
