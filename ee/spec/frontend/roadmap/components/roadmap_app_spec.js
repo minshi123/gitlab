@@ -72,8 +72,7 @@ describe('Roadmap AppComponent', () => {
     });
 
     describe('showRoadmap', () => {
-      it('returns true if `windowResizeInProgress`, `epicsFetchInProgress`, `epicsFetchResultEmpty` and `epicsFetchFailure` are all `false`', () => {
-        vm.$store.state.windowResizeInProgress = false;
+      it('returns true if `epicsFetchInProgress`, `epicsFetchResultEmpty` and `epicsFetchFailure` are all `false`', () => {
         vm.$store.state.epicsFetchInProgress = false;
         vm.$store.state.epicsFetchResultEmpty = false;
         vm.$store.state.epicsFetchFailure = false;
@@ -81,29 +80,19 @@ describe('Roadmap AppComponent', () => {
         expect(vm.showRoadmap).toBe(true);
       });
 
-      it('returns false if either of `windowResizeInProgress`, `epicsFetchInProgress`, `epicsFetchResultEmpty` and `epicsFetchFailure` is `true`', () => {
-        vm.$store.state.windowResizeInProgress = true;
-        vm.$store.state.epicsFetchInProgress = false;
-        vm.$store.state.epicsFetchResultEmpty = false;
-        vm.$store.state.epicsFetchFailure = false;
-
-        expect(vm.showRoadmap).toBe(false);
-
-        vm.$store.state.windowResizeInProgress = false;
+      it('returns false if either of `epicsFetchInProgress`, `epicsFetchResultEmpty` and `epicsFetchFailure` is `true`', () => {
         vm.$store.state.epicsFetchInProgress = true;
         vm.$store.state.epicsFetchResultEmpty = false;
         vm.$store.state.epicsFetchFailure = false;
 
         expect(vm.showRoadmap).toBe(false);
 
-        vm.$store.state.windowResizeInProgress = false;
         vm.$store.state.epicsFetchInProgress = false;
         vm.$store.state.epicsFetchResultEmpty = true;
         vm.$store.state.epicsFetchFailure = false;
 
         expect(vm.showRoadmap).toBe(false);
 
-        vm.$store.state.windowResizeInProgress = false;
         vm.$store.state.epicsFetchInProgress = false;
         vm.$store.state.epicsFetchResultEmpty = false;
         vm.$store.state.epicsFetchFailure = true;
