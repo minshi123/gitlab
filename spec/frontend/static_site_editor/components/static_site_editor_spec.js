@@ -71,6 +71,9 @@ describe('StaticSiteEditor', () => {
     wrapper = shallowMount(StaticSiteEditor, {
       localVue,
       store,
+      provide: {
+        glFeatures: { richContentEditor: true },
+      },
     });
   };
 
