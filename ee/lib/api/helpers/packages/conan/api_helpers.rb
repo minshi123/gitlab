@@ -156,6 +156,15 @@ module API
             job.user
           end
 
+          def find_user_from_deploy_token
+            return unless route_authentication_setting[:deploy_token_allowed]
+
+            deploy_token = find_deploy_token_from_conan_jwt ||
+              find_personal_access_token_from_http_basic_auth
+
+            deploy_token
+          end
+
           def find_job_from_token
             find_job_from_conan_jwt || find_job_from_http_basic_auth
           end
@@ -171,6 +180,17 @@ module API
             return unless token
 
             PersonalAccessToken.find_by_id_and_user_id(token.access_token_id, token.user_id)
+          end
+
+          def find_deploy_token_from_conan_jwt
+            token = decode_oauth_token_from_jwt
+
+            return unless token
+
+            deploy_token = DeployToken.active.find_by_token(token.access_token_id)
+            return if token.user_id != deploy_token&.username
+
+            deploy_token
           end
 
           def find_job_from_conan_jwt

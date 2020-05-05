@@ -108,14 +108,17 @@ conan search Hello* --all --remote=gitlab
 
 ## Authenticating to the GitLab Conan Repository
 
-You will need to generate a [personal access token](../../../user/profile/personal_access_tokens.md) with the scope set to `api` for repository authentication.
+You will need a personal access token or deploy token.
+
+* You can generate a [personal access token](../../../user/profile/personal_access_tokens.md) with the scope set to `api` for repository authentication.
+* You can generate a [deploy token](./../../project/deploy_tokens/index.md) with the `read_package_registry` and/or `write_package_registry` scopes for repository authentication.
 
 ### Adding a Conan user to the GitLab remote
 
 Once you have a personal access token and have [set your Conan remote](#adding-the-gitlab-package-registry-as-a-conan-remote), you can associate the token with the remote so you do not have to explicitly add them to each Conan command you run:
 
 ```shell
-conan user <gitlab-username> -r gitlab -p <personal_access_token>
+conan user <gitlab-username or deploy_token_username> -r gitlab -p <personal_access_token or deploy_token>
 ```
 
 Note: **Note**
@@ -130,7 +133,7 @@ Alternatively, you could explicitly include your credentials in any given comman
 For example:
 
 ```shell
-CONAN_LOGIN_USERNAME=<gitlab-username> CONAN_PASSWORD=<personal_access_token> conan upload Hello/0.1@my-group+my-project/beta --all --remote=gitlab
+CONAN_LOGIN_USERNAME=<gitlab-username or deploy_token_username> CONAN_PASSWORD=<personal_access_token or deploy_token> conan upload Hello/0.1@my-group+my-project/beta --all --remote=gitlab
 ```
 
 ### Setting a default remote to your project (optional)
