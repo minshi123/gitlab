@@ -188,7 +188,7 @@ describe 'Group Value Stream Analytics', :js do
       it 'will display recent activity' do
         page.within(find('.js-recent-activity')) do
           expect(page).to have_selector('.card-header')
-          expect(page).to have_content('Recent Activity')
+          expect(page).to have_content(_('Recent Activity'))
         end
       end
     end
@@ -211,7 +211,8 @@ describe 'Group Value Stream Analytics', :js do
         stage_nav = page.find(stage_nav_selector)
 
         %w[Issue Plan Code Test Review Staging Total].each do |item|
-          expect(stage_nav).to have_content(item)
+          string_id = "CycleAnalytics|#{item}"
+          expect(stage_nav).to have_content(s_(string_id))
         end
       end
     end
@@ -231,14 +232,14 @@ describe 'Group Value Stream Analytics', :js do
     it 'displays the number of issues' do
       issue_count = page.all(card_metric_selector).first
 
-      expect(issue_count).to have_content('New Issues')
+      expect(issue_count).to have_content(n_('New Issue', 'New Issues', 3))
       expect(issue_count).to have_content('3')
     end
 
     it 'displays the number of deploys' do
       deploys_count = page.all(card_metric_selector)[1]
 
-      expect(deploys_count).to have_content('Deploys')
+      expect(deploys_count).to have_content(n_('Deploy', 'Deploys', 0))
       expect(deploys_count).to have_content('-')
     end
 
@@ -259,7 +260,8 @@ describe 'Group Value Stream Analytics', :js do
   end
 
   def select_stage(name)
-    page.find('.stage-nav .stage-nav-item .stage-name', text: name, match: :prefer_exact).click
+    string_id = "CycleAnalyticsStage|#{name}"
+    page.find('.stage-nav .stage-nav-item .stage-name', text: s_(string_id), match: :prefer_exact).click
 
     wait_for_requests
   end
@@ -321,7 +323,7 @@ describe 'Group Value Stream Analytics', :js do
         if stage[:events_count] == 0
           expect(page).not_to have_selector('.stage-events .events-description')
         else
-          expect(page.find('.stage-events .events-description').text).to have_text(stage[:description])
+          expect(page.find('.stage-events .events-description').text).to have_text(_(stage[:description]))
         end
       end
     end
@@ -368,9 +370,9 @@ describe 'Group Value Stream Analytics', :js do
         end
 
         it 'displays the chart' do
-          expect(page).to have_text('Type of work')
+          expect(page).to have_text(s_('CycleAnalytics|Type of work'))
 
-          expect(page).to have_text('Tasks by type')
+          expect(page).to have_text(s_('CycleAnalytics|Tasks by type'))
         end
 
         it 'has 2 labels selected' do
@@ -390,9 +392,9 @@ describe 'Group Value Stream Analytics', :js do
         end
 
         it 'shows the no data available message' do
-          expect(page).to have_text('Type of work')
+          expect(page).to have_text(s_('CycleAnalytics|Type of work'))
 
-          expect(page).to have_text('There is no data available. Please change your selection.')
+          expect(page).to have_text(_('There is no data available. Please change your selection.'))
         end
       end
     end
@@ -531,7 +533,7 @@ describe 'Group Value Stream Analytics', :js do
 
         it 'is visible' do
           expect(page).to have_selector(add_stage_button, visible: true)
-          expect(page).to have_text('Add a stage')
+          expect(page).to have_text(s_('CustomCycleAnalytics|Add a stage'))
         end
 
         it 'becomes active when clicked' do
@@ -543,11 +545,11 @@ describe 'Group Value Stream Analytics', :js do
         end
 
         it 'displays the custom stage form when clicked' do
-          expect(page).not_to have_text('New stage')
+          expect(page).not_to have_text(s_('CustomCycleAnalytics|New stage'))
 
           page.find(add_stage_button).click
 
-          expect(page).to have_text('New stage')
+          expect(page).to have_text(s_('CustomCycleAnalytics|New stage'))
         end
       end
 
@@ -562,39 +564,39 @@ describe 'Group Value Stream Analytics', :js do
 
           context 'with empty fields' do
             it 'submit button is disabled by default' do
-              expect(page).to have_button('Add stage', disabled: true)
+              expect(page).to have_button(s_('CustomCycleAnalytics|Add stage'), disabled: true)
             end
           end
 
           shared_examples 'submits the form successfully' do |stage_name|
             it 'submit button is enabled' do
-              expect(page).to have_button('Add stage', disabled: false)
+              expect(page).to have_button(s_('CustomCycleAnalytics|Add stage'), disabled: false)
             end
 
             it 'submit button is disabled if the start event changes' do
               select_dropdown_option 'custom-stage-start-event', 'issue_created'
 
-              expect(page).to have_button('Add stage', disabled: true)
+              expect(page).to have_button(s_('CustomCycleAnalytics|Add stage'), disabled: true)
             end
 
             it 'the custom stage is saved' do
-              click_button 'Add stage'
+              click_button(s_('CustomCycleAnalytics|Add stage'))
 
               expect(page).to have_selector('.stage-nav-item', text: stage_name)
             end
 
             it 'a confirmation message is displayed' do
               fill_in 'custom-stage-name', with: stage_name
-              click_button 'Add stage'
+              click_button(s_('CustomCycleAnalytics|Add stage'))
 
-              expect(page.find('.flash-notice')).to have_text("Your custom stage '#{stage_name}' was created")
+              expect(page.find('.flash-notice')).to have_text(_("Your custom stage '%{title}' was created") % { title: stage_name })
             end
 
             it 'with a default name' do
               fill_in 'custom-stage-name', with: 'issue'
-              click_button 'Add stage'
+              click_button(s_('CustomCycleAnalytics|Add stage'))
 
-              expect(page).to have_button('Add stage', disabled: true)
+              expect(page).to have_button(s_('CustomCycleAnalytics|Add stage'), disabled: true)
             end
           end
 
@@ -606,8 +608,8 @@ describe 'Group Value Stream Analytics', :js do
             end
 
             it 'does not have label dropdowns' do
-              expect(page).not_to have_content('Start event label')
-              expect(page).not_to have_content('Stop event label')
+              expect(page).not_to have_content(s_('CustomCycleAnalytics|Start event label'))
+              expect(page).not_to have_content(s_('CustomCycleAnalytics|Stop event label'))
             end
 
             it_behaves_like 'submits the form successfully', custom_stage_name
@@ -621,12 +623,12 @@ describe 'Group Value Stream Analytics', :js do
             end
 
             it 'has label dropdowns' do
-              expect(page).to have_content('Start event label')
-              expect(page).to have_content('Stop event label')
+              expect(page).to have_content(s_('CustomCycleAnalytics|Start event label'))
+              expect(page).to have_content(s_('CustomCycleAnalytics|Stop event label'))
             end
 
             it 'submit button is disabled' do
-              expect(page).to have_button('Add stage', disabled: true)
+              expect(page).to have_button(s_('CustomCycleAnalytics|Add stage'), disabled: true)
             end
 
             context 'with labels available' do
@@ -669,7 +671,7 @@ describe 'Group Value Stream Analytics', :js do
 
           def select_edit_stage
             toggle_more_options(first_custom_stage)
-            click_button "Edit stage"
+            click_button(_('Edit stage'))
           end
 
           context 'with no changes to the data' do
@@ -678,7 +680,7 @@ describe 'Group Value Stream Analytics', :js do
             end
 
             it 'displays the editing stage form' do
-              expect(page.find(stage_form_class)).to have_text 'Editing stage'
+              expect(page.find(stage_form_class)).to have_text(_('Editing stage'))
             end
 
             it 'prepoulates the stage data' do
@@ -707,7 +709,7 @@ describe 'Group Value Stream Analytics', :js do
               fill_in name_field, with: updated_custom_stage_name
               page.find(stage_save_button).click
 
-              expect(page.find('.flash-notice')).to have_text 'Stage data updated'
+              expect(page.find('.flash-notice')).to have_text(_('Stage data updated'))
               expect(page.find(stage_nav_selector)).not_to have_text custom_stage_name
               expect(page.find(stage_nav_selector)).to have_text updated_custom_stage_name
             end
@@ -722,7 +724,7 @@ describe 'Group Value Stream Analytics', :js do
               fill_in name_field, with: 'issue'
               page.find(stage_save_button).click
 
-              expect(page.find(stage_form_class)).to have_text("Stage name already exists")
+              expect(page.find(stage_form_class)).to have_text(_('Stage name already exists'))
             end
           end
         end
@@ -783,13 +785,13 @@ describe 'Group Value Stream Analytics', :js do
           def open_recover_stage_dropdown
             find(add_stage_button).click
 
-            expect(page).to have_content('New stage')
-            expect(page).to have_content('Recover hidden stage')
+            expect(page).to have_content(_('New stage'))
+            expect(page).to have_content(_('Recover hidden stage'))
 
-            click_button "Recover hidden stage"
+            click_button(_('Recover hidden stage'))
 
             within(:css, '.js-recover-hidden-stage-dropdown') do
-              expect(find(".dropdown-menu")).to have_content('Default stages')
+              expect(find(".dropdown-menu")).to have_content(_('Default stages'))
             end
           end
 
@@ -804,53 +806,53 @@ describe 'Group Value Stream Analytics', :js do
           end
 
           it 'can be hidden' do
-            expect(first_default_stage.find('.more-actions-dropdown')).to have_text "Hide stage"
+            expect(first_default_stage.find('.more-actions-dropdown')).to have_text(_('Hide stage'))
           end
 
           it 'can not be edited' do
-            expect(first_default_stage.find('.more-actions-dropdown')).not_to have_text "Edit stage"
+            expect(first_default_stage.find('.more-actions-dropdown')).not_to have_text(_('Edit stage'))
           end
 
           it 'can not be removed' do
-            expect(first_default_stage.find('.more-actions-dropdown')).not_to have_text "Remove stage"
+            expect(first_default_stage.find('.more-actions-dropdown')).not_to have_text(_('Remove stage'))
           end
 
           context 'hidden' do
             before do
-              click_button "Hide stage"
+              click_button(_('Hide stage'))
 
               # wait for the stage list to laod
-              expect(nav).to have_content("Plan")
+              expect(nav).to have_content(s_('CycleAnalyticsStage|Plan'))
             end
 
             it 'will not appear in the stage table' do
-              expect(active_stages).not_to include("Issue")
+              expect(active_stages).not_to include(s_('CycleAnalyticsStage|Issue'))
             end
 
             it 'can be recovered' do
               open_recover_stage_dropdown
 
-              expect(page.find('.js-recover-hidden-stage-dropdown')).to have_text('Issue')
+              expect(page.find('.js-recover-hidden-stage-dropdown')).to have_text(s_('CycleAnalyticsStage|Issue'))
             end
           end
 
           context 'recovered' do
             before do
-              click_button "Hide stage"
+              click_button(_('Hide stage'))
 
               # wait for the stage list to laod
-              expect(nav).to have_content("Plan")
+              expect(nav).to have_content(s_('CycleAnalyticsStage|Plan'))
             end
 
             it 'will appear in the stage table' do
               open_recover_stage_dropdown
 
-              click_button("Issue")
+              click_button(s_('CycleAnalyticsStage|Issue'))
               # wait for the stage list to laod
-              expect(nav).to have_content("Plan")
+              expect(nav).to have_content(s_('CycleAnalyticsStage|Plan'))
 
-              expect(page.find('.flash-notice')).to have_content 'Stage data updated'
-              expect(active_stages).to include("Issue")
+              expect(page.find('.flash-notice')).to have_content(_('Stage data updated'))
+              expect(active_stages).to include(s_('CycleAnalyticsStage|Issue'))
             end
           end
         end
@@ -866,24 +868,24 @@ describe 'Group Value Stream Analytics', :js do
           end
 
           it 'can not be hidden' do
-            expect(first_custom_stage.find('.more-actions-dropdown')).not_to have_text "Hide stage"
+            expect(first_custom_stage.find('.more-actions-dropdown')).not_to have_text(_('Hide stage'))
           end
 
           it 'can be edited' do
-            expect(first_custom_stage.find('.more-actions-dropdown')).to have_text "Edit stage"
+            expect(first_custom_stage.find('.more-actions-dropdown')).to have_text(_('Edit stage'))
           end
 
           it 'can be removed' do
-            expect(first_custom_stage.find('.more-actions-dropdown')).to have_text "Remove stage"
+            expect(first_custom_stage.find('.more-actions-dropdown')).to have_text(_('Remove stage'))
           end
 
           it 'will not appear in the stage table after being removed' do
             nav = page.find(stage_nav_selector)
             expect(nav).to have_text(custom_stage_name)
 
-            click_button "Remove stage"
+            click_button(_('Remove stage'))
 
-            expect(page.find('.flash-notice')).to have_text 'Stage removed'
+            expect(page.find('.flash-notice')).to have_text(_('Stage removed'))
             expect(nav).not_to have_text(custom_stage_name)
           end
         end
@@ -892,7 +894,10 @@ describe 'Group Value Stream Analytics', :js do
       context 'Duration chart' do
         let(:duration_chart_dropdown) { page.find('.dropdown-stages') }
 
-        default_stages = %w[Issue Plan Code Test Review Staging Total].freeze
+        default_stages = Analytics::CycleAnalytics::StagePresenter::DEFAULT_STAGE_ATTRIBUTES
+          .each_value
+          .map { |value| value[:title].call }
+          .freeze
 
         def duration_chart_stages
           duration_chart_dropdown.all('.dropdown-menu-link').collect(&:text)
@@ -916,16 +921,16 @@ describe 'Group Value Stream Analytics', :js do
           before do
             toggle_more_options(first_default_stage)
 
-            click_button "Hide stage"
+            click_button(_('Hide stage'))
 
             # wait for the stage list to laod
-            expect(nav).to have_content("Plan")
+            expect(nav).to have_content(s_('CycleAnalyticsStage|Plan'))
           end
 
           it 'will not appear in the duration chart dropdown' do
             toggle_duration_chart_dropdown
 
-            expect(duration_chart_stages).not_to include("Issue")
+            expect(duration_chart_stages).not_to include(s_('CycleAnalyticsStage|Issue'))
           end
         end
       end
