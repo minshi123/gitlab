@@ -312,7 +312,8 @@ module ApplicationSettingsHelper
       :email_restrictions_enabled,
       :email_restrictions,
       :issues_create_limit,
-      :raw_blob_request_limit
+      :raw_blob_request_limit,
+      :issues_create_limit_users_whitelist_raw
     ]
   end
 
