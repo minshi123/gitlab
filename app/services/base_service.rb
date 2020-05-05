@@ -74,9 +74,10 @@ class BaseService
   end
 
   def base_log_data
-    super.merge(
+    {
+      class: self.class.name,
       current_user: current_user&.name,
       project_full_path: project&.full_path
-    )
+    }
   end
 end

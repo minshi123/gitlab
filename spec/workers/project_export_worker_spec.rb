@@ -55,7 +55,9 @@ describe ProjectExportWorker do
 
     context 'when it fails' do
       it 'does not raise an exception when strategy is invalid' do
-        expect_any_instance_of(::Projects::ImportExport::ExportService).not_to receive(:execute)
+        expect_next_instance_of(::Projects::ImportExport::ExportService) do |service|
+          expect(service).not_to receive(:execute)
+        end
 
         expect { subject.perform(user.id, project.id, { 'klass' => 'Whatever' }) }.not_to raise_error
       end
