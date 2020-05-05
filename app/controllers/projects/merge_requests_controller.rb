@@ -162,7 +162,9 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
   end
 
   def update
-    @merge_request = ::MergeRequests::UpdateService.new(project, current_user, merge_request_params).execute(@merge_request)
+    merge_request_update_params = merge_request_params.merge!(params.permit(:merge_request_diff_head_sha))
+
+    @merge_request = ::MergeRequests::UpdateService.new(project, current_user, merge_request_update_params).execute(@merge_request)
 
     respond_to do |format|
       format.html do

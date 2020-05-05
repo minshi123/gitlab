@@ -140,7 +140,7 @@ class IssuableBaseService < BaseService
     new_label_ids.uniq
   end
 
-  def handle_quick_actions_on_create(issuable)
+  def handle_quick_actions(issuable)
     merge_quick_actions_into_params!(issuable)
   end
 
@@ -148,7 +148,7 @@ class IssuableBaseService < BaseService
     original_description = params.fetch(:description, issuable.description)
 
     description, command_params =
-      QuickActions::InterpretService.new(project, current_user)
+      QuickActions::InterpretService.new(project, current_user, quick_action_options)
         .execute(original_description, issuable, only: only)
 
     # Avoid a description already set on an issuable to be overwritten by a nil
@@ -157,8 +157,12 @@ class IssuableBaseService < BaseService
     params.merge!(command_params)
   end
 
+  def quick_action_options
+    {}
+  end
+
   def create(issuable)
-    handle_quick_actions_on_create(issuable)
+    handle_quick_actions(issuable)
     filter_params(issuable)
 
     params.delete(:state_event)
@@ -202,11 +206,14 @@ class IssuableBaseService < BaseService
   end
 
   def update(issuable)
+    handle_quick_actions(issuable)
+    filter_params(issuable)
+
     change_state(issuable)
     change_subscription(issuable)
     change_todo(issuable)
     toggle_award(issuable)
-    filter_params(issuable)
+
     old_associations = associations_before_update(issuable)
 
     label_ids = process_label_ids(params, existing_label_ids: issuable.label_ids)

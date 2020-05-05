@@ -54,7 +54,7 @@ export default {
           class="note-textarea js-gfm-input js-autosize markdown-area"
           dir="auto"
           data-qa-selector="snippet_description_field"
-          data-supports-quick-actions="false"
+          data-supports-quick-actions="true"
           :value="value"
           :aria-label="__('Description')"
           :placeholder="__('Write a comment or drag your files here…')"
