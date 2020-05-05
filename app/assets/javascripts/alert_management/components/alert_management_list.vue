@@ -55,7 +55,7 @@ export default {
     {
       key: 'status',
       label: s__('AlertManagement|Status'),
-      tdClass: `${tdClass} rounded-bottom text-capitalize"`,
+      tdClass: `${tdClass} rounded-bottom text-capitalize`,
     },
   ],
   statuses: {
