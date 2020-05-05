@@ -1,3 +1,4 @@
+import { GlLoadingIcon } from '@gitlab/ui';
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -68,10 +69,32 @@ describe('RoadmapApp', () => {
     wrapper = null;
   });
 
+  describe('when the app is fetching the list of epics', () => {
+    beforeEach(() => {
+      wrapper = createComponent();
+    });
+
+    it('the loading icon is shown', () => {
+      expect(wrapper.contains(GlLoadingIcon)).toBe(true);
+    });
+
+    it('the roadmap is not shown', () => {
+      expect(wrapper.contains(RoadmapShell)).toBe(false);
+    });
+
+    it('the empty state view is not shown', () => {
+      expect(wrapper.contains(EpicsListEmpty)).toBe(false);
+    });
+  });
+
   describe('when the app contains epics', () => {
     beforeEach(() => {
       wrapper = createComponent();
       store.commit(types.RECEIVE_EPICS_SUCCESS, epics);
+    });
+
+    it('the loading icon is not shown', () => {
+      expect(wrapper.contains(GlLoadingIcon)).toBe(false);
     });
 
     it('the roadmap is shown', () => {
@@ -87,6 +110,10 @@ describe('RoadmapApp', () => {
     beforeEach(() => {
       wrapper = createComponent();
       store.commit(types.RECEIVE_EPICS_SUCCESS, []);
+    });
+
+    it('the loading icon is not shown', () => {
+      expect(wrapper.contains(GlLoadingIcon)).toBe(false);
     });
 
     it('the roadmap is not shown', () => {
