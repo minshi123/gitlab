@@ -1706,6 +1706,9 @@ msgstr ""
 msgid "AlertManagement|Alert"
 msgstr ""
 
+msgid "AlertManagement|Alerts"
+msgstr ""
+
 msgid "AlertManagement|Authorize external service"
 msgstr ""
 

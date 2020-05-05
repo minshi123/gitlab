@@ -13,6 +13,8 @@ import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import getAlerts from '../graphql/queries/getAlerts.query.graphql';
 
+const tdClass = 'd-flex d-md-table-cell align-items-center';
+
 export default {
   i18n: {
     noAlertsMsg: s__(
@@ -26,29 +28,29 @@ export default {
     {
       key: 'severity',
       label: s__('AlertManagement|Severity'),
-      tdClass: 'd-flex d-md-table-cell align-items-center rounded-top',
+      tdClass: `${tdClass} rounded-top`,
     },
     {
       key: 'startedAt',
       label: s__('AlertManagement|Start time'),
-      tdClass: 'd-flex d-md-table-cell align-items-center',
+      tdClass,
     },
     {
       key: 'endedAt',
       label: s__('AlertManagement|End time'),
-      tdClass: 'd-flex d-md-table-cell align-items-center',
+      tdClass,
     },
     {
       key: 'title',
       label: s__('AlertManagement|Alert'),
       thClass: 'w-30p',
-      tdClass: 'd-flex d-md-table-cell align-items-center',
+      tdClass,
     },
     {
       key: 'eventCount',
       label: s__('AlertManagement|Events'),
       thClass: 'text-right event-count',
-      tdClass: 'd-flex d-md-table-cell align-items-center text-md-right event-count',
+      tdClass: `${tdClass} text-md-right event-count`,
     },
     {
       key: 'status',
@@ -142,7 +144,9 @@ export default {
         {{ $options.i18n.errorMsg }}
       </gl-alert>
 
-      <h4 class="d-block d-md-none my-3">{{ __('Alerts') }}</h4>
+      <h4 class="d-block d-md-none my-3">
+        {{ s__('AlertManagement|Alerts') }}
+      </h4>
       <gl-table
         class="mt-3"
         :items="alerts"
