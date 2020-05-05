@@ -444,8 +444,9 @@ export default {
                 is-check-item
                 :is-checked="environment.name === currentEnvironmentName"
                 :href="environment.metrics_path"
-                >{{ environment.name }}</gl-new-dropdown-item
               >
+                {{ environment.name }}
+              </gl-new-dropdown-item>
             </div>
             <div
               v-show="shouldShowEnvironmentsDropdownNoMatchedMsg"
