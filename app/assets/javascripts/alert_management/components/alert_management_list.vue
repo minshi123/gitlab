@@ -28,7 +28,7 @@ export default {
     {
       key: 'severity',
       label: s__('AlertManagement|Severity'),
-      tdClass: `${tdClass} rounded-top`,
+      tdClass: `${tdClass} rounded-top text-capitalize`,
     },
     {
       key: 'startedAt',
@@ -55,7 +55,7 @@ export default {
     {
       key: 'status',
       label: s__('AlertManagement|Status'),
-      tdClass: `${tdClass} rounded-bottom`,
+      tdClass: `${tdClass} rounded-bottom text-capitalize"`,
     },
   ],
   statuses: {
