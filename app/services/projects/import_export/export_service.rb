@@ -3,14 +3,15 @@
 module Projects
   module ImportExport
     class ExportService < BaseService
+      prepend Gitlab::Measurable
+
       def initialize(*args)
         super
 
         @shared = project.import_export_shared
-        @measuring = ::Feature.enabled?(:measure_project_export_service, project.namespace)
       end
 
-      def service_execute(after_export_strategy = nil)
+      def execute(after_export_strategy = nil)
         unless project.template_source? || can?(current_user, :admin_project, project)
           raise ::Gitlab::ImportExport::Error.permission_error(current_user, project)
         end
@@ -24,6 +25,10 @@ module Projects
       private
 
       attr_accessor :shared
+
+      def measuring?
+        ::Feature.enabled?(:measure_project_export_service, project.namespace)
+      end
 
       def base_log_data
         super.merge(file_path: shared.export_path)

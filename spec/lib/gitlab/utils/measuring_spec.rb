@@ -8,7 +8,6 @@ describe Gitlab::Utils::Measuring do
     let(:result) { "result" }
     let(:logger) { double(:logger) }
 
-
     before do
       described_class.logger = logger
       allow(described_class.logger).to receive(:info)

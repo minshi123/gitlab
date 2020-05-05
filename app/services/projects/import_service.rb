@@ -2,13 +2,9 @@
 
 module Projects
   class ImportService < BaseService
+    prepend Gitlab::Measurable
+
     Error = Class.new(StandardError)
-
-    def initialize(*args)
-      super
-
-      self.measuring = ::Feature.enabled?(:measure_project_import_service, project.namespace)
-    end
 
     # Returns true if this importer is supposed to perform its work in the
     # background.
@@ -20,7 +16,7 @@ module Projects
       has_importer? && !!importer_class.try(:async?)
     end
 
-    def service_execute
+    def execute
       add_repository_to_project
 
       download_lfs_objects
@@ -41,6 +37,10 @@ module Projects
     end
 
     private
+
+    def measuring?
+      ::Feature.enabled?(:measure_project_import_service, project.namespace)
+    end
 
     def base_log_data
       super.merge(import_type: project.import_type, file_path: project.import_source)

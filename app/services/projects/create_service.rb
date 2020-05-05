@@ -2,6 +2,7 @@
 
 module Projects
   class CreateService < BaseService
+    prepend Gitlab::Measurable
     include ValidatesClassificationLabel
 
     def initialize(user, params)
@@ -10,10 +11,9 @@ module Projects
       @initialize_with_readme = Gitlab::Utils.to_boolean(@params.delete(:initialize_with_readme))
       @import_data            = @params.delete(:import_data)
       @relations_block        = @params.delete(:relations_block)
-      @measuring              = ::Feature.enabled?(:measure_project_create_service, Namespace.find_by_id(params[:namespace_id]) || current_user.namespace)
     end
 
-    def service_execute
+    def execute
       if create_from_template?
         return ::Projects::CreateFromTemplateService.new(current_user, params).execute
       end
@@ -204,6 +204,10 @@ module Projects
     end
 
     private
+
+    def measuring?
+      ::Feature.enabled?(:measure_project_create_service, Namespace.find_by_id(params[:namespace_id]) || current_user.namespace)
+    end
 
     def base_log_data
       super.merge(project_full_path: @params[:path])
