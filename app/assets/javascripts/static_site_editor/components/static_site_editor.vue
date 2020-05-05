@@ -82,7 +82,7 @@ export default {
         <edit-header class="w-75 align-self-center py-2" :title="title" />
         <rich-content-editor
           v-if="glFeatures.richContentEditor"
-          class="w-75 h-100 align-self-center"
+          class="w-75 gl-align-self-center"
           :value="content"
           @input="setContent"
         />

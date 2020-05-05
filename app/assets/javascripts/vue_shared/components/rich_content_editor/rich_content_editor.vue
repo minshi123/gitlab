@@ -35,6 +35,7 @@ export default {
     :initial-edit-type="$options.initialEditType"
     :initial-value="value"
     :options="$options.editorOptions"
+    height="100%"
     @change="onContentChanged"
   />
 </template>
