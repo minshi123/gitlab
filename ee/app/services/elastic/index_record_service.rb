@@ -38,7 +38,7 @@ module Elastic
       # Enqueue the repository indexing jobs immediately so they run in parallel
       # One for the project repository, one for the wiki repository
       ElasticCommitIndexerWorker.perform_async(project.id)
-      ElasticCommitIndexerWorker.perform_async(project.id, nil, nil, true)
+      ElasticCommitIndexerWorker.perform_async(project.id, nil, nil, wiki: true)
 
       project.each_indexed_association do |klass, association|
         import_association(association)

@@ -16,7 +16,7 @@ module Gitlab
         end
       end
 
-      attr_reader :project, :index_status
+      attr_reader :project, :index_status, :wiki
 
       def initialize(project, wiki: false)
         @project = project
@@ -27,18 +27,18 @@ module Gitlab
       end
 
       def run(to_sha = nil)
-        to_sha = nil if to_sha == Gitlab::Git::BLANK_SHA
-
-        head_commit = repository.try(:commit)
-
-        if repository.nil? || !repository.exists? || repository.empty? || head_commit.nil?
-          update_index_status(Gitlab::Git::BLANK_SHA)
-          return
-        end
+        # default to HEAD
+        to_sha ||= repository&.commit&.sha
+        return update_index_status(Gitlab::Git::BLANK_SHA) unless commit_indexable?(to_sha)
 
         repository.__elasticsearch__.elastic_writing_targets.each do |target|
+          Sidekiq.logger.debug(message: "Indexation running for #{project.id} #{from_sha}..#{to_sha}",
+                               project_id: project.id,
+                               wiki: wiki)
           run_indexer!(to_sha, target)
         end
+
+        # update the index status only if all writes where successful
         update_index_status(to_sha)
 
         true
@@ -51,17 +51,15 @@ module Gitlab
       end
 
       def repository
-        wiki? ? project.wiki.repository : project.repository
+        wiki ? project.wiki.repository : project.repository
       end
 
       def run_indexer!(to_sha, target)
         vars = build_envvars(to_sha, target)
-
-        if index_status && !repository_contains_last_indexed_commit?
-          target.delete_index_for_commits_and_blobs(wiki: wiki?)
-        end
-
         path_to_indexer = Gitlab.config.elasticsearch.indexer_path
+
+        # This might happen when default branch has been rebased.
+        purge_unreachable_commits_from_index!
 
         command =
           if wiki?
@@ -73,6 +71,13 @@ module Gitlab
         output, status = Gitlab::Popen.popen(command, nil, vars)
 
         raise Error, output unless status&.zero?
+      end
+
+      # Remove all indexed data for commits and blobs for a project.
+      def purge_unreachable_commits_from_index!
+        if index_status && !repository_contains_last_indexed_commit?
+          target.delete_index_for_commits_and_blobs(wiki: wiki?)
+        end
       end
 
       def build_envvars(to_sha, target)
@@ -113,6 +118,10 @@ module Gitlab
         end
       end
 
+      def commit_indexable?(rev = nil)
+        repository.present? && repository.exists? && !repository.empty? && repository&.commit(rev).present?
+      end
+
       def repository_path
         "#{repository.disk_path}.git"
       end
@@ -131,7 +140,7 @@ module Gitlab
 
       # rubocop: disable CodeReuse/ActiveRecord
       def update_index_status(to_sha)
-        head_commit = repository.try(:commit)
+        raise "Invalid sha #{to_sha}" unless to_sha.present?
 
         # An index_status should always be created,
         # even if the repository is empty, so we know it's been looked at.
@@ -142,17 +151,11 @@ module Gitlab
             retry
           end
 
-        # Don't update the index status if we never reached HEAD
-        return if head_commit && to_sha && head_commit.sha != to_sha
-
-        sha = head_commit.try(:sha)
-        sha ||= Gitlab::Git::BLANK_SHA
-
         attributes =
           if wiki?
-            { last_wiki_commit: sha, wiki_indexed_at: Time.now }
+            { last_wiki_commit: to_sha, wiki_indexed_at: Time.now }
           else
-            { last_commit: sha, indexed_at: Time.now }
+            { last_commit: to_sha, indexed_at: Time.now }
           end
 
         @index_status.update(attributes)
