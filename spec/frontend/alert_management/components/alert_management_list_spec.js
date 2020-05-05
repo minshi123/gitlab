@@ -1,6 +1,16 @@
 import { mount } from '@vue/test-utils';
-import { GlEmptyState, GlTable, GlAlert, GlLoadingIcon, GlNewDropdown, GlIcon } from '@gitlab/ui';
+import {
+  GlEmptyState,
+  GlTable,
+  GlAlert,
+  GlLoadingIcon,
+  GlNewDropdown,
+  GlBadge,
+  GlIcon,
+  GlTab,
+} from '@gitlab/ui';
 import AlertManagementList from '~/alert_management/components/alert_management_list.vue';
+import { ALERTS_STATUS_TABS } from '../../../../app/assets/javascripts/alert_management/constants';
 
 import mockAlerts from '../mocks/alerts.json';
 
@@ -12,6 +22,8 @@ describe('AlertManagementList', () => {
   const findAlert = () => wrapper.find(GlAlert);
   const findLoader = () => wrapper.find(GlLoadingIcon);
   const findStatusDropdown = () => wrapper.find(GlNewDropdown);
+  const findStatusFilterTabs = () => wrapper.findAll(GlTab);
+  const findNumberOfAlertsBadge = () => wrapper.findAll(GlBadge);
 
   function mountComponent({
     props = {
@@ -20,6 +32,7 @@ describe('AlertManagementList', () => {
     },
     data = {},
     loading = false,
+    stubs = {},
   } = {}) {
     wrapper = mount(AlertManagementList, {
       propsData: {
@@ -40,6 +53,7 @@ describe('AlertManagementList', () => {
           },
         },
       },
+      stubs,
     });
   }
 
@@ -56,6 +70,34 @@ describe('AlertManagementList', () => {
   describe('alert management feature renders empty state', () => {
     it('shows empty state', () => {
       expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+    });
+  });
+
+  describe('Status Filter Tabs', () => {
+    beforeEach(() => {
+      mountComponent({
+        props: { alertManagementEnabled: true, userCanEnableAlertManagement: true },
+        data: { alerts: mockAlerts },
+        loading: false,
+        stubs: {
+          GlTab: true,
+        },
+      });
+    });
+    it('should display filter tabs for all statuses', () => {
+      const tabs = findStatusFilterTabs().wrappers;
+      tabs.forEach((tab, i) => {
+        expect(tab.text()).toContain(ALERTS_STATUS_TABS[i].title);
+      });
+    });
+
+    it('should have number of items badge along with status tab', () => {
+      expect(findNumberOfAlertsBadge().length).toEqual(ALERTS_STATUS_TABS.length);
+      expect(
+        findNumberOfAlertsBadge()
+          .at(0)
+          .text(),
+      ).toEqual(`${mockAlerts.length}`);
     });
   });
 
