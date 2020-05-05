@@ -55,7 +55,7 @@ export default {
     {
       key: 'status',
       label: s__('AlertManagement|Status'),
-      tdClass: 'rounded-bottom',
+      tdClass: `${tdClass} rounded-bottom`,
     },
   ],
   statuses: {
