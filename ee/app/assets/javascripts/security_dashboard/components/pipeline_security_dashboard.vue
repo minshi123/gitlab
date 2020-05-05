@@ -45,9 +45,11 @@ export default {
   },
   created() {
     this.setSourceBranch(this.sourceBranch);
+    this.fetchFiltersData('/filters/data');
   },
   methods: {
     ...mapActions('vulnerabilities', ['setSourceBranch']),
+    ...mapActions('filters', ['fetchFiltersData']),
   },
 };
 </script>

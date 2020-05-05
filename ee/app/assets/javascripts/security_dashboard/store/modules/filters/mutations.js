@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import * as types from './mutation_types';
 import { ALL } from './constants';
 import { setFilter } from './utils';
@@ -37,4 +38,17 @@ export default {
   [types.SET_TOGGLE_VALUE](state, { key, value }) {
     state[key] = value;
   },
+  [types.REQUEST_FILTERS_DATA](state) {},
+  [types.RECEIVE_FILTERS_DATA_SUCCESS](state, data) {
+    Object.entries(data).forEach(([filterId, filterOptions]) => {
+      const filter = state.filters.find(({ id }) => id === filterId);
+      filterOptions.forEach(filterOption => {
+        const option = filter.options.find(({ id }) => id === filterOption.id);
+        Object.entries(filterOption).forEach(([key, value]) => {
+          Vue.set(option, key, value);
+        });
+      });
+    });
+  },
+  [types.RECEIVE_FILTERS_DATA_ERROR](state) {},
 };

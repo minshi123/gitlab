@@ -113,9 +113,14 @@ export default {
               class="flex-shrink-0 js-check"
               name="mobile-issue-close"
             />
-            <span :class="isSelected(option) ? 'prepend-left-4' : 'prepend-left-20'">{{
-              option.name
-            }}</span>
+            <span :class="isSelected(option) ? 'prepend-left-4' : 'prepend-left-20'">
+              {{ option.name
+              }}<span v-if="option.vulnerability_count" class="gl-text-gray-500">
+                {{
+                  n__('(%d vulnerability)', '(%d vulnerabilities)', option.vulnerability_count)
+                }}</span
+              >
+            </span>
           </span>
         </button>
       </div>
