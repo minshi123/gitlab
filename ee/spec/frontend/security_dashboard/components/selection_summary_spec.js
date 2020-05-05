@@ -1,4 +1,4 @@
-import { shallowMount, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SelectionSummary from 'ee/security_dashboard/components/selection_summary.vue';
 import { GlFormSelect, GlButton } from '@gitlab/ui';
 import createFlash from '~/flash';
@@ -26,15 +26,10 @@ describe('Selection Summary component', () => {
   const dismissMessage = () => wrapper.find({ ref: 'dismiss-message' });
   const formSelect = () => wrapper.find(GlFormSelect);
 
-  const createComponent = ({
-    props = {},
-    data = defaultData,
-    mocks = defaultMocks,
-    mountFn = shallowMount,
-    listeners = {},
-  }) => {
+  const createComponent = ({ props = {}, data = defaultData, mocks = defaultMocks }) => {
     spyMutate = mocks.$apollo.mutate;
-    wrapper = mountFn(SelectionSummary, {
+
+    wrapper = mount(SelectionSummary, {
       mocks: {
         ...defaultMocks,
         ...mocks,
@@ -43,11 +38,6 @@ describe('Selection Summary component', () => {
         selectedVulnerabilities: [],
         ...props,
       },
-      stubs: {
-        GlButton,
-        GlFormSelect,
-      },
-      listeners,
       data: () => data,
     });
   };
@@ -79,7 +69,7 @@ describe('Selection Summary component', () => {
       });
 
       it('should have the button disabled if an option is not selected', () => {
-        expect(dismissButton().attributes('disabled')).toBe('true');
+        expect(dismissButton().attributes('disabled')).toBe('disabled');
       });
 
       it('should have the button enabled if a vulnerability is selected and an option is selected', () => {
@@ -99,16 +89,10 @@ describe('Selection Summary component', () => {
     });
 
     describe('clicking the dismiss vulnerability button', () => {
-      let refetchVulnerabilitiesSpy;
-
       beforeEach(() => {
-        refetchVulnerabilitiesSpy = jest.fn();
         createComponent({
           props: { selectedVulnerabilities: [{ id: 'id_0' }, { id: 'id_1' }] },
           data: { dismissalReason: 'Will Not Fix' },
-          listeners: {
-            'refetch-vulnerabilities': refetchVulnerabilitiesSpy,
-          },
         });
       });
 
@@ -142,7 +126,10 @@ describe('Selection Summary component', () => {
       it('should emit an event to refetch the vulnerabilities when the request is successful', () => {
         dismissButton().trigger('submit');
         return waitForPromises().then(() => {
-          expect(refetchVulnerabilitiesSpy).toHaveBeenCalled();
+          expect(wrapper.emittedByOrder()).toEqual([
+            { name: 'deselect-all-vulnerabilities', args: [] },
+            { name: 'refetch-vulnerabilities', args: [] },
+          ]);
         });
       });
 
@@ -151,13 +138,10 @@ describe('Selection Summary component', () => {
           props: { selectedVulnerabilities: [{ id: 'id_0' }, { id: 'id_1' }] },
           data: { dismissalReason: 'Will Not Fix' },
           mocks: { $apollo: { mutate: jest.fn().mockRejectedValue() } },
-          listeners: {
-            'refetch-vulnerabilities': refetchVulnerabilitiesSpy,
-          },
         });
         dismissButton().trigger('submit');
         return waitForPromises().then(() => {
-          expect(refetchVulnerabilitiesSpy).toHaveBeenCalled();
+          expect(wrapper.emittedByOrder()).toEqual([{ name: 'refetch-vulnerabilities', args: [] }]);
         });
       });
     });
@@ -169,7 +153,7 @@ describe('Selection Summary component', () => {
     });
 
     it('should have the button disabled', () => {
-      expect(dismissButton().attributes('disabled')).toBe('true');
+      expect(dismissButton().attributes('disabled')).toBe('disabled');
     });
   });
 });
