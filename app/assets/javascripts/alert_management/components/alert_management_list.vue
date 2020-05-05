@@ -26,29 +26,34 @@ export default {
     {
       key: 'severity',
       label: s__('AlertManagement|Severity'),
+      tdClass: 'd-flex d-md-table-cell align-items-center rounded-top',
     },
     {
       key: 'startedAt',
       label: s__('AlertManagement|Start time'),
+      tdClass: 'd-flex d-md-table-cell align-items-center',
     },
     {
       key: 'endedAt',
       label: s__('AlertManagement|End time'),
+      tdClass: 'd-flex d-md-table-cell align-items-center',
     },
     {
       key: 'title',
       label: s__('AlertManagement|Alert'),
       thClass: 'w-30p',
+      tdClass: 'd-flex d-md-table-cell align-items-center',
     },
     {
       key: 'eventCount',
       label: s__('AlertManagement|Events'),
       thClass: 'text-right event-count',
-      tdClass: 'text-right event-count',
+      tdClass: 'd-flex d-md-table-cell align-items-center text-md-right event-count',
     },
     {
       key: 'status',
       label: s__('AlertManagement|Status'),
+      tdClass: 'rounded-bottom',
     },
   ],
   statuses: {
@@ -137,6 +142,7 @@ export default {
         {{ $options.i18n.errorMsg }}
       </gl-alert>
 
+      <h4 class="d-block d-md-none my-3">{{ __('Alerts') }}</h4>
       <gl-table
         class="mt-3"
         :items="alerts"
@@ -169,6 +175,7 @@ export default {
         <template #cell(title)="{ item }">
           <div class="gl-max-w-full text-truncate">{{ item.title }}</div>
         </template>
+
         <template #cell(status)="{ item }">
           <gl-new-dropdown class="w-100" :text="item.status">
             <gl-new-dropdown-item v-for="(label, field) in $options.statuses" :key="field">
