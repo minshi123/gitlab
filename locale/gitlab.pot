@@ -23596,6 +23596,9 @@ msgstr ""
 msgid "When leaving the URL blank, classification labels can still be specified without disabling cross project features or performing external authorization checks."
 msgstr ""
 
+msgid "When the current user's username is included in this list, the rate limit will not apply for this user."
+msgstr ""
+
 msgid "When this merge request is accepted"
 msgid_plural "When these merge requests are accepted"
 msgstr[0] ""
@@ -23623,6 +23626,9 @@ msgid "White helpers give contextual information."
 msgstr ""
 
 msgid "Whitelist to allow requests to the local network from hooks and services"
+msgstr ""
+
+msgid "Whitelist to allow users unlimited issue creation request per minute"
 msgstr ""
 
 msgid "Who can be an approver?"
