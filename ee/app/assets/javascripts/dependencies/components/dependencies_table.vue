@@ -44,18 +44,8 @@ export default {
     },
   },
   data() {
-    const tableSections = [
-      { className: 'section-20', label: s__('Dependencies|Status') },
-      { className: 'section-20', label: s__('Dependencies|Component') },
-      { className: 'section-10', label: s__('Dependencies|Version') },
-      { className: 'section-20', label: s__('Dependencies|Packager') },
-      { className: 'section-15', label: s__('Dependencies|Location') },
-      { className: 'section-15', label: s__('Dependencies|License') },
-    ];
-
     return {
       localDependencies: this.transformDependenciesForUI(this.dependencies),
-      tableSections,
     };
   },
   computed: {
