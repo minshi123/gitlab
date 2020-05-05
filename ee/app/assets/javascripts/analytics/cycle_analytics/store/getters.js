@@ -2,6 +2,7 @@ import dateFormat from 'dateformat';
 import { isNumber } from 'lodash';
 import httpStatus from '~/lib/utils/http_status';
 import { dateFormats } from '../../shared/constants';
+import { parseSeconds } from '~/lib/utils/datetime_utility';
 
 export const hasNoAccessError = state => state.errorCode === httpStatus.FORBIDDEN;
 
@@ -28,3 +29,21 @@ export const enableCustomOrdering = ({ stages, errorSavingStageOrder }) =>
 
 export const customStageFormActive = ({ isCreatingCustomStage, isEditingCustomStage }) =>
   Boolean(isCreatingCustomStage || isEditingCustomStage);
+
+export const stagePathData = ({ stages, medians }) => {
+  // TODO: Need to decide how we'll handle active / hidden stages
+  // TODO: Need to move stage named 'Total' to index 0 and rename to 'Overview'
+  return stages.map(stage => {
+    const { title } = stage;
+    const { days } = parseSeconds(medians[stage.id], {
+      daysPerWeek: 7,
+      hoursPerDay: 24,
+      limitToDays: true,
+    });
+    return {
+      title,
+      // TODO: i18n?
+      metric: days ? `${days}d` : null,
+    };
+  });
+};
