@@ -12,6 +12,7 @@ import StatusDescription from './status_description.vue';
 import { VULNERABILITY_STATE_OBJECTS } from '../constants';
 import VulnerabilitiesEventBus from './vulnerabilities_event_bus';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
+import downloadPatchHelper from 'ee/vue_shared/security_reports/store/utils/download_patch_helper';
 
 export default {
   name: 'VulnerabilityHeader',
@@ -51,7 +52,7 @@ export default {
     targetBranch: {
       type: String,
       required: true,
-    }
+    },
   },
 
   data() {
@@ -79,6 +80,11 @@ export default {
         isLoading: this.isCreatingMergeRequest,
         action: 'createMergeRequest',
       };
+      const DownloadButton = {
+        name: s__('ciReport|Download patch to resolve'),
+        tagline: s__('ciReport|Download the patch to apply it manually'),
+        action: 'downloadPatch',
+      };
 
       if (this.canCreateMR) {
         buttons.push(MRButton);
@@ -88,10 +94,22 @@ export default {
         buttons.push(issueButton);
       }
 
+      if (this.canDownloadPatch) {
+        buttons.push(DownloadButton);
+      }
+
       return buttons;
     },
+    canDownloadPatch() {
+      const { remediations } = this.finding;
+      return Boolean(
+        !this.vulnerability.state === 'resolved' &&
+          (remediations && remediations[0].diff?.length > 0) &&
+          (!this.vulnerability.hasMergeRequest && remediations),
+      );
+    },
     disabled() {
-      return false
+      return false;
     },
     hasIssue() {
       return Boolean(this.finding.issue_feedback?.issue_iid);
@@ -208,6 +226,9 @@ export default {
         });
     },
   },
+  downloadPatch() {
+    downloadPatchHelper(this.vulnerability.remediations[0].diff);
+  },
 };
 </script>
 
@@ -256,6 +277,7 @@ export default {
           :disabled="disabled"
           @createMergeRequest="createMergeRequest"
           @createIssue="createIssue"
+          @downloadPatch="downloadPatch"
         />
       </div>
     </div>
