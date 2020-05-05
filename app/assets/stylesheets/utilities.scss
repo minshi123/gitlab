@@ -116,6 +116,16 @@
 .gl-bg-red-500 { @include gl-bg-red-500; }
 .gl-bg-orange-500 { @include gl-bg-orange-500; }
 
+.gl-justify-content-end {
+  justify-content: flex-end;
+}
+
+.gl-justify-content-md-start {
+  @include media-breakpoint-up(md) {
+    justify-content: flex-start;
+  }
+}
+
 .gl-text-blue-500 { @include gl-text-blue-500; }
 .gl-text-gray-500 { @include gl-text-gray-500; }
 .gl-text-gray-700 { @include gl-text-gray-700; }
