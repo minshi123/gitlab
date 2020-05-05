@@ -28,11 +28,16 @@ module Spam
         # update the spam log accordingly.
         SpamLog.verify_recaptcha!(user_id: user.id, id: spam_log_id)
       else
+        return if allowlisted?(user)
         return unless request
         return unless check_for_spam?
 
         perform_spam_service_check(api)
       end
+    end
+
+    def allowlisted?(user)
+      user.gitlab_employee?
     end
 
     delegate :check_for_spam?, to: :target
