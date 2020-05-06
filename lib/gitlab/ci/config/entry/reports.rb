@@ -11,10 +11,14 @@ module Gitlab
           include ::Gitlab::Config::Entry::Validatable
           include ::Gitlab::Config::Entry::Attributable
 
+          def self.flagged_keys
+            :license_management unless Feature.enabled?(:drop_license_management)
+          end
+
           ALLOWED_KEYS =
             %i[junit codequality sast dependency_scanning container_scanning
-               dast performance license_management license_scanning metrics lsif
-               dotenv cobertura terraform accessibility].freeze
+               dast performance license_scanning metrics lsif
+               dotenv cobertura terraform accessibility].push(flagged_keys).compact.freeze
 
           attributes ALLOWED_KEYS
 
