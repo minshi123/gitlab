@@ -68,12 +68,11 @@ function setSearchOptions() {
 }
 
 export class SearchAutocomplete {
-  constructor({ wrap, optsEl, autocompletePath, projectId, projectRef } = {}) {
+  constructor({ wrap, optsEl, projectId, projectRef } = {}) {
     setSearchOptions();
     this.bindEventContext();
     this.wrap = wrap || $('.search');
     this.optsEl = optsEl || this.wrap.find('.search-autocomplete-opts');
-    this.autocompletePath = autocompletePath || this.optsEl.data('autocompletePath');
     this.projectId = projectId || (this.optsEl.data('autocompleteProjectId') || '');
     this.projectRef = projectRef || (this.optsEl.data('autocompleteProjectRef') || '');
     this.dropdown = this.wrap.find('.dropdown');
@@ -154,151 +153,39 @@ export class SearchAutocomplete {
       return;
     }
 
-    // Prevent multiple ajax calls
-    if (this.loadingSuggestions) {
-      return;
-    }
+    const data = [];
+      const icon = spriteIcon('search', 's16 inline-search-icon');
+      let template;
 
-    this.loadingSuggestions = true;
+      if (this.projectInputEl.val()) {
+        template = s__('SearchAutocomplete|in this project');
+      }
+      if (this.groupInputEl.val()) {
+        template = s__('SearchAutocomplete|in this group');
+      }
 
-    return axios
-      .get(this.autocompletePath, {
-        params: {
-          project_id: this.projectId,
-          project_ref: this.projectRef,
-          term,
-        },
-      })
-      .then(response => {
-        // Hide dropdown menu if no suggestions returns
-        if (!response.data.length) {
-          this.disableAutocomplete();
-          return;
-        }
-
-        const data = [];
-        // List results
-        let firstCategory = true;
-        let lastCategory;
-        for (let i = 0, len = response.data.length; i < len; i += 1) {
-          const suggestion = response.data[i];
-          // Add group header before list each group
-          if (lastCategory !== suggestion.category) {
-            if (!firstCategory) {
-              data.push({ type: 'separator' });
-            }
-            if (firstCategory) {
-              firstCategory = false;
-            }
-            data.push({
-              type: 'header',
-              content: suggestion.category,
-            });
-            lastCategory = suggestion.category;
-          }
-          data.push({
-            id: `${suggestion.category.toLowerCase()}-${suggestion.id}`,
-            icon: this.getAvatar(suggestion),
-            category: suggestion.category,
-            text: suggestion.label,
-            url: suggestion.url,
-          });
-        }
-        // Add option to proceed with the search
-        if (data.length) {
-          const icon = spriteIcon('search', 's16 inline-search-icon');
-          let template;
-
-          if (this.projectInputEl.val()) {
-            template = s__('SearchAutocomplete|in this project');
-          }
-          if (this.groupInputEl.val()) {
-            template = s__('SearchAutocomplete|in this group');
-          }
-
-          data.unshift({ type: 'separator' });
-          data.unshift({
-            icon,
-            text: term,
-            template: s__('SearchAutocomplete|in all GitLab'),
-            url: `${gon.relative_url_root}/search?search=${term}`,
-          });
-
-          if (template) {
-            data.unshift({
-              icon,
-              text: term,
-              template,
-              url: `${
-                gon.relative_url_root
-              }/search?search=${term}&project_id=${this.projectInputEl.val()}&group_id=${this.groupInputEl.val()}`,
-            });
-          }
-        }
-
-        callback(data);
-
-        this.loadingSuggestions = false;
-        this.highlightFirstRow();
-        this.setScrollFade();
-      })
-      .catch(() => {
-        this.loadingSuggestions = false;
+      data.unshift({
+        icon,
+        text: term,
+        template: s__('SearchAutocomplete|in all GitLab'),
+        url: `${gon.relative_url_root}/search?search=${term}`,
       });
-  }
 
-  getCategoryContents() {
-    const userName = gon.current_username;
-    const { projectOptions, groupOptions, dashboardOptions } = gl;
+      if (template) {
+        data.unshift({
+          icon,
+          text: term,
+          template,
+          url: `${
+            gon.relative_url_root
+          }/search?search=${term}&project_id=${this.projectInputEl.val()}&group_id=${this.groupInputEl.val()}`,
+        });
+      }
 
-    // Get options
-    let options;
-    if (isInGroupsPage() && groupOptions) {
-      options = groupOptions[getGroupSlug()];
-    } else if (isInProjectPage() && projectOptions) {
-      options = projectOptions[getProjectSlug()];
-    } else if (dashboardOptions) {
-      options = dashboardOptions;
-    }
+    callback(data);
 
-    const { issuesPath, mrPath, name, issuesDisabled } = options;
-    const baseItems = [];
-
-    if (name) {
-      baseItems.push({
-        type: 'header',
-        content: `${name}`,
-      });
-    }
-
-    const issueItems = [
-      {
-        text: s__('SearchAutocomplete|Issues assigned to me'),
-        url: `${issuesPath}/?assignee_username=${userName}`,
-      },
-      {
-        text: s__("SearchAutocomplete|Issues I've created"),
-        url: `${issuesPath}/?author_username=${userName}`,
-      },
-    ];
-    const mergeRequestItems = [
-      {
-        text: s__('SearchAutocomplete|Merge requests assigned to me'),
-        url: `${mrPath}/?assignee_username=${userName}`,
-      },
-      {
-        text: s__("SearchAutocomplete|Merge requests I've created"),
-        url: `${mrPath}/?author_username=${userName}`,
-      },
-    ];
-
-    let items;
-    if (issuesDisabled) {
-      items = baseItems.concat(mergeRequestItems);
-    } else {
-      items = baseItems.concat(...issueItems, ...mergeRequestItems);
-    }
-    return items;
+    this.highlightFirstRow();
+    this.setScrollFade();
   }
 
   serializeState() {
@@ -420,14 +307,6 @@ export class SearchAutocomplete {
   onClick(item, $el, e) {
     if (window.location.pathname.indexOf(item.url) !== -1) {
       if (!e.metaKey) e.preventDefault();
-      /* eslint-disable-next-line @gitlab/require-i18n-strings */
-      if (item.category === 'Projects') {
-        this.projectInputEl.val(item.id);
-      }
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      if (item.category === 'Groups') {
-        this.groupInputEl.val(item.id);
-      }
       $el.removeClass('is-active');
       this.disableAutocomplete();
       return this.searchInput.val('').focus();
@@ -438,20 +317,58 @@ export class SearchAutocomplete {
     this.searchInput.data('glDropdown').highlightRowAtIndex(null, 0);
   }
 
-  getAvatar(item) {
-    if (!Object.hasOwnProperty.call(item, 'avatar_url')) {
-      return false;
+  getCategoryContents() {
+    const userName = gon.current_username;
+    const { projectOptions, groupOptions, dashboardOptions } = gl;
+
+    // Get options
+    let options;
+    if (isInGroupsPage() && groupOptions) {
+      options = groupOptions[getGroupSlug()];
+    } else if (isInProjectPage() && projectOptions) {
+      options = projectOptions[getProjectSlug()];
+    } else if (dashboardOptions) {
+      options = dashboardOptions;
     }
 
-    const { label, id } = item;
-    const avatarUrl = item.avatar_url;
-    const avatar = avatarUrl
-      ? `<img class="search-item-avatar" src="${avatarUrl}" />`
-      : `<div class="s16 avatar identicon ${getIdenticonBackgroundClass(id)}">${getIdenticonTitle(
-          escape(label),
-        )}</div>`;
+    const { issuesPath, mrPath, name, issuesDisabled } = options;
+    const baseItems = [];
 
-    return avatar;
+    if (name) {
+      baseItems.push({
+        type: 'header',
+        content: `${name}`,
+      });
+    }
+
+    const issueItems = [
+      {
+        text: s__('SearchAutocomplete|Issues assigned to me'),
+        url: `${issuesPath}/?assignee_username=${userName}`,
+      },
+      {
+        text: s__("SearchAutocomplete|Issues I've created"),
+        url: `${issuesPath}/?author_username=${userName}`,
+      },
+    ];
+    const mergeRequestItems = [
+      {
+        text: s__('SearchAutocomplete|Merge requests assigned to me'),
+        url: `${mrPath}/?assignee_username=${userName}`,
+      },
+      {
+        text: s__("SearchAutocomplete|Merge requests I've created"),
+        url: `${mrPath}/?author_username=${userName}`,
+      },
+    ];
+
+    let items;
+    if (issuesDisabled) {
+      items = baseItems.concat(mergeRequestItems);
+    } else {
+      items = baseItems.concat(...issueItems, ...mergeRequestItems);
+    }
+    return items;
   }
 
   isScrolledUp() {
