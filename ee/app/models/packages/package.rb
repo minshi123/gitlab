@@ -125,6 +125,13 @@ class Packages::Package < ApplicationRecord
     end
   end
 
+  def versions
+    project.packages
+           .with_name(name)
+           .where.not(version: version)
+           .with_package_type(package_type)
+  end
+
   private
 
   def valid_conan_package_recipe

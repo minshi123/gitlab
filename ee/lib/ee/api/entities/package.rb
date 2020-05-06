@@ -29,6 +29,8 @@ module EE
 
         expose :pipeline, if: ->(package) { package.build_info }, using: Package::Pipeline
 
+        expose :versions, using: ::EE::API::Entities::PackageVersion
+
         private
 
         def project_path
