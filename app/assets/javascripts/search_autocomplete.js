@@ -68,13 +68,10 @@ function setSearchOptions() {
 }
 
 export class SearchAutocomplete {
-  constructor({ wrap, optsEl, projectId, projectRef } = {}) {
+  constructor({ wrap } = {}) {
     setSearchOptions();
     this.bindEventContext();
     this.wrap = wrap || $('.search');
-    this.optsEl = optsEl || this.wrap.find('.search-autocomplete-opts');
-    this.projectId = projectId || (this.optsEl.data('autocompleteProjectId') || '');
-    this.projectRef = projectRef || (this.optsEl.data('autocompleteProjectRef') || '');
     this.dropdown = this.wrap.find('.dropdown');
     this.dropdownToggle = this.wrap.find('.js-dropdown-search-toggle');
     this.dropdownMenu = this.dropdown.find('.dropdown-menu');
