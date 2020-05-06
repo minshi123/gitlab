@@ -17,16 +17,7 @@ For alerts, we offer a easy way for a user to identify the severity of a particu
 
 Icon Naming: `severity`
 
-Alert icons:
-
-| Name         | Icon                                                           | Color(hex) |
-| ------------ | -------------------------------------------------------------- | ---------- |
-| `Critical`   | https://gitlab-org.gitlab.io/gitlab-svgs/?q=severity-critical  | #8b261     |
-| `High`       | https://gitlab-org.gitlab.io/gitlab-svgs/?q=severity-high      | #c0341d    |
-| `Medium`     | https://gitlab-org.gitlab.io/gitlab-svgs/?q=severity-medium    | #fca429    |
-| `Low`        | https://gitlab-org.gitlab.io/gitlab-svgs/?q=severity-low       | #fdbc60    |
-| `Info`       | https://gitlab-org.gitlab.io/gitlab-svgs/?q=severity-info      | #418cd8    |
-| `Unknown`    | https://gitlab-org.gitlab.io/gitlab-svgs/?q=severity-unknown   | #bababa    |
+![Alert Management Severity System](img/alert_management_severity_v13_0.png)
 
 ### Alert Management List
 
@@ -37,28 +28,10 @@ You can find the Alert Management list at **Operations > Alerts** in your projec
 Each alert has a set of meaningful metric which include:
 
 - `serverity`
-    - An alerts severity
 - `start time`
-    - An alerts start time
 - `end time`
-    - An alerts start time
 - `alert description`
-    - An alerts description
 - `event count`
-    - The number of times that an alert has fired
 - `status`
-    - The alerts current status
 
 ![Alert Management List](img/alert_management_1_v13_0.png)
-
-Each alert contains a status dropdown which is important because it communicates which alerts need to be investigated. Standard alert statuses include `triggered`, `acknowledged`, and `resolved`.
-
-Alert Statuses:
-
-| Name           | Meaning                                                       |
-| -------------- | ------------------------------------------------------------- |
-| `Triggered`    | Indicates that no one has begun investigation.                |
-| `Acknowledged` | Indicates that someone is actively investigating the problem. |
-| `Resolved`     | Indicates no further work is required.                        |
-
-![Alert Management List](img/alert_management_2_v13_0.png)
