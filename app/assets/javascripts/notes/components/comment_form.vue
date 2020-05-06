@@ -3,7 +3,15 @@ import $ from 'jquery';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { isEmpty } from 'lodash';
 import Autosize from 'autosize';
-import { GlAlert, GlIntersperse, GlLink, GlSprintf } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlFormCheckbox,
+  GlIcon,
+  GlIntersperse,
+  GlLink,
+  GlSprintf,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
 import TimelineEntryItem from '~/vue_shared/components/notes/timeline_entry_item.vue';
 import Flash from '../../flash';
@@ -36,9 +44,14 @@ export default {
     loadingButton,
     TimelineEntryItem,
     GlAlert,
+    GlFormCheckbox,
+    GlIcon,
     GlIntersperse,
     GlLink,
     GlSprintf,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [issuableStateMixin],
   props: {
@@ -51,6 +64,7 @@ export default {
     return {
       note: '',
       noteType: constants.COMMENT,
+      noteIsConfidential: false,
       isSubmitting: false,
       isSubmitButtonDisabled: true,
     };
@@ -138,6 +152,9 @@ export default {
     trackingLabel() {
       return slugifyWithUnderscore(`${this.commentButtonTitle} button`);
     },
+    confidentialNotesEnabled() {
+      return Boolean(gon.features?.confidentialNotes);
+    },
   },
   watch: {
     note(newNote) {
@@ -185,6 +202,7 @@ export default {
             note: {
               noteable_type: this.noteableType,
               noteable_id: this.getNoteableData.id,
+              confidential: this.noteIsConfidential,
               note: this.note,
             },
             merge_request_diff_head_sha: this.getNoteableData.diff_head_sha,
@@ -285,6 +303,7 @@ export default {
 
       if (shouldClear) {
         this.note = '';
+        this.noteIsConfidential = false;
         this.resizeTextarea();
         this.$refs.markdownField.previewMarkdown = false;
       }
@@ -411,6 +430,18 @@ js-gfm-input js-autosize markdown-area js-vue-textarea qa-comment-input"
               </p>
             </gl-alert>
             <div class="note-form-actions">
+              <div v-if="confidentialNotesEnabled" class="js-confidential-note-toggle mb-4">
+                <gl-form-checkbox v-model="noteIsConfidential">
+                  {{ __('Mark this comment as private') }}
+                  <gl-icon
+                    v-gl-tooltip:tooltipcontainer.bottom
+                    name="question"
+                    :size="12"
+                    :title="__('Private comments are accessible by internal staff only')"
+                    class="gl-text-gray-800"
+                  />
+                </gl-form-checkbox>
+              </div>
               <div
                 class="float-left btn-group
 append-right-10 comment-type-dropdown js-comment-type-dropdown droplab-dropdown"

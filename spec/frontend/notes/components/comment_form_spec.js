@@ -298,6 +298,28 @@ describe('issue_comment_form component', () => {
           });
         });
       });
+
+      describe('when note can be confidential', () => {
+        it('appends confidential status to note payload when saving', () => {
+          wrapper.vm.note = 'confidential note';
+          jest.spyOn(wrapper.vm, 'saveNote').mockReturnValue(new Promise(() => {}));
+          wrapper.vm.handleSave();
+
+          const [providedData] = wrapper.vm.saveNote.mock.calls[0];
+
+          expect(providedData.data.note.confidential).toBe(false);
+        });
+
+        it('should render confidential toggle as false', () => {
+          window.gon = { features: { confidentialNotes: true } };
+          mountComponent();
+
+          const input = wrapper.find('.js-confidential-note-toggle .form-check-input');
+
+          expect(input.exists()).toBe(true);
+          expect(input.attributes('checked')).toBeFalsy();
+        });
+      });
     });
 
     describe('issue is confidential', () => {
