@@ -15,7 +15,7 @@ describe Wikis::CreateAttachmentService do
   end
   let(:opts) { file_opts }
 
-  subject(:service) { described_class.new(project, user, opts) }
+  subject(:service) { described_class.new(container: project, current_user: user, params: opts) }
 
   before do
     project.add_developer(user)
@@ -24,7 +24,7 @@ describe Wikis::CreateAttachmentService do
   describe 'initialization' do
     context 'author commit info' do
       it 'does not raise error if user is nil' do
-        service = described_class.new(project, nil, opts)
+        service = described_class.new(container: project, current_user: nil, params: opts)
 
         expect(service.instance_variable_get(:@author_email)).to be_nil
         expect(service.instance_variable_get(:@author_name)).to be_nil
@@ -151,7 +151,7 @@ describe Wikis::CreateAttachmentService do
     context 'when user' do
       shared_examples 'wiki attachment user validations' do
         it 'returns error' do
-          result = described_class.new(project, user2, opts).execute
+          result = described_class.new(container: project, current_user: user2, params: opts).execute
 
           expect(result[:status]).to eq :error
           expect(result[:message]).to eq 'You are not allowed to push to the wiki'
