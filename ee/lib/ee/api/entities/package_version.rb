@@ -7,6 +7,7 @@ module EE
         expose :id
         expose :version
         expose :created_at
+        expose :tags
 
         expose :pipeline, if: ->(package) { package.build_info }, using: Package::Pipeline
 

@@ -130,6 +130,7 @@ class Packages::Package < ApplicationRecord
            .with_name(name)
            .where.not(version: version)
            .with_package_type(package_type)
+           .order(:version)
   end
 
   private
