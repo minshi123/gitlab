@@ -108,13 +108,12 @@ module Gitlab
       def deploy_token_from_request
         return unless route_authentication_setting[:deploy_token_allowed]
 
-        token = current_request.env[DEPLOY_TOKEN_HEADER].presence
+        token = current_request.env[DEPLOY_TOKEN_HEADER].presence || parsed_oauth_token
         username = current_request.env[DEPLOY_TOKEN_USER_HEADER].presence
-
-        return unless token && username
+        return unless token
 
         deploy_token = DeployToken.active.find_by_token(token)
-        return if username != deploy_token&.username
+        return if username && username != deploy_token&.username
 
         deploy_token
       end
