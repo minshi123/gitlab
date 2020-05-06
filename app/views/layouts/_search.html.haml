@@ -50,4 +50,3 @@
     -# workaround for non-JS feature specs, see spec/support/helpers/search_helpers.rb
     - if ENV['RAILS_ENV'] == 'test'
       %noscript= button_tag 'Search'
-    .search-autocomplete-opts.hide{ :'data-autocomplete-path' => search_autocomplete_path, :'data-autocomplete-project-id' => @project.try(:id), :'data-autocomplete-project-ref' => @ref }
