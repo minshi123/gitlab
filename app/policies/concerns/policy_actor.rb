@@ -58,7 +58,7 @@ module PolicyActor
   end
 
   def preferred_language
-    false
+    nil
   end
 
   def requires_ldap_check?
@@ -66,7 +66,7 @@ module PolicyActor
   end
 
   def try_obtain_ldap_lease
-    false
+    nil
   end
 end
 

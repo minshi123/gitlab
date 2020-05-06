@@ -105,7 +105,7 @@ module Gitlab
 
       # This returns a deploy token, not a user since a deploy token does not
       # belong to a user.
-      def find_user_from_deploy_token
+      def deploy_token_from_request
         return unless route_authentication_setting[:deploy_token_allowed]
 
         token = current_request.env[DEPLOY_TOKEN_HEADER].presence

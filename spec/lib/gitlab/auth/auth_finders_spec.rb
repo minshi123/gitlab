@@ -187,11 +187,11 @@ describe Gitlab::Auth::AuthFinders do
     end
   end
 
-  describe '#find_user_from_deploy_token' do
+  describe '#deploy_token_from_request' do
     let_it_be(:deploy_token) { create(:deploy_token) }
     let_it_be(:route_authentication_setting) { { deploy_token_allowed: true } }
 
-    subject { find_user_from_deploy_token }
+    subject { deploy_token_from_request }
 
     it { is_expected.to be_nil }
 

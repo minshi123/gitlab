@@ -85,12 +85,12 @@ class ProjectPolicy < BasePolicy
   end
 
   desc "Deploy token with read_package_registry scope"
-  condition(:read_package_deploy_token) do
+  condition(:read_package_registry_deploy_token) do
     user.is_a?(DeployToken) && user.has_access_to?(project) && user.read_package_registry
   end
 
   desc "Deploy token with write_package_registry scope"
-  condition(:write_package_deploy_token) do
+  condition(:write_package_registry_deploy_token) do
     user.is_a?(DeployToken) && user.has_access_to?(project) && user.write_package_registry
   end
 
@@ -540,12 +540,12 @@ class ProjectPolicy < BasePolicy
     prevent :destroy_design
   end
 
-  rule { read_package_deploy_token }.policy do
+  rule { read_package_registry_deploy_token }.policy do
     enable :read_package
     enable :read_project
   end
 
-  rule { write_package_deploy_token }.policy do
+  rule { write_package_registry_deploy_token }.policy do
     enable :create_package
     enable :read_project
   end
