@@ -7,7 +7,6 @@
 -# helpers in some way but given that they're very frontend-centeric,
 -# keeping them in HAML view makes more sense.
 - page_size = 20
-- ignore_page_params = ['next', 'prev', 'page']
 - requirements_count = Hash.new(0).merge(@project.requirements.counts_by_state)
 - total_requirements = requirements_count['opened'] + requirements_count['archived']
 - is_open_tab = params[:state].nil? || params[:state] == 'opened'
@@ -18,28 +17,6 @@
   - current_tab_count = requirements_count['archived'] > page_size ? page_size : requirements_count['archived']
 - else
   - current_tab_count = total_requirements > page_size ? page_size : total_requirements
-
-.top-area
-  %ul.nav-links.mobile-separator.requirements-state-filters.js-requirements-state-filters
-    %li{ class: active_when(is_open_tab) }>
-      = link_to page_filter_path(state: 'opened', without: ignore_page_params), id: 'state-opened', title: (_("Filter by %{issuable_type} that are currently opened.") % { issuable_type: page_context_word }), data: { state: 'opened' } do
-        = _('Open')
-        %span.badge.badge-pill.js-opened-count= requirements_count['opened']
-
-    %li{ class: active_when(params[:state] == 'archived') }>
-      = link_to page_filter_path(state: 'archived', without: ignore_page_params), id: 'state-archived', title: (_("Filter by %{issuable_type} that are currently archived.") % { issuable_type: page_context_word }), data: { state: 'archived' } do
-        = _('Archived')
-        %span.badge.badge-pill.js-archived-count= requirements_count['archived']
-
-    %li{ class: active_when(params[:state] == 'all') }>
-      = link_to page_filter_path(state: 'all', without: ignore_page_params), id: 'state-all', title: (_("Show all %{issuable_type}.") % { issuable_type: page_context_word }), data: { state: 'all' } do
-        = _('All')
-        %span.badge.badge-pill.js-all-count= total_requirements
-
-  .nav-controls
-    - if is_open_tab && can?(current_user, :create_requirement, @project)
-      %button.btn.btn-success.js-new-requirement.qa-new-requirement-button{ type: 'button' }
-        = _('New requirement')
 
 #js-requirements-app{ data: { filter_by: params[:state],
   page: params[:page],

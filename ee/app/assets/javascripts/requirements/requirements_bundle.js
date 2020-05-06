@@ -58,8 +58,8 @@ export default () => {
       const ALL = parseInt(all, 10);
 
       return {
-        filterBy: stateFilterBy,
-        requirementsCount: {
+        initialfilterBy: stateFilterBy,
+        initialRequirementsCount: {
           OPENED,
           ARCHIVED,
           ALL,
@@ -77,8 +77,8 @@ export default () => {
       return createElement('requirements-root', {
         props: {
           projectPath: this.projectPath,
-          filterBy: this.filterBy,
-          requirementsCount: this.requirementsCount,
+          initialfilterBy: this.initialfilterBy,
+          initialRequirementsCount: this.initialRequirementsCount,
           page: parseInt(this.page, 10) || 1,
           prev: this.prev,
           next: this.next,
