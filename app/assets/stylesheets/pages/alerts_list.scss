@@ -55,8 +55,8 @@
   }
 
   @include media-breakpoint-down(sm) {
-    table {
-      td {
+    .alert-management-table {
+      .table-col {
         min-height: 68px;
 
         &:last-child {

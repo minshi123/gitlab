@@ -13,7 +13,7 @@ import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import getAlerts from '../graphql/queries/getAlerts.query.graphql';
 
-const tdClass = 'd-flex d-md-table-cell align-items-center';
+const tdClass = 'table-col d-flex d-md-table-cell align-items-center';
 
 export default {
   i18n: {
@@ -148,7 +148,7 @@ export default {
         {{ s__('AlertManagement|Alerts') }}
       </h4>
       <gl-table
-        class="mt-3"
+        class="alert-management-table mt-3"
         :items="alerts"
         :fields="$options.fields"
         :show-empty="true"
