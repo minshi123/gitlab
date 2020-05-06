@@ -14,6 +14,8 @@ module VulnerabilitiesHelper
       has_mr: !!vulnerability.finding.merge_request_feedback.try(:merge_request_iid),
       vulnerability_feedback_help_path: help_page_path('user/application_security/index', anchor: 'interacting-with-the-vulnerabilities'),
       finding_json: vulnerability_finding_data(vulnerability.finding).to_json,
+      source_branch: pipeline.source_ref,
+      create_mr_url: create_vulnerability_feedback_merge_request_path(vulnerability.finding.project),
       timestamp: Time.now.to_i
     }
   end
@@ -39,7 +41,8 @@ module VulnerabilitiesHelper
       :location,
       :name,
       :issue_feedback,
-      :project
+      :project,
+      remediation: remediation
     ).merge(
       solution: remediation ? remediation['summary'] : occurrence[:solution]
     )
