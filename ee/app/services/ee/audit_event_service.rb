@@ -158,7 +158,7 @@ module EE
     #
     # @return [AuditEventService]
     def for_user(full_path = @entity.full_path)
-      for_custom_model('user', full_path)
+      for_custom_model('user', full_path, @entity.id)
     end
 
     # Builds the @details attribute for project
@@ -167,7 +167,7 @@ module EE
     #
     # @return [AuditEventService]
     def for_project
-      for_custom_model('project', @entity.full_path)
+      for_custom_model('project', @entity.full_path, @entity.id)
     end
 
     # Builds the @details attribute for group
@@ -176,7 +176,7 @@ module EE
     #
     # @return [AuditEventService]
     def for_group
-      for_custom_model('group', @entity.full_path)
+      for_custom_model('group', @entity.full_path, @entity.id)
     end
 
     def enabled?
@@ -222,7 +222,7 @@ module EE
       }
     end
 
-    def for_custom_model(model, key_title)
+    def for_custom_model(model, key_title, target_id)
       action = @details[:action]
       model_class = model.camelize
       custom_message = @details[:custom_message]
@@ -233,7 +233,7 @@ module EE
           {
             remove: model,
             author_name: @author.name,
-            target_id: key_title,
+            target_id: target_id,
             target_type: model_class,
             target_details: key_title
           }
@@ -241,7 +241,7 @@ module EE
           {
             add: model,
             author_name: @author.name,
-            target_id: key_title,
+            target_id: target_id,
             target_type: model_class,
             target_details: key_title
           }
@@ -249,7 +249,7 @@ module EE
           {
             custom_message: custom_message,
             author_name: @author&.name,
-            target_id: key_title,
+            target_id: target_id,
             target_type: model_class,
             target_details: key_title,
             ip_address: @details[:ip_address]
