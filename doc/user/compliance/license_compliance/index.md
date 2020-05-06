@@ -135,7 +135,7 @@ License Compliance can be configured using environment variables.
 
 | Environment variable  | Required | Description |
 |-----------------------|----------|-------------|
-| `ADDITIONAL_CA_CERT_BUNDLE` | no | Bundle of trusted CA certificates (currently supported in Python projects). |
+| `ADDITIONAL_CA_CERT_BUNDLE` | no | Bundle of trusted CA certificates (currently supported in Pip, Pipenv, Maven, Gradle and NPM projects). |
 | `GRADLE_CLI_OPTS` | no | Additional arguments for the gradle executable. If not supplied, defaults to `--exclude-task=test`. |
 | `LICENSE_FINDER_CLI_OPTS` | no | Additional arguments for the `license_finder` executable. For example, if your project has both Golang and Ruby code stored in different directories and you want to only scan the Ruby code, you can update your `.gitlab-ci-yml` template to specify which project directories to scan, like `LICENSE_FINDER_CLI_OPTS: '--debug --aggregate-paths=. ruby'`. |
 | `LM_JAVA_VERSION`      | no | Version of Java. If set to `11`, Maven and Gradle use Java 11 instead of Java 8. |
@@ -329,6 +329,52 @@ license_scanning:
       license_scanning: gl-license-scanning-report.json
 ```
 
+#### Using private NPM registries
+
+If you have a private NPM registry you can use a
+ [`.npmrc`](https://docs.npmjs.com/configuring-your-registry-settings-as-an-npm-enterprise-user)
+to specify its location.
+
+E.g.
+
+```text
+registry = https://npm.example.com
+strict-ssl = true
+```
+
+It is also possible to provide custom [certificate authority signing certificates](https://docs.npmjs.com/misc/config#cafile)
+to verify TLS endpoints serving an x509 certificate signed by a custom authority
+by using the `ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variables).
+
+For example, the following `.gitlab-ci.yml`:
+
+```yaml
+include:
+  - template: 'License-Scanning.gitlab-ci.yml'
+
+license_scanning:
+  image:
+    name: $CI_REGISTRY/analyzers/license-management:latest
+  variables:
+    ADDITIONAL_CA_CERT_BUNDLE: |
+      -----BEGIN CERTIFICATE-----
+      MIICkzCCAfagAwIBAgIUEnAu8fmFTEMKSXW8+ko/SFuNr+owCgYIKoZIzj0EAwIw
+      XDELMAkGA1UEBhMCWFgxFTATBgNVBAcMDERlZmF1bHQgQ2l0eTEcMBoGA1UECgwT
+      RGVmYXVsdCBDb21wYW55IEx0ZDEYMBYGA1UEAwwPbnBtLmV4YW1wbGUuY29tMB4X
+      DTIwMDUwNjE5MjcwMVoXDTIwMDcwNzE5MjcwMVowXDELMAkGA1UEBhMCWFgxFTAT
+      BgNVBAcMDERlZmF1bHQgQ2l0eTEcMBoGA1UECgwTRGVmYXVsdCBDb21wYW55IEx0
+      ZDEYMBYGA1UEAwwPbnBtLmV4YW1wbGUuY29tMIGbMBAGByqGSM49AgEGBSuBBAAj
+      A4GGAAQB4Bb4/xVI0VL4xmxYqMV33Zhh1MEDR6VL9G4dPuvcXj7mKqc8VRtszyqB
+      JFs2q9VdyWNkM92IZsi5rSWRN0lTvFEAc4CN1s2OYVfMObqL3e5H3bdfzjcW9y49
+      /3RBItGxLlZpSUoufoXvO1bKei3bxPJ6rCKda1Jd/2evHo2pSESjGEGjUzBRMB0G
+      A1UdDgQWBBT1ikfEVKgWSi9Bni6pPhFPlafb5zAfBgNVHSMEGDAWgBT1ikfEVKgW
+      Si9Bni6pPhFPlafb5zAPBgNVHRMBAf8EBTADAQH/MAoGCCqGSM49BAMCA4GKADCB
+      hgJBI7E8743JkdqjgaxjYvaZL6MT8SWGTX3ZKeVrlIGSaeMsRvEjKMQgoI6f1QBB
+      HCfmU57tdgjwb9yXnybBc0LAV88CQSgLfJT+cQs+MmRQYhkelAD43+A70feMsGG8
+      TWeWahUzckp+mOcJmnR18R6um0Q7VSduNKYLxKX1C0nyYLtyH5JU
+      -----END CERTIFICATE-----
+```
+
 ## Running License Compliance in an offline environment
 
 For self-managed GitLab instances in an environment with limited, restricted, or intermittent access
@@ -386,8 +432,8 @@ license_scanning:
 The License Compliance job should now use local copies of the License Compliance analyzers to scan
 your code and generate security reports, without requiring internet access.
 
-Additional configuration may be needed for connecting to [private Maven repositories](#using-private-maven-repos)
-and [private Python repositories](#using-private-python-repos).
+Additional configuration may be needed for connecting to [private Maven repositories](#using-private-maven-repos),
+[private NPM re](#using-private-npm-registries), and [private Python repositories](#using-private-python-repos).
 
 Exact name matches are required for [project policies](#project-policies-for-license-compliance)
 when running in an offline environment ([see related issue](https://gitlab.com/gitlab-org/gitlab/-/issues/212388)).
