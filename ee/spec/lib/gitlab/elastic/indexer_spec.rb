@@ -35,6 +35,7 @@ describe Gitlab::Elastic::Indexer do
   context 'wikis' do
     let(:project) { create(:project, :wiki_repo) }
     let(:indexer) { described_class.new(project, wiki: true) }
+    let(:to_sha) { project.wiki.repository.commit('master').sha }
 
     before do
       project.wiki.create_page('test.md', '# term')
@@ -54,7 +55,7 @@ describe Gitlab::Elastic::Indexer do
           'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
           'RAILS_ENV'               => Rails.env,
           'FROM_SHA'                => expected_from_sha,
-          'TO_SHA'                  => nil
+          'TO_SHA'                  => to_sha
         )
       ).and_return(popen_success)
 
@@ -126,6 +127,7 @@ describe Gitlab::Elastic::Indexer do
 
   context 'test project' do
     let(:project) { create(:project, :repository) }
+    let(:to_sha) { project.repository.commit.sha }
 
     it 'runs the indexing command' do
       gitaly_connection_data = {
@@ -149,7 +151,7 @@ describe Gitlab::Elastic::Indexer do
         )
       ).and_return(popen_success)
 
-      indexer.run(to_sha)
+      indexer.run
     end
 
     context 'when IndexStatus exists' do
@@ -224,6 +226,17 @@ describe Gitlab::Elastic::Indexer do
       end
     end
 
+    def indexed_commits_for(term)
+      commits = Repository.elastic_search(
+        term,
+        type: 'commit'
+      )[:commits][:results].response
+
+      commits.map do |commit|
+        commit['_source']['commit']['sha']
+      end
+    end
+
     context 'when IndexStatus#last_commit is no longer in repository' do
       before do
         ElasticIndexerWorker.new.perform('index', 'Project', project.id, project.es_id)
@@ -252,19 +265,21 @@ describe Gitlab::Elastic::Indexer do
     end
 
     context 'when branch is reset to an earlier commit' do
-      before do
+      it 'reverses already indexed commits' do
         change_repository_and_index(project) do
           project.repository.create_file(user, '12', '', message: '12', branch_name: 'master')
         end
+        head = project.repository.commit.sha
 
+        expect(indexed_commits_for('12')).to include(head)
         expect(indexed_file_paths_for('12')).to include('12')
-      end
 
-      it 'reverses already indexed commits' do
+        # resetting the repository should purge the index of the outstanding commits
         change_repository_and_index(project) do
           project.repository.write_ref('master', initial_commit)
         end
 
+        expect(indexed_commits_for('12')).not_to include(head)
         expect(indexed_file_paths_for('12')).not_to include('12')
       end
     end

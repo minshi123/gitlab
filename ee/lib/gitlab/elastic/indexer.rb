@@ -26,15 +26,20 @@ module Gitlab
         @index_status = project.index_status
       end
 
-      def run(to_sha = nil)
-        # default to HEAD
-        to_sha ||= repository&.commit&.sha
+      # Runs the indexation process, which is the following:
+      # - Purge the index for any unreachable commits;
+      # - Run the `gitlab-elasticsearch-indexer`;
+      # - Update the `index_status` for the associated project;
+      #
+      # ref - Git ref up to which the indexation will run (default: 'master')
+      def run(ref = 'master')
+        to_sha ||= repository&.commit(ref)&.sha
         return update_index_status(Gitlab::Git::BLANK_SHA) unless commit_indexable?(to_sha)
 
         repository.__elasticsearch__.elastic_writing_targets.each do |target|
           Sidekiq.logger.debug(message: "Indexation running for #{project.id} #{from_sha}..#{to_sha}",
                                project_id: project.id,
-                               wiki: wiki)
+                               wiki: wiki?)
           run_indexer!(to_sha, target)
         end
 
@@ -59,7 +64,7 @@ module Gitlab
         path_to_indexer = Gitlab.config.elasticsearch.indexer_path
 
         # This might happen when default branch has been rebased.
-        purge_unreachable_commits_from_index!
+        purge_unreachable_commits_from_index!(to_sha, target)
 
         command =
           if wiki?
@@ -74,8 +79,8 @@ module Gitlab
       end
 
       # Remove all indexed data for commits and blobs for a project.
-      def purge_unreachable_commits_from_index!
-        if index_status && !repository_contains_last_indexed_commit?
+      def purge_unreachable_commits_from_index!(to_sha, target)
+        unless last_commit_ancestor_of?(to_sha)
           target.delete_index_for_commits_and_blobs(wiki: wiki?)
         end
       end
@@ -116,6 +121,10 @@ module Gitlab
         strong_memoize(:repository_contains_last_indexed_commit) do
           last_commit.present? && repository.commit(last_commit).present?
         end
+      end
+
+      def last_commit_ancestor_of?(to_sha)
+        from_sha != Gitlab::Git::EMPTY_TREE_ID && repository.ancestor?(from_sha, to_sha)
       end
 
       def commit_indexable?(rev = nil)
