@@ -58,7 +58,7 @@ $item-weight-max-width: 48px;
   }
 
   .item-title-wrapper {
-    max-width: 100%;
+    max-width: calc(100% - 30px);
   }
 
   .item-title {
@@ -235,10 +235,10 @@ $item-weight-max-width: 48px;
 }
 
 .btn-item-remove {
-  position: absolute;
+  position: relative;
   right: 0;
   top: $gl-padding-4 / 2;
-  padding: $gl-padding-4;
+  padding: $btn-sm-side-margin;
   margin-right: $gl-padding-4 / 2;
   line-height: 0;
   border-color: transparent;
@@ -246,6 +246,7 @@ $item-weight-max-width: 48px;
 
   &:hover {
     color: $gl-text-color;
+    border-color: $border-color;
   }
 }
 
@@ -359,10 +360,6 @@ $item-weight-max-width: 48px;
       }
     }
 
-    .item-title-wrapper {
-      max-width: calc(100% - 500px);
-    }
-
     .item-info-area {
       flex-basis: auto;
     }
@@ -380,10 +377,6 @@ $item-weight-max-width: 48px;
     overflow: hidden;
   }
 
-  .item-meta {
-    flex: 1;
-  }
-
   .item-assignees {
     .avatar {
       height: $gl-padding-24;
@@ -395,17 +388,6 @@ $item-weight-max-width: 48px;
       min-width: $gl-padding-24;
       line-height: $gl-padding-24;
       border-radius: $gl-padding-24;
-    }
-  }
-
-  .btn-item-remove {
-    position: relative;
-    top: initial;
-    right: 0;
-    padding: $btn-sm-side-margin;
-
-    &:hover {
-      border-color: $border-color;
     }
   }
 
@@ -423,12 +405,6 @@ $item-weight-max-width: 48px;
 
     .health-label-long {
       display: initial;
-    }
-  }
-
-  .item-body {
-    .item-title-wrapper {
-      max-width: calc(100% - 640px);
     }
   }
 }
