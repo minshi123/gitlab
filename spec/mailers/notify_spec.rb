@@ -728,6 +728,15 @@ describe Notify do
 
       subject { described_class.note_design_email(recipient.id, note.id) }
 
+      # TODO These tests are being temporarily skipped unless run in EE,
+      # as we are in the process of moving Design Management to FOSS in 13.0
+      # in steps. In the current step the services have not yet been moved.
+      #
+      # See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283.
+      before do
+        skip 'See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283' unless Gitlab.ee?
+      end
+
       it { is_expected.to have_header(header_name, design.id.to_s) }
 
       it { is_expected.to have_body_text(design.filename) }

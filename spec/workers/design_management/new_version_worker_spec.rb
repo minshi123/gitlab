@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe DesignManagement::NewVersionWorker do
-
   # TODO a number of these tests are being temporarily skipped unless run in EE,
   # as we are in the process of moving Design Management to FOSS in 13.0
   # in steps. In the current step the services have not yet been moved.
