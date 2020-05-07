@@ -12,10 +12,11 @@ export const EDITOR_OPTIONS = {
     'ul',
     'ol',
     'task',
+    'indent',
+    'outdent',
     'divider',
     'hr',
     'table',
-    'divider',
     'code',
   ],
 };
