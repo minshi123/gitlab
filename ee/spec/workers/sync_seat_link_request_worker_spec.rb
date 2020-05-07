@@ -5,11 +5,10 @@ require 'spec_helper'
 describe SyncSeatLinkRequestWorker, type: :worker do
   describe '#perform' do
     subject do
-      described_class.new.perform(*parameters)
+      described_class.new.perform('2020-01-01', '123', 5, 4)
     end
 
     let(:seat_link_url) { [EE::SUBSCRIPTIONS_URL, '/api/v1/seat_links'].join }
-    let(:parameters) { ['2020-01-01', '123', 5, 4] }
 
     it 'makes an HTTP POST request with passed params' do
       stub_request(:post, seat_link_url).to_return(status: 200)
@@ -44,12 +43,5 @@ describe SyncSeatLinkRequestWorker, type: :worker do
     end
 
     it_behaves_like 'unsuccessful request'
-
-    context 'parameters' do
-      it 'fails if any of the parameters is not present' do
-        parameters.delete(parameters.sample)
-        expect { subject }.to raise_error(ArgumentError)
-      end
-    end
   end
 end
