@@ -151,7 +151,7 @@ describe Gitlab::UsageData, :aggregate_failures do
       end
     end
 
-    describe '#recording_ce_finished_at' do
+    describe '.recording_ce_finished_at' do
       subject { described_class.recording_ce_finish_data }
 
       it 'gathers time ce recording finishes at' do

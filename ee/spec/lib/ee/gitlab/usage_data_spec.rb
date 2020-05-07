@@ -673,7 +673,7 @@ describe Gitlab::UsageData do
     end
   end
 
-  describe '#recording_ee_finished_at' do
+  describe '.recording_ee_finished_at' do
     subject { described_class.recording_ee_finish_data }
 
     it 'gathers time ee recording finishes at' do

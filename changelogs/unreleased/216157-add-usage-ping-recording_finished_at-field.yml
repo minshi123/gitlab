@@ -1,5 +1,5 @@
 ---
-title: Add usage ping recording finish times
+title: Record usage ping finish time
 merge_request: 31222
 author:
 type: performance
