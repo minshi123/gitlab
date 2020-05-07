@@ -11,13 +11,22 @@ being developed, efficiency and awareness can be increased.
 NOTE: **Note:**
 You will need at least Maintainer [permissions](../../permissions.md) to enable the Alert Management feature.
 
-## Alert Management Severity
+## Alert Management severity
 
-For alerts, we offer a easy way for a user to identify the severity of a particular alert via a set of icons which are shaped and color coded appropriately. These severity icons can act as instant feedback for which Alerts need to be made a priority for investigation.
-
-Icon Naming: `severity`
+Each level of alert contains a uniquely shaped and color-coded icon to help
+you identify the severity of a particular alert. These severity icons help you
+immediately identify which alerts you should prioritize investigating:
 
 ![Alert Management Severity System](img/alert_management_severity_v13_0.png)
+
+Alerts contain one of the following icons:
+
+- **Critical**: **{severity-critical}** and hexadecimal color `#8b261`
+- **High**: **{severity-high}** and hexadecimal color `#c0341d`
+- **Medium**: **{severity-medium}** and hexadecimal color `#fca429`
+- **Low**: **{severity-low}** and hexadecimal color `#fdbc60`
+- **Info**: **{severity-info}** and hexadecimal color `#418cd8`
+- **Unknown**: **{severity-unknown}** and hexadecimal color `#bababa`
 
 ## Alert Management List
 
