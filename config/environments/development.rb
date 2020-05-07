@@ -42,7 +42,8 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
   # Don't make a mess when bootstrapping a development environment
   config.action_mailer.perform_deliveries = (ENV['BOOTSTRAP'] != '1')
-  config.action_mailer.preview_path = 'app/mailers/previews'
+  # multiple path support for ee https://github.com/rails/rails/pull/31595#issuecomment-568901569
+  config.action_mailer.preview_path = "{app/mailers/previews,ee/app/mailers/previews}"
 
   config.eager_load = false
 
