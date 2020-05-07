@@ -1,8 +1,9 @@
 <script>
-import { GlNewDropdown, GlNewDropdownItem, GlTabs, GlTab } from '@gitlab/ui';
+import { GlNewDropdown, GlNewDropdownItem, GlTabs, GlTab, GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import query from '../graphql/queries/details.query.graphql';
 import { fetchPolicies } from '~/lib/graphql';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 export default {
   statuses: {
@@ -19,13 +20,19 @@ export default {
     GlNewDropdownItem,
     GlTab,
     GlTabs,
+    GlButton,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     alertId: {
       type: String,
       required: true,
     },
     projectPath: {
+      type: String,
+      required: true,
+    },
+    newIssuePath: {
       type: String,
       required: true,
     },
@@ -52,8 +59,10 @@ export default {
 </script>
 <template>
   <div>
-    <div v-if="alert" class="d-flex justify-content-between border-bottom pb-2 pt-1">
-      <div></div>
+    <div
+      v-if="alert"
+      class="gl-display-flex gl-justify-content-space-between gl-border-b-1 gl-border-b-gray-200 gl-border-b-solid  gl-p-4"
+    >
       <gl-new-dropdown class="align-self-center" right>
         <gl-new-dropdown-item
           v-for="(label, field) in $options.statuses"
@@ -63,6 +72,16 @@ export default {
           >{{ label }}
         </gl-new-dropdown-item>
       </gl-new-dropdown>
+
+      <gl-button
+        v-if="glFeatures.createIssueFromAlertEnabled"
+        data-testid="createIssueBtn"
+        :href="newIssuePath"
+        category="primary"
+        variant="success"
+      >
+        {{ s__('AlertManagement|Create issue') }}
+      </gl-button>
     </div>
     <gl-tabs v-if="alert" data-testid="alertDetailsTabs">
       <gl-tab data-testid="overviewTab" :title="$options.i18n.overviewTitle">

@@ -35,11 +35,13 @@ describe Projects::AlertManagementHelper do
 
   describe '#alert_management_detail_data' do
     let(:alert_id) { 1 }
+    let(:new_issue_path) { new_project_issue_path(project) }
 
     it 'returns detail page configuration' do
-      expect(alert_management_detail_data(project_path, alert_id)).to eq(
+      expect(alert_management_detail_data(project, alert_id)).to eq(
         'alert-id' => alert_id,
-        'project-path' => project_path
+        'project-path' => project_path,
+        'new-issue-path' => new_issue_path
       )
     end
   end
