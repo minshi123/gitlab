@@ -28,19 +28,19 @@ Alerts contain one of the following icons:
 - **Info**: **{severity-info}** and hexadecimal color `#418cd8`
 - **Unknown**: **{severity-unknown}** and hexadecimal color `#bababa`
 
-## Alert Management List
+## Alert Management list
 
 NOTE: **Note:**
 You will need at least Developer [permissions](../../permissions.md) to view the Alert Management list.
 
-You can find the Alert Management list at **Operations > Alerts** in your project's sidebar.
-Each alert has a set of meaningful metric which include:
-
-- `serverity`
-- `start time`
-- `end time`
-- `alert description`
-- `event count`
-- `status`
+You can find the Alert Management list at **{cloud-gear}** **Operations > Alerts** in your project's sidebar.
+Each alert contains the following metrics:
 
 ![Alert Management List](img/alert_management_1_v13_0.png)
+
+- **Severity** - definition TBD
+- **Start time** - definition TBD. What format?
+- **End time** - definition TBD. What format? 
+- **Alert description** - definition TBD
+- **Event count** - definition TBD
+- **Status** - definition TBD. Describe the different states. 'Triggered' is one...
