@@ -11,6 +11,12 @@ being developed, efficiency and awareness can be increased.
 NOTE: **Note:**
 You will need at least Maintainer [permissions](../../permissions.md) to enable the Alert Management feature.
 
+1. Navigate to your project’s **Settings > Operations**.
+1. Click to expand the **Incidents** panel.
+1. Ensure that the **Active** toggle is set.
+1. Click **Save changes** for the changes to take effect.
+1. You can now visit **Operations > Alert Management** in your project's sidebar to [view a list](#alert-management-list) of alerts.
+
 ## Alert Management severity
 
 Each level of alert contains a uniquely shaped and color-coded icon to help
@@ -21,7 +27,7 @@ immediately identify which alerts you should prioritize investigating:
 
 Alerts contain one of the following icons:
 
-- **Critical**: **{severity-critical}** and hexadecimal color `#8b261`
+- **Critical**: **{severity-critical}** and hexadecimal color `#8b2615`
 - **High**: **{severity-high}** and hexadecimal color `#c0341d`
 - **Medium**: **{severity-medium}** and hexadecimal color `#fca429`
 - **Low**: **{severity-low}** and hexadecimal color `#fdbc60`
@@ -38,9 +44,21 @@ Each alert contains the following metrics:
 
 ![Alert Management List](img/alert_management_1_v13_0.png)
 
-- **Severity** - definition TBD
-- **Start time** - definition TBD. What format?
-- **End time** - definition TBD. What format? 
-- **Alert description** - definition TBD
-- **Event count** - definition TBD
-- **Status** - definition TBD. Describe the different states. 'Triggered' is one...
+- **Severity** - The current importance of a alert and how much attention it should receive.
+- **Start time** - How long ago the alert fired, this field is measured using the standard GitLab pattern of `X time ago` but is supported by a granular date/time tooltip depending on the users locale.
+- **End time** - How long ago the alert fired was resolved, this field is measured using the standard GitLab pattern of `X time ago` but is supported by a granular date/time tooltip depending on the users locale.
+- **Alert description** - The description of the alert trying to capture the most meaningful data.
+- **Event count** - The number of times that an alert has fired.
+- **Status** - The current status of the alert, for alert statuses please see below.
+
+### Alert Management Statuses
+
+Each alert contains a status dropdown which is important because it communicates which alerts need to be investigated. Standard alert statuses include `triggered`, `acknowledged`, and `resolved`.
+
+Alert Statuses:
+
+| Name           | Meaning                                                       |
+| -------------- | ------------------------------------------------------------- |
+| `Triggered`    | Indicates that no one has begun investigation.                |
+| `Acknowledged` | Indicates that someone is actively investigating the problem. |
+| `Resolved`     | Indicates no further work is required.                        |
