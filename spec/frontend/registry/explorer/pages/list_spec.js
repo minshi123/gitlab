@@ -1,11 +1,12 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlPagination, GlSkeletonLoader, GlSprintf, GlAlert } from '@gitlab/ui';
+import { GlSkeletonLoader, GlSprintf, GlAlert } from '@gitlab/ui';
 import Tracking from '~/tracking';
 import component from '~/registry/explorer/pages/list.vue';
 import QuickstartDropdown from '~/registry/explorer/components/quickstart_dropdown.vue';
 import GroupEmptyState from '~/registry/explorer/components/group_empty_state.vue';
 import ProjectEmptyState from '~/registry/explorer/components/project_empty_state.vue';
 import ProjectPolicyAlert from '~/registry/explorer/components/project_policy_alert.vue';
+import ImageList from '~/registry/explorer/components/image_list.vue';
 import { createStore } from '~/registry/explorer/stores/';
 import {
   SET_MAIN_LOADING,
@@ -18,7 +19,7 @@ import {
   DELETE_IMAGE_ERROR_MESSAGE,
 } from '~/registry/explorer/constants';
 import { imagesListResponse } from '../mock_data';
-import { GlModal, GlEmptyState, RouterLink } from '../stubs';
+import { GlModal, GlEmptyState } from '../stubs';
 import { $toast } from '../../shared/mocks';
 
 describe('List Page', () => {
@@ -26,20 +27,18 @@ describe('List Page', () => {
   let dispatchSpy;
   let store;
 
-  const findDeleteBtn = () => wrapper.find({ ref: 'deleteImageButton' });
   const findDeleteModal = () => wrapper.find(GlModal);
   const findSkeletonLoader = () => wrapper.find(GlSkeletonLoader);
   const findImagesList = () => wrapper.find({ ref: 'imagesList' });
-  const findRowItems = () => wrapper.findAll({ ref: 'rowItem' });
+
   const findEmptyState = () => wrapper.find(GlEmptyState);
-  const findDetailsLink = () => wrapper.find({ ref: 'detailsLink' });
-  const findClipboardButton = () => wrapper.find({ ref: 'clipboardButton' });
-  const findPagination = () => wrapper.find(GlPagination);
+
   const findQuickStartDropdown = () => wrapper.find(QuickstartDropdown);
   const findProjectEmptyState = () => wrapper.find(ProjectEmptyState);
   const findGroupEmptyState = () => wrapper.find(GroupEmptyState);
   const findProjectPolicyAlert = () => wrapper.find(ProjectPolicyAlert);
   const findDeleteAlert = () => wrapper.find(GlAlert);
+  const findImageList = () => wrapper.find(ImageList);
 
   const mountComponent = ({ mocks } = {}) => {
     wrapper = shallowMount(component, {
@@ -48,7 +47,6 @@ describe('List Page', () => {
         GlModal,
         GlEmptyState,
         GlSprintf,
-        RouterLink,
       },
       mocks: {
         $toast,
@@ -203,140 +201,103 @@ describe('List Page', () => {
       expect(findQuickStartDropdown().exists()).toBe(true);
     });
 
-    describe('listElement', () => {
-      let listElements;
-      let firstElement;
+    it('list component is visible', () => {
+      expect(findImageList().exists()).toBe(true);
+    });
 
-      beforeEach(() => {
-        listElements = findRowItems();
-        [firstElement] = store.state.images;
+    describe('delete image', () => {
+      const itemToDelete = { path: 'bar' };
+      it('should call deleteItem when confirming deletion', () => {
+        dispatchSpy.mockResolvedValue();
+        findImageList().vm.$emit('delete', itemToDelete);
+        expect(wrapper.vm.itemToDelete).toEqual(itemToDelete);
+        findDeleteModal().vm.$emit('ok');
+        expect(store.dispatch).toHaveBeenCalledWith('requestDeleteImage', wrapper.vm.itemToDelete);
       });
 
-      it('contains one list element for each image', () => {
-        expect(listElements.length).toBe(store.state.images.length);
-      });
-
-      it('contains a link to the details page', () => {
-        const link = findDetailsLink();
-        expect(link.html()).toContain(firstElement.path);
-        expect(link.props('to').name).toBe('details');
-      });
-
-      it('contains a clipboard button', () => {
-        const button = findClipboardButton();
-        expect(button.exists()).toBe(true);
-        expect(button.props('text')).toBe(firstElement.location);
-        expect(button.props('title')).toBe(firstElement.location);
-      });
-
-      describe('delete image', () => {
-        it('should be possible to delete a repo', () => {
-          const deleteBtn = findDeleteBtn();
-          expect(deleteBtn.exists()).toBe(true);
-        });
-
-        it('should call deleteItem when confirming deletion', () => {
-          dispatchSpy.mockResolvedValue();
-          findDeleteBtn().vm.$emit('click');
-          expect(wrapper.vm.itemToDelete).not.toEqual({});
-          findDeleteModal().vm.$emit('ok');
-          expect(store.dispatch).toHaveBeenCalledWith(
-            'requestDeleteImage',
-            wrapper.vm.itemToDelete,
+      it('should show a success alert when delete request is successful', () => {
+        dispatchSpy.mockResolvedValue();
+        findImageList().vm.$emit('delete', itemToDelete);
+        expect(wrapper.vm.itemToDelete).toEqual(itemToDelete);
+        return wrapper.vm.handleDeleteImage().then(() => {
+          const alert = findDeleteAlert();
+          expect(alert.exists()).toBe(true);
+          expect(alert.text().replace(/\s\s+/gm, ' ')).toBe(
+            DELETE_IMAGE_SUCCESS_MESSAGE.replace('%{title}', wrapper.vm.itemToDelete.path),
           );
         });
-
-        it('should show a success alert when delete request is successful', () => {
-          dispatchSpy.mockResolvedValue();
-          findDeleteBtn().vm.$emit('click');
-          expect(wrapper.vm.itemToDelete).not.toEqual({});
-          return wrapper.vm.handleDeleteImage().then(() => {
-            const alert = findDeleteAlert();
-            expect(alert.exists()).toBe(true);
-            expect(alert.text().replace(/\s\s+/gm, ' ')).toBe(
-              DELETE_IMAGE_SUCCESS_MESSAGE.replace('%{title}', wrapper.vm.itemToDelete.path),
-            );
-          });
-        });
-
-        it('should show an error alert when delete request fails', () => {
-          dispatchSpy.mockRejectedValue();
-          findDeleteBtn().vm.$emit('click');
-          expect(wrapper.vm.itemToDelete).not.toEqual({});
-          return wrapper.vm.handleDeleteImage().then(() => {
-            const alert = findDeleteAlert();
-            expect(alert.exists()).toBe(true);
-            expect(alert.text().replace(/\s\s+/gm, ' ')).toBe(
-              DELETE_IMAGE_ERROR_MESSAGE.replace('%{title}', wrapper.vm.itemToDelete.path),
-            );
-          });
-        });
       });
 
-      describe('pagination', () => {
-        it('exists', () => {
-          expect(findPagination().exists()).toBe(true);
-        });
-
-        it('is wired to the correct pagination props', () => {
-          const pagination = findPagination();
-          expect(pagination.props('perPage')).toBe(store.state.pagination.perPage);
-          expect(pagination.props('totalItems')).toBe(store.state.pagination.total);
-          expect(pagination.props('value')).toBe(store.state.pagination.page);
-        });
-
-        it('fetch the data from the API when the v-model changes', () => {
-          dispatchSpy.mockReturnValue();
-          wrapper.setData({ currentPage: 2 });
-          return wrapper.vm.$nextTick().then(() => {
-            expect(store.dispatch).toHaveBeenCalledWith('requestImagesList', { page: 2 });
-          });
+      it('should show an error alert when delete request fails', () => {
+        dispatchSpy.mockRejectedValue();
+        findImageList().vm.$emit('delete', itemToDelete);
+        expect(wrapper.vm.itemToDelete).toEqual(itemToDelete);
+        return wrapper.vm.handleDeleteImage().then(() => {
+          const alert = findDeleteAlert();
+          expect(alert.exists()).toBe(true);
+          expect(alert.text().replace(/\s\s+/gm, ' ')).toBe(
+            DELETE_IMAGE_ERROR_MESSAGE.replace('%{title}', wrapper.vm.itemToDelete.path),
+          );
         });
       });
     });
 
-    describe('modal', () => {
-      it('exists', () => {
-        expect(findDeleteModal().exists()).toBe(true);
-      });
-
-      it('contains a description with the path of the item to delete', () => {
-        wrapper.setData({ itemToDelete: { path: 'foo' } });
-        return wrapper.vm.$nextTick().then(() => {
-          expect(findDeleteModal().html()).toContain('foo');
-        });
+    describe('pagination', () => {
+      it('pageChange event triggers the appropriate store function', () => {
+        findImageList().vm.$emit('pageChange', 2);
+        expect(store.dispatch).toHaveBeenCalledWith('requestImagesList', { page: 2 });
       });
     });
+  });
 
-    describe('tracking', () => {
-      const testTrackingCall = action => {
-        expect(Tracking.event).toHaveBeenCalledWith(undefined, action, {
-          label: 'registry_repository_delete',
-        });
-      };
+  describe('modal', () => {
+    beforeEach(() => {
+      mountComponent();
+    });
 
-      beforeEach(() => {
-        jest.spyOn(Tracking, 'event');
-        dispatchSpy.mockResolvedValue();
+    it('exists', () => {
+      expect(findDeleteModal().exists()).toBe(true);
+    });
+
+    it('contains a description with the path of the item to delete', () => {
+      wrapper.setData({ itemToDelete: { path: 'foo' } });
+      return wrapper.vm.$nextTick().then(() => {
+        expect(findDeleteModal().html()).toContain('foo');
       });
+    });
+  });
 
-      it('send an event when delete button is clicked', () => {
-        const deleteBtn = findDeleteBtn();
-        deleteBtn.vm.$emit('click');
-        testTrackingCall('click_button');
-      });
+  describe('tracking', () => {
+    beforeEach(() => {
+      mountComponent();
+    });
 
-      it('send an event when cancel is pressed on modal', () => {
-        const deleteModal = findDeleteModal();
-        deleteModal.vm.$emit('cancel');
-        testTrackingCall('cancel_delete');
+    const testTrackingCall = action => {
+      expect(Tracking.event).toHaveBeenCalledWith(undefined, action, {
+        label: 'registry_repository_delete',
       });
+    };
 
-      it('send an event when confirm is clicked on modal', () => {
-        const deleteModal = findDeleteModal();
-        deleteModal.vm.$emit('ok');
-        testTrackingCall('confirm_delete');
-      });
+    beforeEach(() => {
+      jest.spyOn(Tracking, 'event');
+      dispatchSpy.mockResolvedValue();
+    });
+
+    it('send an event when delete button is clicked', () => {
+      findImageList().vm.$emit('delete', {});
+      testTrackingCall('click_button');
+    });
+
+    it('send an event when cancel is pressed on modal', () => {
+      const deleteModal = findDeleteModal();
+      deleteModal.vm.$emit('cancel');
+      testTrackingCall('cancel_delete');
+    });
+
+    it('send an event when confirm is clicked on modal', () => {
+      const deleteModal = findDeleteModal();
+      deleteModal.vm.$emit('ok');
+      testTrackingCall('confirm_delete');
     });
   });
 });
