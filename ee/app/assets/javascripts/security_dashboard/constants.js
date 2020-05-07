@@ -6,28 +6,44 @@ import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
 const parseOptions = obj =>
   Object.entries(obj).map(([id, name]) => ({ id: id.toUpperCase(), name }));
 
-export const initFirstClassVulnerabilityFilters = () => [
-  {
-    name: s__('SecurityReports|Status'),
-    id: 'state',
-    options: [
-      { id: ALL, name: s__('VulnerabilityStatusTypes|All') },
-      ...parseOptions(VULNERABILITY_STATES),
-    ],
-    selection: new Set([ALL]),
-  },
-  {
-    name: s__('SecurityReports|Severity'),
-    id: 'severity',
-    options: [BASE_FILTERS.severity, ...parseOptions(SEVERITY_LEVELS)],
-    selection: new Set([ALL]),
-  },
-  {
-    name: s__('SecurityReports|Report type'),
-    id: 'reportType',
-    options: [BASE_FILTERS.report_type, ...parseOptions(REPORT_TYPES)],
-    selection: new Set([ALL]),
-  },
-];
+export const initFirstClassVulnerabilityFilters = projects => {
+  const filters = [
+    {
+      name: s__('SecurityReports|Status'),
+      id: 'state',
+      options: [
+        { id: ALL, name: s__('VulnerabilityStatusTypes|All') },
+        ...parseOptions(VULNERABILITY_STATES),
+      ],
+      selection: new Set([ALL]),
+    },
+    {
+      name: s__('SecurityReports|Severity'),
+      id: 'severity',
+      options: [BASE_FILTERS.severity, ...parseOptions(SEVERITY_LEVELS)],
+      selection: new Set([ALL]),
+    },
+    {
+      name: s__('SecurityReports|Report type'),
+      id: 'reportType',
+      options: [BASE_FILTERS.report_type, ...parseOptions(REPORT_TYPES)],
+      selection: new Set([ALL]),
+    },
+  ];
+
+  if (Array.isArray(projects)) {
+    filters.push({
+      name: s__('SecurityReports|Project'),
+      id: 'projectId',
+      options: [
+        BASE_FILTERS.project_id,
+        ...projects.map(p => ({ id: p.id.split('/').pop(), name: p.name })),
+      ],
+      selection: new Set([ALL]),
+    });
+  }
+
+  return filters;
+};
 
 export default () => ({});

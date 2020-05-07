@@ -45,6 +45,7 @@ export default {
   data() {
     return {
       filters: {},
+      graphqlProjectList: [], // TODO: Rename me to projects once we back the project selector with GraphQL as well
       showProjectSelector: false,
     };
   },
@@ -87,6 +88,9 @@ export default {
     toggleProjectSelector() {
       this.showProjectSelector = !this.showProjectSelector;
     },
+    handleProjectsFetch(projects) {
+      this.graphqlProjectList = projects;
+    },
   },
 };
 </script>
@@ -103,7 +107,12 @@ export default {
           >{{ toggleButtonProps.text }}</gl-button
         >
       </header>
-      <filters v-if="shouldShowDashboard" @filterChange="handleFilterChange" />
+      <filters
+        v-if="shouldShowDashboard"
+        :projects="graphqlProjectList"
+        @filterChange="handleFilterChange"
+        @projectFetch="handleProjectsFetch"
+      />
     </template>
     <instance-security-vulnerabilities
       v-if="shouldShowDashboard"
@@ -111,6 +120,7 @@ export default {
       :dashboard-documentation="dashboardDocumentation"
       :empty-state-svg-path="emptyStateSvgPath"
       :filters="filters"
+      @projectFetch="handleProjectsFetch"
     />
     <gl-empty-state
       v-else-if="shouldShowEmptyState"
