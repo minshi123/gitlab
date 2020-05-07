@@ -4,7 +4,7 @@ import IssuableListRootApp from '~/issuables_list/components/issuable_list_root_
 
 const mountComponent = ({
   canEdit = true,
-  isAlertShowing = true,
+  isInProgressAlertShowing = true,
   isInProgress = false,
   isJiraConfigured = true,
 } = {}) =>
@@ -16,7 +16,7 @@ const mountComponent = ({
     },
     data() {
       return {
-        isAlertShowing,
+        isInProgressAlertShowing,
         jiraImport: {
           isInProgress,
         },
