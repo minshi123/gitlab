@@ -39,7 +39,7 @@ module Gitlab
       def deployment_frequency_stats
         serialize(
           Summary::DeploymentFrequency.new(
-            deployments: deployments_summary.value,
+            deployments: deployments_summary.deployments_count,
             from: @from,
             to: @to),
           with_unit: true

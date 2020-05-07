@@ -9,7 +9,7 @@ module Gitlab
         end
 
         def value
-          @value ||= count_commits
+          @value ||= Value::PrettyNumeric.new(count_commits)
         end
 
         private
