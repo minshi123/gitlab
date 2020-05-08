@@ -5584,9 +5584,6 @@ msgstr ""
 msgid "Configure Prometheus"
 msgstr ""
 
-msgid "Configure Security %{wordBreakOpportunity}and Compliance"
-msgstr ""
-
 msgid "Configure Tracing"
 msgstr ""
 
@@ -18579,9 +18576,6 @@ msgstr ""
 msgid "Security Dashboard"
 msgstr ""
 
-msgid "Security configuration help link"
-msgstr ""
-
 msgid "Security dashboard"
 msgstr ""
 
@@ -18591,22 +18585,19 @@ msgstr ""
 msgid "Security report is out of date. Run %{newPipelineLinkStart}a new pipeline%{newPipelineLinkEnd} for the target branch (%{targetBranchName})"
 msgstr ""
 
-msgid "SecurityConfiguration|Configured"
-msgstr ""
-
-msgid "SecurityConfiguration|Feature"
+msgid "SecurityConfiguration|Enabled"
 msgstr ""
 
 msgid "SecurityConfiguration|Feature documentation for %{featureName}"
 msgstr ""
 
-msgid "SecurityConfiguration|Not yet configured"
-msgstr ""
-
-msgid "SecurityConfiguration|Secure features"
+msgid "SecurityConfiguration|Not yet enabled"
 msgstr ""
 
 msgid "SecurityConfiguration|Status"
+msgstr ""
+
+msgid "SecurityConfiguration|Testing & Compliance"
 msgstr ""
 
 msgid "SecurityReports|%{firstProject} and %{secondProject}"
