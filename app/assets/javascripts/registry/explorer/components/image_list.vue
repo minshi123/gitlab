@@ -56,7 +56,7 @@ export default {
 </script>
 
 <template>
-  <div class="d-flex flex-column">
+  <div class="gl-display-flex gl-flex-direction-column">
     <div
       v-for="(listItem, index) in images"
       :key="index"
@@ -68,10 +68,10 @@ export default {
       }"
     >
       <div
-        class="d-flex justify-content-between align-items-center py-2 px-1 border-bottom"
+        class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-py-2 gl-px-1 border-bottom"
         :class="{ 'border-top': index === 0, 'disabled-content': listItem.deleting }"
       >
-        <div class="d-felx align-items-center">
+        <div class="gl-display-flex gl-align-items-center">
           <router-link
             ref="detailsLink"
             :to="{ name: 'details', params: { id: encodeListItem(listItem) } }"
@@ -119,7 +119,7 @@ export default {
       :per-page="pagination.perPage"
       :total-items="pagination.total"
       align="center"
-      class="w-100 mt-2"
+      class="w-100 gl-mt-2"
     />
   </div>
 </template>
