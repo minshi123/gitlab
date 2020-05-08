@@ -1,6 +1,8 @@
 <script>
 import MetricCard from '../../shared/components/metric_card.vue';
 
+const emptyState = [{ label: 'Lead time', value: null }, { label: 'Cycle time', value: null }];
+
 const placeholder = [
   { label: 'Lead time', value: '2', unit: 'days' },
   { label: 'Cycle time', value: '1.5', unit: 'days' },
