@@ -8,6 +8,7 @@ import {
   GlLink,
   GlAlert,
   GlSkeletonLoader,
+  GlSearchBoxByClick,
 } from '@gitlab/ui';
 import Tracking from '~/tracking';
 
@@ -26,6 +27,9 @@ import {
   LIST_INTRO_TEXT,
   REMOVE_REPOSITORY_MODAL_TEXT,
   REMOVE_REPOSITORY_LABEL,
+  SEARCH_PLACEHOLDER_TEXT,
+  IMAGE_REPOSITORY_LIST_LABEL,
+  EMPTY_RESULT_MESSAGE,
 } from '../constants';
 
 export default {
@@ -42,6 +46,7 @@ export default {
     GlLink,
     GlAlert,
     GlSkeletonLoader,
+    GlSearchBoxByClick,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -59,11 +64,16 @@ export default {
     LIST_INTRO_TEXT,
     REMOVE_REPOSITORY_MODAL_TEXT,
     REMOVE_REPOSITORY_LABEL,
+    SEARCH_PLACEHOLDER_TEXT,
+    IMAGE_REPOSITORY_LIST_LABEL,
+    EMPTY_RESULT_MESSAGE,
   },
   data() {
     return {
       itemToDelete: {},
       deleteAlertType: null,
+      search: null,
+      isEmpty: false,
     };
   },
   computed: {
@@ -92,8 +102,11 @@ export default {
     ...mapActions(['requestImagesList', 'requestDeleteImage']),
     loadImageList(fromName) {
       if (!fromName || !this.images?.length) {
-        this.requestImagesList();
+        return this.requestImagesList().then(() => {
+          this.isEmpty = this.images.length === 0;
+        });
       }
+      return Promise.resolve();
     },
     deleteImage(item) {
       this.track('click_button');
@@ -185,14 +198,36 @@ export default {
         </gl-skeleton-loader>
       </div>
       <template v-else>
-        <image-list
-          v-if="images.length"
-          :images="images"
-          :pagination="pagination"
-          @pageChange="requestImagesList({ page: $event })"
-          @delete="deleteImage"
-        />
+        <template v-if="!isEmpty">
+          <div class="gl-display-flex gl-p-1" data-testid="listHeader">
+            <div class="gl-flex-fill-1">
+              <h5>{{ $options.i18n.IMAGE_REPOSITORY_LIST_LABEL }}</h5>
+            </div>
+            <div>
+              <gl-search-box-by-click
+                v-model="search"
+                :placeholder="$options.i18n.SEARCH_PLACEHOLDER_TEXT"
+                @submit="requestImagesList({ name: $event })"
+              />
+            </div>
+          </div>
 
+          <image-list
+            v-if="images.length"
+            :images="images"
+            :pagination="pagination"
+            @pageChange="requestImagesList({ pagination: { page: $event }, name: search })"
+            @delete="deleteImage"
+          />
+
+          <gl-empty-state
+            v-else
+            :title="$options.i18n.EMPTY_RESULT_MESSAGE"
+            :svg-path="config.noContainersImage"
+            data-testid="emptySearch"
+            class="container-message"
+          />
+        </template>
         <template v-else>
           <project-empty-state v-if="!config.isGroupPage" />
           <group-empty-state v-else />
