@@ -159,6 +159,47 @@ describe API::Todos do
       expect { get api('/todos', john_doe) }.not_to exceed_query_limit(control)
       expect(response).to have_gitlab_http_status(:ok)
     end
+
+    context 'when there is a Design Todo' do
+      let!(:design_todo) { create_todo_for_mentioned_in_design }
+      let(:pat) { create(:personal_access_token, user: author_1) }
+
+      def create_todo_for_mentioned_in_design
+        issue = create(:issue, project: project_1)
+        create(:todo, :mentioned,
+               user: author_1,
+               project: project_1,
+               target: create(:design, issue: issue),
+               author: author_2,
+               note: create(:note, project: project_1, note: "I am note, hear me roar"))
+      end
+
+      def api_request
+        get api('/todos', personal_access_token: pat)
+      end
+
+      before do
+        api_request
+      end
+
+      it 'responds with success' do
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'avoids N+1 queries', :request_store do
+        control = ActiveRecord::QueryRecorder.new { api_request }
+
+        create_todo_for_mentioned_in_design
+
+        expect { api_request }.not_to exceed_query_limit(control)
+      end
+
+      it 'includes the Design Todo in the response' do
+        expect(json_response).to include(
+          a_hash_including('id' => design_todo.id)
+        )
+      end
+    end
   end
 
   describe 'POST /todos/:id/mark_as_done' do
