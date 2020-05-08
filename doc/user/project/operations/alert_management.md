@@ -51,14 +51,11 @@ Each alert contains the following metrics:
 - **Event count** - The number of times that an alert has fired.
 - **Status** - The [current status](#alert-management-statuses) of the alert.
 
-### Alert Management Statuses
+### Alert Management statuses
 
-Each alert contains a status dropdown which is important because it communicates which alerts need to be investigated. Standard alert statuses include `triggered`, `acknowledged`, and `resolved`.
+Each alert contains a status dropdown to indicate which alerts need investigation.
+Standard alert statuses include `triggered`, `acknowledged`, and `resolved`:
 
-Alert Statuses:
-
-| Name           | Meaning                                                       |
-| -------------- | ------------------------------------------------------------- |
-| `Triggered`    | Indicates that no one has begun investigation.                |
-| `Acknowledged` | Indicates that someone is actively investigating the problem. |
-| `Resolved`     | Indicates no further work is required.                        |
+- **Triggered**: No one has begun investigation.
+- **Acknowledged**: Someone is actively investigating the problem.
+- **Resolved**: No further work is required.
