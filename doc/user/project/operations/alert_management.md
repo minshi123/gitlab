@@ -11,7 +11,7 @@ being developed, efficiency and awareness can be increased.
 NOTE: **Note:**
 You will need at least Maintainer [permissions](../../permissions.md) to enable the Alert Management feature.
 
-1. Follow the [instructions for toggling generic alerts](https://docs.gitlab.com/ee/user/project/integrations/generic_alerts.html#setting-up-generic-alerts)
+1. Follow the [instructions for toggling generic alerts](../integrations/generic_alerts.md#setting-up-generic-alerts)
 1. You can now visit **{cloud-gear}** **Operations > Alert Management** in your project's sidebar to [view a list](#alert-management-list) of alerts.
 
 ![Alert Management Toggle](img/alert_management_1_v13_1.png)
