@@ -182,7 +182,7 @@ describe('AlertManagementList', () => {
       expect(findStatusDropdown().exists()).toBe(true);
     });
 
-    it('shows correct severity icons', () => {
+    it.skip('shows correct severity icons', () => {
       mountComponent({
         props: { alertManagementEnabled: true, userCanEnableAlertManagement: true },
         data: { alerts: mockAlerts, errored: false },

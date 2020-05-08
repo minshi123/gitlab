@@ -30,33 +30,33 @@ export default {
     ),
   },
   fields: [
-    {
+    /*  {
       key: 'severity',
       label: s__('AlertManagement|Severity'),
       tdClass: `${tdClass} rounded-top text-capitalize`,
-    },
+    },*/
     {
       key: 'startedAt',
       label: s__('AlertManagement|Start time'),
       tdClass,
     },
-    {
+    /*    {
       key: 'endedAt',
       label: s__('AlertManagement|End time'),
       tdClass,
-    },
+    },*/
     {
       key: 'title',
       label: s__('AlertManagement|Alert'),
       thClass: 'w-30p',
       tdClass,
     },
-    {
+    /*  {
       key: 'eventCount',
       label: s__('AlertManagement|Events'),
       thClass: 'text-right event-count',
       tdClass: `${tdClass} text-md-right event-count`,
-    },
+    },*/
     {
       key: 'status',
       label: s__('AlertManagement|Status'),
@@ -209,7 +209,7 @@ export default {
         </template>
 
         <template #cell(status)="{ item }">
-          <gl-new-dropdown class="w-100" :text="item.status">
+          <gl-new-dropdown :text="item.status">
             <gl-new-dropdown-item v-for="(label, field) in $options.statuses" :key="field">
               {{ label }}
             </gl-new-dropdown-item>

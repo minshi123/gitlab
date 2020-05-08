@@ -1730,13 +1730,7 @@ msgstr ""
 msgid "AlertManagement|Display alerts from all your monitoring tools directly within GitLab. Streamline the investigation of your alerts and the escalation of alerts to incidents."
 msgstr ""
 
-msgid "AlertManagement|End time"
-msgstr ""
-
 msgid "AlertManagement|End time:"
-msgstr ""
-
-msgid "AlertManagement|Events"
 msgstr ""
 
 msgid "AlertManagement|Events:"
@@ -1761,9 +1755,6 @@ msgid "AlertManagement|Overview"
 msgstr ""
 
 msgid "AlertManagement|Resolved"
-msgstr ""
-
-msgid "AlertManagement|Severity"
 msgstr ""
 
 msgid "AlertManagement|Start time"
