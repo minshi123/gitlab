@@ -60,11 +60,15 @@ module Gitlab
       end
 
       def run_indexer!(to_sha, target)
-        vars = build_envvars(to_sha, target)
-        path_to_indexer = Gitlab.config.elasticsearch.indexer_path
-
         # This might happen when default branch has been rebased.
-        purge_unreachable_commits_from_index!(to_sha, target)
+        base_sha = if purge_unreachable_commits_from_index!(to_sha, target)
+                     Gitlab::Git::EMPTY_TREE_ID
+                   else
+                     from_sha
+                   end
+
+        vars = build_envvars(base_sha, to_sha, target)
+        path_to_indexer = Gitlab.config.elasticsearch.indexer_path
 
         command =
           if wiki?
@@ -79,13 +83,18 @@ module Gitlab
       end
 
       # Remove all indexed data for commits and blobs for a project.
+      #
+      # @return: whether the index has been purged
       def purge_unreachable_commits_from_index!(to_sha, target)
-        unless last_commit_ancestor_of?(to_sha)
-          target.delete_index_for_commits_and_blobs(wiki: wiki?)
-        end
+        return false if last_commit_ancestor_of?(to_sha)
+
+        target.delete_index_for_commits_and_blobs(wiki: wiki?)
+        true
+      rescue ::Elasticsearch::Transport::Transport::Errors::BadRequest => e
+        Gitlab::ErrorTracking.track_exception(e, project_id: project.id)
       end
 
-      def build_envvars(to_sha, target)
+      def build_envvars(from_sha, to_sha, target)
         # We accept any form of settings, including string and array
         # This is why JSON is needed
         vars = {
@@ -124,7 +133,12 @@ module Gitlab
       end
 
       def last_commit_ancestor_of?(to_sha)
-        from_sha != Gitlab::Git::EMPTY_TREE_ID && repository.ancestor?(from_sha, to_sha)
+        return true if from_sha == Gitlab::Git::BLANK_SHA
+        return false unless repository_contains_last_indexed_commit?
+
+        # we always treat the `EMPTY_TREE_ID` as an ancestor to make sure
+        # we don't try to purge an empty index
+        from_sha == Gitlab::Git::EMPTY_TREE_ID || repository.ancestor?(from_sha, to_sha)
       end
 
       def commit_indexable?(rev = nil)
