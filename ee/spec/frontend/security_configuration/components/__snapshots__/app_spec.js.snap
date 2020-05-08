@@ -11,7 +11,9 @@ exports[`Security Configuration App features table displays a given feature 1`] 
     <div
       class="table-section section-80"
     >
-      Secure features
+      
+        Secure features
+      
     </div>
      
     <div
@@ -34,7 +36,9 @@ exports[`Security Configuration App features table displays a given feature 1`] 
           class="table-mobile-header"
           role="rowheader"
         >
-          Feature
+          
+            Feature
+          
         </div>
          
         <div
@@ -74,7 +78,9 @@ exports[`Security Configuration App features table displays a given feature 1`] 
           class="table-mobile-header"
           role="rowheader"
         >
-          Status
+          
+            Status
+          
         </div>
          
         <div
