@@ -25,6 +25,7 @@ import {
   CONNECTION_ERROR_MESSAGE,
   LIST_INTRO_TEXT,
   REMOVE_REPOSITORY_MODAL_TEXT,
+  REMOVE_REPOSITORY_LABEL,
 } from '../constants';
 
 export default {
@@ -57,6 +58,7 @@ export default {
     CONNECTION_ERROR_MESSAGE,
     LIST_INTRO_TEXT,
     REMOVE_REPOSITORY_MODAL_TEXT,
+    REMOVE_REPOSITORY_LABEL,
   },
   data() {
     return {
