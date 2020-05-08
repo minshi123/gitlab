@@ -11,11 +11,11 @@ being developed, efficiency and awareness can be increased.
 NOTE: **Note:**
 You will need at least Maintainer [permissions](../../permissions.md) to enable the Alert Management feature.
 
-1. Navigate to your project’s **Settings > Operations**.
+1. Navigate to your project’s **{settings}** **Settings > Operations**.
 1. Click to expand the **Incidents** panel.
 1. Ensure that the **Active** toggle is set.
 1. Click **Save changes** for the changes to take effect.
-1. You can now visit **Operations > Alert Management** in your project's sidebar to [view a list](#alert-management-list) of alerts.
+1. You can now visit **{cloud-gear}** **Operations > Alert Management** in your project's sidebar to [view a list](#alert-management-list) of alerts.
 
 ## Alert Management severity
 
