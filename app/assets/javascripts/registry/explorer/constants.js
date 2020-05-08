@@ -37,6 +37,14 @@ export const DELETE_IMAGE_SUCCESS_MESSAGE = s__(
   'ContainerRegistry|%{title} was successfully scheduled for deletion',
 );
 
+export const IMAGE_REPOSITORY_LIST_LABEL = s__('ContainerRegistry|Image Repositories');
+
+export const SEARCH_PLACEHOLDER_TEXT = s__('ContainerRegistry|Filter by name...');
+
+export const EMPTY_RESULT_MESSAGE = s__(
+  'ContainerRegistry|No image match the search criteria, please try again.',
+);
+
 // Image details page
 
 export const DETAILS_PAGE_TITLE = s__('ContainerRegistry|%{imageName} tags');

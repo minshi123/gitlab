@@ -5674,10 +5674,16 @@ msgstr ""
 msgid "ContainerRegistry|Expiration schedule:"
 msgstr ""
 
+msgid "ContainerRegistry|Filter by name..."
+msgstr ""
+
 msgid "ContainerRegistry|If you are not already logged in, you need to authenticate to the Container Registry by using your GitLab username and password. If you have %{twofaDocLinkStart}Two-Factor Authentication%{twofaDocLinkEnd} enabled, use a %{personalAccessTokensDocLinkStart}Personal Access Token%{personalAccessTokensDocLinkEnd} instead of a password."
 msgstr ""
 
 msgid "ContainerRegistry|Image ID"
+msgstr ""
+
+msgid "ContainerRegistry|Image Repositories"
 msgstr ""
 
 msgid "ContainerRegistry|Keep and protect the images that matter most."
@@ -5690,6 +5696,9 @@ msgid "ContainerRegistry|Login"
 msgstr ""
 
 msgid "ContainerRegistry|Missing or insufficient permission, delete button disabled"
+msgstr ""
+
+msgid "ContainerRegistry|No image match the search criteria, please try again."
 msgstr ""
 
 msgid "ContainerRegistry|Number of tags to retain:"
