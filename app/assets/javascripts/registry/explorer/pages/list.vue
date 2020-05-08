@@ -29,6 +29,7 @@ import {
   REMOVE_REPOSITORY_LABEL,
   SEARCH_PLACEHOLDER_TEXT,
   IMAGE_REPOSITORY_LIST_LABEL,
+  EMPTY_RESULT_TITLE,
   EMPTY_RESULT_MESSAGE,
 } from '../constants';
 
@@ -66,6 +67,7 @@ export default {
     REMOVE_REPOSITORY_LABEL,
     SEARCH_PLACEHOLDER_TEXT,
     IMAGE_REPOSITORY_LIST_LABEL,
+    EMPTY_RESULT_TITLE,
     EMPTY_RESULT_MESSAGE,
   },
   data() {
@@ -222,11 +224,15 @@ export default {
 
           <gl-empty-state
             v-else
-            :title="$options.i18n.EMPTY_RESULT_MESSAGE"
             :svg-path="config.noContainersImage"
             data-testid="emptySearch"
+            :title="$options.i18n.EMPTY_RESULT_TITLE"
             class="container-message"
-          />
+          >
+            <template #description>
+              {{ $options.i18n.EMPTY_RESULT_MESSAGE }}
+            </template>
+          </gl-empty-state>
         </template>
         <template v-else>
           <project-empty-state v-if="!config.isGroupPage" />
