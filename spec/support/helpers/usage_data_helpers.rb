@@ -96,6 +96,24 @@ module UsageDataHelpers
       projects_with_error_tracking_enabled
       projects_with_alerts_service_enabled
       projects_with_prometheus_alerts
+      projects_with_expiration_policy_enabled
+      projects_with_expiration_policy_disabled
+      projects_with_expiration_policy_enabled_with_keep_n_unset
+      projects_with_expiration_policy_enabled_with_keep_n_set_to_1
+      projects_with_expiration_policy_enabled_with_keep_n_set_to_5
+      projects_with_expiration_policy_enabled_with_keep_n_set_to_10
+      projects_with_expiration_policy_enabled_with_keep_n_set_to_25
+      projects_with_expiration_policy_enabled_with_keep_n_set_to_50
+      projects_with_expiration_policy_enabled_with_older_than_unset
+      projects_with_expiration_policy_enabled_with_older_than_set_to_7d
+      projects_with_expiration_policy_enabled_with_older_than_set_to_14d
+      projects_with_expiration_policy_enabled_with_older_than_set_to_30d
+      projects_with_expiration_policy_enabled_with_older_than_set_to_90d
+      projects_with_expiration_policy_enabled_with_cadence_set_to_1d
+      projects_with_expiration_policy_enabled_with_cadence_set_to_7d
+      projects_with_expiration_policy_enabled_with_cadence_set_to_14d
+      projects_with_expiration_policy_enabled_with_cadence_set_to_1month
+      projects_with_expiration_policy_enabled_with_cadence_set_to_3month
       pages_domains
       protected_branches
       releases
