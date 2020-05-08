@@ -38,6 +38,8 @@ module Gitlab
           wiki_url(object, **options)
         when WikiPage
           instance.project_wiki_url(object.wiki.project, object.slug, **options)
+        when ::DesignManagement::Design
+          design_url(object, **options)
         else
           raise NotImplementedError.new("No URL builder defined for #{object.inspect}")
         end
@@ -76,6 +78,17 @@ module Gitlab
           instance.project_wiki_url(object.container, Wiki::HOMEPAGE, **options)
         else
           raise NotImplementedError.new("No URL builder defined for #{object.inspect}")
+        end
+      end
+
+      def design_url(design, **options)
+        size, ref = options.values_at(:size, :ref)
+        options.except!(:size, :ref)
+
+        if size
+          instance.project_design_management_designs_resized_image_url(design.project, design, ref, size, **options)
+        else
+          instance.project_design_management_designs_raw_image_url(design.project, design, ref, **options)
         end
       end
     end

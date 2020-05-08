@@ -154,6 +154,9 @@ module UsageDataHelpers
       projects_with_expiration_policy_enabled_with_older_than_set_to_30d
       projects_with_expiration_policy_enabled_with_older_than_set_to_90d
       object_store
+      design_management_designs_create
+      design_management_designs_update
+      design_management_designs_delete
     ).freeze
 
   def stub_object_store_settings
