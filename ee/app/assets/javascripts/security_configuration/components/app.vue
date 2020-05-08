@@ -101,7 +101,9 @@ export default {
         class="gl-responsive-table-row table-row-header text-2 font-weight-bold px-2 gl-text-gray-900"
         role="row"
       >
-        <div class="table-section section-80">{{ s__('SecurityConfiguration|Secure features') }}</div>
+        <div class="table-section section-80">
+          {{ s__('SecurityConfiguration|Secure features') }}
+        </div>
         <div class="table-section section-20">{{ s__('SecurityConfiguration|Status') }}</div>
       </div>
       <div
@@ -112,10 +114,9 @@ export default {
       >
         <div class="d-md-flex align-items-center">
           <div class="table-section section-80 section-wrap pr-md-3">
-            <div
-              role="rowheader"
-              class="table-mobile-header"
-            >{{ s__('SecurityConfiguration|Feature') }}</div>
+            <div role="rowheader" class="table-mobile-header">
+              {{ s__('SecurityConfiguration|Feature') }}
+            </div>
             <div class="table-mobile-content">
               <div class="d-flex align-items-center justify-content-end justify-content-md-start">
                 <div class="text-2 gl-text-gray-900">{{ feature.name }}</div>
@@ -126,20 +127,20 @@ export default {
                   target="_blank"
                   :href="feature.link"
                   :aria-label="getFeatureDocumentationLinkLabel(feature.name)"
-                >{{ __('More information') }}</gl-link>
+                  >{{ __('More information') }}</gl-link
+                >
               </div>
             </div>
           </div>
           <div class="table-section section-20 section-wrap pr-md-3">
-            <div
-              role="rowheader"
-              class="table-mobile-header"
-            >{{ s__('SecurityConfiguration|Status') }}</div>
+            <div role="rowheader" class="table-mobile-header">
+              {{ s__('SecurityConfiguration|Status') }}
+            </div>
             <div ref="featureConfigStatus" class="table-mobile-content">
               {{
-              feature.configured
-              ? s__('SecurityConfiguration|Enabled')
-              : s__('SecurityConfiguration|Not yet enabled')
+                feature.configured
+                  ? s__('SecurityConfiguration|Enabled')
+                  : s__('SecurityConfiguration|Not yet enabled')
               }}
             </div>
           </div>
