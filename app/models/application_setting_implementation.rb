@@ -112,6 +112,7 @@ module ApplicationSettingImplementation
         sourcegraph_enabled: false,
         sourcegraph_url: nil,
         sourcegraph_public_only: true,
+        spam_check_endpoint: nil,
         minimum_password_length: DEFAULT_MINIMUM_PASSWORD_LENGTH,
         namespace_storage_size_limit: 0,
         terminal_max_session_time: 0,

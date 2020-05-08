@@ -43,6 +43,14 @@
         %a{ href: 'http://www.akismet.com', target: 'blank' } http://www.akismet.com
 
     .form-group
+      = f.label :spam_check_endpoint, 'Spam Check Endpoint', class: 'label-bold'
+      = f.text_field :spam_check_endpoint, class: 'form-control'
+      .form-text.text-muted
+        API Endpoint for custom spam detection
+      %span.form-text.text-muted#spam_check_endpoint_help_block
+        Define custom rules for what constitutes spam, independent of Akismet
+
+    .form-group
       .form-check
         = f.check_box :unique_ips_limit_enabled, class: 'form-check-input'
         = f.label :unique_ips_limit_enabled, class: 'form-check-label' do

@@ -10,6 +10,7 @@ module ApplicationSettings
 
     def execute
       validate_classification_label(application_setting, :external_authorization_service_default_label) unless bypass_external_auth?
+      validate_spam_check_endpoint(application_setting)
 
       if application_setting.errors.any?
         return false
@@ -94,6 +95,13 @@ module ApplicationSettings
 
     def bypass_external_auth?
       params.key?(:external_authorization_service_enabled) && !Gitlab::Utils.to_boolean(params[:external_authorization_service_enabled])
+    end
+
+    def validate_spam_check_endpoint(application_setting)
+      url = params[:spam_check_endpoint]
+      return if url.blank?
+
+      application_setting.errors[:spam_check_endpoint] << "spam_check_endpoint must be nil or a valid URL" unless url =~ URI::regexp
     end
   end
 end

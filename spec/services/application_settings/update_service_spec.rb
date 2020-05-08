@@ -350,4 +350,48 @@ describe ApplicationSettings::UpdateService do
       expect(application_settings.issues_create_limit).to eq(600)
     end
   end
+
+  context 'when spam_check_endpoint is passed' do
+    let(:params) do
+      {
+          spam_check_endpoint: endpoint_url
+      }
+    end
+
+    context 'when value is a valid URL' do
+      let(:endpoint_url) { 'https://gitlab.com/spam_check_endpoint' }
+
+      it 'updates spam_check_endpoint value' do
+        subject.execute
+
+        application_settings.reload
+
+        expect(application_settings.spam_check_endpoint).to eq(endpoint_url)
+      end
+    end
+
+    context 'when value is NOT a valid URL' do
+      let(:endpoint_url) { 'nonsense' }
+
+      it 'does not update spam_check_endpoint value' do
+        subject.execute
+
+        application_settings.reload
+
+        expect(application_settings.spam_check_endpoint).to eq(nil)
+      end
+    end
+
+    context 'when value is nil' do
+      let(:endpoint_url) { nil }
+
+      it 'updates spam_check_endpoint value' do
+        subject.execute
+
+        application_settings.reload
+
+        expect(application_settings.spam_check_endpoint).to eq(nil)
+      end
+    end
+  end
 end

@@ -438,7 +438,8 @@ CREATE TABLE public.application_settings (
     container_expiration_policies_enable_historic_entries boolean DEFAULT false NOT NULL,
     issues_create_limit integer DEFAULT 300 NOT NULL,
     push_rule_id bigint,
-    group_owners_can_manage_default_branch_protection boolean DEFAULT true NOT NULL
+    group_owners_can_manage_default_branch_protection boolean DEFAULT true NOT NULL,
+    spam_check_endpoint character varying
 );
 
 CREATE SEQUENCE public.application_settings_id_seq
@@ -13708,5 +13709,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200429181955
 20200429182245
 20200506125731
+20200508050301
 \.
 
