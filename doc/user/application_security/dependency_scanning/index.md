@@ -486,7 +486,7 @@ See explanations of the variables above in the [configuration section](#configur
 
 ### Specific settings for languages and package managers
 
-See the following sections for instructions for configuring specific languages and package managers.
+See the following sections for configuring specific languages and package managers.
 
 #### JavaScript (npm and yarn) projects
 
