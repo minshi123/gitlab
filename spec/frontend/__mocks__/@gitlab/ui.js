@@ -34,3 +34,16 @@ export const GlPopover = {
     return h('div', this.$attrs, Object.keys(this.$slots).map(s => this.$slots[s]));
   },
 };
+
+export const GlTable = {
+  props: {
+    items: {
+      type: Array,
+      required: true,
+    },
+    stacked: {
+      type: String,
+      required: true,
+    },
+  },
+};
