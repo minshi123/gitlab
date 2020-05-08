@@ -11,9 +11,11 @@ module API
       expose :version, :revision, :platform, :architecture
       expose :contacted_at
 
-      # @deprecated in 12.10 https://gitlab.com/gitlab-org/gitlab/-/issues/214320
-      # will be removed by 13.0 https://gitlab.com/gitlab-org/gitlab/-/issues/214322
-      expose :token, if: lambda { |runner, options| options[:current_user].admin? || !runner.instance_type? }
+      # TODO: create a follow-up issue and paste here
+      expose(:token, if: ->(runner, options) do
+        !::Feature.enabled?(:hide_token_from_runners_api, default_enabled: true) &&
+          (options[:current_user].admin? || !runner.instance_type?)
+      end)
 
       # rubocop: disable CodeReuse/ActiveRecord
       expose :projects, with: Entities::BasicProjectDetails do |runner, options|

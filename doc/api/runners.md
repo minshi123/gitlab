@@ -162,10 +162,6 @@ GET /runners/:id
 curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/runners/6"
 ```
 
-CAUTION: **Deprecation**
-The `token` attribute in the response is deprecated [since GitLab 12.10](https://gitlab.com/gitlab-org/gitlab/-/issues/214320).
-It will be removed in [GitLab 13.0](https://gitlab.com/gitlab-org/gitlab/-/issues/214322).
-
 Example response:
 
 ```json
@@ -190,7 +186,6 @@ Example response:
             "path_with_namespace": "gitlab-org/gitlab-foss"
         }
     ],
-    "token": "205086a8e3b9a2b818ffac9b89d102",
     "revision": null,
     "tag_list": [
         "ruby",
@@ -225,10 +220,6 @@ PUT /runners/:id
 curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/runners/6" --form "description=test-1-20150125-test" --form "tag_list=ruby,mysql,tag1,tag2"
 ```
 
-CAUTION: **Deprecation**
-The `token` attribute in the response is deprecated [since GitLab 12.10](https://gitlab.com/gitlab-org/gitlab/-/issues/214320).
-It will be removed in [GitLab 13.0](https://gitlab.com/gitlab-org/gitlab/-/issues/214322).
-
 Example response:
 
 ```json
@@ -253,7 +244,6 @@ Example response:
             "path_with_namespace": "gitlab-org/gitlab-foss"
         }
     ],
-    "token": "205086a8e3b9a2b818ffac9b89d102",
     "revision": null,
     "tag_list": [
         "ruby",
