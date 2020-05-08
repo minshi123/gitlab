@@ -14,6 +14,7 @@ import TypeOfWorkCharts from './type_of_work_charts.vue';
 import UrlSyncMixin from '../../shared/mixins/url_sync_mixin';
 import { toYmd } from '../../shared/utils';
 import RecentActivityCard from './recent_activity_card.vue';
+import TimeMetricsCard from './time_metrics_card.vue';
 import StageTableNav from './stage_table_nav.vue';
 import CustomStageForm from './custom_stage_form.vue';
 
@@ -29,6 +30,7 @@ export default {
     StageTable,
     TypeOfWorkCharts,
     RecentActivityCard,
+    TimeMetricsCard,
     CustomStageForm,
     StageTableNav,
   },
@@ -253,11 +255,20 @@ export default {
         "
       />
       <div v-else-if="!errorCode">
-        <div class="js-recent-activity mt-3">
-          <recent-activity-card
-            :group-path="currentGroupPath"
-            :additional-params="cycleAnalyticsRequestParams"
-          />
+        <div class="js-recent-activity mt-3 flex flex-row justify-space-between">
+          <!-- TODO: remove, this is just for testing -->
+          <div class="col pl-0 pr-1">
+            <time-metrics-card
+              :group-path="currentGroupPath"
+              :additional-params="cycleAnalyticsRequestParams"
+            />
+          </div>
+          <div class="col pr-0 pl-1">
+            <recent-activity-card
+              :group-path="currentGroupPath"
+              :additional-params="cycleAnalyticsRequestParams"
+            />
+          </div>
         </div>
         <div v-if="isLoading">
           <gl-loading-icon class="mt-4" size="md" />
