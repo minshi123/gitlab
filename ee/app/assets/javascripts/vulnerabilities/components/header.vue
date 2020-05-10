@@ -11,6 +11,7 @@ import VulnerabilityStateDropdown from './vulnerability_state_dropdown.vue';
 import StatusDescription from './status_description.vue';
 import { VULNERABILITY_STATE_OBJECTS } from '../constants';
 import VulnerabilitiesEventBus from './vulnerabilities_event_bus';
+import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 
 export default {
   name: 'VulnerabilityHeader',
@@ -19,10 +20,15 @@ export default {
     GlLoadingIcon,
     ResolutionAlert,
     VulnerabilityStateDropdown,
+    SplitButton,
     StatusDescription,
   },
 
   props: {
+    createMrUrl: {
+      type: String,
+      required: true,
+    },
     initialVulnerability: {
       type: Object,
       required: true,
@@ -43,6 +49,10 @@ export default {
       type: String,
       required: true,
     },
+    targetBranch: {
+      type: String,
+      required: true,
+    },
   },
 
   data() {
@@ -60,9 +70,20 @@ export default {
       const buttons = [];
       const issueButton = {
         name: s__('ciReport|Create issue'),
+        tagline: s__('ciReport|Investigate this vulnerability by creating an issue'),
         isLoading: this.isProcessing,
         action: 'createIssue',
       };
+      const MergeRequestButton = {
+        name: s__('ciReport|Resolve with merge request'),
+        tagline: s__('ciReport|Automatically apply the patch in a new branch'),
+        isLoading: this.isProcessing,
+        action: 'createMergeRequest',
+      };
+
+      if (this.canCreateMergeRequest) {
+        buttons.push(MergeRequestButton);
+      }
 
       if (!this.hasIssue) {
         buttons.push(issueButton);
@@ -72,6 +93,13 @@ export default {
     },
     hasIssue() {
       return Boolean(this.finding.issue_feedback?.issue_iid);
+    },
+    canCreateMergeRequest() {
+      return (
+        !this.finding.merge_request_feedback.merge_request_path &&
+        Boolean(this.createMrUrl) &&
+        Boolean(this.finding.remediations)
+      );
     },
     statusBoxStyle() {
       // Get the badge variant based on the vulnerability state, defaulting to 'expired'.
@@ -157,6 +185,32 @@ export default {
           );
         });
     },
+    createMergeRequest() {
+      this.isProcessing = true;
+      axios
+        .post(this.createMrUrl, {
+          vulnerability_feedback: {
+            feedback_type: 'merge_request',
+            category: this.vulnerability.report_type,
+            project_fingerprint: this.projectFingerprint,
+            vulnerability_data: {
+              ...this.vulnerability,
+              ...this.finding,
+              category: this.vulnerability.report_type,
+              target_branch: this.targetBranch,
+            },
+          },
+        })
+        .then(({ data: { merge_request_path } }) => {
+          redirectTo(merge_request_path);
+        })
+        .catch(() => {
+          this.isProcessing = false;
+          createFlash(
+            s__('ciReport|There was an error creating the merge request. Please try again.'),
+          );
+        });
+    },
   },
 };
 </script>
@@ -198,8 +252,17 @@ export default {
           :initial-state="vulnerability.state"
           @change="changeVulnerabilityState"
         />
+        <split-button
+          v-if="actionButtons.length > 1"
+          :buttons="actionButtons"
+          :disabled="isProcessing"
+          class="js-split-button"
+          data-qa-selector="resolve_split_button"
+          @createMergeRequest="createMergeRequest"
+          @createIssue="createIssue"
+        />
         <gl-deprecated-button
-          v-if="actionButtons.length > 0"
+          v-else-if="actionButtons.length > 0"
           class="ml-2"
           variant="success"
           category="secondary"
