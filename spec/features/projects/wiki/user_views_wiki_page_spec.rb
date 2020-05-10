@@ -74,7 +74,7 @@ RSpec.describe 'User views a wiki page' do
         expect(page).to have_content('History')
       end
 
-      find('a[href*="?version_id"]')
+      find('td:first-child > a[href*="?version_id"]')
     end
   end
 
@@ -114,7 +114,7 @@ RSpec.describe 'User views a wiki page' do
 
   context 'when a page has history' do
     before do
-      wiki_page.update(message: 'updated home', content: 'updated [some link](other-page)')
+      wiki_page.update(message: 'updated home', content: 'updated [some link](other-page)') # rubocop:disable Rails/SaveBang
     end
 
     it 'shows the page history' do
@@ -134,13 +134,58 @@ RSpec.describe 'User views a wiki page' do
 
       expect(page).not_to have_selector('a.btn', text: 'Edit')
     end
+
+    it 'shows the diff between the current and the previous version of a page' do
+      visit(project_wiki_path(project, wiki_page))
+      click_on('Page history')
+      click_on('updated home')
+
+      expect(page).to have_content('by John Doe')
+      expect(page).to have_content('updated home')
+      expect(page).to have_content('Showing 1 changed file with 1 addition and 3 deletions')
+      expect(page).to have_content('some link')
+
+      commit = project.wiki.commit
+      expect(page).to have_link("View file @ #{commit.short_id}", href: wiki_page_path(project.wiki, wiki_page, version_id: commit))
+    end
+
+    it 'shows the diff between two old versions of a page' do
+      wiki_page.update(message: 'latest home change', content: 'updated [another link](other-page)') # rubocop:disable Rails/SaveBang:
+      visit(project_wiki_path(project, wiki_page))
+      click_on('Page history')
+      click_on('updated home')
+
+      expect(page).to have_content('by John Doe')
+      expect(page).to have_content('updated home')
+      expect(page).to have_content('Showing 1 changed file with 1 addition and 3 deletions')
+      expect(page).to have_content('some link')
+      expect(page).not_to have_content('latest home change')
+      expect(page).not_to have_content('another link')
+
+      commit = project.wiki.commit('HEAD^')
+      expect(page).to have_link("View file @ #{commit.short_id}", href: wiki_page_path(project.wiki, wiki_page, version_id: commit))
+    end
+
+    it 'shows the diff for the oldest version of a page' do
+      visit(project_wiki_path(project, wiki_page))
+      click_on('Page history')
+      click_on('created page: home')
+
+      expect(page).to have_content('by John Doe')
+      expect(page).to have_content('created page: home')
+      expect(page).to have_content('Showing 1 changed file with 4 additions and 0 deletions')
+      expect(page).to have_content('Look at this')
+
+      commit = project.wiki.commit('HEAD^')
+      expect(page).to have_link("View file @ #{commit.short_id}", href: wiki_page_path(project.wiki, wiki_page, version_id: commit))
+    end
   end
 
   context 'when a page has special characters in its title' do
     let(:title) { '<foo> !@#$%^&*()[]{}=_+\'"\\|<>? <bar>' }
 
     before do
-      wiki_page.update(title: title )
+      wiki_page.update(title: title ) # rubocop:disable Rails/SaveBang
     end
 
     it 'preserves the special characters' do
@@ -155,7 +200,7 @@ RSpec.describe 'User views a wiki page' do
     let(:title) { '<script>alert("title")<script>' }
 
     before do
-      wiki_page.update(title: title, content: 'foo <script>alert("content")</script> bar')
+      wiki_page.update(title: title, content: 'foo <script>alert("content")</script> bar') # rubocop:disable Rails/SaveBang
     end
 
     it 'safely displays the page' do
@@ -168,7 +213,7 @@ RSpec.describe 'User views a wiki page' do
 
   context 'when a page has XSS in its message' do
     before do
-      wiki_page.update(message: '<script>alert(true)<script>', content: 'XSS update')
+      wiki_page.update(message: '<script>alert(true)<script>', content: 'XSS update') # rubocop:disable Rails/SaveBang
     end
 
     it 'safely displays the message' do

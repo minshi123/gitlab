@@ -183,11 +183,14 @@ module CommitsHelper
   def view_file_button(commit_sha, diff_new_path, project, replaced: false)
     title = replaced ? _('View replaced file @ ') : _('View file @ ')
 
-    link_to(
-      project_blob_path(project,
-                                  tree_join(commit_sha, diff_new_path)),
-      class: 'btn view-file js-view-file'
-    ) do
+    path =
+      if current_controller?(:wikis)
+        wiki_page_path(@wiki, @page, version_id: commit_sha)
+      else
+        project_blob_path(project, tree_join(commit_sha, diff_new_path))
+      end
+
+    link_to(path, class: 'btn view-file js-view-file') do
       raw(title) + content_tag(:span, Commit.truncate_sha(commit_sha),
                                        class: 'commit-sha')
     end

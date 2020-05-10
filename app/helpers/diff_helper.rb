@@ -134,9 +134,15 @@ module DiffHelper
   end
 
   def diff_file_html_data(project, diff_file_path, diff_commit_id)
+    blob_diff_path =
+      if current_controller?(:wikis)
+        wiki_page_path(@wiki, @page, action: :diff, version_id: diff_commit_id)
+      else
+        project_blob_diff_path(project, tree_join(diff_commit_id, diff_file_path))
+      end
+
     {
-      blob_diff_path: project_blob_diff_path(project,
-                                                       tree_join(diff_commit_id, diff_file_path)),
+      blob_diff_path: blob_diff_path,
       view: diff_view
     }
   end

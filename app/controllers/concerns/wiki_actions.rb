@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module WikiActions
+  include DiffHelper
   include SendsBlob
   include Gitlab::Utils::StrongMemoize
   extend ActiveSupport::Concern
@@ -11,7 +12,7 @@ module WikiActions
     before_action :authorize_admin_wiki!, only: :destroy
 
     before_action :wiki
-    before_action :page, only: [:show, :edit, :update, :history, :destroy]
+    before_action :page, only: [:show, :edit, :update, :history, :destroy, :diff]
     before_action :load_sidebar, except: [:pages]
 
     before_action only: [:show, :edit, :update] do
@@ -133,6 +134,37 @@ module WikiActions
   # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
   # rubocop:disable Gitlab/ModuleWithInstanceVariables
+  def diff
+    return render_404 unless page
+
+    commit = wiki.commit(page.version.commit)
+    return render_404 unless commit
+
+    apply_diff_view_cookie!
+
+    opts = diff_options.merge(
+      expanded: true,
+      paths: [@page.path]
+    )
+
+    opts[:ignore_whitespace_change] = true if params[:format] == 'diff'
+
+    # TODO: Uncouple diffing from projects, so we can just do `commit.diffs(opts)` here.
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/217752
+    @diffs = Gitlab::Diff::FileCollection::Base.new(
+      commit,
+      project: wiki,
+      diff_refs: commit.diff_refs,
+      diff_options: opts
+    )
+
+    @diff_notes_disabled = true
+
+    render 'shared/wikis/diff'
+  end
+  # rubocop:disable Gitlab/ModuleWithInstanceVariables
+
+  # rubocop:disable Gitlab/ModuleWithInstanceVariables
   def destroy
     WikiPages::DestroyService.new(container: container, current_user: current_user).execute(page)
 
@@ -203,7 +235,7 @@ module WikiActions
 
   def page_params
     keys = [:id]
-    keys << :version_id if params[:action] == 'show'
+    keys << :version_id if %w[show diff].include?(params[:action])
 
     params.values_at(*keys)
   end

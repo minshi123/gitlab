@@ -303,6 +303,28 @@ RSpec.describe DiffHelper do
     end
   end
 
+  describe '#diff_file_html_data' do
+    let(:project) { build(:project) }
+    let(:path) { 'path/to/file' }
+    let(:sha) { '1234567890' }
+
+    subject do
+      helper.diff_file_html_data(project, path, sha)
+    end
+
+    it 'returns data for project files' do
+      expect(subject).to include(blob_diff_path: helper.project_blob_diff_path(project, "#{sha}/#{path}"))
+    end
+
+    it 'returns data for wiki files' do
+      @wiki = Wiki.for_container(project)
+      @page = 'slug'
+
+      expect(helper).to receive(:current_controller?).with(:wikis).and_return(true)
+      expect(subject).to include(blob_diff_path: helper.wiki_page_path(@wiki, @page, action: :diff, version_id: sha))
+    end
+  end
+
   describe '#diff_file_path_text' do
     it 'returns full path by default' do
       expect(diff_file_path_text(diff_file)).to eq(diff_file.new_path)

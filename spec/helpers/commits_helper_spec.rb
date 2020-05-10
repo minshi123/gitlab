@@ -51,6 +51,28 @@ RSpec.describe CommitsHelper do
     end
   end
 
+  describe '#view_file_button' do
+    let(:project) { build(:project) }
+    let(:path) { 'path/to/file' }
+    let(:sha) { '1234567890' }
+
+    subject do
+      helper.view_file_button(sha, path, project)
+    end
+
+    it 'links to project files' do
+      expect(subject).to have_link('1234567', href: helper.project_blob_path(project, "#{sha}/#{path}"))
+    end
+
+    it 'links to wiki files' do
+      @wiki = Wiki.for_container(project)
+      @page = 'slug'
+
+      expect(helper).to receive(:current_controller?).with(:wikis).and_return(true)
+      expect(subject).to have_link('1234567', href: helper.wiki_page_path(@wiki, @page, version_id: sha))
+    end
+  end
+
   describe '#view_on_environment_button' do
     let(:project) { create(:project) }
     let(:environment) { create(:environment, external_url: 'http://example.com') }

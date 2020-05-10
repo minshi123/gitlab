@@ -1,0 +1,31 @@
+- page_title _('Changes'), @page.title.capitalize, _('Wiki')
+- commit = @diffs.diffable
+
+.top-area
+  .nav-text
+    %strong
+      = link_to @page.title.capitalize, wiki_page_path(@wiki, @page)
+    %span.light
+      &middot;
+      = _('Changes')
+
+  .nav-controls
+    = render 'shared/wikis/main_links'
+
+.page-content-header
+  .header-main-content
+    = _('Authored')
+    #{time_ago_with_tooltip(commit.authored_date)}
+    = s_('ByAuthor|by')
+    = author_avatar(commit, size: 24, has_tooltip: false)
+    %strong
+      = commit_author_link(commit, avatar: true, size: 24)
+
+.commit-box
+  %h3.commit-title
+    = markdown_field(commit, :title)
+  - if commit.description.present?
+    %pre.commit-description<
+      = preserve(markdown_field(commit, :description))
+
+= render 'projects/diffs/diffs', diffs: @diffs
