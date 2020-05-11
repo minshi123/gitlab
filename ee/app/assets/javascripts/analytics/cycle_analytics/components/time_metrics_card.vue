@@ -1,12 +1,10 @@
 <script>
+import Api from 'ee/api';
+import { __ } from '~/locale';
+import createFlash from '~/flash';
+import { slugify } from '~/lib/utils/text_utility';
 import MetricCard from '../../shared/components/metric_card.vue';
-
-const emptyState = [{ label: 'Lead time', value: null }, { label: 'Cycle time', value: null }];
-
-const placeholder = [
-  { label: 'Lead time', value: '2', unit: 'days' },
-  { label: 'Cycle time', value: '1.5', unit: 'days' },
-];
+import { removeFlash } from '../utils';
 
 export default {
   name: 'TimeMetricsCard',
@@ -40,7 +38,27 @@ export default {
   },
   methods: {
     fetchData() {
-      this.data = placeholder;
+      removeFlash();
+      this.loading = true;
+      return Api.cycleAnalyticsTimeSummaryData(
+        this.groupPath,
+        this.additionalParams ? this.additionalParams : {},
+      )
+        .then(({ data }) => {
+          this.data = data.map(({ title: label, value }) => ({
+            value: value || '-',
+            label,
+            key: slugify(label),
+          }));
+        })
+        .catch(() => {
+          createFlash(
+            __('There was an error while fetching value stream analytics time summary data.'),
+          );
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
   },
 };
