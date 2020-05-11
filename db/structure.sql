@@ -3128,6 +3128,21 @@ CREATE SEQUENCE public.group_deploy_tokens_id_seq
 
 ALTER SEQUENCE public.group_deploy_tokens_id_seq OWNED BY public.group_deploy_tokens.id;
 
+CREATE TABLE public.group_features (
+    id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    wiki_access_level integer NOT NULL
+);
+
+CREATE SEQUENCE public.group_features_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.group_features_id_seq OWNED BY public.group_features.id;
+
 CREATE TABLE public.group_group_links (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -7528,6 +7543,8 @@ ALTER TABLE ONLY public.group_custom_attributes ALTER COLUMN id SET DEFAULT next
 
 ALTER TABLE ONLY public.group_deploy_tokens ALTER COLUMN id SET DEFAULT nextval('public.group_deploy_tokens_id_seq'::regclass);
 
+ALTER TABLE ONLY public.group_features ALTER COLUMN id SET DEFAULT nextval('public.group_features_id_seq'::regclass);
+
 ALTER TABLE ONLY public.group_group_links ALTER COLUMN id SET DEFAULT nextval('public.group_group_links_id_seq'::regclass);
 
 ALTER TABLE ONLY public.group_import_states ALTER COLUMN group_id SET DEFAULT nextval('public.group_import_states_group_id_seq'::regclass);
@@ -8306,6 +8323,9 @@ ALTER TABLE ONLY public.group_deletion_schedules
 
 ALTER TABLE ONLY public.group_deploy_tokens
     ADD CONSTRAINT group_deploy_tokens_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.group_features
+    ADD CONSTRAINT group_features_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.group_group_links
     ADD CONSTRAINT group_group_links_pkey PRIMARY KEY (id);
@@ -9717,6 +9737,8 @@ CREATE INDEX index_group_deletion_schedules_on_user_id ON public.group_deletion_
 CREATE INDEX index_group_deploy_tokens_on_deploy_token_id ON public.group_deploy_tokens USING btree (deploy_token_id);
 
 CREATE UNIQUE INDEX index_group_deploy_tokens_on_group_and_deploy_token_ids ON public.group_deploy_tokens USING btree (group_id, deploy_token_id);
+
+CREATE UNIQUE INDEX index_group_features_on_group_id ON public.group_features USING btree (group_id);
 
 CREATE UNIQUE INDEX index_group_group_links_on_shared_group_and_shared_with_group ON public.group_group_links USING btree (shared_group_id, shared_with_group_id);
 
@@ -11733,6 +11755,9 @@ ALTER TABLE ONLY public.requirements
 
 ALTER TABLE ONLY public.metrics_dashboard_annotations
     ADD CONSTRAINT fk_rails_345ab51043 FOREIGN KEY (cluster_id) REFERENCES public.clusters(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.group_features
+    ADD CONSTRAINT fk_rails_356514082b FOREIGN KEY (group_id) REFERENCES public.namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.wiki_page_slugs
     ADD CONSTRAINT fk_rails_358b46be14 FOREIGN KEY (wiki_page_meta_id) REFERENCES public.wiki_page_meta(id) ON DELETE CASCADE;
@@ -13765,6 +13790,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200506085748
 20200506125731
 20200507221434
+20200511070112
 20200511145545
 \.
 
