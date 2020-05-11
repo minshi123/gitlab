@@ -6,7 +6,7 @@ config:
   test2:
     stage: test
     when: manual
-    allow_failure: true
+    allow_failure: false
     script: exit 1
 
   deploy:
@@ -16,9 +16,9 @@ config:
 
 init:
   expect:
-    pipeline: pending
+    pipeline: running
     stages:
-      test: pending
+      test: running
       deploy: created
     jobs:
       test1: pending
@@ -29,9 +29,9 @@ transitions:
   - event: success
     jobs: [test1]
     expect:
-      pipeline: running
+      pipeline: manual
       stages:
-        test: success
+        test: manual
         deploy: created
       jobs:
         test1: success
