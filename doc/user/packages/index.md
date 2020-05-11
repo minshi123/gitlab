@@ -34,7 +34,7 @@ see the **Packages & Registries > Package Registry**link in the sidebar.
 
 ### View Packages for your project
 
-Navigating to your project's **{package}** **Packages & Registries > Package Registry**will show a list
+Navigating to your project's **{package}** **Packages & Registries > Package Registry** will show a list
 of all packages that have been added to your project.
 
 ![Project Packages list](img/project_packages_list_v13_0.png)
