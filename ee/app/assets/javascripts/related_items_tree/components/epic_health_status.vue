@@ -12,11 +12,22 @@ export default {
       default: () => {},
     },
   },
+  computed: {
+    hasHealthStatus() {
+      const { issuesOnTrack, issuesNeedingAttention, issuesAtRisk } = this.healthStatus;
+      const totalHealthStatuses = issuesOnTrack + issuesNeedingAttention + issuesAtRisk;
+      return totalHealthStatuses > 0;
+    },
+  },
 };
 </script>
 
 <template>
-  <div ref="healthStatus" class="health-status d-inline-flex align-items-center">
+  <div
+    v-if="hasHealthStatus"
+    ref="healthStatus"
+    class="health-status d-inline-flex align-items-center"
+  >
     <gl-tooltip :target="() => $refs.healthStatus" placement="top">
       <span
         ><strong>{{ healthStatus.issuesOnTrack }}</strong
