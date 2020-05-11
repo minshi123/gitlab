@@ -51,7 +51,7 @@ On this page, you can:
 ### View Packages for your group
 
 You can view all packages belonging to a group by navigating to **{package}**
-**Packages & Registries > Package Registry**from the group sidebar.
+**Packages & Registries > Package Registry** from the group sidebar.
 
 ![Group Packages list](img/group_packages_list_v13_0.png)
 
