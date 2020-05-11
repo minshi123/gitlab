@@ -222,6 +222,7 @@ export default {
       'allDashboards',
       'environmentsLoading',
       'expandedPanel',
+      'isUpdatingStarredValue',
     ]),
     ...mapGetters('monitoringDashboard', ['getMetricStates', 'filteredEnvironments']),
     firstDashboard() {
@@ -305,6 +306,7 @@ export default {
       'filterEnvironments',
       'setExpandedPanel',
       'clearExpandedPanel',
+      'toggleStarredValue',
     ]),
     updatePanels(key, panels) {
       this.setPanelGroupMetrics({
@@ -511,6 +513,18 @@ export default {
       <div class="flex-grow-1"></div>
 
       <div class="d-sm-flex">
+        <div class="mb-2 mr-2 d-flex">
+          <gl-deprecated-button
+            :disabled="isUpdatingStarredValue"
+            variant="default"
+            class="flex-grow-1"
+            @click="toggleStarredValue()"
+          >
+            <!-- TODO Add aria label -->
+            <gl-icon :name="selectedDashboard.starred ? 'star' : 'star-o'" />
+          </gl-deprecated-button>
+        </div>
+
         <div v-if="showRearrangePanelsBtn" class="mb-2 mr-2 d-flex">
           <gl-deprecated-button
             :pressed="isRearrangingPanels"
