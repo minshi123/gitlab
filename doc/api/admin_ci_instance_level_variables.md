@@ -59,9 +59,9 @@ curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/a
 }
 ```
 
-## Create variable
+## Create instance variable
 
-Create a new variable.
+Create a new instance-level variable.
 
 ```plaintext
 POST /admin/ci/instance_variables
