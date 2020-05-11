@@ -278,7 +278,7 @@ describe('Details Page', () => {
           });
         });
 
-        it('table header does not has class w-25', () => {
+        it('table header does not have class w-25', () => {
           expect(findFirsTagColumn().classes()).not.toContain('w-25');
         });
 
