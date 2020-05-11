@@ -65,6 +65,12 @@ module Gitlab
         code_owners_blob = @project.repository.code_owners_blob(ref: @ref)
         Gitlab::CodeOwners::File.new(code_owners_blob, @project)
       end
+
+      def sectional_codeowners?
+        strong_memoize(:sectional_codeowners_check) do
+          Feature.enabled?(:sectional_codeowners, @project, default_enabled: false)
+        end
+      end
     end
   end
 end
