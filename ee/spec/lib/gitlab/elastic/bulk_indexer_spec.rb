@@ -43,6 +43,23 @@ describe Gitlab::Elastic::BulkIndexer, :elastic do
 
       expect(indexer.failures).to be_empty
     end
+
+    it 'sends a bulk request if adding another item would go over bulk limit' do
+      set_bulk_limit(indexer, 400)
+      indexer.process(issue_as_ref) # 376 bytes
+
+      expect(es_client).to receive(:bulk) do |args|
+        body_bytesize = args[:body].map(&:bytesize).reduce(:+)
+
+        expect(body_bytesize).to be <= 400
+
+        {}
+      end
+
+      indexer.process(issue_as_ref)
+
+      expect(indexer.failures).to be_empty
+    end
   end
 
   describe '#flush' do
