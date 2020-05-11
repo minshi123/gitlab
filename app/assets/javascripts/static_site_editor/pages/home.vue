@@ -1,14 +1,12 @@
 <script>
-import { mapState, mapActions } from 'vuex';
-
 import SkeletonLoader from '../components/skeleton_loader.vue';
 import EditArea from '../components/edit_area.vue';
 import SavedChangesMessage from '../components/saved_changes_message.vue';
 import InvalidContentMessage from '../components/invalid_content_message.vue';
 import SubmitChangesError from '../components/submit_changes_error.vue';
-
 import appDataQuery from '../graphql/queries/app_data.query.graphql';
 import sourceContentQuery from '../graphql/queries/source_content.query.graphql';
+import submitContentChangesMutation from '../graphql/mutations/submit_content_changes.mutation.graphql';
 
 import createFlash from '~/flash';
 
@@ -49,8 +47,15 @@ export default {
       },
     },
   },
+  data() {
+    return {
+      content: null,
+      savedContentMeta: null,
+      submitChangesError: null,
+      isSavingChanges: false,
+    };
+  },
   computed: {
-    ...mapState(['isSavingChanges', 'submitChangesError', 'savedContentMeta']),
     isLoadingContent() {
       return this.$apollo.queries.sourceContent.loading;
     },
@@ -59,10 +64,35 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setContent', 'submitChanges', 'dismissSubmitChangesError']),
+    onDismissError() {
+      this.submitChangesError = false;
+    },
     onSubmit({ content }) {
-      this.setContent(content);
+      this.content = content;
       this.submitChanges();
+    },
+    submitChanges() {
+      this.isSavingChanges = true;
+
+      this.$apollo
+        .mutate({
+          mutation: submitContentChangesMutation,
+          variables: {
+            project: this.appData.project,
+            username: this.appData.username,
+            sourcePath: this.appData.sourcePath,
+            content: this.content,
+          },
+        })
+        .then(({ data: { submitContentChanges: savedContentMeta } }) => {
+          this.savedContentMeta = savedContentMeta;
+        })
+        .catch(e => {
+          this.submitChangesError = e.message;
+        })
+        .finally(() => {
+          this.isSavingChanges = false;
+        });
     },
   },
 };
@@ -85,7 +115,7 @@ export default {
         v-if="submitChangesError"
         :error="submitChangesError"
         @retry="submitChanges"
-        @dismiss="dismissSubmitChangesError"
+        @dismiss="onDismissError"
       />
       <edit-area
         v-if="isContentLoaded"
