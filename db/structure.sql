@@ -10978,6 +10978,9 @@ ALTER TABLE ONLY public.notification_settings
 ALTER TABLE ONLY public.lists
     ADD CONSTRAINT fk_0d3f677137 FOREIGN KEY (board_id) REFERENCES public.boards(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.projects
+    ADD CONSTRAINT fk_0e800909ce FOREIGN KEY (namespace_id) REFERENCES public.namespaces(id) ON DELETE RESTRICT;
+
 ALTER TABLE ONLY public.group_deletion_schedules
     ADD CONSTRAINT fk_11e3ebfcdd FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
@@ -13765,5 +13768,8 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200506085748
 20200506125731
 20200507221434
+20200511080113
+20200511083541
+20200511220023
 \.
 
