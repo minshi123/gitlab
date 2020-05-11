@@ -44,7 +44,7 @@ project:
    projects this might be enabled by default. For existing projects
    (prior GitLab 8.8), you will have to explicitly enable it.
 1. Press **Save changes** for the changes to take effect. You should now be able
-   to see the **Packages & Registries > Container Registry**  link in the sidebar.
+   to see the **Packages & Registries > Container Registry** link in the sidebar.
 
 ## Control Container Registry from within GitLab
 
