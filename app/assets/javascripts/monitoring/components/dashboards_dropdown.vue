@@ -2,6 +2,7 @@
 import { mapState, mapActions } from 'vuex';
 import {
   GlAlert,
+  GlIcon,
   GlDropdown,
   GlDropdownItem,
   GlDropdownHeader,
@@ -21,6 +22,7 @@ const events = {
 export default {
   components: {
     GlAlert,
+    GlIcon,
     GlDropdown,
     GlDropdownItem,
     GlDropdownHeader,
@@ -60,6 +62,7 @@ export default {
     selectedDashboardText() {
       return this.selectedDashboard.display_name;
     },
+
     filteredDashboards() {
       return this.allDashboards.filter(({ display_name }) =>
         display_name.toLowerCase().includes(this.searchTerm.toLowerCase()),
@@ -68,6 +71,13 @@ export default {
     shouldShowNoMsgContainer() {
       return this.filteredDashboards.length === 0;
     },
+    starredDashboards() {
+      return this.filteredDashboards.filter(({ starred }) => starred);
+    },
+    nonStarredDashboards() {
+      return this.filteredDashboards.filter(({ starred }) => !starred);
+    },
+
     okButtonText() {
       return this.loading ? s__('Metrics|Duplicating...') : s__('Metrics|Duplicate');
     },
@@ -127,9 +137,28 @@ export default {
         v-model="searchTerm"
         class="m-2"
       />
+
       <div class="flex-fill overflow-auto">
         <gl-dropdown-item
-          v-for="dashboard in filteredDashboards"
+          v-for="dashboard in starredDashboards"
+          :key="dashboard.path"
+          :active="dashboard.path === selectedDashboard.path"
+          active-class="is-active"
+          @click="selectDashboard(dashboard)"
+        >
+          <div class="d-flex">
+            {{ dashboard.display_name || dashboard.path }}
+            <gl-icon class="text-muted ml-auto" name="star" />
+          </div>
+        </gl-dropdown-item>
+
+        <gl-dropdown-divider
+          v-if="starredDashboards.length && nonStarredDashboards.length"
+          ref="starredListDivider"
+        />
+
+        <gl-dropdown-item
+          v-for="dashboard in nonStarredDashboards"
           :key="dashboard.path"
           :active="dashboard.path === selectedDashboard.path"
           active-class="is-active"
