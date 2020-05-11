@@ -33,9 +33,9 @@ curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/a
 ]
 ```
 
-## Show variable details
+## Show instance variable details
 
-Get the details of a specific instance level variable.
+Get the details of a specific instance-level variable.
 
 ```plaintext
 GET /admin/ci/instance_variables/:key
