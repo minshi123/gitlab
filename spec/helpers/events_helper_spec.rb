@@ -199,5 +199,24 @@ describe EventsHelper do
 
       expect(subject).to eq("#{project_base_url}/-/merge_requests/#{event.note_target.iid}#note_#{event.target.id}")
     end
+
+    context 'for design note events' do
+      let(:event) { create(:event, :for_design) }
+
+      it 'returns an appropriate URL' do
+        # TODO this test is being temporarily skipped unless run in EE,
+        # as we are in the process of moving Design Management to FOSS in 13.0
+        # in steps. In the current step the routes have not yet been moved.
+        #
+        # See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283.
+        skip 'See https://gitlab.com/gitlab-org/gitlab/-/issues/212566#note_327724283' unless Gitlab.ee?
+
+        iid = event.note_target.issue.iid
+        filename = event.note_target.filename
+        note_id  = event.target.id
+
+        expect(subject).to eq("#{project_base_url}/-/issues/#{iid}/designs/#{filename}#note_#{note_id}")
+      end
+    end
   end
 end
