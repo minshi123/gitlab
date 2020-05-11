@@ -1,4 +1,4 @@
-# Admin instance level variables API
+# Instance-level CI variables API
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/14108) in GitLab 13.0
 
