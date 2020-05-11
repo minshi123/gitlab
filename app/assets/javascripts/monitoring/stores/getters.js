@@ -3,6 +3,13 @@ import { NOT_IN_DB_PREFIX } from '../constants';
 const metricsIdsInPanel = panel =>
   panel.metrics.filter(metric => metric.metricId && metric.result).map(metric => metric.metricId);
 
+export const selectedDashboard = state => {
+  const { allDashboards } = state;
+  return (
+    allDashboards.find(({ path }) => path === state.currentDashboard) || allDashboards[0] || null
+  );
+};
+
 /**
  * Get all state for metric in the dashboard or a group. The
  * states are not repeated so the dashboard or group can show

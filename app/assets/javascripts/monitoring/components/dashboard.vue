@@ -433,7 +433,6 @@ export default {
           class="flex-grow-1"
           toggle-class="dropdown-menu-toggle"
           :default-branch="defaultBranch"
-          :selected-dashboard="selectedDashboard"
           @selectDashboard="selectDashboard($event)"
         />
       </div>

@@ -3,7 +3,7 @@ import * as getters from '~/monitoring/stores/getters';
 import mutations from '~/monitoring/stores/mutations';
 import * as types from '~/monitoring/stores/mutation_types';
 import { metricStates } from '~/monitoring/constants';
-import { environmentData, metricsResult } from '../mock_data';
+import { environmentData, metricsResult, dashboardGitResponse } from '../mock_data';
 import {
   metricsDashboardPayload,
   metricResultStatus,
@@ -321,6 +321,42 @@ describe('Monitoring store Getters', () => {
       metricsSavedToDb = getters.metricsSavedToDb(state);
 
       expect(metricsSavedToDb).toEqual([`${id1}_${metric1.id}`, `${id2}_${metric2.id}`]);
+    });
+  });
+
+  describe('selectedDashboard', () => {
+    const { selectedDashboard } = getters;
+
+    it('returns a dashboard', () => {
+      const state = {
+        allDashboards: dashboardGitResponse,
+        currentDashboard: dashboardGitResponse[0].path,
+      };
+      expect(selectedDashboard(state)).toEqual(dashboardGitResponse[0]);
+    });
+
+    it('returns a non-default dashboard', () => {
+      const state = {
+        allDashboards: dashboardGitResponse,
+        currentDashboard: dashboardGitResponse[1].path,
+      };
+      expect(selectedDashboard(state)).toEqual(dashboardGitResponse[1]);
+    });
+
+    it('returns a default dashboard when dashboard cannot be found', () => {
+      const state = {
+        allDashboards: dashboardGitResponse,
+        currentDashboard: 'wrong_path',
+      };
+      expect(selectedDashboard(state)).toEqual(dashboardGitResponse[0]);
+    });
+
+    it('returns null when no dashboards are present', () => {
+      const state = {
+        allDashboards: [],
+        currentDashboard: dashboardGitResponse[0].path,
+      };
+      expect(selectedDashboard(state)).toEqual(null);
     });
   });
 });

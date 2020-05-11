@@ -83,6 +83,22 @@ export default {
     state.showEmptyState = true;
   },
 
+  [types.REQUEST_DASHBOARD_STARRING](state) {
+    state.isUpdatingStarredValue = true;
+  },
+  [types.RECEIVE_DASHBOARD_STARRING_SUCCESS](state, { selectedDashboard, newStarredValue }) {
+    state.isUpdatingStarredValue = false;
+
+    // eslint-disable-next-line no-param-reassign
+    selectedDashboard.starred = newStarredValue;
+
+    // Ensure computed in filtered lists are updated
+    state.allDashboards = [...state.allDashboards];
+  },
+  [types.RECEIVE_DASHBOARD_STARRING_FAILURE](state) {
+    state.isUpdatingStarredValue = false;
+  },
+
   /**
    * Deployments and environments
    */
