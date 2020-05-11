@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlPagination } from '@gitlab/ui';
 import Component from '~/registry/explorer/components/image_list.vue';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { RouterLink } from '../stubs';
 import { imagesListResponse, imagePagination } from '../mock_data';
 
@@ -9,10 +10,10 @@ describe('Image List', () => {
 
   const firstElement = imagesListResponse.data[0];
 
-  const findDeleteBtn = () => wrapper.find({ ref: 'deleteImageButton' });
-  const findRowItems = () => wrapper.findAll({ ref: 'rowItem' });
-  const findDetailsLink = () => wrapper.find({ ref: 'detailsLink' });
-  const findClipboardButton = () => wrapper.find({ ref: 'clipboardButton' });
+  const findDeleteBtn = () => wrapper.find('[data-testid="deleteImageButton"]');
+  const findRowItems = () => wrapper.findAll('[data-testid="rowItem"]');
+  const findDetailsLink = () => wrapper.find('[data-testid="detailsLink"]');
+  const findClipboardButton = () => wrapper.find(ClipboardButton);
   const findPagination = () => wrapper.find(GlPagination);
 
   const mountComponent = () => {

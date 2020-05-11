@@ -5754,7 +5754,7 @@ msgstr ""
 msgid "ContainerRegistry|Something went wrong while updating the expiration policy."
 msgstr ""
 
-msgid "ContainerRegistry|Sorry, your filter produced no results"
+msgid "ContainerRegistry|Sorry, your filter produced no results."
 msgstr ""
 
 msgid "ContainerRegistry|Tag"
@@ -5808,7 +5808,7 @@ msgstr ""
 msgid "ContainerRegistry|This image repository is scheduled for deletion"
 msgstr ""
 
-msgid "ContainerRegistry|To widen your search, change or remove the filters above"
+msgid "ContainerRegistry|To widen your search, change or remove the filters above."
 msgstr ""
 
 msgid "ContainerRegistry|We are having trouble connecting to Docker, which could be due to an issue with your project name or path. %{docLinkStart}More Information%{docLinkEnd}"

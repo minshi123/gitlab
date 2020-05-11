@@ -60,12 +60,12 @@ export default {
     <div
       v-for="(listItem, index) in images"
       :key="index"
-      ref="rowItem"
       v-gl-tooltip="{
         placement: 'left',
         disabled: !listItem.deleting,
         title: $options.i18n.ROW_SCHEDULED_FOR_DELETION,
       }"
+      data-testid="rowItem"
     >
       <div
         class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-py-2 gl-px-1 border-bottom"
@@ -73,14 +73,13 @@ export default {
       >
         <div class="gl-display-flex gl-align-items-center">
           <router-link
-            ref="detailsLink"
+            data-testid="detailsLink"
             :to="{ name: 'details', params: { id: encodeListItem(listItem) } }"
           >
             {{ listItem.path }}
           </router-link>
           <clipboard-button
             v-if="listItem.location"
-            ref="clipboardButton"
             :disabled="listItem.deleting"
             :text="listItem.location"
             :title="listItem.location"
@@ -100,8 +99,8 @@ export default {
           :title="$options.i18n.LIST_DELETE_BUTTON_DISABLED"
         >
           <gl-deprecated-button
-            ref="deleteImageButton"
             v-gl-tooltip
+            data-testid="deleteImageButton"
             :disabled="!listItem.destroy_path || listItem.deleting"
             :title="$options.i18n.REMOVE_REPOSITORY_LABEL"
             :aria-label="$options.i18n.REMOVE_REPOSITORY_LABEL"
