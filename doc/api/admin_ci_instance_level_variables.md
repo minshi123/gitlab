@@ -99,11 +99,11 @@ PUT /admin/ci/instance_variables/:key
 
 | Attribute       | Type    | required | Description             |
 |-----------------|---------|----------|-------------------------|
-| `key`           | string  | yes      | The `key` of a variable   |
-| `value`         | string  | yes      | The `value` of a variable |
-| `variable_type` | string  | no       | The type of a variable. Available types are: `env_var` (default) and `file` |
-| `protected`     | boolean | no       | Whether the variable is protected |
-| `masked`        | boolean | no       | Whether the variable is masked |
+| `key`           | string  | yes      | The `key` of a variable.   |
+| `value`         | string  | yes      | The `value` of a variable. |
+| `variable_type` | string  | no       | The type of a variable. Available types are: `env_var` (default) and `file`. |
+| `protected`     | boolean | no       | Whether the variable is protected. |
+| `masked`        | boolean | no       | Whether the variable is masked. |
 
 ```shell
 curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/admin/ci/instance_variables/NEW_VARIABLE" --form "value=updated value"
