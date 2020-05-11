@@ -88,9 +88,12 @@ module Gitlab
       def submit(*hashes)
         hashes.each do |hash|
           text = hash.to_json
+          bytesize = text.bytesize + 2
+
+          maybe_send_bulk(force: true) if body_size_bytes + bytesize > bulk_limit_bytes
 
           body.push(text)
-          @body_size_bytes += text.bytesize + 2 # Account for newlines
+          @body_size_bytes += bytesize # Account for newlines
         end
       end
 
