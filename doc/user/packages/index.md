@@ -30,7 +30,7 @@ project:
 1. Expand the **Visibility, project features, permissions** section and enable the
 **Packages** feature on your project.
 1. Press **Save changes** for the changes to take effect. You should now be able to
-see the **Packages & Registries > Package Registry**link in the sidebar.
+see the **Packages & Registries > Package Registry** link in the sidebar.
 
 ### View Packages for your project
 
