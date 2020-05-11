@@ -89,9 +89,9 @@ curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" "https://gitla
 }
 ```
 
-## Update variable
+## Update instance variable
 
-Update a instance level variable.
+Update an instance-level variable.
 
 ```plaintext
 PUT /admin/ci/instance_variables/:key
