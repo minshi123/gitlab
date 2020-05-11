@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ElasticCommitIndexerWorker # rubocop:disable Scalability/IdempotentWorker
+class ElasticCommitIndexerWorker
   include ApplicationWorker
 
   feature_category :global_search

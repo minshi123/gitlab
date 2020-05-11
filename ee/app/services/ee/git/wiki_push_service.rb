@@ -13,7 +13,7 @@ module EE
           branch_name = ::Gitlab::Git.ref_name(change[:ref])
           next unless project.wiki.default_branch == branch_name
 
-          project.wiki.index_wiki_blobs(change[:newrev])
+          project.wiki.index_wiki_blobs
         end
       end
     end
