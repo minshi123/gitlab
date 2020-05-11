@@ -119,9 +119,9 @@ curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab
 }
 ```
 
-## Remove variable
+## Remove instance variable
 
-Remove a instance level variable.
+Remove an instance-level variable.
 
 ```plaintext
 DELETE /admin/ci/instance_variables/:key
