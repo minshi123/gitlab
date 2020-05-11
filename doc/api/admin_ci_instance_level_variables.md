@@ -2,9 +2,9 @@
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/14108) in GitLab 13.0
 
-## List instance variables
+## List all instance variables
 
-Get list of instance level variables.
+Get the list of all instance-level variables.
 
 ```plaintext
 GET /admin/ci/instance_variables
