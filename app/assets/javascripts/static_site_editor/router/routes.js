@@ -14,4 +14,9 @@ export default [
     path: '/success',
     component: Success,
   },
+  {
+    name: '404',
+    path: '*',
+    redirect: HOME_ROUTE,
+  },
 ];
