@@ -166,18 +166,6 @@ export default () => {
       .catch(() => {});
   }
 
-<<<<<<< HEAD
   createDagApp();
-=======
-  new Vue({
-    el: '#js-pipeline-dag-vue',
-    components: {
-      Dag,
-    },
-    render(createElement) {
-      return createElement('dag');
-    },
 
-  })
->>>>>>> f42eb8bef6a... Add basic scaffolding
 };
