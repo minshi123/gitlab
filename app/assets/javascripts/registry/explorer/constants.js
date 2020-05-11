@@ -41,7 +41,7 @@ export const IMAGE_REPOSITORY_LIST_LABEL = s__('ContainerRegistry|Image Reposito
 
 export const SEARCH_PLACEHOLDER_TEXT = s__('ContainerRegistry|Filter by name');
 
-export const EMPTY_RESULT_TITLE = s__('ContainerRegistry|Sorry, your filter produced no results');
+export const EMPTY_RESULT_TITLE = s__('ContainerRegistry|Sorry, your filter produced no results.');
 export const EMPTY_RESULT_MESSAGE = s__(
   'ContainerRegistry|To widen your search, change or remove the filters above',
 );
