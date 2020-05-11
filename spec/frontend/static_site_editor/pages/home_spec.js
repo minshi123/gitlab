@@ -1,18 +1,14 @@
 import Vuex from 'vuex';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import { GlSkeletonLoader } from '@gitlab/ui';
-
 import createState from '~/static_site_editor/store/state';
-
 import { SUCCESS_ROUTE } from '~/static_site_editor/router/constants';
-
 import Home from '~/static_site_editor/pages/home.vue';
 import RichContentEditor from '~/vue_shared/components/rich_content_editor/rich_content_editor.vue';
 import EditHeader from '~/static_site_editor/components/edit_header.vue';
 import InvalidContentMessage from '~/static_site_editor/components/invalid_content_message.vue';
 import PublishToolbar from '~/static_site_editor/components/publish_toolbar.vue';
 import SubmitChangesError from '~/static_site_editor/components/submit_changes_error.vue';
-
 import { sourceContent, sourceContentTitle, submitChangesError } from '../mock_data';
 
 const localVue = createLocalVue();
@@ -99,14 +95,18 @@ describe('static_site_editor/pages/home', () => {
   beforeEach(() => {
     buildRouter();
     buildStore();
-    buildWrapper();
   });
 
   afterEach(() => {
     wrapper.destroy();
+    wrapper = null;
   });
 
   describe('when content is not loaded', () => {
+    beforeEach(() => {
+      buildWrapper();
+    });
+
     it('does not render rich content editor', () => {
       expect(findRichContentEditor().exists()).toBe(false);
     });
@@ -224,6 +224,8 @@ describe('static_site_editor/pages/home', () => {
   });
 
   it('dispatches load content action', () => {
+    buildWrapper();
+
     expect(loadContentActionMock).toHaveBeenCalled();
   });
 

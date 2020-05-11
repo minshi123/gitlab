@@ -33,7 +33,7 @@ const initStaticSiteEditor = el => {
     sourcePath,
     username,
   });
-  const router = createRouter(baseUrl, store);
+  const router = createRouter(baseUrl);
 
   return new Vue({
     el,

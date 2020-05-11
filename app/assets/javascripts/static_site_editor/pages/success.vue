@@ -1,7 +1,7 @@
 <script>
 import { mapState } from 'vuex';
-
 import SavedChangesMessage from '../components/saved_changes_message.vue';
+import { HOME_ROUTE } from '../router/constants';
 
 export default {
   components: {
@@ -10,10 +10,15 @@ export default {
   computed: {
     ...mapState(['savedContentMeta', 'returnUrl']),
   },
+  created() {
+    if (!this.savedContentMeta) {
+      this.$router.push(HOME_ROUTE);
+    }
+  },
 };
 </script>
 <template>
-  <div class="container">
+  <div v-if="savedContentMeta" class="container">
     <saved-changes-message
       :branch="savedContentMeta.branch"
       :commit="savedContentMeta.commit"
