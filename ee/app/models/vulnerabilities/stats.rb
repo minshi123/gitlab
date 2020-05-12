@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+# This model uses database table of another class and defines
+# just a subset of the columns as attributes. The rationale
+# behind is, encapsulating related logic in one place while
+# being able to eager load the information.
+#
+# Later this model can use a different table which can be
+# populated with the data by database triggers for performance
+# reasons.
 module Vulnerabilities
   class Stats < ApplicationRecord
     INHERITED_COLUMNS = %w(project_id).freeze
