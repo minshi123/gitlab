@@ -21,6 +21,8 @@ describe Project do
 
     it { is_expected.to delegate_method(:closest_gitlab_subscription).to(:namespace) }
 
+    it { is_expected.to delegate_method(:grade).to(:vulnerability_stats).with_prefix(:vulnerability) }
+
     it { is_expected.to belong_to(:deleting_user) }
 
     it { is_expected.to have_one(:import_state).class_name('ProjectImportState') }
