@@ -161,13 +161,13 @@ module Gitlab
           .where("issues.description LIKE '%' || grafana_integrations.grafana_url || '%'")
           .where(grafana_integrations: { enabled: true }))
       end
-      # rubocop: enable CodeReuse/ActiveRecord
 
       def incident_label_issue_data
-        incident_label_id = Label.with_title(IncidentManagement::CreateIssueService::INCIDENT_LABEL['title']).first&.id
+        incident_label_id = Label.find_by(IncidentManagement::CreateIssueService::INCIDENT_LABEL)&.id
 
         count(::Issue.with_label({ id: incident_label_id }))
       end
+      # rubocop: enable CodeReuse/ActiveRecord
 
       def features_usage_data
         features_usage_data_ce

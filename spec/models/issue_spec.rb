@@ -1030,4 +1030,14 @@ describe Issue do
       it { is_expected.to contain_exactly(design_a, design_c) }
     end
   end
+
+  describe '#with_label' do
+    it 'gets issues with given label attributes' do
+      label_properties = { title: 'hello world' }
+      label = create(:label, **label_properties)
+      labeled_issue = create(:labeled_issue, project: label.project, labels: [label])
+
+      expect(described_class.with_label(label_properties).first.id).to eq(labeled_issue.id)
+    end
+  end
 end
