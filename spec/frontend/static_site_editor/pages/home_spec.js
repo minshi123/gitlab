@@ -70,9 +70,6 @@ describe('static_site_editor/pages/home', () => {
     wrapper = shallowMount(Home, {
       localVue,
       store,
-      provide: {
-        glFeatures: { richContentEditor: true },
-      },
       data() {
         return data;
       },
