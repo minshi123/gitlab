@@ -178,6 +178,11 @@ type AlertManagementAlert {
   iid: ID!
 
   """
+  Internal ID of the GitLab issue attached to the alert
+  """
+  issueIid: ID
+
+  """
   Monitoring tool the alert came from
   """
   monitoringTool: String
@@ -258,7 +263,7 @@ enum AlertManagementAlertSort {
   CREATED_TIME_ASC
 
   """
-  Created time by ascending order
+  Created time by descending order
   """
   CREATED_TIME_DESC
 
@@ -318,7 +323,7 @@ enum AlertManagementAlertSort {
   UPDATED_TIME_ASC
 
   """
-  Created time by ascending order
+  Created time by descending order
   """
   UPDATED_TIME_DESC
 
@@ -4405,6 +4410,41 @@ type Group {
   ): VulnerabilityConnection
 
   """
+  Number of vulnerabilities per severity level, per day, for the projects in the group and its subgroups
+  """
+  vulnerabilitiesCountByDayAndSeverity(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Last day for which to fetch vulnerability history
+    """
+    endDate: ISO8601Date!
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+
+    """
+    First day for which to fetch vulnerability history
+    """
+    startDate: ISO8601Date!
+  ): VulnerabilitiesCountByDayAndSeverityConnection
+
+  """
   Web URL of the group
   """
   webUrl: String!
@@ -4425,6 +4465,11 @@ enum HealthStatus {
   needsAttention
   onTrack
 }
+
+"""
+An ISO 8601-encoded date
+"""
+scalar ISO8601Date
 
 type InstanceSecurityDashboard {
   """
@@ -6277,7 +6322,7 @@ type MetricsDashboardAnnotation {
   """
   Timestamp marking end of annotated time span
   """
-  endingAt: String
+  endingAt: Time
 
   """
   ID of the annotation
@@ -6292,7 +6337,7 @@ type MetricsDashboardAnnotation {
   """
   Timestamp marking start of annotated time span
   """
-  startingAt: String
+  startingAt: Time
 }
 
 """
@@ -6469,6 +6514,7 @@ type Mutation {
   mergeRequestSetSubscription(input: MergeRequestSetSubscriptionInput!): MergeRequestSetSubscriptionPayload
   mergeRequestSetWip(input: MergeRequestSetWipInput!): MergeRequestSetWipPayload
   removeAwardEmoji(input: RemoveAwardEmojiInput!): RemoveAwardEmojiPayload
+  removeProjectFromSecurityDashboard(input: RemoveProjectFromSecurityDashboardInput!): RemoveProjectFromSecurityDashboardPayload
   todoMarkDone(input: TodoMarkDoneInput!): TodoMarkDonePayload
   todoRestore(input: TodoRestoreInput!): TodoRestorePayload
   todoRestoreMany(input: TodoRestoreManyInput!): TodoRestoreManyPayload
@@ -7090,6 +7136,11 @@ type Project {
     Sort alerts by this criteria
     """
     sort: AlertManagementAlertSort
+
+    """
+    Alerts with the specified statues. For example, [TRIGGERED]
+    """
+    statuses: [AlertManagementStatus!]
   ): AlertManagementAlert
 
   """
@@ -7125,6 +7176,11 @@ type Project {
     Sort alerts by this criteria
     """
     sort: AlertManagementAlertSort
+
+    """
+    Alerts with the specified statues. For example, [TRIGGERED]
+    """
+    statuses: [AlertManagementStatus!]
   ): AlertManagementAlertConnection
 
   """
@@ -8337,6 +8393,41 @@ type Query {
   ): Project
 
   """
+  Find projects visible to the current user
+  """
+  projects(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+
+    """
+    Limit projects that the current user is a member of
+    """
+    membership: Boolean
+
+    """
+    Search criteria
+    """
+    search: String
+  ): ProjectConnection
+
+  """
   Find Snippets visible to the current user
   """
   snippets(
@@ -8435,6 +8526,41 @@ type Query {
     """
     state: [VulnerabilityState!]
   ): VulnerabilityConnection
+
+  """
+  Number of vulnerabilities per severity level, per day, for the projects on the current user's instance security dashboard
+  """
+  vulnerabilitiesCountByDayAndSeverity(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Last day for which to fetch vulnerability history
+    """
+    endDate: ISO8601Date!
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+
+    """
+    First day for which to fetch vulnerability history
+    """
+    startDate: ISO8601Date!
+  ): VulnerabilitiesCountByDayAndSeverityConnection
 }
 
 """
@@ -8603,6 +8729,36 @@ type RemoveAwardEmojiPayload {
   """
   awardEmoji: AwardEmoji
 
+  """
+  A unique identifier for the client performing the mutation.
+  """
+  clientMutationId: String
+
+  """
+  Reasons why the mutation failed.
+  """
+  errors: [String!]!
+}
+
+"""
+Autogenerated input type of RemoveProjectFromSecurityDashboard
+"""
+input RemoveProjectFromSecurityDashboardInput {
+  """
+  A unique identifier for the client performing the mutation.
+  """
+  clientMutationId: String
+
+  """
+  ID of the project to remove from the Instance Security Dashboard
+  """
+  projectId: ID!
+}
+
+"""
+Autogenerated return type of RemoveProjectFromSecurityDashboard
+"""
+type RemoveProjectFromSecurityDashboardPayload {
   """
   A unique identifier for the client performing the mutation.
   """
@@ -10903,6 +11059,61 @@ enum VisibilityScopesEnum {
 }
 
 """
+Represents the number of vulnerabilities for a particular severity on a particular day
+"""
+type VulnerabilitiesCountByDayAndSeverity {
+  """
+  Number of vulnerabilities
+  """
+  count: Int
+
+  """
+  Date for the count
+  """
+  day: ISO8601Date
+
+  """
+  Severity of the counted vulnerabilities
+  """
+  severity: VulnerabilitySeverity
+}
+
+"""
+The connection type for VulnerabilitiesCountByDayAndSeverity.
+"""
+type VulnerabilitiesCountByDayAndSeverityConnection {
+  """
+  A list of edges.
+  """
+  edges: [VulnerabilitiesCountByDayAndSeverityEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [VulnerabilitiesCountByDayAndSeverity]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type VulnerabilitiesCountByDayAndSeverityEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: VulnerabilitiesCountByDayAndSeverity
+}
+
+"""
 Represents a vulnerability.
 """
 type Vulnerability {
@@ -10917,10 +11128,9 @@ type Vulnerability {
   id: ID!
 
   """
-  The JSON location metadata for the vulnerability. Its format depends on the
-  type of the security scan that found the vulnerability
+  Location metadata for the vulnerability. Its fields depend on the type of security scan that found the vulnerability
   """
-  location: JSON
+  location: VulnerabilityLocation
 
   """
   The project on which the vulnerability was found
@@ -10991,6 +11201,101 @@ type VulnerabilityEdge {
   The item at the end of the edge.
   """
   node: Vulnerability
+}
+
+"""
+Represents a vulnerability location. The fields with data will depend on the vulnerability report type
+"""
+union VulnerabilityLocation = VulnerabilityLocationContainerScanning | VulnerabilityLocationDast | VulnerabilityLocationDependencyScanning | VulnerabilityLocationSast
+
+"""
+Represents the location of a vulnerability found by a container security scan
+"""
+type VulnerabilityLocationContainerScanning {
+  """
+  Dependency containing the vulnerability
+  """
+  dependency: VulnerableDependency
+
+  """
+  Name of the vulnerable container image
+  """
+  image: String
+
+  """
+  Operating system that runs on the vulnerable container image
+  """
+  operatingSystem: String
+}
+
+"""
+Represents the location of a vulnerability found by a DAST scan
+"""
+type VulnerabilityLocationDast {
+  """
+  Domain name of the vulnerable request
+  """
+  hostname: String
+
+  """
+  Query parameter for the URL on which the vulnerability occurred
+  """
+  param: String
+
+  """
+  URL path and query string of the vulnerable request
+  """
+  path: String
+
+  """
+  HTTP method of the vulnerable request
+  """
+  requestMethod: String
+}
+
+"""
+Represents the location of a vulnerability found by a dependency security scan
+"""
+type VulnerabilityLocationDependencyScanning {
+  """
+  Dependency containing the vulnerability
+  """
+  dependency: VulnerableDependency
+
+  """
+  Path to the vulnerable file
+  """
+  file: String
+}
+
+"""
+Represents the location of a vulnerability found by a SAST scan
+"""
+type VulnerabilityLocationSast {
+  """
+  Number of the last relevant line in the vulnerable file
+  """
+  endLine: String
+
+  """
+  Path to the vulnerable file
+  """
+  file: String
+
+  """
+  Number of the first relevant line in the vulnerable file
+  """
+  startLine: String
+
+  """
+  Class containing the vulnerability
+  """
+  vulnerableClass: String
+
+  """
+  Method containing the vulnerability
+  """
+  vulnerableMethod: String
 }
 
 """
@@ -11103,4 +11408,29 @@ enum VulnerabilityState {
   DETECTED
   DISMISSED
   RESOLVED
+}
+
+"""
+Represents a vulnerable dependency. Used in vulnerability location data
+"""
+type VulnerableDependency {
+  """
+  The package associated with the vulnerable dependency
+  """
+  package: VulnerablePackage
+
+  """
+  The version of the vulnerable dependency
+  """
+  version: String
+}
+
+"""
+Represents a vulnerable package. Used in vulnerability dependency data
+"""
+type VulnerablePackage {
+  """
+  The name of the vulnerable package
+  """
+  name: String
 }

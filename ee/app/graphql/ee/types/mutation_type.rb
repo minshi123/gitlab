@@ -21,6 +21,7 @@ module EE
         mount_mutation ::Mutations::Vulnerabilities::Dismiss
         mount_mutation ::Mutations::Boards::Lists::UpdateLimitMetrics
         mount_mutation ::Mutations::InstanceSecurityDashboard::AddProject
+        mount_mutation ::Mutations::InstanceSecurityDashboard::RemoveProject
       end
     end
   end

@@ -1,3 +1,9 @@
+---
+stage: Configure
+group: Configure
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # GitLab Managed Apps
 
 GitLab provides **GitLab Managed Apps**, a one-click install for various applications which can
@@ -837,7 +843,8 @@ management project. Refer to the
 for the available configuration options.
 
 CAUTION: **Caution:**
-Installation and removal of the Cilium [requires restart](https://cilium.readthedocs.io/en/stable/gettingstarted/k8s-install-gke/#restart-remaining-pods)
+Installation and removal of the Cilium requires a **manual**
+[restart](https://cilium.readthedocs.io/en/stable/gettingstarted/k8s-install-gke/#restart-remaining-pods)
 of all affected pods in all namespaces to ensure that they are
 [managed](https://cilium.readthedocs.io/en/stable/troubleshooting/#ensure-pod-is-managed-by-cilium)
 by the correct networking plugin.
