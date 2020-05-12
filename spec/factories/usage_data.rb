@@ -43,6 +43,11 @@ FactoryBot.define do
       # Incident Labeled Issues
       incident_label = create(:label, project: projects[0], **IncidentManagement::CreateIssueService::INCIDENT_LABEL)
       create(:labeled_issue, project: projects[0], labels: [incident_label])
+      incident_group = create(:group)
+      incident_label_scoped_to_project = create(:label, project: projects[1], **IncidentManagement::CreateIssueService::INCIDENT_LABEL)
+      incident_label_scoped_to_group = create(:group_label, group: incident_group, **IncidentManagement::CreateIssueService::INCIDENT_LABEL)
+      create(:labeled_issue, project: projects[1], labels: [incident_label_scoped_to_project])
+      create(:labeled_issue, project: projects[1], labels: [incident_label_scoped_to_group])
 
       # Enabled clusters
       gcp_cluster = create(:cluster_provider_gcp, :created).cluster
