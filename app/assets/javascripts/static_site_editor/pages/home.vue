@@ -3,7 +3,6 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { GlSkeletonLoader } from '@gitlab/ui';
 
 import RichContentEditor from '~/vue_shared/components/rich_content_editor/rich_content_editor.vue';
-import EditArea from '../components/edit_area.vue';
 import EditHeader from '../components/edit_header.vue';
 import SavedChangesMessage from '../components/saved_changes_message.vue';
 import PublishToolbar from '../components/publish_toolbar.vue';
@@ -20,7 +19,6 @@ import { LOAD_CONTENT_ERROR } from '../constants';
 export default {
   components: {
     RichContentEditor,
-    EditArea,
     EditHeader,
     InvalidContentMessage,
     GlSkeletonLoader,
