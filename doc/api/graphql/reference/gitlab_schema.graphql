@@ -4338,6 +4338,11 @@ type Group {
   ): VulnerabilitiesCountByDayAndSeverityConnection
 
   """
+  Represents vulnerable project counts for each grade
+  """
+  vulnerabilityGrades: VulnerabilityGrades!
+
+  """
   Web URL of the group
   """
   webUrl: String!
@@ -4389,6 +4394,11 @@ type InstanceSecurityDashboard {
     """
     last: Int
   ): ProjectConnection!
+
+  """
+  Represents vulnerable project counts for each grade
+  """
+  vulnerabilityGrades: VulnerabilityGrades!
 }
 
 """
@@ -10938,6 +10948,36 @@ type VulnerabilityEdge {
   The item at the end of the edge.
   """
   node: Vulnerability
+}
+
+"""
+Represents vulnerable project counts for each grade
+"""
+type VulnerabilityGrades {
+  """
+  Number of vulnerable projects with no vulnerabilities and security scanning enabled
+  """
+  a: Int!
+
+  """
+  Number of vulnerable projects with low severities
+  """
+  b: Int!
+
+  """
+  Number of vulnerable projects with medium severities
+  """
+  c: Int!
+
+  """
+  Number of vulnerable projects with high or unknown severities
+  """
+  d: Int!
+
+  """
+  Number of vulnerable projects with critical severities
+  """
+  f: Int!
 }
 
 """
