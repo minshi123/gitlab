@@ -112,7 +112,13 @@ export default {
           </li>
         </ul>
       </gl-tab>
-      <gl-tab data-testid="fullDetailsTab" :title="$options.i18n.fullAlertDetailsTitle" />
+      <gl-tab data-testid="fullDetailsTab" :title="$options.i18n.fullAlertDetailsTitle">
+        <ul class="pt-2 list-unstyled">
+          <li v-for="(value, key) in alert" class="py-1 gl-font-base">
+            <b>{{ key }}: </b> <span> {{ value }} </span>
+          </li>
+        </ul>
+      </gl-tab>
     </gl-tabs>
   </div>
 </template>
