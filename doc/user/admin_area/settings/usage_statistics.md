@@ -313,7 +313,8 @@ but commented out to help encourage others to add to it in the future. -->
 |epics|counts||
 |feature_flags|counts||
 |geo_nodes|counts||
-|incident_issues|counts||
+|incident_issues|counts|monitor|Issues created by the alert bot|
+|incident_labeled_issues|counts|monitor|Issues with the incident label|
 |ldap_group_links|counts||
 |ldap_keys|counts||
 |ldap_users|counts||

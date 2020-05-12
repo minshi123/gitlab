@@ -113,6 +113,7 @@ module Gitlab
             issues_using_zoom_quick_actions: distinct_count(ZoomMeeting, :issue_id),
             issues_with_embedded_grafana_charts_approx: grafana_embed_usage_data,
             incident_issues: count(::Issue.authored(::User.alert_bot)),
+            incident_labeled_issues: incident_label_issue_data,
             keys: count(Key),
             label_lists: count(List.label),
             lfs_objects: count(LfsObject),
@@ -161,6 +162,12 @@ module Gitlab
           .where(grafana_integrations: { enabled: true }))
       end
       # rubocop: enable CodeReuse/ActiveRecord
+
+      def incident_label_issue_data
+        incident_label_id = Label.with_title(IncidentManagement::CreateIssueService::INCIDENT_LABEL['title']).first&.id
+
+        count(::Issue.with_label({ id: incident_label_id }))
+      end
 
       def features_usage_data
         features_usage_data_ce
