@@ -26,6 +26,10 @@ describe Group do
     end
   end
 
+  it_behaves_like 'having vulnerability grades' do
+    let(:vulnerable) { group }
+  end
+
   describe 'scopes' do
     describe '.with_custom_file_templates' do
       let!(:excluded_group) { create(:group) }
