@@ -3,6 +3,7 @@ import {
   GlLoadingIcon,
   GlNewDropdown,
   GlNewDropdownItem,
+  GlTable,
   GlTabs,
   GlTab,
   GlButton,
@@ -26,6 +27,7 @@ export default {
     GlLoadingIcon,
     GlNewDropdown,
     GlNewDropdownItem,
+    GlTable,
     GlTab,
     GlTabs,
     GlButton,
@@ -71,7 +73,7 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div class="alert-management-details">
     <div v-if="loading"><gl-loading-icon size="lg" class="mt-3" /></div>
     <div
       v-if="alert"
@@ -112,7 +114,30 @@ export default {
           </li>
         </ul>
       </gl-tab>
-      <gl-tab data-testid="fullDetailsTab" :title="$options.i18n.fullAlertDetailsTitle" />
+      <gl-tab
+        data-testid="fullDetailsTab"
+        :title="$options.i18n.fullAlertDetailsTitle"
+        class="alert-management-full-details"
+      >
+        <h4 class="d-block my-3">
+          {{ alert.title }}
+        </h4>
+        <gl-table
+          class="alert-management-full-details-table mt-3"
+          :items="[{ key: 'Value', ...alert }]"
+          :show-empty="true"
+          :busy="loading"
+          stacked
+          tbody-tr-class="table-row mb-4"
+        >
+          <template #empty>
+            {{ s__('AlertManagement|No alert data to display.') }}
+          </template>
+          <template #table-busy>
+            <gl-loading-icon size="lg" color="dark" class="mt-3" />
+          </template>
+        </gl-table>
+      </gl-tab>
     </gl-tabs>
   </div>
 </template>

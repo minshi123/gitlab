@@ -1,0 +1,32 @@
+.alert-management-full-details {
+  table {
+    color: $gray-700;
+
+    tr {
+      div {
+        text-align: left  !important;
+      }
+
+      td {
+        @include gl-p-5;
+        color: $gl-gray-400;
+        border-color: $gray-100;
+        border-top-width: 0 !important;
+        border-left-width: 0  !important;
+        border-right-width: 0  !important;
+        @include gl-border-b-1;
+        @include gl-border-b-solid;
+        background-color: transparent;
+
+        &:before {
+          font-weight: $gl-font-weight-normal !important;
+        }
+
+        &:first-child {
+          color: $gl-gray-600;
+          font-weight: $gl-font-weight-bold;
+        }
+      }
+    }
+  }
+}
