@@ -139,7 +139,6 @@ module Issuable
 
     scope :without_label, -> { joins("LEFT OUTER JOIN label_links ON label_links.target_type = '#{name}' AND label_links.target_id = #{table_name}.id").where(label_links: { id: nil }) }
     scope :with_label_ids, ->(label_ids) { joins(:label_links).where(label_links: { label_id: label_ids }) }
-    scope :any_label, -> { joins(:label_links).distinct }
     scope :join_project, -> { joins(:project) }
     scope :inc_notes_with_associations, -> { includes(notes: [:project, :author, :award_emoji]) }
     scope :references_project, -> { references(:project) }
@@ -314,6 +313,10 @@ module Issuable
       else
         joins(:labels).where(labels: { title: title })
       end
+    end
+
+    def any_label(sort = nil)
+      joins(:label_links).group(*grouping_columns(sort))
     end
 
     # Includes table keys in group by clause when sorting

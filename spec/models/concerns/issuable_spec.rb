@@ -102,6 +102,16 @@ describe Issuable do
     end
   end
 
+  describe '.any_label' do
+    it 'returns an issuable with at least one label' do
+      issue_with_label = create(:labeled_issue, labels: [create(:label)])
+      issue_with_multiple_labels = create(:labeled_issue, labels: [create(:label), create(:label)])
+      create(:issue)
+
+      expect(issuable_class.any_label).to match_array([issue_with_label, issue_with_multiple_labels])
+    end
+  end
+
   describe ".search" do
     let!(:searchable_issue) { create(:issue, title: "Searchable awesome issue") }
     let!(:searchable_issue2) { create(:issue, title: 'Aw') }
