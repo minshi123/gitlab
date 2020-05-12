@@ -93,8 +93,9 @@ export default {
               :enable-autocomplete="true"
               label="Description"
               :textarea-value="description"
+              :add-spacing-class="false"
               markdown-docs-path="/help/user/markdown"
-              class="md-area gl-my-0"
+              class="md-area"
             >
               <textarea
                 id="issue-description"
