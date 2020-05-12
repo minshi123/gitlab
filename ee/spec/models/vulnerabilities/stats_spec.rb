@@ -63,4 +63,49 @@ describe Vulnerabilities::Stats do
       end
     end
   end
+
+  describe '#grade' do
+    let(:critical) { 1 }
+    let(:high) { 1 }
+    let(:medium) { 1 }
+    let(:low) { 1 }
+    let(:vulnerability_counts) { { critical: critical, high: high, medium: medium, low: low } }
+    let(:stats) { described_class.new(vulnerability_counts) }
+
+    subject { stats.grade }
+
+    context 'when the highest severity is critical' do
+      it { is_expected.to be(:f) }
+    end
+
+    context 'when the highest severity is high' do
+      let(:critical) { 0 }
+
+      it { is_expected.to be(:d) }
+    end
+
+    context 'when the highest severity is medium' do
+      let(:critical) { 0 }
+      let(:high) { 0 }
+
+      it { is_expected.to be(:c) }
+    end
+
+    context 'when the highest severity is low' do
+      let(:critical) { 0 }
+      let(:high) { 0 }
+      let(:medium) { 0 }
+
+      it { is_expected.to be(:b) }
+    end
+
+    context 'when the highest severity is low' do
+      let(:critical) { 0 }
+      let(:high) { 0 }
+      let(:medium) { 0 }
+      let(:low) { 0 }
+
+      it { is_expected.to be(:a) }
+    end
+  end
 end
