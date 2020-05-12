@@ -179,7 +179,28 @@ export default {
             </li>
           </ul>
         </gl-tab>
-        <gl-tab data-testid="fullDetailsTab" :title="$options.i18n.fullAlertDetailsTitle" />
+        <gl-tabs v-if="alert" data-testid="alertDetailsTabs">
+          <gl-tab data-testid="overviewTab" :title="$options.i18n.overviewTitle">
+            <ul class="pl-3">
+              <li data-testid="startTimeItem" class="font-weight-bold mb-3 mt-2">
+                {{ s__('AlertManagement|Start time:') }}
+              </li>
+              <li class="font-weight-bold my-3">
+                {{ s__('AlertManagement|End time:') }}
+              </li>
+              <li class="font-weight-bold my-3">
+                {{ s__('AlertManagement|Events:') }}
+              </li>
+            </ul>
+          </gl-tab>
+          <gl-tab data-testid="fullDetailsTab" :title="$options.i18n.fullAlertDetailsTitle">
+            <ul class="pt-2 list-unstyled">
+              <li v-for="(value, key) in alert" class="py-1 gl-font-base">
+                <b>{{ key }}: </b> <span> {{ value }} </span>
+              </li>
+            </ul>
+          </gl-tab>
+        </gl-tabs>
       </gl-tabs>
     </div>
   </div>
