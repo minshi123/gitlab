@@ -42,6 +42,7 @@ module Types
     mount_mutation Mutations::Snippets::Create
     mount_mutation Mutations::Snippets::MarkAsSpam
     mount_mutation Mutations::JiraImport::Start
+    mount_mutation Mutations::Boards::Lists::Create
   end
 end
 
