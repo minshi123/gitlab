@@ -94,7 +94,7 @@ export default {
               label="Description"
               :textarea-value="description"
               markdown-docs-path="/help/user/markdown"
-              class="md-area"
+              class="md-area gl-my-0"
             >
               <textarea
                 id="issue-description"
