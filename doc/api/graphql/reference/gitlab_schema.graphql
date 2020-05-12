@@ -1127,7 +1127,7 @@ input CreateIterationInput {
   """
   The end date of the iteration
   """
-  dueDate: String!
+  dueDate: String
 
   """
   The group the iteration to create will be in
@@ -1137,7 +1137,7 @@ input CreateIterationInput {
   """
   The start date of the iteration
   """
-  startDate: String!
+  startDate: String
 
   """
   The title of the iteration
@@ -5150,6 +5150,107 @@ enum IssueState {
 
 """
 Represents an iteration object.
+"""
+type Iteration {
+  """
+  Timestamp of iteration creation
+  """
+  createdAt: Time!
+
+  """
+  Description of the iteration
+  """
+  description: String
+
+  """
+  Timestamp of the iteration due date
+  """
+  dueDate: Time
+
+  """
+  ID of the iteration
+  """
+  id: ID!
+
+  """
+  Timestamp of the iteration start date
+  """
+  startDate: Time
+
+  """
+  State of the iteration
+  """
+  state: IterationState!
+
+  """
+  Title of the iteration
+  """
+  title: String!
+
+  """
+  Timestamp of last iteration update
+  """
+  updatedAt: Time!
+
+  """
+  Web path of the iteration
+  """
+  webPath: String!
+
+  """
+  Web url of the iteration
+  """
+  webUrl: String!
+}
+
+"""
+The connection type for Iteration.
+"""
+type IterationConnection {
+  """
+  A list of edges.
+  """
+  edges: [IterationEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [Iteration]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type IterationEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: Iteration
+}
+
+"""
+State of a GitLab iteration
+"""
+enum IterationState {
+  all
+  closed
+  opened
+  started
+  upcoming
+}
+
+"""
+Represents untyped JSON
 """
 type Iteration {
   """
