@@ -24,7 +24,7 @@ describe('AlertManagementList', () => {
   const findLoader = () => wrapper.find(GlLoadingIcon);
   const findStatusDropdown = () => wrapper.find(GlNewDropdown);
   const findStatusFilterTabs = () => wrapper.findAll(GlTab);
-  const findNumberOfAlertsBadge = () => wrapper.findAll(GlBadge);
+  const findAlertsBadge = () => wrapper.find(GlBadge);
   const findDateFields = () => wrapper.findAll(TimeAgo);
 
   function mountComponent({
@@ -34,7 +34,6 @@ describe('AlertManagementList', () => {
     },
     data = {},
     loading = false,
-    alertListStatusFilteringEnabled = false,
     stubs = {},
   } = {}) {
     wrapper = mount(AlertManagementList, {
@@ -43,9 +42,6 @@ describe('AlertManagementList', () => {
         enableAlertManagementPath: '/link',
         emptyAlertSvgPath: 'illustration/path',
         ...props,
-      },
-      provide: {
-        glFeatures: { alertListStatusFilteringEnabled },
       },
       data() {
         return data;
@@ -80,52 +76,26 @@ describe('AlertManagementList', () => {
   });
 
   describe('Status Filter Tabs', () => {
-    describe('alertListStatusFilteringEnabled feature flag enabled', () => {
-      beforeEach(() => {
-        mountComponent({
-          props: { alertManagementEnabled: true, userCanEnableAlertManagement: true },
-          data: { alerts: mockAlerts },
-          loading: false,
-          alertListStatusFilteringEnabled: true,
-          stubs: {
-            GlTab: true,
-          },
-        });
-      });
-
-      it('should display filter tabs for all statuses', () => {
-        const tabs = findStatusFilterTabs().wrappers;
-        tabs.forEach((tab, i) => {
-          expect(tab.text()).toContain(ALERTS_STATUS_TABS[i].title);
-        });
-      });
-
-      it('should have number of items badge along with status tab', () => {
-        expect(findNumberOfAlertsBadge().length).toEqual(ALERTS_STATUS_TABS.length);
-        expect(
-          findNumberOfAlertsBadge()
-            .at(0)
-            .text(),
-        ).toEqual(`${mockAlerts.length}`);
+    beforeEach(() => {
+      mountComponent({
+        props: { alertManagementEnabled: true, userCanEnableAlertManagement: true },
+        data: { alerts: mockAlerts },
+        loading: false,
+        stubs: {
+          GlTab: true,
+        },
       });
     });
 
-    describe('alertListStatusFilteringEnabled feature flag disabled', () => {
-      beforeEach(() => {
-        mountComponent({
-          props: { alertManagementEnabled: true, userCanEnableAlertManagement: true },
-          data: { alerts: mockAlerts },
-          loading: false,
-          alertListStatusFilteringEnabled: false,
-          stubs: {
-            GlTab: true,
-          },
-        });
+    it('should display filter tabs for all statuses', () => {
+      const tabs = findStatusFilterTabs().wrappers;
+      tabs.forEach((tab, i) => {
+        expect(tab.text()).toContain(ALERTS_STATUS_TABS[i].title);
       });
+    });
 
-      it('should NOT display tabs', () => {
-        expect(findStatusFilterTabs()).not.toExist();
-      });
+    it('should have number of items badge along with status tab', () => {
+      expect(findAlertsBadge().text()).toEqual(`${mockAlerts.length}`);
     });
   });
 

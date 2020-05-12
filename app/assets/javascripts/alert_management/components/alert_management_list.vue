@@ -16,7 +16,6 @@ import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import getAlerts from '../graphql/queries/getAlerts.query.graphql';
 import { ALERTS_STATUS, ALERTS_STATUS_TABS } from '../constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 const tdClass = 'table-col d-flex d-md-table-cell align-items-center';
 
@@ -83,7 +82,6 @@ export default {
     GlTab,
     GlBadge,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     projectPath: {
       type: String,
@@ -112,7 +110,7 @@ export default {
       variables() {
         return {
           projectPath: this.projectPath,
-          status: this.statusFilter,
+          statuses: this.statusFilter,
         };
       },
       update(data) {
@@ -129,7 +127,8 @@ export default {
       errored: false,
       isAlertDismissed: false,
       isErrorAlertDismissed: false,
-      statusFilter: this.$options.statusTabs[0].status,
+      statusFilter: this.$options.statusTabs[0].filters,
+      activeTab: 0,
     };
   },
   computed: {
@@ -145,7 +144,11 @@ export default {
   },
   methods: {
     filterALertsByStatus(tabIndex) {
-      this.statusFilter = this.$options.statusTabs[tabIndex].status;
+      this.activeTab = tabIndex;
+      this.statusFilter = this.$options.statusTabs[tabIndex].filters;
+    },
+    showAlertsCountBadge(index) {
+      return !this.loading && this.alerts?.length && this.activeTab === index;
     },
   },
 };
@@ -161,11 +164,11 @@ export default {
         {{ $options.i18n.errorMsg }}
       </gl-alert>
 
-      <gl-tabs v-if="glFeatures.alertListStatusFilteringEnabled" @input="filterALertsByStatus">
-        <gl-tab v-for="tab in $options.statusTabs" :key="tab.status">
+      <gl-tabs @input="filterALertsByStatus">
+        <gl-tab v-for="(tab, index) in $options.statusTabs" :key="tab.status">
           <template slot="title">
             <span>{{ tab.title }}</span>
-            <gl-badge v-if="alerts" size="sm" class="gl-tab-counter-badge">
+            <gl-badge v-if="showAlertsCountBadge(index)" size="sm" class="gl-tab-counter-badge">
               {{ alerts.length }}
             </gl-badge>
           </template>
