@@ -42,7 +42,7 @@ class Projects::ApplicationController < ApplicationController
   end
 
   def group
-    @group ||= project.group
+    @group ||= project&.group
   end
 
   def authorize_action!(action)
