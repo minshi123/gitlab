@@ -6,7 +6,14 @@ import dateFormat from 'dateformat';
 import { s__, __ } from '~/locale';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import Icon from '~/vue_shared/components/icon.vue';
-import { panelTypes, chartHeight, lineTypes, lineWidths, dateFormats } from '../../constants';
+import {
+  panelTypes,
+  chartHeight,
+  lineTypes,
+  lineWidths,
+  dateFormats,
+  legendLayoutTypes,
+} from '../../constants';
 import { getYAxisOptions, getChartGrid, getTooltipFormatter } from './options';
 import { annotationsYAxis, generateAnnotationsSeries } from './annotations';
 import { makeDataSeries } from '~/helpers/monitor_helper';
@@ -74,15 +81,30 @@ export default {
       required: false,
       default: () => [],
     },
+    legendLayout: {
+      type: String,
+      required: false,
+      default: legendLayoutTypes.table,
+    },
     legendAverageText: {
       type: String,
       required: false,
       default: s__('Metrics|Avg'),
     },
+    legendCurrentText: {
+      type: String,
+      required: false,
+      default: s__('Metrics|Current'),
+    },
     legendMaxText: {
       type: String,
       required: false,
       default: s__('Metrics|Max'),
+    },
+    legendMinText: {
+      type: String,
+      required: false,
+      default: s__('Metrics|Min'),
     },
     groupId: {
       type: String,
@@ -368,8 +390,11 @@ export default {
       :thresholds="thresholds"
       :width="width"
       :height="height"
-      :average-text="legendAverageText"
-      :max-text="legendMaxText"
+      :legend-layout="legendLayout"
+      :legend-average-text="legendAverageText"
+      :legend-current-text="legendCurrentText"
+      :legend-max-text="legendMaxText"
+      :legend-min-text="legendMinText"
       @created="onChartCreated"
       @updated="onChartUpdated"
     >

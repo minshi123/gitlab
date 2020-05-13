@@ -132,6 +132,11 @@ export const dateFormats = {
   default: 'dd mmm yyyy, h:MMTT',
 };
 
+export const legendLayoutTypes = {
+  inline: 'inline',
+  table: 'table',
+};
+
 /**
  * These Vuex store properties are allowed to be
  * replaced dynamically after component has been created
