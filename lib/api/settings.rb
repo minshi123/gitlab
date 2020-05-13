@@ -194,6 +194,9 @@ module API
         attrs[:allow_local_requests_from_web_hooks_and_services] = attrs.delete(:allow_local_requests_from_hooks_and_services)
       end
 
+      # since 13.0 it's not possible to disable hashed storage - support can be removed in 13.4
+      attrs.delete(:hashed_storage_enabled) if attrs.has_key?(:hashed_storage_enabled)
+
       attrs = filter_attributes_using_license(attrs)
 
       if ApplicationSettings::UpdateService.new(current_settings, current_user, attrs).execute
