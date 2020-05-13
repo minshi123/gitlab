@@ -151,7 +151,12 @@ export default () => {
       Dag,
     },
     render(createElement) {
-      return createElement('dag');
+      return createElement('dag',
+      {
+        props: {
+          graphUrl: undefined
+        }
+      });
     },
 
   })
