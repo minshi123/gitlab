@@ -442,6 +442,7 @@ class Project < ApplicationRecord
   scope :inc_routes, -> { includes(:route, namespace: :route) }
   scope :with_statistics, -> { includes(:statistics) }
   scope :with_namespace, -> { includes(:namespace) }
+  scope :with_group, -> { includes(:group) }
   scope :with_import_state, -> { includes(:import_state) }
   scope :with_service, ->(service) { joins(service).eager_load(service) }
   scope :with_shared_runners, -> { where(shared_runners_enabled: true) }

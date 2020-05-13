@@ -7,6 +7,7 @@ class Projects::ApplicationController < ApplicationController
 
   skip_before_action :authenticate_user!
   before_action :project
+  before_action :group
   before_action :repository
   layout 'project'
 
@@ -26,7 +27,7 @@ class Projects::ApplicationController < ApplicationController
     path = File.join(params[:namespace_id], params[:project_id] || params[:id])
     auth_proc = ->(project) { !project.pending_delete? }
 
-    @project = find_routable!(Project, path, extra_authorization_proc: auth_proc)
+    @project = find_routable!(Project.with_group, path, extra_authorization_proc: auth_proc)
   end
 
   def build_canonical_path(project)
@@ -38,6 +39,10 @@ class Projects::ApplicationController < ApplicationController
 
   def repository
     @repository ||= project.repository
+  end
+
+  def group
+    @group ||= project.group
   end
 
   def authorize_action!(action)

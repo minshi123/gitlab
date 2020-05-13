@@ -170,32 +170,64 @@ export class SearchAutocomplete {
         },
       })
       .then(response => {
-        // Hide dropdown menu if no suggestions returns
-        if (!response.data.length) {
-          this.disableAutocomplete();
-          return;
+        const data = [];
+
+        // Add option to proceed with the search for each
+        // scope that is currently available, namely:
+        //
+        // - Search in this project
+        // - Search in this group (or project's group)
+        // - Search in all GitLab
+        const icon = spriteIcon('search', 's16 inline-search-icon');
+        const projectId = this.projectInputEl.val();
+        const groupId = this.groupInputEl.val();
+
+        if (projectId) {
+          const projectOptions = gl.projectOptions[getProjectSlug()];
+          const url = groupId
+            ? `${gon.relative_url_root}/search?search=${term}&project_id=${projectId}&group_id=${groupId}`
+            : `${gon.relative_url_root}/search?search=${term}&project_id=${projectId}`;
+
+          data.push({
+            icon,
+            text: term,
+            template: s__(`SearchAutocomplete|in project <i>${projectOptions.name}</i>`),
+            url,
+          });
         }
 
-        const data = [];
+        if (groupId) {
+          const groupOption = gl.groupOptions[getGroupSlug()];
+          data.push({
+            icon,
+            text: term,
+            template: s__(`SearchAutocomplete|in group <i>${groupOption.name}</i>`),
+            url: `${gon.relative_url_root}/search?search=${term}&group_id=${groupId}`,
+          });
+        }
+
+        data.push({
+          icon,
+          text: term,
+          template: s__('SearchAutocomplete|in all GitLab'),
+          url: `${gon.relative_url_root}/search?search=${term}`,
+        });
+
         // List results
-        let firstCategory = true;
-        let lastCategory;
+        let lastCategory = null;
         for (let i = 0, len = response.data.length; i < len; i += 1) {
           const suggestion = response.data[i];
           // Add group header before list each group
           if (lastCategory !== suggestion.category) {
-            if (!firstCategory) {
-              data.push({ type: 'separator' });
-            }
-            if (firstCategory) {
-              firstCategory = false;
-            }
+            data.push({ type: 'separator' });
             data.push({
               type: 'header',
               content: suggestion.category,
             });
             lastCategory = suggestion.category;
           }
+
+          // Add the suggestion
           data.push({
             id: `${suggestion.category.toLowerCase()}-${suggestion.id}`,
             icon: this.getAvatar(suggestion),
@@ -203,37 +235,6 @@ export class SearchAutocomplete {
             text: suggestion.label,
             url: suggestion.url,
           });
-        }
-        // Add option to proceed with the search
-        if (data.length) {
-          const icon = spriteIcon('search', 's16 inline-search-icon');
-          let template;
-
-          if (this.projectInputEl.val()) {
-            template = s__('SearchAutocomplete|in this project');
-          }
-          if (this.groupInputEl.val()) {
-            template = s__('SearchAutocomplete|in this group');
-          }
-
-          data.unshift({ type: 'separator' });
-          data.unshift({
-            icon,
-            text: term,
-            template: s__('SearchAutocomplete|in all GitLab'),
-            url: `${gon.relative_url_root}/search?search=${term}`,
-          });
-
-          if (template) {
-            data.unshift({
-              icon,
-              text: term,
-              template,
-              url: `${
-                gon.relative_url_root
-              }/search?search=${term}&project_id=${this.projectInputEl.val()}&group_id=${this.groupInputEl.val()}`,
-            });
-          }
         }
 
         callback(data);
@@ -255,9 +256,13 @@ export class SearchAutocomplete {
     let options;
     if (isInGroupsPage() && groupOptions) {
       options = groupOptions[getGroupSlug()];
-    } else if (isInProjectPage() && projectOptions) {
+    }
+
+    if (isInProjectPage() && projectOptions) {
       options = projectOptions[getProjectSlug()];
-    } else if (dashboardOptions) {
+    }
+
+    if (dashboardOptions) {
       options = dashboardOptions;
     }
 
