@@ -1,0 +1,74 @@
+# frozen_string_literal: true
+
+module AlertManagement
+  class CreateAlertIssueService
+
+    # @param alert [AlertManagement::Alert]
+    # @param user [User]
+    def initialize(alert, user)
+      @alert = alert
+      @user = user
+    end
+
+    def execute
+      return error_no_permissions unless allowed?
+      return error_issue_already_exists if alert.issue
+
+      result = create_issue(alert, user, alert_payload)
+      @issue = result[:issue]
+
+      if result[:status] == :success
+        unless update_alert_issue_id(issue)
+          return error(alert.errors.full_messages.to_sentence)
+        end
+      end
+
+      success
+    end
+
+    private
+
+    attr_reader :alert, :user, :issue
+
+    delegate :project, to: :alert
+
+    def allowed?
+      Feature.enabled?(:alert_management_create_alert_issue, project) &&
+        user.can?(:update_alert_management_alert, project)
+    end
+
+    def create_issue(alert, user, alert_payload)
+      ::IncidentManagement::CreateIssueService
+        .new(project, user, alert_payload)
+        .execute(skip_settings_check: true)
+    end
+
+    def alert_payload
+      if alert.prometheus?
+        alert.payload
+      else
+        Gitlab::Alerting::NotificationPayloadParser.call(alert.payload.to_h)
+      end
+    end
+
+    def update_alert_issue_id(issue)
+      alert.update(issue_id: issue.id)
+    end
+
+    def success
+      ServiceResponse.success(payload: { issue: issue })
+    end
+
+    def error(message)
+      ServiceResponse.error(payload: { issue: issue }, message: message)
+    end
+
+    def error_issue_already_exists
+      error('An issue already exists')
+    end
+
+    def error_no_permissions
+      error('You have no permissions')
+    end
+  end
+end
