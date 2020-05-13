@@ -11,6 +11,7 @@ module EE
     GOLD_TRIAL_BILLINGS = 'gold_trial_billings'
     THREAT_MONITORING_INFO = 'threat_monitoring_info'
     ACCOUNT_RECOVERY_REGULAR_CHECK = 'account_recovery_regular_check'
+    STANDALONE_VULNERABILITIES_INTRODUCTION_BANNER = 'standalone_vulnerabilities_introduction_banner'
 
     def show_canary_deployment_callout?(project)
       !user_dismissed?(CANARY_DEPLOYMENT) &&
@@ -78,6 +79,10 @@ module EE
 
     def show_threat_monitoring_info?
       !user_dismissed?(THREAT_MONITORING_INFO)
+    end
+
+    def show_standalone_vulnerabilities_introduction_banner?
+      !user_dismissed?(STANDALONE_VULNERABILITIES_INTRODUCTION_BANNER)
     end
 
     private
