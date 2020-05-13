@@ -8,7 +8,7 @@
 >   login to GitLab's Container Registry.
 > - Multiple level image names support was added in GitLab 9.1.
 > - The group level Container Registry was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23315) in GitLab 12.10.
-> - The ability to search by Image Repositories name was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/31322) in GitLab 13.0.
+> - Searching by image repository name was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/31322) in GitLab 13.0.
 
 NOTE: **Note:**
 This document is the user guide. To learn how to enable GitLab Container
