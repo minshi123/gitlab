@@ -56,6 +56,10 @@ FactoryBot.define do
       without_ended_at
     end
 
+    trait :prometheus do
+      monitoring_tool { Gitlab::AlertManagement::AlertParams::MONITORING_TOOLS[:prometheus] }
+    end
+
     trait :all_fields do
       with_issue
       with_fingerprint
