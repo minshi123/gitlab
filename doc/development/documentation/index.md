@@ -554,7 +554,8 @@ You can disable a specific Vale linting rule or all Vale linting rules for any p
 - To disable all Vale linting rules, add a `<!-- vale off -->` tag before the text,
   and a `<!-- vale on -->` tag after the text.
 
-In some cases, such as list items, you may need to disable linting on the entire
+Whenever possible, exclude only the problematic rule and line(s).
+In some cases, such as list items, you may need to disable linting for the entire
 list until ["Ignore comments are not honored in a Markdown file"](https://github.com/errata-ai/vale/issues/175) is resolved.
 
 For more information, see [Vale's documentation](https://errata-ai.gitbook.io/vale/getting-started/markup#markup-based-configuration).
