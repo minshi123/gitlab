@@ -6,12 +6,13 @@ describe Resolvers::RequirementsManagement::RequirementsResolver do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
+  let_it_be(:other_user) { create(:user) }
+  let_it_be(:project) { create(:project) }
 
   context 'with a project' do
-    let_it_be(:project) { create(:project) }
-    let_it_be(:requirement1) { create(:requirement, project: project, state: :opened, created_at: 5.hours.ago) }
-    let_it_be(:requirement2) { create(:requirement, project: project, state: :archived, created_at: 3.hours.ago) }
-    let_it_be(:requirement3) { create(:requirement, project: project, state: :archived, created_at: 4.hours.ago) }
+    let_it_be(:requirement1) { create(:requirement, project: project, state: :opened, created_at: 5.hours.ago, title: 'it needs to do the thing', author: current_user) }
+    let_it_be(:requirement2) { create(:requirement, project: project, state: :archived, created_at: 3.hours.ago, title: 'it needs to not break', author: other_user) }
+    let_it_be(:requirement3) { create(:requirement, project: project, state: :archived, created_at: 4.hours.ago, title: 'do the kubernetes!', author: other_user) }
 
     before do
       project.add_developer(current_user)
@@ -65,9 +66,63 @@ describe Resolvers::RequirementsManagement::RequirementsResolver do
         expect(resolve_requirements).to be_empty
       end
     end
-  end
 
-  def resolve_requirements(args = {}, context = { current_user: current_user })
-    resolve(described_class, obj: project, args: args, ctx: context)
+    context 'with search' do
+      it 'filters requirements by title' do
+        requirements = resolve_requirements(search: 'kubernetes')
+
+        expect(requirements).to match_array([requirement3])
+      end
+    end
+
+    context 'filtering by author_username' do
+      subject do
+        resolve_requirements(params)
+      end
+
+      context 'author exists' do
+        let(:params) do
+          { author_username: other_user.username }
+        end
+
+        it 'filters requirements by author' do
+          expect(subject).to match_array([requirement2, requirement3])
+        end
+      end
+
+      context 'author cannot be found' do
+        let(:params) do
+          { author_username: "nonsense" }
+        end
+
+        it 'returns no items' do
+          expect(subject).to match_array([])
+        end
+      end
+
+      context 'author is not supplied' do
+        let(:params) do
+          { }
+        end
+
+        it 'returns requirements without filtering by author' do
+          expect(subject).to match_array([requirement1, requirement2, requirement3])
+        end
+      end
+
+      context 'author is nil' do
+        let(:params) do
+          { author_username: nil }
+        end
+
+        it 'returns requirements without filtering by author' do
+          expect(subject).to match_array([requirement1, requirement2, requirement3])
+        end
+      end
+    end
+
+    def resolve_requirements(args = {}, context = { current_user: current_user })
+      resolve(described_class, obj: project, args: args, ctx: context)
+    end
   end
 end

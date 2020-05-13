@@ -30,7 +30,11 @@ module RequirementsManagement
 
     scope :for_iid, -> (iid) { where(iid: iid) }
     scope :for_state, -> (state) { where(state: state) }
+    scope :with_author, -> (user_id) { where(author_id: user_id) }
     scope :counts_by_state, -> { group(:state).count }
+    scope :with_title_like, -> (query) do
+      where(arel_table[:title].matches("%#{sanitize_sql_like query}%"))
+    end
 
     def self.simple_sorts
       super.except('name_asc', 'name_desc')

@@ -33,5 +33,39 @@ describe RequirementsManagement::Requirement do
 
       it { is_expected.to contain_exactly(['archived', 1], ['opened', 1]) }
     end
+
+    describe '.with_author' do
+      let_it_be(:my_requirement) { create(:requirement, project: project, author: user) }
+      let_it_be(:other_requirement) { create(:requirement, project: project) }
+
+      subject { described_class.with_author(user) }
+
+      it { is_expected.to contain_exactly(my_requirement) }
+    end
+
+    describe '.with_title_like' do
+      let_it_be(:requirement_one) { create(:requirement, project: project, title: "it needs to do the thing") }
+      let_it_be(:requirement_two) { create(:requirement, project: project, title: "it needs to not break") }
+
+      subject { described_class.with_title_like(query) }
+
+      context 'with a query that covers both' do
+        let(:query) { 'it needs to' }
+
+        it { is_expected.to contain_exactly(requirement_one, requirement_two) }
+      end
+
+      context 'with a query that covers neither' do
+        let(:query) { 'break often' }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'with a query that covers one' do
+        let(:query) { 'do the thing' }
+
+        it { is_expected.to contain_exactly(requirement_one) }
+      end
+    end
   end
 end

@@ -9,6 +9,8 @@ module RequirementsManagement
     # iids: integer[]
     # state: string[]
     # sort: string
+    # search: string
+    # author_username: string
     def initialize(current_user, params = {})
       @current_user = current_user
       @params = params
@@ -18,6 +20,8 @@ module RequirementsManagement
       items = init_collection
       items = by_state(items)
       items = by_iid(items)
+      items = by_author(items)
+      items = by_search(items)
 
       sort(items)
     end
@@ -42,6 +46,27 @@ module RequirementsManagement
       return items unless params[:state].present?
 
       items.for_state(params[:state])
+    end
+
+    def by_author(items)
+      username_param = params[:author_username]
+
+      if username_param
+        author = User.find_by_username(username_param)
+        return items.none unless author # author not found
+
+        items.with_author(author.id)
+      else
+        items
+      end
+    end
+
+    def by_search(items)
+      if params[:search].present?
+        items.with_title_like(params[:search])
+      else
+        items
+      end
     end
 
     def project

@@ -19,6 +19,14 @@ module Resolvers
                required: false,
                description: 'Filter requirements by state'
 
+      argument :search, GraphQL::STRING_TYPE,
+               required: false,
+               description: 'Filter requirement by title'
+
+      argument :author_username, GraphQL::STRING_TYPE,
+               required: false,
+               description: 'Filter requirement by author username'
+
       type Types::RequirementsManagement::RequirementType, null: true
 
       def resolve(**args)
