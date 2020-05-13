@@ -78,15 +78,24 @@ describe Vulnerabilities::Export do
     end
 
     context 'when the export does not have project assigned' do
-      let(:author) { build(:user) }
-      let(:vulnerability_export) { build(:vulnerability_export, :user, author: author) }
-      let(:mock_security_dashboard) { instance_double(InstanceSecurityDashboard) }
+      context 'when the export has group assigned' do
+        let(:group) { build(:group) }
+        let(:vulnerability_export) { build(:vulnerability_export, :group, group: group) }
 
-      before do
-        allow(author).to receive(:security_dashboard).and_return(mock_security_dashboard)
+        it { is_expected.to eql(group) }
       end
 
-      it { is_expected.to eql(mock_security_dashboard) }
+      context 'when the export does not have group assigned' do
+        let(:author) { build(:user) }
+        let(:vulnerability_export) { build(:vulnerability_export, :user, author: author) }
+        let(:mock_security_dashboard) { instance_double(InstanceSecurityDashboard) }
+
+        before do
+          allow(author).to receive(:security_dashboard).and_return(mock_security_dashboard)
+        end
+
+        it { is_expected.to eql(mock_security_dashboard) }
+      end
     end
   end
 
@@ -99,6 +108,14 @@ describe Vulnerabilities::Export do
       let(:exportable) { build(:project) }
 
       it 'changes the exportable of the export to given project' do
+        expect { set_exportable }.to change { vulnerability_export.exportable }.to(exportable)
+      end
+    end
+
+    context 'when the exportable is a Group' do
+      let(:exportable) { build(:group) }
+
+      it 'changes the exportable of the export to given group' do
         expect { set_exportable }.to change { vulnerability_export.exportable }.to(exportable)
       end
     end
