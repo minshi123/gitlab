@@ -548,11 +548,11 @@ Vale's test results are not currently displayed in CI, but may be displayed in t
 
 You can disable a specific Vale linting rule or all Vale linting rules for any portion of a document:
 
-- To disable all Vale linting rules, add a `<!-- vale off -->` tag before the text,
-  and a `<!-- vale on -->` tag after the text.
 - To disable a specific rule, add a `<!-- vale gitlab.rulename = NO -->` tag
   before the text, and a `<!-- vale gitlab.rulename = YES -->` tag after the text,
   replacing `rulename` with the filename of a test in the [GitLab styles](https://gitlab.com/gitlab-org/gitlab/-/tree/master/doc/.linting/vale/styles/gitlab) directory.
+- To disable all Vale linting rules, add a `<!-- vale off -->` tag before the text,
+  and a `<!-- vale on -->` tag after the text.
 
 In some cases, such as list items, you may need to disable linting on the entire
 list until ["Ignore comments are not honored in a Markdown file"](https://github.com/errata-ai/vale/issues/175) is resolved.
