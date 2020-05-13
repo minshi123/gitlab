@@ -59,7 +59,7 @@ GET /groups/:id/registry/repositories
 | --------- | ---- | -------- | ----------- |
 | `id`      | integer/string | yes | The ID or [URL-encoded path of the group](README.md#namespaced-path-encoding) accessible by the authenticated user. |
 | `tags`      | boolean | no | If the parameter is included as true, each repository will include an array of `"tags"` in the response. |
-| `name`      | string | no | Returns a list of repositories with a name matching the value ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/29763) in GitLab 13.0) |
+| `name`      | string | no | Returns a list of repositories with a name that matches the value. ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/29763) in GitLab 13.0). |
 
 ```shell
 curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/groups/2/registry/repositories?tags=1"
