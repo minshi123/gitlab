@@ -1,6 +1,8 @@
 <script>
 import { GlFormGroup, GlFormInput } from '@gitlab/ui';
+import { mapActions, mapState } from 'vuex';
 import { __ } from '~/locale';
+import { validateCapacity } from '../validations';
 
 export default {
   name: 'GeoNodeFormCapacities',
@@ -65,6 +67,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['formErrors']),
     visibleFormGroups() {
       return this.formGroups.filter(group => {
         if (group.conditional) {
@@ -73,6 +76,15 @@ export default {
             : group.conditional === 'secondary';
         }
         return true;
+      });
+    },
+  },
+  methods: {
+    ...mapActions(['setError']),
+    checkCapacity(formGroup) {
+      this.setError({
+        key: formGroup.key,
+        error: validateCapacity({ data: this.nodeData[formGroup.key], label: formGroup.label }),
       });
     },
   },
@@ -87,12 +99,16 @@ export default {
       :label="formGroup.label"
       :label-for="formGroup.id"
       :description="formGroup.description"
+      :state="Boolean(formErrors[formGroup.key])"
+      :invalid-feedback="formErrors[formGroup.key]"
     >
       <gl-form-input
         :id="formGroup.id"
         v-model="nodeData[formGroup.key]"
+        :class="{ 'is-invalid': Boolean(formErrors[formGroup.key]) }"
         class="col-sm-3"
         type="number"
+        @input="checkCapacity(formGroup)"
       />
     </gl-form-group>
   </div>
