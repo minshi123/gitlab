@@ -111,7 +111,7 @@ class PushEvent < Event
   end
 
   def validate_push_action
-    return if action == PUSHED
+    return if action == 'pushed'
 
     errors.add(:action, "the action #{action.inspect} is not valid")
   end

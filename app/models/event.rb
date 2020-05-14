@@ -52,6 +52,8 @@ class Event < ApplicationRecord
   RESET_PROJECT_ACTIVITY_INTERVAL = 1.hour
   REPOSITORY_UPDATED_AT_INTERVAL = 5.minutes
 
+  enum action: ACTIONS, _suffix: true
+
   delegate :name, :email, :public_email, :username, to: :author, prefix: true, allow_nil: true
   delegate :title, to: :issue, prefix: true, allow_nil: true
   delegate :title, to: :merge_request, prefix: true, allow_nil: true
@@ -81,8 +83,8 @@ class Event < ApplicationRecord
 
   # Scopes
   scope :recent, -> { reorder(id: :desc) }
-  scope :code_push, -> { where(action: PUSHED) }
-  scope :merged, -> { where(action: MERGED) }
+  scope :code_push, -> { pushed_action }
+  scope :merged, -> { merged_action }
   scope :for_wiki_page, -> { where(target_type: 'WikiPage::Meta') }
 
   # Needed to implement feature flag: can be removed when feature flag is removed
@@ -108,6 +110,12 @@ class Event < ApplicationRecord
   self.inheritance_column = 'action'
 
   class << self
+    def action_ids(*keys)
+      return actions.values if keys.empty?
+
+      keys.map { |key| actions.fetch(key) }.uniq
+    end
+
     def model_name
       ActiveModel::Name.new(self, nil, 'event')
     end
@@ -124,16 +132,12 @@ class Event < ApplicationRecord
     def contributions
       where("action = ? OR (target_type IN (?) AND action IN (?)) OR (target_type = ? AND action = ?)",
             Event::PUSHED,
-            %w(MergeRequest Issue), [Event::CREATED, Event::CLOSED, Event::MERGED],
-            "Note", Event::COMMENTED)
+            %w(MergeRequest Issue), [actions[:created], actions[:closed], actions[:merged]],
+            "Note", actions[:commented])
     end
 
     def limit_recent(limit = 20, offset = nil)
       recent.limit(limit).offset(offset)
-    end
-
-    def actions
-      ACTIONS.keys
     end
 
     def target_types
@@ -159,44 +163,8 @@ class Event < ApplicationRecord
     target.try(:title)
   end
 
-  def created_action?
-    action == CREATED
-  end
-
   def push_action?
     false
-  end
-
-  def merged_action?
-    action == MERGED
-  end
-
-  def closed_action?
-    action == CLOSED
-  end
-
-  def reopened_action?
-    action == REOPENED
-  end
-
-  def joined_action?
-    action == JOINED
-  end
-
-  def left_action?
-    action == LEFT
-  end
-
-  def expired_action?
-    action == EXPIRED
-  end
-
-  def destroyed_action?
-    action == DESTROYED
-  end
-
-  def commented_action?
-    action == COMMENTED
   end
 
   def membership_changed?
@@ -208,11 +176,11 @@ class Event < ApplicationRecord
   end
 
   def created_wiki_page?
-    wiki_page? && action == CREATED
+    wiki_page? && created_action?
   end
 
   def updated_wiki_page?
-    wiki_page? && action == UPDATED
+    wiki_page? && updated_action?
   end
 
   def created_target?
