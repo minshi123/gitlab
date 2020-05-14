@@ -28,6 +28,10 @@ module Gitlab
         end
       end
 
+      def create_alias(alias_name, index_name)
+        client.indices.put_alias(name: alias_name, index: index_name)
+      end
+
       # rubocop: disable CodeReuse/ActiveRecord
       def create_empty_index
         settings = {}
