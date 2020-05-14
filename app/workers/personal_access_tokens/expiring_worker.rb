@@ -17,7 +17,7 @@ module PersonalAccessTokens
 
           Rails.logger.info "#{self.class}: Notifying User #{user.id} about expiring tokens" # rubocop:disable Gitlab/RailsLogger
 
-          user.personal_access_tokens.expiring_and_not_notified(limit_date).update_all(expire_notification_delivered: true)
+          user.personal_access_tokens.without_impersonation.expiring_and_not_notified(limit_date).update_all(expire_notification_delivered: true)
         end
       end
     end

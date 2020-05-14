@@ -33,7 +33,23 @@ RSpec.describe PersonalAccessTokens::ExpiringWorker, type: :worker do
         worker.perform
       end
 
-      it "doesn't change the notificationd delivered of the token" do
+      it "doesn't change the notification delivered of the token" do
+        expect { worker.perform }.not_to change { pat.reload.expire_notification_delivered }
+      end
+    end
+
+    context 'when a token is an impersonation token' do
+      let!(:pat) { create(:personal_access_token, expires_at: 5.days.from_now, impersonation: true) }
+
+      it "doesn't use notification service to send the email" do
+        expect_next_instance_of(NotificationService) do |notification_service|
+          expect(notification_service).not_to receive(:access_token_about_to_expire).with(pat.user)
+        end
+
+        worker.perform
+      end
+
+      it "doesn't change the notification delivered of the token" do
         expect { worker.perform }.not_to change { pat.reload.expire_notification_delivered }
       end
     end
