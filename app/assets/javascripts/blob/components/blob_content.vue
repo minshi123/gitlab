@@ -9,6 +9,11 @@ export default {
     BlobContentError,
   },
   props: {
+    blob: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
     content: {
       type: String,
       default: '',
@@ -44,7 +49,7 @@ export default {
     <gl-loading-icon v-if="loading" size="md" color="dark" class="my-4 mx-auto" />
 
     <template v-else>
-      <blob-content-error v-if="viewerError" :viewer-error="viewerError" />
+      <blob-content-error v-if="viewerError" :viewer-error="viewerError" :blob="blob" />
       <component
         :is="viewer"
         v-else

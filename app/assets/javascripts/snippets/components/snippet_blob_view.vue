@@ -81,7 +81,12 @@ export default {
           />
         </template>
       </blob-header>
-      <blob-content :loading="isContentLoading" :content="blobContent" :active-viewer="viewer" />
+      <blob-content
+        :loading="isContentLoading"
+        :content="blobContent"
+        :active-viewer="viewer"
+        :blob="blob"
+      />
     </article>
   </div>
 </template>

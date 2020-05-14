@@ -5,6 +5,11 @@ export default {
       type: String,
       required: true,
     },
+    blob: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
   },
 };
 </script>
