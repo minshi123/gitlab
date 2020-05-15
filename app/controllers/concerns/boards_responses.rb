@@ -31,7 +31,7 @@ module BoardsResponses
   end
 
   def group?
-    instance_variable_defined?(:@group)
+    !instance_variable_defined?(:@project) && instance_variable_defined?(:@group) && group.present?
   end
 
   def authorize_read_list
