@@ -32,17 +32,17 @@ module EE
               description: 'Vulnerabilities reported on the projects in the group and its subgroups',
               resolver: ::Resolvers::VulnerabilitiesResolver
 
-        field :vulnerability_grades,
-              ::Types::VulnerabilityGradesType,
-              null: false,
-              description: 'Represents vulnerable project counts for each grade',
-              resolver: ::Resolvers::VulnerabilityGradesResolver
-
         field :vulnerabilities_count_by_day_and_severity,
               ::Types::VulnerabilitiesCountByDayAndSeverityType.connection_type,
               null: true,
               description: 'Number of vulnerabilities per severity level, per day, for the projects in the group and its subgroups',
               resolver: ::Resolvers::VulnerabilitiesHistoryResolver
+
+        field :vulnerability_grades,
+              ::Types::VulnerabilityGradesType,
+              null: false,
+              description: 'Represents vulnerable project counts for each grade',
+              resolver: ::Resolvers::VulnerabilityGradesResolver
       end
     end
   end
