@@ -27,6 +27,12 @@ export default {
       },
       update: data =>
         data.snippets.edges[0].node.blob.richData || data.snippets.edges[0].node.blob.plainData,
+      result() {
+        this.viewer.renderError = null;
+      },
+      skip() {
+        return this.viewer.renderError;
+      },
     },
   },
   props: {
@@ -64,6 +70,10 @@ export default {
     switchViewer(newViewer) {
       this.activeViewerType = newViewer;
     },
+    forceQuery() {
+      this.$apollo.queries.blobContent.skip = false;
+      this.$apollo.queries.blobContent.refetch();
+    },
   },
 };
 </script>
@@ -86,6 +96,7 @@ export default {
         :content="blobContent"
         :active-viewer="viewer"
         :blob="blob"
+        @force-content-fetch="forceQuery"
       />
     </article>
   </div>
