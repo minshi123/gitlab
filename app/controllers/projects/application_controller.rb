@@ -7,7 +7,7 @@ class Projects::ApplicationController < ApplicationController
 
   skip_before_action :authenticate_user!
   before_action :project
-  # before_action :group
+  before_action :group
   before_action :repository
   layout 'project'
 
