@@ -93,7 +93,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -181,7 +181,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -343,7 +343,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -500,6 +500,20 @@
                   "name": "ID",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "issueIid",
+              "description": "Internal ID of the GitLab issue attached to the alert",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -720,6 +734,125 @@
 
           ],
           "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "AlertManagementAlertSort",
+          "description": "Values for sorting alerts",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "updated_desc",
+              "description": "Updated at descending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_asc",
+              "description": "Updated at ascending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "created_desc",
+              "description": "Created at descending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "created_asc",
+              "description": "Created at ascending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "START_TIME_ASC",
+              "description": "Start time by ascending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "START_TIME_DESC",
+              "description": "Start time by descending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "END_TIME_ASC",
+              "description": "End time by ascending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "END_TIME_DESC",
+              "description": "End time by descending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "CREATED_TIME_ASC",
+              "description": "Created time by ascending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "CREATED_TIME_DESC",
+              "description": "Created time by descending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "UPDATED_TIME_ASC",
+              "description": "Created time by ascending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "UPDATED_TIME_DESC",
+              "description": "Created time by descending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "EVENTS_COUNT_ASC",
+              "description": "Events count by ascending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "EVENTS_COUNT_DESC",
+              "description": "Events count by descending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "SEVERITY_ASC",
+              "description": "Severity by ascending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "SEVERITY_DESC",
+              "description": "Severity by descending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "STATUS_ASC",
+              "description": "Status by ascending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "STATUS_DESC",
+              "description": "Status by descending order",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
           "possibleTypes": null
         },
         {
@@ -1865,7 +1998,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -2246,6 +2379,20 @@
               "deprecationReason": null
             },
             {
+              "name": "titleHtml",
+              "description": "The GitLab Flavored Markdown rendering of `title`",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "webUrl",
               "description": "Web URL of the commit",
               "args": [
@@ -2369,7 +2516,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -2485,7 +2632,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -2707,7 +2854,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -2823,7 +2970,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -2877,7 +3024,7 @@
           "inputFields": [
             {
               "name": "groupPath",
-              "description": "The group the iteration to create will be in",
+              "description": "The target group for the iteration",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -2965,7 +3112,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -3091,7 +3238,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -3207,7 +3354,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -3367,7 +3514,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -4989,7 +5136,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -5153,7 +5300,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -5660,7 +5807,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -5762,7 +5909,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -6769,7 +6916,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -8329,7 +8476,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -9001,6 +9148,20 @@
                   "name": "ID",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "iteration",
+              "description": "Iteration of the issue",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Iteration",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -9874,7 +10035,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -10118,7 +10279,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -11387,6 +11548,99 @@
               "deprecationReason": null
             },
             {
+              "name": "iterations",
+              "description": "Find iterations",
+              "args": [
+                {
+                  "name": "startDate",
+                  "description": "List items within a time frame where items.start_date is between startDate and endDate parameters (endDate parameter must be present)",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Time",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "endDate",
+                  "description": "List items within a time frame where items.end_date is between startDate and endDate parameters (startDate parameter must be present)",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Time",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "state",
+                  "description": "Filter iterations by state",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "IterationState",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "title",
+                  "description": "Fuzzy search by title",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "Returns the elements in the list that come after the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "Returns the elements in the list that come before the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "first",
+                  "description": "Returns the first _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "Returns the last _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "IterationConnection",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "lfsEnabled",
               "description": "Indicates if Large File Storage (LFS) is enabled for namespace",
               "args": [
@@ -11444,6 +11698,16 @@
                   "type": {
                     "kind": "ENUM",
                     "name": "MilestoneStateEnum",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "includeDescendants",
+                  "description": "Return also milestones in all subgroups and subprojects",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -11568,6 +11832,16 @@
                 {
                   "name": "includeSubgroups",
                   "description": "Include also subgroup projects",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                },
+                {
+                  "name": "hasVulnerabilities",
+                  "description": "Returns only the projects which have vulnerabilities",
                   "type": {
                     "kind": "SCALAR",
                     "name": "Boolean",
@@ -12050,6 +12324,87 @@
               "deprecationReason": null
             },
             {
+              "name": "vulnerabilitiesCountByDayAndSeverity",
+              "description": "Number of vulnerabilities per severity level, per day, for the projects in the group and its subgroups",
+              "args": [
+                {
+                  "name": "startDate",
+                  "description": "First day for which to fetch vulnerability history",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ISO8601Date",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "endDate",
+                  "description": "Last day for which to fetch vulnerability history",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ISO8601Date",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "Returns the elements in the list that come after the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "Returns the elements in the list that come before the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "first",
+                  "description": "Returns the first _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "Returns the last _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "VulnerabilitiesCountByDayAndSeverityConnection",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "webUrl",
               "description": "Web URL of the group",
               "args": [
@@ -12142,6 +12497,86 @@
           "fields": null,
           "inputFields": null,
           "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "SCALAR",
+          "name": "ISO8601Date",
+          "description": "An ISO 8601-encoded date",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "InstanceSecurityDashboard",
+          "description": null,
+          "fields": [
+            {
+              "name": "projects",
+              "description": "Projects selected in Instance Security Dashboard",
+              "args": [
+                {
+                  "name": "after",
+                  "description": "Returns the elements in the list that come after the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "Returns the elements in the list that come before the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "first",
+                  "description": "Returns the first _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "Returns the last _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "ProjectConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
           "enumValues": null,
           "possibleTypes": null
         },
@@ -12515,6 +12950,20 @@
                   "name": "ID",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "iteration",
+              "description": "Iteration of the issue",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Iteration",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -13360,7 +13809,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -13490,7 +13939,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -13616,7 +14065,133 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "issue",
+              "description": "The issue after mutation",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Issue",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "IssueSetIterationInput",
+          "description": "Autogenerated input type of IssueSetIteration",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "projectPath",
+              "description": "The project the issue to mutate is in",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "iid",
+              "description": "The iid of the issue to mutate",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "iterationId",
+              "description": "The iteration to assign to the issue.\n",
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "clientMutationId",
+              "description": "A unique identifier for the client performing the mutation.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "IssueSetIterationPayload",
+          "description": "Autogenerated return type of IssueSetIteration",
+          "fields": [
+            {
+              "name": "clientMutationId",
+              "description": "A unique identifier for the client performing the mutation.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "errors",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -14079,7 +14654,7 @@
             },
             {
               "name": "webUrl",
-              "description": "Web url of the iteration",
+              "description": "Web URL of the iteration",
               "args": [
 
               ],
@@ -14531,7 +15106,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -14932,7 +15507,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -16525,7 +17100,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -16673,7 +17248,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -16803,7 +17378,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -16929,7 +17504,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -17059,7 +17634,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -17189,7 +17764,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -17326,7 +17901,7 @@
           "fields": [
             {
               "name": "annotations",
-              "description": "Annotations added to the dashboard. Will always return `null` if `metrics_dashboard_annotations` feature flag is disabled",
+              "description": "Annotations added to the dashboard",
               "args": [
                 {
                   "name": "from",
@@ -17450,7 +18025,7 @@
               ],
               "type": {
                 "kind": "SCALAR",
-                "name": "String",
+                "name": "Time",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -17496,7 +18071,7 @@
               ],
               "type": {
                 "kind": "SCALAR",
-                "name": "String",
+                "name": "Time",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -18840,6 +19415,33 @@
               "deprecationReason": null
             },
             {
+              "name": "removeProjectFromSecurityDashboard",
+              "description": null,
+              "args": [
+                {
+                  "name": "input",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "RemoveProjectFromSecurityDashboardInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "RemoveProjectFromSecurityDashboardPayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "todoMarkDone",
               "description": null,
               "args": [
@@ -19344,6 +19946,16 @@
                 {
                   "name": "includeSubgroups",
                   "description": "Include also subgroup projects",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                },
+                {
+                  "name": "hasVulnerabilities",
+                  "description": "Returns only the projects which have vulnerabilities",
                   "type": {
                     "kind": "SCALAR",
                     "name": "Boolean",
@@ -21029,6 +21641,34 @@
                     "ofType": null
                   },
                   "defaultValue": null
+                },
+                {
+                  "name": "statuses",
+                  "description": "Alerts with the specified statues. For example, [TRIGGERED]",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "AlertManagementStatus",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "sort",
+                  "description": "Sort alerts by this criteria",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "AlertManagementAlertSort",
+                    "ofType": null
+                  },
+                  "defaultValue": null
                 }
               ],
               "type": {
@@ -21049,6 +21689,34 @@
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "statuses",
+                  "description": "Alerts with the specified statues. For example, [TRIGGERED]",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "AlertManagementStatus",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "sort",
+                  "description": "Sort alerts by this criteria",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "AlertManagementAlertSort",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -22374,6 +23042,86 @@
               "type": {
                 "kind": "SCALAR",
                 "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "release",
+              "description": "A single release of the project. Available only when feature flag `graphql_release_data` is enabled",
+              "args": [
+                {
+                  "name": "tagName",
+                  "description": "The name of the tag associated to the release",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Release",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "releases",
+              "description": "Releases of the project. Available only when feature flag `graphql_release_data` is enabled",
+              "args": [
+                {
+                  "name": "after",
+                  "description": "Returns the elements in the list that come after the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "Returns the elements in the list that come before the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "first",
+                  "description": "Returns the first _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "Returns the last _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ReleaseConnection",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -24264,6 +25012,20 @@
               "deprecationReason": null
             },
             {
+              "name": "instanceSecurityDashboard",
+              "description": "Fields related to Instance Security Dashboard",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "InstanceSecurityDashboard",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "metadata",
               "description": "Metadata about GitLab",
               "args": [
@@ -24326,6 +25088,79 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "Project",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "projects",
+              "description": "Find projects visible to the current user",
+              "args": [
+                {
+                  "name": "membership",
+                  "description": "Limit projects that the current user is a member of",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "search",
+                  "description": "Search criteria",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "Returns the elements in the list that come after the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "Returns the elements in the list that come before the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "first",
+                  "description": "Returns the first _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "Returns the last _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProjectConnection",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -24576,6 +25411,87 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "vulnerabilitiesCountByDayAndSeverity",
+              "description": "Number of vulnerabilities per severity level, per day, for the projects on the current user's instance security dashboard",
+              "args": [
+                {
+                  "name": "startDate",
+                  "description": "First day for which to fetch vulnerability history",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ISO8601Date",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "endDate",
+                  "description": "Last day for which to fetch vulnerability history",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ISO8601Date",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "Returns the elements in the list that come after the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "Returns the elements in the list that come before the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "first",
+                  "description": "Returns the first _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "Returns the last _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "VulnerabilitiesCountByDayAndSeverityConnection",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -24618,6 +25534,314 @@
               "deprecationReason": null
             }
           ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Release",
+          "description": null,
+          "fields": [
+            {
+              "name": "author",
+              "description": "User that created the release",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "User",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "commit",
+              "description": "The commit associated with the release",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Commit",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "createdAt",
+              "description": "Timestamp of when the release was created",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Time",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "description",
+              "description": "Description (also known as \"release notes\") of the release",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "descriptionHtml",
+              "description": "The GitLab Flavored Markdown rendering of `description`",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "milestones",
+              "description": "Milestones associated to the release",
+              "args": [
+                {
+                  "name": "after",
+                  "description": "Returns the elements in the list that come after the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "Returns the elements in the list that come before the specified cursor.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "first",
+                  "description": "Returns the first _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "Returns the last _n_ elements from the list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "MilestoneConnection",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "name",
+              "description": "Name of the release",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "releasedAt",
+              "description": "Timestamp of when the release was released",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Time",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "tagName",
+              "description": "Name of the tag associated with the release",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "tagPath",
+              "description": "Relative web path to the tag associated with the release",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "ReleaseConnection",
+          "description": "The connection type for Release.",
+          "fields": [
+            {
+              "name": "edges",
+              "description": "A list of edges.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "ReleaseEdge",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "nodes",
+              "description": "A list of nodes.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Release",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "pageInfo",
+              "description": "Information to aid in pagination.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "ReleaseEdge",
+          "description": "An edge in a connection.",
+          "fields": [
+            {
+              "name": "cursor",
+              "description": "A cursor for use in pagination.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "node",
+              "description": "The item at the end of the edge.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Release",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
           "possibleTypes": null
         },
         {
@@ -24704,7 +25928,95 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "RemoveProjectFromSecurityDashboardInput",
+          "description": "Autogenerated input type of RemoveProjectFromSecurityDashboard",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "id",
+              "description": "ID of the project to remove from the Instance Security Dashboard",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "clientMutationId",
+              "description": "A unique identifier for the client performing the mutation.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RemoveProjectFromSecurityDashboardPayload",
+          "description": "Autogenerated return type of RemoveProjectFromSecurityDashboard",
+          "fields": [
+            {
+              "name": "clientMutationId",
+              "description": "A unique identifier for the client performing the mutation.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "errors",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -27166,12 +28478,6 @@
               "description": null,
               "isDeprecated": false,
               "deprecationReason": null
-            },
-            {
-              "name": "JENKINS_DEPRECATED_SERVICE",
-              "description": null,
-              "isDeprecated": false,
-              "deprecationReason": null
             }
           ],
           "possibleTypes": null
@@ -27350,7 +28656,7 @@
             },
             {
               "name": "id",
-              "description": "Id of the snippet",
+              "description": "ID of the snippet",
               "args": [
 
               ],
@@ -27595,6 +28901,20 @@
               "deprecationReason": null
             },
             {
+              "name": "externalStorage",
+              "description": "Blob external storage",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "mode",
               "description": "Blob mode",
               "args": [
@@ -27662,6 +28982,24 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "renderedAsText",
+              "description": "Shows whether the blob is rendered as text",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
                   "ofType": null
                 }
               },
@@ -28777,7 +30115,7 @@
             },
             {
               "name": "id",
-              "description": "Id of the todo",
+              "description": "ID of the todo",
               "args": [
 
               ],
@@ -29072,7 +30410,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -29221,7 +30559,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -29300,7 +30638,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -29456,7 +30794,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -29598,7 +30936,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -30218,7 +31556,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -30501,7 +31839,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -30609,7 +31947,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -30775,7 +32113,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -30891,7 +32229,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -31027,7 +32365,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -31179,7 +32517,7 @@
             },
             {
               "name": "errors",
-              "description": "Reasons why the mutation failed.",
+              "description": "Errors encountered during execution of the mutation.",
               "args": [
 
               ],
@@ -31829,6 +33167,173 @@
         },
         {
           "kind": "OBJECT",
+          "name": "VulnerabilitiesCountByDayAndSeverity",
+          "description": "Represents the number of vulnerabilities for a particular severity on a particular day",
+          "fields": [
+            {
+              "name": "count",
+              "description": "Number of vulnerabilities",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "day",
+              "description": "Date for the count",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "ISO8601Date",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "severity",
+              "description": "Severity of the counted vulnerabilities",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "ENUM",
+                "name": "VulnerabilitySeverity",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VulnerabilitiesCountByDayAndSeverityConnection",
+          "description": "The connection type for VulnerabilitiesCountByDayAndSeverity.",
+          "fields": [
+            {
+              "name": "edges",
+              "description": "A list of edges.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "VulnerabilitiesCountByDayAndSeverityEdge",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "nodes",
+              "description": "A list of nodes.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "VulnerabilitiesCountByDayAndSeverity",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "pageInfo",
+              "description": "Information to aid in pagination.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VulnerabilitiesCountByDayAndSeverityEdge",
+          "description": "An edge in a connection.",
+          "fields": [
+            {
+              "name": "cursor",
+              "description": "A cursor for use in pagination.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "node",
+              "description": "The item at the end of the edge.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "VulnerabilitiesCountByDayAndSeverity",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "Vulnerability",
           "description": "Represents a vulnerability.",
           "fields": [
@@ -31866,13 +33371,13 @@
             },
             {
               "name": "location",
-              "description": "The JSON location metadata for the vulnerability. Its format depends on the type of the security scan that found the vulnerability",
+              "description": "Location metadata for the vulnerability. Its fields depend on the type of security scan that found the vulnerability",
               "args": [
 
               ],
               "type": {
-                "kind": "SCALAR",
-                "name": "JSON",
+                "kind": "UNION",
+                "name": "VulnerabilityLocation",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -32087,6 +33592,285 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "Vulnerability",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "UNION",
+          "name": "VulnerabilityLocation",
+          "description": "Represents a vulnerability location. The fields with data will depend on the vulnerability report type",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "VulnerabilityLocationContainerScanning",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "VulnerabilityLocationDast",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "VulnerabilityLocationDependencyScanning",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "VulnerabilityLocationSast",
+              "ofType": null
+            }
+          ]
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VulnerabilityLocationContainerScanning",
+          "description": "Represents the location of a vulnerability found by a container security scan",
+          "fields": [
+            {
+              "name": "dependency",
+              "description": "Dependency containing the vulnerability",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "VulnerableDependency",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "image",
+              "description": "Name of the vulnerable container image",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "operatingSystem",
+              "description": "Operating system that runs on the vulnerable container image",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VulnerabilityLocationDast",
+          "description": "Represents the location of a vulnerability found by a DAST scan",
+          "fields": [
+            {
+              "name": "hostname",
+              "description": "Domain name of the vulnerable request",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "param",
+              "description": "Query parameter for the URL on which the vulnerability occurred",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "path",
+              "description": "URL path and query string of the vulnerable request",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "requestMethod",
+              "description": "HTTP method of the vulnerable request",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VulnerabilityLocationDependencyScanning",
+          "description": "Represents the location of a vulnerability found by a dependency security scan",
+          "fields": [
+            {
+              "name": "dependency",
+              "description": "Dependency containing the vulnerability",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "VulnerableDependency",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "file",
+              "description": "Path to the vulnerable file",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VulnerabilityLocationSast",
+          "description": "Represents the location of a vulnerability found by a SAST scan",
+          "fields": [
+            {
+              "name": "endLine",
+              "description": "Number of the last relevant line in the vulnerable file",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "file",
+              "description": "Path to the vulnerable file",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "startLine",
+              "description": "Number of the first relevant line in the vulnerable file",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "vulnerableClass",
+              "description": "Class containing the vulnerability",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "vulnerableMethod",
+              "description": "Method containing the vulnerability",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -32469,6 +34253,74 @@
               "deprecationReason": null
             }
           ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VulnerableDependency",
+          "description": "Represents a vulnerable dependency. Used in vulnerability location data",
+          "fields": [
+            {
+              "name": "package",
+              "description": "The package associated with the vulnerable dependency",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "VulnerablePackage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "version",
+              "description": "The version of the vulnerable dependency",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VulnerablePackage",
+          "description": "Represents a vulnerable package. Used in vulnerability dependency data",
+          "fields": [
+            {
+              "name": "name",
+              "description": "The name of the vulnerable package",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
           "possibleTypes": null
         },
         {

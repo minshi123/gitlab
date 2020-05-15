@@ -1,3 +1,9 @@
+---
+stage: Monitor
+group: APM
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # GitLab Prometheus metrics
 
 >**Note:**
@@ -78,7 +84,7 @@ The following metrics are available:
 | `gitlab_transaction_event_remove_tag_total`                    | Counter   |                    9.4 | Counter when a tag is remove for any repository                                                     |                                                     |
 | `gitlab_transaction_event_sidekiq_exception_total`             | Counter   |                    9.4 | Counter of Sidekiq exceptions                                                                       |                                                     |
 | `gitlab_transaction_event_stuck_import_jobs_total`             | Counter   |                    9.4 | Count of stuck import jobs                                                                          | `projects_without_jid_count`, `projects_with_jid_count` |
-| `gitlab_transaction_event_update_build_total`                  | Counter   |                    9.4 | Counter for update build for API /jobs/request/:id                                                  |                                                     |
+| `gitlab_transaction_event_update_build_total`                  | Counter   |                    9.4 | Counter for update build for API `/jobs/request/:id`                                                |                                                     |
 | `gitlab_transaction_new_redis_connections_total`               | Counter   |                    9.4 | Counter for new Redis connections                                                                   |                                                     |
 | `gitlab_transaction_queue_duration_total`                      | Counter   |                    9.4 | Duration jobs were enqueued before processing                                                       |                                                     |
 | `gitlab_transaction_rails_queue_duration_total`                | Counter   |                    9.4 | Measures latency between GitLab Workhorse forwarding a request to Rails                             | `controller`, `action`                              |
@@ -172,17 +178,18 @@ The following metrics are available:
 
 Some basic Ruby runtime metrics are available:
 
-| Metric                               | Type      | Since | Description |
-|:------------------------------------ |:--------- |:----- |:----------- |
-| `ruby_gc_duration_seconds`           | Counter   | 11.1  | Time spent by Ruby in GC |
-| `ruby_gc_stat_...`                   | Gauge     | 11.1  | Various metrics from [GC.stat](https://ruby-doc.org/core-2.6.5/GC.html#method-c-stat) |
-| `ruby_file_descriptors`              | Gauge     | 11.1  | File descriptors per process |
-| `ruby_memory_bytes`                  | Gauge     | 11.1  | Memory usage by process |
-| `ruby_sampler_duration_seconds`      | Counter   | 11.1  | Time spent collecting stats |
-| `ruby_process_cpu_seconds_total`     | Gauge     | 12.0  | Total amount of CPU time per process |
-| `ruby_process_max_fds`               | Gauge     | 12.0  | Maximum number of open file descriptors per process |
-| `ruby_process_resident_memory_bytes` | Gauge     | 12.0  | Memory usage by process |
-| `ruby_process_start_time_seconds`    | Gauge     | 12.0  | UNIX timestamp of process start time |
+| Metric                                   | Type      | Since | Description |
+|:---------------------------------------- |:--------- |:----- |:----------- |
+| `ruby_gc_duration_seconds`               | Counter   | 11.1  | Time spent by Ruby in GC |
+| `ruby_gc_stat_...`                       | Gauge     | 11.1  | Various metrics from [GC.stat](https://ruby-doc.org/core-2.6.5/GC.html#method-c-stat) |
+| `ruby_file_descriptors`                  | Gauge     | 11.1  | File descriptors per process |
+| `ruby_sampler_duration_seconds`          | Counter   | 11.1  | Time spent collecting stats |
+| `ruby_process_cpu_seconds_total`         | Gauge     | 12.0  | Total amount of CPU time per process |
+| `ruby_process_max_fds`                   | Gauge     | 12.0  | Maximum number of open file descriptors per process |
+| `ruby_process_resident_memory_bytes`     | Gauge     | 12.0  | Memory usage by process (RSS/Resident Set Size) |
+| `ruby_process_unique_memory_bytes`       | Gauge     | 13.0  | Memory usage by process (USS/Unique Set Size) |
+| `ruby_process_proportional_memory_bytes` | Gauge     | 13.0  | Memory usage by process (PSS/Proportional Set Size) |
+| `ruby_process_start_time_seconds`        | Gauge     | 12.0  | UNIX timestamp of process start time |
 
 ## Unicorn Metrics
 

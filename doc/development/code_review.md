@@ -64,7 +64,7 @@ It picks reviewers and maintainers from the list at the
 page, with these behaviors:
 
 1. It will not pick people whose [GitLab status](../user/profile/index.md#current-status)
-   contains the string 'OOO'.
+   contains the string 'OOO', or the emoji is `:palm_tree:` or `:beach:`.
 1. [Trainee maintainers](https://about.gitlab.com/handbook/engineering/workflow/code-review/#trainee-maintainer)
    are three times as likely to be picked as other reviewers.
 1. It always picks the same reviewers and maintainers for the same
@@ -96,11 +96,16 @@ with [domain expertise](#domain-experts).
 1. If your merge request includes documentation changes, it must be **approved
    by a [Technical writer](https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers)**, based on
    the appropriate [product category](https://about.gitlab.com/handbook/product/categories/).
+1. If your merge request includes Quality and non-Quality-related changes (*3*), it must be **approved
+   by a [Software Engineer in Test](https://about.gitlab.com/handbook/engineering/quality/#individual-contributors)**.
+1. If your merge request includes _only_ Quality-related changes (*3*), it must be **approved
+   by a [Quality maintainer](https://about.gitlab.com/handbook/engineering/projects/#gitlab_maintainers_qa)**.
 
 - (*1*): Please note that specs other than JavaScript specs are considered backend code.
 - (*2*): We encourage you to seek guidance from a database maintainer if your merge
   request is potentially introducing expensive queries. It is most efficient to comment
   on the line of code in question with the SQL queries so they can give their advice.
+- (*3*): Quality-related changes include all files within the `qa` directory.
 
 #### Security requirements
 
@@ -320,6 +325,7 @@ Before taking the decision to merge:
 - Consider warnings and errors from danger bot, code quality, and other reports.
   Unless a strong case can be made for the violation, these should be resolved
   before merging. A comment must to be posted if the MR is merged with any failed job.
+- If the MR contains both Quality and non-Quality-related changes, the MR should be merged by the relevant maintainer for user-facing changes (backend, frontend, or database) after the Quality related changes are approved by a Software Engineer in Test.
 
 When ready to merge:
 
@@ -468,13 +474,13 @@ When a merge request author has been blocked for longer than
 the `Review-response` SLO, they are free to remind the reviewer through Slack or assign
 another reviewer.
 
-#### Customer critical merge requests
+### Customer critical merge requests
 
 A merge request may benefit from being considered a customer critical priority because there is a significant benefit to the business in doing so.
 
 Properties of customer critical merge requests:
 
-- The [Senior Director of Development](https://about.gitlab.com/job-families/engineering/engineering-management/#senior-director-engineering) [@clefelhocz1](https://gitlab.com/clefelhocz1) is the DRI for deciding if a merge request will be customer critical.
+- The [Senior Director of Development](https://about.gitlab.com/job-families/engineering/engineering-management/#senior-director-engineering) ([@clefelhocz1](https://gitlab.com/clefelhocz1)) is the DRI for deciding if a merge request will be customer critical.
 - The DRI will assign the `customer-critical-merge-request` label to the merge request.
 - It is required that the reviewer(s) and maintainer(s) involved with a customer critical merge request are engaged as soon as this decision is made.
 - It is required to prioritize work for those involved on a customer critical merge request so that they have the time available necessary to focus on it.

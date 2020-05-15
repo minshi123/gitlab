@@ -39,7 +39,7 @@ describe 'Creating an Iteration' do
                'or you don\'t have permission to perform this action']
 
     it 'does not create iteration' do
-      expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Sprint, :count)
+      expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
     end
   end
 
@@ -82,7 +82,7 @@ describe 'Creating an Iteration' do
                         errors: ["Title can't be blank", "Start date can't be blank", "Due date can't be blank"]
 
         it 'does not create the iteration' do
-          expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Sprint, :count)
+          expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
         end
       end
 
@@ -93,7 +93,7 @@ describe 'Creating an Iteration' do
                         errors: ['The list of iteration attributes is empty']
 
         it 'does not create the iteration' do
-          expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Sprint, :count)
+          expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
         end
       end
     end

@@ -1,3 +1,9 @@
+---
+stage: Monitor
+group: APM
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Prometheus integration
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/8935) in GitLab 9.0.
@@ -186,10 +192,28 @@ GitLab supports a limited set of [CI variables](../../../ci/variables/README.md)
 NOTE: **Note:**
 Variables for Prometheus queries must be lowercase.
 
-There are 2 methods to specify a variable in a query or dashboard:
+Variables can be specified using double curly braces, such as `"{{ci_environment_slug}}"` ([added](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/20793) in GitLab 12.7).
 
-1. Variables can be specified using the [Liquid template format](https://shopify.dev/docs/liquid/reference/basics), for example `{{ci_environment_slug}}` ([added](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/20793) in GitLab 12.6).
-1. You can also enclose it in quotation marks with curly braces with a leading percent, for example `"%{ci_environment_slug}"`. This method is deprecated though and support will be [removed in the next major release](https://gitlab.com/gitlab-org/gitlab/issues/37990).
+Support for the `"%{ci_environment_slug}"` format was
+[removed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/31581) in GitLab 13.0.
+Queries that continue to use the old format will show no data.
+
+#### Query Variables from URL
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/214500) in GitLab 13.0.
+
+GitLab supports setting custom variables through URL parameters. Surround the variable
+name with double curly braces (`{{example}}`) to interpolate the variable in a query:
+
+```plaintext
+avg(sum(container_memory_usage_bytes{container_name!="{{pod}}"}) by (job)) without (job)  /1024/1024/1024'
+```
+
+The URL for this query would be:
+
+```plaintext
+http://gitlab.com/<user>/<project>/-/environments/<environment_id>/metrics?dashboard=.gitlab%2Fdashboards%2Fcustom.yml&pod=POD
+```
 
 #### Editing additional metrics from the dashboard
 
@@ -639,10 +663,11 @@ When viewing a custom dashboard of a project, you can view the original
 
 From each of the panels in the dashboard, you can access the context menu by clicking the **{ellipsis_v}** **More actions** dropdown box above the upper right corner of the panel to take actions related to the chart's data.
 
-![Context Menu](img/panel_context_menu_v12_10.png)
+![Context Menu](img/panel_context_menu_v13_0.png)
 
 The options are:
 
+- [Expand panel](#expand-panel)
 - [View logs](#view-logs-ultimate)
 - [Download CSV](#downloading-data-as-csv)
 - [Copy link to chart](#embedding-gitlab-managed-kubernetes-metrics)
@@ -650,7 +675,8 @@ The options are:
 
 ### Dashboard Annotations
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/211330) in GitLab 12.10 (enabled by feature flag `metrics_dashboard_annotations`).
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/211330) in GitLab 12.10 (enabled by feature flag `metrics_dashboard_annotations`).
+> - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/215224) in GitLab 13.0.
 
 You can use **Metrics Dashboard Annotations** to mark any important events on
 every metrics dashboard by adding annotations to it. While viewing a dashboard,
@@ -661,6 +687,18 @@ its description.
 
 You can create annotations by making requests to the
 [Metrics dashboard annotations API](../../../api/metrics_dashboard_annotations.md)
+
+![Annotations UI](img/metrics_dashboard_annotations_ui_v13.0.png)
+
+### Expand panel
+
+> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/3100) in GitLab 13.0.
+
+To view a larger version of a visualization, expand the panel by clicking the
+**{ellipsis_v}** **More actions** icon and selecting **Expand panel**.
+
+To return to the metrics dashboard, click the **Back** button in your
+browser, or pressing the <kbd>Esc</kbd> key.
 
 ### View Logs **(ULTIMATE)**
 
@@ -829,6 +867,8 @@ The following requirements must be met for the metric to unfurl:
 Metric charts may also be hidden:
 
 ![Show Hide](img/hide_embedded_metrics_v12_10.png)
+
+You can open the link directly into your browser for a [detailed view of the data](#expand-panel).
 
 ### Embedding metrics in issue templates
 

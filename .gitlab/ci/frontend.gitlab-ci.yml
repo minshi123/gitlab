@@ -138,9 +138,9 @@ compile-assets pull-cache as-if-foss:
     - .default-retry
     - .default-cache
     - .default-before_script
-    - .use-pg9
+    - .use-pg11
   stage: fixtures
-  needs: ["setup-test-env pg9", "compile-assets pull-cache"]
+  needs: ["setup-test-env", "compile-assets pull-cache"]
   script:
     - date
     - scripts/gitaly-test-spawn
@@ -288,9 +288,10 @@ qa-frontend-node:10:
   image: node:dubnium
 
 qa-frontend-node:latest:
-  extends: .qa-frontend-node
+  extends:
+    - .qa-frontend-node
+    - .frontend:rules:qa-frontend-node-latest
   image: node:latest
-  allow_failure: true
 
 webpack-dev-server:
   extends:

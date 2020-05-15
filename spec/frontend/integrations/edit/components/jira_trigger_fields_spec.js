@@ -13,12 +13,15 @@ describe('JiraTriggerFields', () => {
 
   const createComponent = props => {
     wrapper = mount(JiraTriggerFields, {
-      propsData: Object.assign({}, defaultProps, props),
+      propsData: { ...defaultProps, ...props },
     });
   };
 
   afterEach(() => {
-    if (wrapper) wrapper.destroy();
+    if (wrapper) {
+      wrapper.destroy();
+      wrapper = null;
+    }
   });
 
   const findCommentSettings = () => wrapper.find('[data-testid="comment-settings"]');

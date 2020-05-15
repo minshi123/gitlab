@@ -33,12 +33,12 @@ NOTE: **Note:**
 This comparison logic uses only the latest pipeline executed for the target branch's base commit.
 Running the pipeline on any other commit has no effect on the merge request.
 
-![DAST Widget](img/dast_all_v12_9.png)
+![DAST Widget](img/dast_all_v13_0.png)
 
 By clicking on one of the detected linked vulnerabilities, you can
 see the details and the URL(s) affected.
 
-![DAST Widget Clicked](img/dast_single_v12_9.png)
+![DAST Widget Clicked](img/dast_single_v13_0.png)
 
 [Dynamic Application Security Testing (DAST)](https://en.wikipedia.org/wiki/Dynamic_Application_Security_Testing)
 uses the popular open source tool [OWASP ZAProxy](https://github.com/zaproxy/zaproxy)
@@ -95,11 +95,11 @@ There are two ways to define the URL to be scanned by DAST:
    persist its domain in an `environment_url.txt` file, and DAST
    automatically parses that file to find its scan target.
    You can see an [example](https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Deploy.gitlab-ci.yml)
-   of this in our Auto DevOps CI YML.
+   of this in our Auto DevOps CI YAML.
 
 If both values are set, the `DAST_WEBSITE` value takes precedence.
 
-The included template creates a `dast` job in your CI/CD pipeline and scan
+The included template creates a `dast` job in your CI/CD pipeline and scans
 your project's source code for possible vulnerabilities.
 
 The results are saved as a
@@ -133,14 +133,14 @@ stages:
 ```
 
 Be aware that if your pipeline is configured to deploy to the same webserver in
-each run, running a pipeline while another is still running, could cause a race condition
+each run, running a pipeline while another is still running could cause a race condition
 where one pipeline overwrites the code from another pipeline. The site to be scanned
 should be excluded from changes for the duration of a DAST scan.
 The only changes to the site should be from the DAST scanner. Be aware that any
 changes that users, scheduled tasks, database changes, code changes, other pipelines, or other scanners make to
 the site during a scan could lead to inaccurate results.
 
-### Authenticated scan
+### Authentication
 
 It's also possible to authenticate the user before performing the DAST checks:
 
@@ -438,7 +438,8 @@ don't forget to add `stage: dast` when you override the template job definition.
 DAST can be [configured](#customizing-the-dast-settings) using environment variables.
 
 | Environment variable        | Required   | Description                                                                    |
-|-----------------------------| ----------|--------------------------------------------------------------------------------|
+|-----------------------------| -----------|--------------------------------------------------------------------------------|
+| `SECURE_ANALYZERS_PREFIX`   | no         | Set the Docker registry base address from which to download the analyzer.            |
 | `DAST_WEBSITE`  | no| The URL of the website to scan. `DAST_API_SPECIFICATION` must be specified if this is omitted. |
 | `DAST_API_SPECIFICATION`  | no | The API specification to import. `DAST_WEBSITE` must be specified if this is omitted. |
 | `DAST_AUTH_URL` | no | The authentication URL of the website to scan. Not supported for API scans. |
@@ -454,6 +455,7 @@ DAST can be [configured](#customizing-the-dast-settings) using environment varia
 | `DAST_API_HOST_OVERRIDE` | no | Used to override domains defined in API specification files. |
 | `DAST_EXCLUDE_RULES` | no | Set to a comma-separated list of Vulnerability Rule IDs to exclude them from scans. Rule IDs are numbers and can be found from the DAST log or on the [ZAP project](https://github.com/zaproxy/zaproxy/blob/master/docs/scanners.md). For example, `HTTP Parameter Override` has a rule ID of `10026`. |
 | `DAST_REQUEST_HEADERS` | no | Set to a comma-separated list of request header names and values. For example, `Cache-control: no-cache,User-Agent: DAST/1.0` |
+| `DAST_ZAP_USE_AJAX_SPIDER` | no | Use the AJAX spider in addition to the traditional spider, useful for crawling sites that require JavaScript. Boolean. `true`, `True`, or `1` are considered as true value, otherwise false. Defaults to `false`. |
 
 ### DAST command-line options
 
@@ -471,7 +473,7 @@ dast:
 ```
 
 You must then overwrite the `script` command to pass in the appropriate argument.
-For example, AJAX spidering can be enabled by using `-j`, as shown in the following configuration:
+For example, debug messages can be enabled by using `-d`, as shown in the following configuration:
 
 ```yaml
 include:
@@ -480,7 +482,7 @@ include:
 dast:
   script:
     - export DAST_WEBSITE=${DAST_WEBSITE:-$(cat environment_url.txt)}
-    - /analyze -j -t $DAST_WEBSITE
+    - /analyze -d -t $DAST_WEBSITE
 ```
 
 ### Custom ZAProxy configuration
@@ -562,6 +564,8 @@ dast:
 The DAST job should now use local copies of the DAST analyzers to scan your code and generate
 security reports without requiring internet access.
 
+Alternatively, you can use the variable `SECURE_ANALYZERS_PREFIX` to override the base registry address of the `dast` image.
+
 ## Reports
 
 The DAST job can emit various reports.
@@ -582,9 +586,10 @@ The DAST tool always emits a JSON report file called `gl-dast-report.json` and
 sample reports can be found in the
 [DAST repository](https://gitlab.com/gitlab-org/security-products/dast/-/tree/master/test/end-to-end/expect).
 
-There are two formats of data in the JSON report that are used side by side: the
-proprietary ZAP format which will be eventually deprecated, and a "common" format
-which will be the default in the future.
+There are two formats of data in the JSON report that are used side by side:
+
+- The proprietary ZAP format that will be eventually deprecated.
+- A common format that will be the default in the future.
 
 ### Other formats
 

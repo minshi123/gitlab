@@ -8,6 +8,9 @@ module Resolvers
     argument :state, Types::IterationStateEnum,
              required: false,
              description: 'Filter iterations by state'
+    argument :title, GraphQL::STRING_TYPE,
+             required: false,
+             description: 'Fuzzy search by title'
 
     type Types::IterationType, null: true
 
@@ -16,7 +19,7 @@ module Resolvers
 
       authorize!
 
-      iterations = SprintsFinder.new(iterations_finder_params(args)).execute
+      iterations = IterationsFinder.new(iterations_finder_params(args)).execute
 
       Gitlab::Graphql::Pagination::OffsetActiveRecordRelationConnection.new(iterations)
     end
@@ -27,7 +30,8 @@ module Resolvers
       {
         state: args[:state] || 'all',
         start_date: args[:start_date],
-        end_date: args[:end_date]
+        end_date: args[:end_date],
+        search_title: args[:title]
       }.merge(parent_id_parameter)
     end
 

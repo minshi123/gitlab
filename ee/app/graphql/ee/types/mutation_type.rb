@@ -6,8 +6,6 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        mount_mutation ::Mutations::DesignManagement::Upload, calls_gitaly: true
-        mount_mutation ::Mutations::DesignManagement::Delete, calls_gitaly: true
         mount_mutation ::Mutations::Issues::SetIteration
         mount_mutation ::Mutations::Issues::SetWeight
         mount_mutation ::Mutations::EpicTree::Reorder
@@ -16,11 +14,12 @@ module EE
         mount_mutation ::Mutations::Epics::SetSubscription
         mount_mutation ::Mutations::Epics::AddIssue
         mount_mutation ::Mutations::Iterations::Create
-        mount_mutation ::Mutations::Requirements::Create
-        mount_mutation ::Mutations::Requirements::Update
+        mount_mutation ::Mutations::RequirementsManagement::CreateRequirement
+        mount_mutation ::Mutations::RequirementsManagement::UpdateRequirement
         mount_mutation ::Mutations::Vulnerabilities::Dismiss
         mount_mutation ::Mutations::Boards::Lists::UpdateLimitMetrics
-        mount_mutation ::Mutations::SecurityDashboard::AddProject
+        mount_mutation ::Mutations::InstanceSecurityDashboard::AddProject
+        mount_mutation ::Mutations::InstanceSecurityDashboard::RemoveProject
       end
     end
   end

@@ -17,6 +17,7 @@ class Issue < ApplicationRecord
   include IgnorableColumns
   include MilestoneEventable
   include WhereComposite
+  include StateEventable
 
   DueDateStruct                   = Struct.new(:title, :name).freeze
   NoDueDate                       = DueDateStruct.new('No Due Date', '0').freeze
@@ -31,7 +32,7 @@ class Issue < ApplicationRecord
   belongs_to :project
   belongs_to :duplicated_to, class_name: 'Issue'
   belongs_to :closed_by, class_name: 'User'
-  belongs_to :sprint
+  belongs_to :iteration, foreign_key: 'sprint_id'
 
   belongs_to :moved_to, class_name: 'Issue'
   has_one :moved_from, class_name: 'Issue', foreign_key: :moved_to_id
@@ -83,6 +84,7 @@ class Issue < ApplicationRecord
 
   scope :preload_associated_models, -> { preload(:assignees, :labels, project: :namespace) }
   scope :with_api_entity_associations, -> { preload(:timelogs, :assignees, :author, :notes, :labels, project: [:route, { namespace: :route }] ) }
+  scope :with_label_attributes, ->(label_attributes) { joins(:labels).where(labels: label_attributes) }
 
   scope :public_only, -> { where(confidential: false) }
   scope :confidential_only, -> { where(confidential: true) }

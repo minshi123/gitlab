@@ -14,6 +14,7 @@ export default () => ({
   emptyState: 'gettingStarted',
   showEmptyState: true,
   showErrorBanner: true,
+  isUpdatingStarredValue: false,
   dashboard: {
     panelGroups: [],
   },
@@ -33,6 +34,7 @@ export default () => ({
     panel: null,
   },
   allDashboards: [],
+  promVariables: {},
 
   // Other project data
   annotations: [],

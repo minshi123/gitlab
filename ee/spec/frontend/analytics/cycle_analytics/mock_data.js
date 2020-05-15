@@ -13,6 +13,7 @@ import { toYmd } from 'ee/analytics/shared/utils';
 import {
   getTasksByTypeData,
   transformRawTasksByTypeData,
+  transformStagesForPathNavigation,
 } from 'ee/analytics/cycle_analytics/utils';
 
 const fixtureEndpoints = {
@@ -52,6 +53,10 @@ const getStageByTitle = (stages, title) =>
   stages.find(stage => stage.title && stage.title.toLowerCase().trim() === title) || {};
 
 export const recentActivityData = getJSONFixture(fixtureEndpoints.recentActivityData);
+export const timeMetricsData = [
+  { label: 'Lead time', value: '2', unit: 'days' },
+  { label: 'Cycle time', value: '1.5', unit: 'days' },
+];
 
 export const customizableStagesAndEvents = getJSONFixture(
   fixtureEndpoints.customizableCycleAnalyticsStagesAndEvents,
@@ -60,7 +65,7 @@ export const customizableStagesAndEvents = getJSONFixture(
 const dummyState = {};
 
 // prepare the raw stage data for our components
-mutations[types.RECEIVE_GROUP_STAGES_AND_EVENTS_SUCCESS](dummyState, customizableStagesAndEvents);
+mutations[types.RECEIVE_GROUP_STAGES_SUCCESS](dummyState, customizableStagesAndEvents.stages);
 
 export const issueStage = getStageByTitle(dummyState.stages, 'issue');
 export const planStage = getStageByTitle(dummyState.stages, 'plan');
@@ -92,6 +97,15 @@ export const stageMedians = defaultStages.reduce((acc, stage) => {
   };
 }, {});
 
+export const stageMediansWithNumericIds = defaultStages.reduce((acc, stage) => {
+  const { value } = getJSONFixture(fixtureEndpoints.stageMedian(stage));
+  const { id } = getStageByTitle(dummyState.stages, stage);
+  return {
+    ...acc,
+    [id]: value,
+  };
+}, {});
+
 export const endDate = new Date(2019, 0, 14);
 export const startDate = getDateInPast(endDate, DEFAULT_DAYS_IN_PAST);
 
@@ -116,8 +130,8 @@ export const rawCustomStage = {
 
 export const medians = stageMedians;
 
-const { events: rawCustomStageEvents } = customizableStagesAndEvents;
-const camelCasedStageEvents = rawCustomStageEvents.map(deepCamelCase);
+export const rawCustomStageEvents = customizableStagesAndEvents.events;
+export const camelCasedStageEvents = rawCustomStageEvents.map(deepCamelCase);
 
 export const customStageLabelEvents = camelCasedStageEvents.filter(ev => ev.type === 'label');
 export const customStageStartEvents = camelCasedStageEvents.filter(ev => ev.canBeStartEvent);
@@ -162,6 +176,12 @@ export const apiTasksByTypeData = getJSONFixture('analytics/type_of_work/tasks_b
 
 export const rawTasksByTypeData = transformRawTasksByTypeData(apiTasksByTypeData);
 export const transformedTasksByTypeData = getTasksByTypeData(apiTasksByTypeData);
+
+export const transformedStagePathData = transformStagesForPathNavigation({
+  stages: allowedStages,
+  medians,
+  selectedStage: issueStage,
+});
 
 export const tasksByTypeData = {
   seriesNames: ['Cool label', 'Normal label'],
@@ -259,3 +279,6 @@ export const selectedProjects = [
     avatarUrl: null,
   },
 ];
+
+// Value returned from JSON fixture is 345600 for issue stage which equals 4d
+export const pathNavIssueMetric = '4d';

@@ -48,6 +48,8 @@ module EE
       delegate :deleting_user, :marked_for_deletion_on, to: :deletion_schedule, allow_nil: true
       delegate :enforced_group_managed_accounts?, :enforced_sso?, to: :saml_provider, allow_nil: true
 
+      has_one :group_wiki_repository
+
       belongs_to :file_template_project, class_name: "Project"
 
       belongs_to :push_rule
@@ -412,14 +414,10 @@ module EE
 
     # Members belonging to Groups invited to collaborate with Groups and Subgroups
     def billed_shared_group_members
-      return ::GroupMember.none unless ::Feature.enabled?(:share_group_with_group)
-
       invited_or_shared_group_members(invited_group_in_groups)
     end
 
     def billed_shared_non_guests_group_members
-      return ::GroupMember.none unless ::Feature.enabled?(:share_group_with_group)
-
       invited_or_shared_group_members(invited_non_guest_group_in_groups)
     end
 

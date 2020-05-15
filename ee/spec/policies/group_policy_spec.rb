@@ -105,9 +105,7 @@ describe GroupPolicy do
       subject { described_class.new(non_group_member, private_group) }
 
       context 'when user is not invited to any of the group projects' do
-        it do
-          is_expected.not_to be_allowed(:read_group_contribution_analytics)
-        end
+        it { is_expected.not_to be_allowed(:read_group_contribution_analytics) }
       end
 
       context 'when user is invited to a group project, but not to the group' do
@@ -117,9 +115,7 @@ describe GroupPolicy do
           private_project.add_guest(non_group_member)
         end
 
-        it do
-          is_expected.not_to be_allowed(:read_group_contribution_analytics)
-        end
+        it { is_expected.not_to be_allowed(:read_group_contribution_analytics) }
       end
     end
   end
@@ -138,8 +134,7 @@ describe GroupPolicy do
     let(:current_user) { developer }
 
     before do
-      allow(Feature).to receive(:enabled?).with(:group_activity_analytics, group).and_return(false)
-
+      stub_feature_flags(group_activity_analytics: true)
       stub_licensed_features(group_activity_analytics: true)
     end
 
@@ -150,9 +145,7 @@ describe GroupPolicy do
     let(:current_user) { developer }
 
     before do
-      allow(Feature).to receive(:enabled?).with(:group_activity_analytics, group).and_return(false)
-      allow(Feature).to receive(:enabled?).with(:group_activity_analytics).and_return(true)
-
+      stub_feature_flags(group_activity_analytics: false)
       stub_licensed_features(group_activity_analytics: false)
     end
 
@@ -674,7 +667,7 @@ describe GroupPolicy do
         stub_licensed_features(security_dashboard: true)
       end
 
-      it do
+      specify do
         expect_allowed(:read_group)
         expect_allowed(:read_group_security_dashboard)
         expect_disallowed(:upload_file)
@@ -881,6 +874,27 @@ describe GroupPolicy do
           it { is_expected.to be_allowed(:update_default_branch_protection) }
         end
       end
+    end
+  end
+
+  describe ':read_ci_minutes_quota' do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:policy) { :read_ci_minutes_quota }
+
+    where(:role, :allowed) do
+      :guest      | false
+      :reporter   | false
+      :developer  | false
+      :maintainer | true
+      :owner      | true
+      :admin      | true
+    end
+
+    with_them do
+      let(:current_user) { public_send(role) }
+
+      it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
     end
   end
 

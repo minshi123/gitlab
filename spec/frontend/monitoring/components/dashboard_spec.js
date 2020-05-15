@@ -1,7 +1,8 @@
 import { shallowMount, mount } from '@vue/test-utils';
 import Tracking from '~/tracking';
 import { ESC_KEY, ESC_KEY_IE11 } from '~/lib/utils/keys';
-import { GlModal, GlDropdownItem, GlDeprecatedButton } from '@gitlab/ui';
+import { GlModal, GlDropdownItem, GlDeprecatedButton, GlIcon } from '@gitlab/ui';
+import { objectToQuery } from '~/lib/utils/url_utility';
 import VueDraggable from 'vuedraggable';
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
@@ -17,9 +18,18 @@ import GroupEmptyState from '~/monitoring/components/group_empty_state.vue';
 import DashboardPanel from '~/monitoring/components/dashboard_panel.vue';
 import { createStore } from '~/monitoring/stores';
 import * as types from '~/monitoring/stores/mutation_types';
-import { setupStoreWithDashboard, setMetricResult, setupStoreWithData } from '../store_utils';
+import {
+  setupAllDashboards,
+  setupStoreWithDashboard,
+  setMetricResult,
+  setupStoreWithData,
+  setupStoreWithVariable,
+} from '../store_utils';
 import { environmentData, dashboardGitResponse, propsData } from '../mock_data';
 import { metricsDashboardViewModel, metricsDashboardPanelCount } from '../fixture_data';
+import createFlash from '~/flash';
+
+jest.mock('~/flash');
 
 describe('Dashboard', () => {
   let store;
@@ -64,7 +74,6 @@ describe('Dashboard', () => {
 
   describe('no metrics are available yet', () => {
     beforeEach(() => {
-      jest.spyOn(store, 'dispatch');
       createShallowWrapper();
     });
 
@@ -150,6 +159,171 @@ describe('Dashboard', () => {
     });
   });
 
+  describe('when the URL contains a reference to a panel', () => {
+    let location;
+
+    const setSearch = search => {
+      window.location = { ...location, search };
+    };
+
+    beforeEach(() => {
+      location = window.location;
+      delete window.location;
+    });
+
+    afterEach(() => {
+      window.location = location;
+    });
+
+    it('when the URL points to a panel it expands', () => {
+      const panelGroup = metricsDashboardViewModel.panelGroups[0];
+      const panel = panelGroup.panels[0];
+
+      setSearch(
+        objectToQuery({
+          group: panelGroup.group,
+          title: panel.title,
+          y_label: panel.y_label,
+        }),
+      );
+
+      createMountedWrapper({ hasMetrics: true });
+      setupStoreWithData(wrapper.vm.$store);
+
+      return wrapper.vm.$nextTick().then(() => {
+        expect(store.dispatch).toHaveBeenCalledWith('monitoringDashboard/setExpandedPanel', {
+          group: panelGroup.group,
+          panel: expect.objectContaining({
+            title: panel.title,
+            y_label: panel.y_label,
+          }),
+        });
+      });
+    });
+
+    it('when the URL does not link to any panel, no panel is expanded', () => {
+      setSearch('');
+
+      createMountedWrapper({ hasMetrics: true });
+      setupStoreWithData(wrapper.vm.$store);
+
+      return wrapper.vm.$nextTick().then(() => {
+        expect(store.dispatch).not.toHaveBeenCalledWith(
+          'monitoringDashboard/setExpandedPanel',
+          expect.anything(),
+        );
+      });
+    });
+
+    it('when the URL points to an incorrect panel it shows an error', () => {
+      const panelGroup = metricsDashboardViewModel.panelGroups[0];
+      const panel = panelGroup.panels[0];
+
+      setSearch(
+        objectToQuery({
+          group: panelGroup.group,
+          title: 'incorrect',
+          y_label: panel.y_label,
+        }),
+      );
+
+      createMountedWrapper({ hasMetrics: true });
+      setupStoreWithData(wrapper.vm.$store);
+
+      return wrapper.vm.$nextTick().then(() => {
+        expect(createFlash).toHaveBeenCalled();
+        expect(store.dispatch).not.toHaveBeenCalledWith(
+          'monitoringDashboard/setExpandedPanel',
+          expect.anything(),
+        );
+      });
+    });
+  });
+
+  describe('when the panel is expanded', () => {
+    let group;
+    let panel;
+
+    const expandPanel = (mockGroup, mockPanel) => {
+      store.commit(`monitoringDashboard/${types.SET_EXPANDED_PANEL}`, {
+        group: mockGroup,
+        panel: mockPanel,
+      });
+    };
+
+    beforeEach(() => {
+      setupStoreWithData(store);
+
+      const { panelGroups } = store.state.monitoringDashboard.dashboard;
+      group = panelGroups[0].group;
+      [panel] = panelGroups[0].panels;
+
+      jest.spyOn(window.history, 'pushState').mockImplementation();
+    });
+
+    afterEach(() => {
+      window.history.pushState.mockRestore();
+    });
+
+    it('URL is updated with panel parameters', () => {
+      createMountedWrapper({ hasMetrics: true });
+      expandPanel(group, panel);
+
+      const expectedSearch = objectToQuery({
+        group,
+        title: panel.title,
+        y_label: panel.y_label,
+      });
+
+      return wrapper.vm.$nextTick(() => {
+        expect(window.history.pushState).toHaveBeenCalledTimes(1);
+        expect(window.history.pushState).toHaveBeenCalledWith(
+          expect.anything(), // state
+          expect.any(String), // document title
+          expect.stringContaining(`${expectedSearch}`),
+        );
+      });
+    });
+
+    it('URL is updated with panel parameters and custom dashboard', () => {
+      const dashboard = 'dashboard.yml';
+
+      createMountedWrapper({ hasMetrics: true, currentDashboard: dashboard });
+      expandPanel(group, panel);
+
+      const expectedSearch = objectToQuery({
+        dashboard,
+        group,
+        title: panel.title,
+        y_label: panel.y_label,
+      });
+
+      return wrapper.vm.$nextTick(() => {
+        expect(window.history.pushState).toHaveBeenCalledTimes(1);
+        expect(window.history.pushState).toHaveBeenCalledWith(
+          expect.anything(), // state
+          expect.any(String), // document title
+          expect.stringContaining(`${expectedSearch}`),
+        );
+      });
+    });
+
+    it('URL is updated with no parameters', () => {
+      expandPanel(group, panel);
+      createMountedWrapper({ hasMetrics: true });
+      expandPanel(null, null);
+
+      return wrapper.vm.$nextTick(() => {
+        expect(window.history.pushState).toHaveBeenCalledTimes(1);
+        expect(window.history.pushState).toHaveBeenCalledWith(
+          expect.anything(), // state
+          expect.any(String), // document title
+          expect.not.stringMatching(/group|title|y_label/), // no panel params
+        );
+      });
+    });
+  });
+
   describe('when all requests have been commited by the store', () => {
     beforeEach(() => {
       createMountedWrapper({ hasMetrics: true });
@@ -177,6 +351,85 @@ describe('Dashboard', () => {
       );
 
       expect(activeItem.length).toBe(1);
+    });
+  });
+
+  describe('star dashboards', () => {
+    const findToggleStar = () => wrapper.find({ ref: 'toggleStarBtn' });
+    const findToggleStarIcon = () => findToggleStar().find(GlIcon);
+
+    beforeEach(() => {
+      createShallowWrapper();
+      setupAllDashboards(store);
+    });
+
+    it('toggle star button is shown', () => {
+      expect(findToggleStar().exists()).toBe(true);
+      expect(findToggleStar().props('disabled')).toBe(false);
+    });
+
+    it('toggle star button is disabled when starring is taking place', () => {
+      store.commit(`monitoringDashboard/${types.REQUEST_DASHBOARD_STARRING}`);
+
+      return wrapper.vm.$nextTick(() => {
+        expect(findToggleStar().exists()).toBe(true);
+        expect(findToggleStar().props('disabled')).toBe(true);
+      });
+    });
+
+    describe('when the dashboard list is loaded', () => {
+      // Tooltip element should wrap directly
+      const getToggleTooltip = () => findToggleStar().element.parentElement.getAttribute('title');
+
+      beforeEach(() => {
+        setupAllDashboards(store);
+        jest.spyOn(store, 'dispatch');
+      });
+
+      it('dispatches a toggle star action', () => {
+        findToggleStar().vm.$emit('click');
+
+        return wrapper.vm.$nextTick().then(() => {
+          expect(store.dispatch).toHaveBeenCalledWith(
+            'monitoringDashboard/toggleStarredValue',
+            undefined,
+          );
+        });
+      });
+
+      describe('when dashboard is not starred', () => {
+        beforeEach(() => {
+          store.commit(`monitoringDashboard/${types.SET_INITIAL_STATE}`, {
+            currentDashboard: dashboardGitResponse[0].path,
+          });
+          return wrapper.vm.$nextTick();
+        });
+
+        it('toggle star button shows "Star dashboard"', () => {
+          expect(getToggleTooltip()).toBe('Star dashboard');
+        });
+
+        it('toggle star button shows  an unstarred state', () => {
+          expect(findToggleStarIcon().attributes('name')).toBe('star-o');
+        });
+      });
+
+      describe('when dashboard is starred', () => {
+        beforeEach(() => {
+          store.commit(`monitoringDashboard/${types.SET_INITIAL_STATE}`, {
+            currentDashboard: dashboardGitResponse[1].path,
+          });
+          return wrapper.vm.$nextTick();
+        });
+
+        it('toggle star button shows "Star dashboard"', () => {
+          expect(getToggleTooltip()).toBe('Unstar dashboard');
+        });
+
+        it('toggle star button shows a starred state', () => {
+          expect(findToggleStarIcon().attributes('name')).toBe('star');
+        });
+      });
     });
   });
 
@@ -210,6 +463,20 @@ describe('Dashboard', () => {
 
       expect(refreshBtn).toHaveLength(1);
       expect(refreshBtn.is(GlDeprecatedButton)).toBe(true);
+    });
+  });
+
+  describe('variables section', () => {
+    beforeEach(() => {
+      createShallowWrapper({ hasMetrics: true });
+      setupStoreWithData(wrapper.vm.$store);
+      setupStoreWithVariable(wrapper.vm.$store);
+
+      return wrapper.vm.$nextTick();
+    });
+
+    it('shows the variables section', () => {
+      expect(wrapper.vm.shouldShowVariablesSection).toBe(true);
     });
   });
 
@@ -287,7 +554,7 @@ describe('Dashboard', () => {
 
       it('sets a link to the expanded panel', () => {
         const searchQuery =
-          '?group=System%20metrics%20(Kubernetes)&title=Memory%20Usage%20(Total)&y_label=Total%20Memory%20Used%20(GB)';
+          '?dashboard=config%2Fprometheus%2Fcommon_metrics.yml&group=System%20metrics%20(Kubernetes)&title=Memory%20Usage%20(Total)&y_label=Total%20Memory%20Used%20(GB)';
 
         expect(findExpandedPanel().attributes('clipboard-text')).toEqual(
           expect.stringContaining(searchQuery),
@@ -544,10 +811,7 @@ describe('Dashboard', () => {
     beforeEach(() => {
       createShallowWrapper({ hasMetrics: true });
 
-      wrapper.vm.$store.commit(
-        `monitoringDashboard/${types.SET_ALL_DASHBOARDS}`,
-        dashboardGitResponse,
-      );
+      setupAllDashboards(store);
       return wrapper.vm.$nextTick();
     });
 
@@ -556,10 +820,11 @@ describe('Dashboard', () => {
     });
 
     it('is present for a custom dashboard, and links to its edit_path', () => {
-      const dashboard = dashboardGitResponse[1]; // non-default dashboard
-      const currentDashboard = dashboard.path;
+      const dashboard = dashboardGitResponse[1];
+      store.commit(`monitoringDashboard/${types.SET_INITIAL_STATE}`, {
+        currentDashboard: dashboard.path,
+      });
 
-      wrapper.setProps({ currentDashboard });
       return wrapper.vm.$nextTick().then(() => {
         expect(findEditLink().exists()).toBe(true);
         expect(findEditLink().attributes('href')).toBe(dashboard.project_blob_path);
@@ -570,12 +835,7 @@ describe('Dashboard', () => {
   describe('Dashboard dropdown', () => {
     beforeEach(() => {
       createMountedWrapper({ hasMetrics: true });
-
-      wrapper.vm.$store.commit(
-        `monitoringDashboard/${types.SET_ALL_DASHBOARDS}`,
-        dashboardGitResponse,
-      );
-
+      setupAllDashboards(store);
       return wrapper.vm.$nextTick();
     });
 
@@ -608,7 +868,7 @@ describe('Dashboard', () => {
   });
 
   describe('Clipboard text in panels', () => {
-    const currentDashboard = 'TEST_DASHBOARD';
+    const currentDashboard = dashboardGitResponse[1].path;
     const panelIndex = 1; // skip expanded panel
 
     const getClipboardTextFirstPanel = () =>
@@ -618,36 +878,19 @@ describe('Dashboard', () => {
         .props('clipboardText');
 
     beforeEach(() => {
+      setupStoreWithData(store);
       createShallowWrapper({ hasMetrics: true, currentDashboard });
-
-      setupStoreWithData(wrapper.vm.$store);
 
       return wrapper.vm.$nextTick();
     });
 
     it('contains a link to the dashboard', () => {
-      expect(getClipboardTextFirstPanel()).toContain(`dashboard=${currentDashboard}`);
+      const dashboardParam = `dashboard=${encodeURIComponent(currentDashboard)}`;
+
+      expect(getClipboardTextFirstPanel()).toContain(dashboardParam);
       expect(getClipboardTextFirstPanel()).toContain(`group=`);
       expect(getClipboardTextFirstPanel()).toContain(`title=`);
       expect(getClipboardTextFirstPanel()).toContain(`y_label=`);
-    });
-
-    it('strips the undefined parameter', () => {
-      wrapper.setProps({ currentDashboard: undefined });
-
-      return wrapper.vm.$nextTick(() => {
-        expect(getClipboardTextFirstPanel()).not.toContain(`dashboard=`);
-        expect(getClipboardTextFirstPanel()).toContain(`y_label=`);
-      });
-    });
-
-    it('null parameter is stripped', () => {
-      wrapper.setProps({ currentDashboard: null });
-
-      return wrapper.vm.$nextTick(() => {
-        expect(getClipboardTextFirstPanel()).not.toContain(`dashboard=`);
-        expect(getClipboardTextFirstPanel()).toContain(`y_label=`);
-      });
     });
   });
 

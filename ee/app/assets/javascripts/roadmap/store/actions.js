@@ -19,9 +19,6 @@ import * as types from './mutation_types';
 
 export const setInitialData = ({ commit }, data) => commit(types.SET_INITIAL_DATA, data);
 
-export const setWindowResizeInProgress = ({ commit }, inProgress) =>
-  commit(types.SET_WINDOW_RESIZE_IN_PROGRESS, inProgress);
-
 const fetchGroupEpics = (
   { epicIid, fullPath, epicsState, sortedBy, presetType, filterParams, timeframe },
   defaultTimeframe,
@@ -67,12 +64,12 @@ const fetchGroupEpics = (
 
 export const fetchChildrenEpics = (state, { parentItem }) => {
   const { iid } = parentItem;
-  const { fullPath, filterParams } = state;
+  const { fullPath, filterParams, epicsState } = state;
 
   return epicUtils.gqClient
     .query({
       query: epicChildEpics,
-      variables: { iid, fullPath, ...filterParams },
+      variables: { iid, fullPath, state: epicsState, ...filterParams },
     })
     .then(({ data }) => {
       const edges = data?.group?.epic?.children?.edges || [];
@@ -80,12 +77,11 @@ export const fetchChildrenEpics = (state, { parentItem }) => {
     });
 };
 
-export const requestEpics = ({ commit }) => commit(types.REQUEST_EPICS);
-export const requestEpicsForTimeframe = ({ commit }) => commit(types.REQUEST_EPICS_FOR_TIMEFRAME);
 export const receiveEpicsSuccess = (
   { commit, dispatch, state, getters },
   { rawEpics, newEpic, timeframeExtended },
 ) => {
+  const epicIds = [];
   const epics = rawEpics.reduce((filteredEpics, epic) => {
     const formattedEpic = roadmapItemUtils.formatRoadmapItemDetails(
       epic,
@@ -105,10 +101,12 @@ export const receiveEpicsSuccess = (
         newEpic,
       });
       filteredEpics.push(formattedEpic);
-      commit(types.UPDATE_EPIC_IDS, formattedEpic.id);
+      epicIds.push(formattedEpic.id);
     }
     return filteredEpics;
   }, []);
+
+  commit(types.UPDATE_EPIC_IDS, epicIds);
 
   if (timeframeExtended) {
     const updatedEpics = state.epics.concat(epics);
@@ -153,8 +151,8 @@ export const receiveChildrenSuccess = (
   commit(types.RECEIVE_CHILDREN_SUCCESS, { parentItemId, children });
 };
 
-export const fetchEpics = ({ state, dispatch }) => {
-  dispatch('requestEpics');
+export const fetchEpics = ({ state, commit, dispatch }) => {
+  commit(types.REQUEST_EPICS);
 
   fetchGroupEpics(state)
     .then(rawEpics => {
@@ -163,8 +161,8 @@ export const fetchEpics = ({ state, dispatch }) => {
     .catch(() => dispatch('receiveEpicsFailure'));
 };
 
-export const fetchEpicsForTimeframe = ({ state, dispatch }, { timeframe }) => {
-  dispatch('requestEpicsForTimeframe');
+export const fetchEpicsForTimeframe = ({ state, commit, dispatch }, { timeframe }) => {
+  commit(types.REQUEST_EPICS_FOR_TIMEFRAME);
 
   return fetchGroupEpics(state, timeframe)
     .then(rawEpics => {

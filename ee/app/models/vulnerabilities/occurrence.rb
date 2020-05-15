@@ -28,7 +28,7 @@ module Vulnerabilities
     attr_writer :sha
 
     CONFIDENCE_LEVELS = {
-      undefined: 0,
+      # undefined: 0, no longer applicable
       ignore: 1,
       unknown: 2,
       experimental: 3,
@@ -138,7 +138,7 @@ module Vulnerabilities
 
     def state
       return 'dismissed' if dismissal_feedback.present?
-      return 'detected' unless Feature.enabled?(:first_class_vulnerabilities, project)
+      return 'detected' unless Feature.enabled?(:first_class_vulnerabilities, project, default_enabled: true)
 
       if vulnerability.nil?
         'detected'
@@ -228,7 +228,11 @@ module Vulnerabilities
 
     def metadata
       strong_memoize(:metadata) do
-        Gitlab::Json.parse(raw_metadata)
+        data = Gitlab::Json.parse(raw_metadata)
+
+        data = {} unless data.is_a?(Hash)
+
+        data
       rescue JSON::ParserError
         {}
       end

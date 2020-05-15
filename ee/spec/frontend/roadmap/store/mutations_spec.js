@@ -15,7 +15,6 @@ describe('Roadmap Store Mutations', () => {
   describe('SET_INITIAL_DATA', () => {
     it('Should set initial Roadmap data to state', () => {
       const initialData = {
-        windowResizeInProgress: false,
         epicsFetchInProgress: false,
         epicsFetchForTimeframeInProgress: false,
         epicsFetchFailure: false,
@@ -48,17 +47,9 @@ describe('Roadmap Store Mutations', () => {
     });
   });
 
-  describe('SET_WINDOW_RESIZE_IN_PROGRESS', () => {
-    it('Should set value of `state.windowResizeInProgress` based on provided value', () => {
-      mutations[types.SET_WINDOW_RESIZE_IN_PROGRESS](state, true);
-
-      expect(state.windowResizeInProgress).toEqual(true);
-    });
-  });
-
   describe('UPDATE_EPIC_IDS', () => {
     it('Should insert provided epicId to epicIds array in state', () => {
-      mutations[types.UPDATE_EPIC_IDS](state, 22);
+      mutations[types.UPDATE_EPIC_IDS](state, [22]);
 
       expect(state.epicIds).toHaveLength(1);
       expect(state.epicIds[0]).toBe(22);

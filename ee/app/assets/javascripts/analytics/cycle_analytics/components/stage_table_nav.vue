@@ -29,10 +29,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    customStageFormActive: {
-      type: Boolean,
-      required: true,
-    },
     canEditStages: {
       type: Boolean,
       required: true,
@@ -58,7 +54,8 @@ export default {
   },
   mounted() {
     if (this.allowCustomOrdering) {
-      const options = Object.assign({}, sortableDefaultOptions(), {
+      const options = {
+        ...sortableDefaultOptions(),
         onUpdate: event => {
           const el = event.item;
 
@@ -70,7 +67,7 @@ export default {
 
           this.$emit('reorderStage', { id, moveAfterId, moveBeforeId });
         },
-      });
+      };
       this.sortable = Sortable.create(this.$refs.list, options);
     }
   },
@@ -105,7 +102,7 @@ export default {
     <add-stage-button
       v-if="canEditStages"
       :class="$options.noDragClass"
-      :active="customStageFormActive"
+      :active="isCreatingCustomStage"
       @showform="$emit('showAddStageForm')"
     />
   </ul>

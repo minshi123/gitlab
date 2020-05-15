@@ -3,6 +3,7 @@ require 'ffaker'
 
 FactoryBot.define do
   factory :alert_management_alert, class: 'AlertManagement::Alert' do
+    triggered
     project
     title { FFaker::Lorem.sentence }
     started_at { Time.current }
@@ -24,15 +25,39 @@ FactoryBot.define do
     end
 
     trait :with_host do
-      hosts { FFaker::Internet.ip_v4_address }
+      hosts { [FFaker::Internet.ip_v4_address] }
     end
 
     trait :with_ended_at do
       ended_at { Time.current }
     end
 
+    trait :without_ended_at do
+      ended_at { nil }
+    end
+
+    trait :triggered do
+      status { AlertManagement::Alert::STATUSES[:triggered] }
+      without_ended_at
+    end
+
+    trait :acknowledged do
+      status { AlertManagement::Alert::STATUSES[:acknowledged] }
+      without_ended_at
+    end
+
     trait :resolved do
-      status { :resolved }
+      status { AlertManagement::Alert::STATUSES[:resolved] }
+      with_ended_at
+    end
+
+    trait :ignored do
+      status { AlertManagement::Alert::STATUSES[:ignored] }
+      without_ended_at
+    end
+
+    trait :low_severity do
+      severity { 'low' }
     end
 
     trait :all_fields do
@@ -41,7 +66,7 @@ FactoryBot.define do
       with_service
       with_monitoring_tool
       with_host
-      with_ended_at
+      low_severity
     end
   end
 end

@@ -20,6 +20,12 @@ class Milestone < ApplicationRecord
 
   scope :active, -> { with_state(:active) }
   scope :started, -> { active.where('milestones.start_date <= CURRENT_DATE') }
+  scope :not_started, -> { active.where('milestones.start_date > CURRENT_DATE') }
+  scope :not_upcoming, -> do
+    active
+        .where('milestones.due_date <= CURRENT_DATE')
+        .order(:project_id, :group_id, :due_date)
+  end
 
   scope :order_by_name_asc, -> { order(Arel::Nodes::Ascending.new(arel_table[:title].lower)) }
   scope :reorder_by_due_date_asc, -> { reorder(Gitlab::Database.nulls_last_order('due_date', 'ASC')) }
@@ -164,6 +170,14 @@ class Milestone < ApplicationRecord
   # https://gitlab.com/gitlab-org/gitlab/-/issues/215690
   alias_method :group_milestone?, :group_timebox?
   alias_method :project_milestone?, :project_timebox?
+
+  def parent
+    if group_milestone?
+      group
+    else
+      project
+    end
+  end
 
   private
 

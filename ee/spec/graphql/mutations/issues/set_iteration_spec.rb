@@ -9,7 +9,7 @@ describe Mutations::Issues::SetIteration do
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
   describe '#resolve' do
-    let(:iteration) { create(:sprint, project: issue.project) }
+    let(:iteration) { create(:iteration, project: issue.project) }
     let(:mutated_issue) { subject[:issue] }
 
     subject { mutation.resolve(project_path: issue.project.full_path, iid: issue.iid, iteration: iteration) }
@@ -25,7 +25,7 @@ describe Mutations::Issues::SetIteration do
 
       it 'returns the issue with the iteration' do
         expect(mutated_issue).to eq(issue)
-        expect(mutated_issue.sprint).to eq(iteration)
+        expect(mutated_issue.iteration).to eq(iteration)
         expect(subject[:errors]).to be_empty
       end
 
@@ -40,13 +40,13 @@ describe Mutations::Issues::SetIteration do
         let(:iteration) { nil }
 
         it 'removes the iteration' do
-          issue.update!(sprint: create(:sprint, project: issue.project))
+          issue.update!(iteration: create(:iteration, project: issue.project))
 
-          expect(mutated_issue.sprint).to eq(nil)
+          expect(mutated_issue.iteration).to eq(nil)
         end
 
         it 'does not do anything if the issue already does not have a iteration' do
-          expect(mutated_issue.sprint).to eq(nil)
+          expect(mutated_issue.iteration).to eq(nil)
         end
       end
     end

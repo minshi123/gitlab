@@ -84,6 +84,16 @@ class ProjectPolicy < BasePolicy
     project.merge_requests_allowing_push_to_user(user).any?
   end
 
+  desc "Deploy token with read_package_registry scope"
+  condition(:read_package_registry_deploy_token) do
+    user.is_a?(DeployToken) && user.has_access_to?(project) && user.read_package_registry
+  end
+
+  desc "Deploy token with write_package_registry scope"
+  condition(:write_package_registry_deploy_token) do
+    user.is_a?(DeployToken) && user.has_access_to?(project) && user.write_package_registry
+  end
+
   with_scope :subject
   condition(:forking_allowed) do
     @subject.feature_available?(:forking, @user)
@@ -236,11 +246,8 @@ class ProjectPolicy < BasePolicy
     enable :read_merge_request
     enable :read_sentry_issue
     enable :update_sentry_issue
-    enable :read_alert_management
     enable :read_prometheus
     enable :read_metrics_dashboard_annotation
-    enable :read_alert_management_alerts
-    enable :update_alert_management_alerts
     enable :metrics_dashboard
   end
 
@@ -272,6 +279,8 @@ class ProjectPolicy < BasePolicy
     enable :read_prometheus
     enable :read_environment
     enable :read_deployment
+    enable :create_metrics_user_starred_dashboard
+    enable :read_metrics_user_starred_dashboard
   end
 
   rule { owner | admin | guest | group_member }.prevent :request_access
@@ -306,6 +315,8 @@ class ProjectPolicy < BasePolicy
     enable :create_metrics_dashboard_annotation
     enable :delete_metrics_dashboard_annotation
     enable :update_metrics_dashboard_annotation
+    enable :read_alert_management_alert
+    enable :update_alert_management_alert
     enable :create_design
     enable :destroy_design
   end
@@ -351,6 +362,10 @@ class ProjectPolicy < BasePolicy
     enable :destroy_deploy_token
     enable :read_prometheus_alerts
     enable :admin_terraform_state
+    enable :create_freeze_period
+    enable :read_freeze_period
+    enable :update_freeze_period
+    enable :destroy_freeze_period
   end
 
   rule { public_project & metrics_dashboard_allowed }.policy do
@@ -529,6 +544,16 @@ class ProjectPolicy < BasePolicy
     prevent :read_design
     prevent :create_design
     prevent :destroy_design
+  end
+
+  rule { read_package_registry_deploy_token }.policy do
+    enable :read_package
+    enable :read_project
+  end
+
+  rule { write_package_registry_deploy_token }.policy do
+    enable :create_package
+    enable :read_project
   end
 
   private

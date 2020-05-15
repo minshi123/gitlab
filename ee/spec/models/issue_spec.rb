@@ -7,6 +7,18 @@ describe Issue do
 
   using RSpec::Parameterized::TableSyntax
 
+  describe 'associations' do
+    subject { build(:issue) }
+
+    it { is_expected.to have_many(:resource_weight_events) }
+  end
+
+  describe 'modules' do
+    subject { build(:issue) }
+
+    it { is_expected.to include_module(EE::WeightEventable) }
+  end
+
   context 'callbacks' do
     describe '.after_create' do
       let_it_be(:project) { create(:project) }
@@ -116,6 +128,13 @@ describe Issue do
         end
       end
 
+      describe '.any_epic' do
+        it 'returns only issues with an epic assigned' do
+          expect(described_class.count).to eq 3
+          expect(described_class.any_epic).to eq [epic_issue1.issue, epic_issue2.issue]
+        end
+      end
+
       describe '.in_epics' do
         it 'returns only issues in selected epics' do
           expect(described_class.count).to eq 3
@@ -177,16 +196,6 @@ describe Issue do
     it { is_expected.to belong_to(:promoted_to_epic).class_name('Epic') }
     it { is_expected.to have_many(:resource_weight_events) }
     it { is_expected.to have_one(:status_page_published_incident) }
-
-    describe 'versions.most_recent' do
-      it 'returns the most recent version' do
-        issue = create(:issue)
-        create_list(:design_version, 2, issue: issue)
-        last_version = create(:design_version, issue: issue)
-
-        expect(issue.design_versions.most_recent).to eq(last_version)
-      end
-    end
   end
 
   it_behaves_like 'an editable mentionable with EE-specific mentions' do

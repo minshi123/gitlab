@@ -13,11 +13,7 @@ import trackDashboardLoad from '../monitoring_tracking_helper';
 import getEnvironments from '../queries/getEnvironments.query.graphql';
 import getAnnotations from '../queries/getAnnotations.query.graphql';
 import statusCodes from '../../lib/utils/http_status';
-import {
-  backOff,
-  convertObjectPropsToCamelCase,
-  isFeatureFlagEnabled,
-} from '../../lib/utils/common_utils';
+import { backOff, convertObjectPropsToCamelCase } from '../../lib/utils/common_utils';
 import { s__, sprintf } from '../../locale';
 
 import {
@@ -80,6 +76,10 @@ export const setTimeRange = ({ commit }, timeRange) => {
   commit(types.SET_TIME_RANGE, timeRange);
 };
 
+export const setVariables = ({ commit }, variables) => {
+  commit(types.SET_VARIABLES, variables);
+};
+
 export const filterEnvironments = ({ commit, dispatch }, searchTerm) => {
   commit(types.SET_ENVIRONMENTS_FILTER, searchTerm);
   dispatch('fetchEnvironmentsData');
@@ -102,17 +102,17 @@ export const clearExpandedPanel = ({ commit }) => {
 
 // All Data
 
+/**
+ * Fetch all dashboard data.
+ *
+ * @param {Object} store
+ * @returns A promise that resolves when the dashboard
+ * skeleton has been loaded.
+ */
 export const fetchData = ({ dispatch }) => {
   dispatch('fetchEnvironmentsData');
   dispatch('fetchDashboard');
-  /**
-   * Annotations data is not yet fetched. This will be
-   * ready after the BE piece is implemented.
-   * https://gitlab.com/gitlab-org/gitlab/-/issues/211330
-   */
-  if (isFeatureFlagEnabled('metricsDashboardAnnotations')) {
-    dispatch('fetchAnnotations');
-  }
+  dispatch('fetchAnnotations');
 };
 
 // Metrics dashboard
@@ -211,10 +211,17 @@ export const fetchDashboardData = ({ state, dispatch, getters }) => {
  *
  * @param {metric} metric
  */
-export const fetchPrometheusMetric = ({ commit }, { metric, defaultQueryParams }) => {
+export const fetchPrometheusMetric = (
+  { commit, state, getters },
+  { metric, defaultQueryParams },
+) => {
   const queryParams = { ...defaultQueryParams };
   if (metric.step) {
     queryParams.step = metric.step;
+  }
+
+  if (Object.keys(state.promVariables).length > 0) {
+    queryParams.variables = getters.getCustomVariablesArray;
   }
 
   commit(types.REQUEST_METRIC_RESULT, { metricId: metric.metricId });
@@ -338,6 +345,35 @@ export const receiveAnnotationsFailure = ({ commit }) => commit(types.RECEIVE_AN
 
 // Dashboard manipulation
 
+export const toggleStarredValue = ({ commit, state, getters }) => {
+  const { selectedDashboard } = getters;
+
+  if (state.isUpdatingStarredValue) {
+    // Prevent repeating requests for the same change
+    return;
+  }
+  if (!selectedDashboard) {
+    return;
+  }
+
+  const method = selectedDashboard.starred ? 'DELETE' : 'POST';
+  const url = selectedDashboard.user_starred_path;
+  const newStarredValue = !selectedDashboard.starred;
+
+  commit(types.REQUEST_DASHBOARD_STARRING);
+
+  axios({
+    url,
+    method,
+  })
+    .then(() => {
+      commit(types.RECEIVE_DASHBOARD_STARRING_SUCCESS, newStarredValue);
+    })
+    .catch(() => {
+      commit(types.RECEIVE_DASHBOARD_STARRING_FAILURE);
+    });
+};
+
 /**
  * Set a new array of metrics to a panel group
  * @param {*} data An object containing
@@ -373,6 +409,12 @@ export const duplicateSystemDashboard = ({ state }, payload) => {
         throw s__('Metrics|There was an error creating the dashboard.');
       }
     });
+};
+
+// Variables manipulation
+
+export const setVariableValues = ({ commit }, updatedVariable) => {
+  commit(types.UPDATE_VARIABLE_VALUES, updatedVariable);
 };
 
 // prevent babel-plugin-rewire from generating an invalid default during karma tests

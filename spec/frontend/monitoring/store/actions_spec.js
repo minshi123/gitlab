@@ -11,12 +11,14 @@ import { ENVIRONMENT_AVAILABLE_STATE } from '~/monitoring/constants';
 import store from '~/monitoring/stores';
 import * as types from '~/monitoring/stores/mutation_types';
 import {
+  fetchData,
   fetchDashboard,
   receiveMetricsDashboardSuccess,
   fetchDeploymentsData,
   fetchEnvironmentsData,
   fetchDashboardData,
   fetchAnnotations,
+  toggleStarredValue,
   fetchPrometheusMetric,
   setInitialState,
   filterEnvironments,
@@ -24,6 +26,7 @@ import {
   clearExpandedPanel,
   setGettingStartedEmptyState,
   duplicateSystemDashboard,
+  setVariableValues,
 } from '~/monitoring/stores/actions';
 import {
   gqClient,
@@ -84,6 +87,45 @@ describe('Monitoring store actions', () => {
 
     commonUtils.backOff.mockReset();
     createFlash.mockReset();
+  });
+
+  describe('fetchData', () => {
+    it('dispatches fetchEnvironmentsData and fetchEnvironmentsData', () => {
+      const { state } = store;
+
+      return testAction(
+        fetchData,
+        null,
+        state,
+        [],
+        [
+          { type: 'fetchEnvironmentsData' },
+          { type: 'fetchDashboard' },
+          { type: 'fetchAnnotations' },
+        ],
+      );
+    });
+
+    it('dispatches when feature metricsDashboardAnnotations is on', () => {
+      const origGon = window.gon;
+      window.gon = { features: { metricsDashboardAnnotations: true } };
+
+      const { state } = store;
+
+      return testAction(
+        fetchData,
+        null,
+        state,
+        [],
+        [
+          { type: 'fetchEnvironmentsData' },
+          { type: 'fetchDashboard' },
+          { type: 'fetchAnnotations' },
+        ],
+      ).then(() => {
+        window.gon = origGon;
+      });
+    });
   });
 
   describe('fetchDeploymentsData', () => {
@@ -309,6 +351,49 @@ describe('Monitoring store actions', () => {
     });
   });
 
+  describe('Toggles starred value of current dashboard', () => {
+    const { state } = store;
+    let unstarredDashboard;
+    let starredDashboard;
+
+    beforeEach(() => {
+      state.isUpdatingStarredValue = false;
+      [unstarredDashboard, starredDashboard] = dashboardGitResponse;
+    });
+
+    describe('toggleStarredValue', () => {
+      it('performs no changes if no dashboard is selected', () => {
+        return testAction(toggleStarredValue, null, state, [], []);
+      });
+
+      it('performs no changes if already changing starred value', () => {
+        state.selectedDashboard = unstarredDashboard;
+        state.isUpdatingStarredValue = true;
+        return testAction(toggleStarredValue, null, state, [], []);
+      });
+
+      it('stars dashboard if it is not starred', () => {
+        state.selectedDashboard = unstarredDashboard;
+        mock.onPost(unstarredDashboard.user_starred_path).reply(200);
+
+        return testAction(toggleStarredValue, null, state, [
+          { type: types.REQUEST_DASHBOARD_STARRING },
+          { type: types.RECEIVE_DASHBOARD_STARRING_SUCCESS, payload: true },
+        ]);
+      });
+
+      it('unstars dashboard if it is starred', () => {
+        state.selectedDashboard = starredDashboard;
+        mock.onPost(starredDashboard.user_starred_path).reply(200);
+
+        return testAction(toggleStarredValue, null, state, [
+          { type: types.REQUEST_DASHBOARD_STARRING },
+          { type: types.RECEIVE_DASHBOARD_STARRING_FAILURE },
+        ]);
+      });
+    });
+  });
+
   describe('Set initial state', () => {
     let mockedState;
     beforeEach(() => {
@@ -356,6 +441,29 @@ describe('Monitoring store actions', () => {
       );
     });
   });
+
+  describe('setVariableValues', () => {
+    let mockedState;
+    beforeEach(() => {
+      mockedState = storeState();
+    });
+    it('should commit UPDATE_VARIABLE_VALUES mutation', done => {
+      testAction(
+        setVariableValues,
+        { pod: 'POD' },
+        mockedState,
+        [
+          {
+            type: types.UPDATE_VARIABLE_VALUES,
+            payload: { pod: 'POD' },
+          },
+        ],
+        [],
+        done,
+      );
+    });
+  });
+
   describe('fetchDashboard', () => {
     let dispatch;
     let state;

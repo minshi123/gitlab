@@ -34,6 +34,7 @@ class EpicsFinder < IssuableFinder
       start_date
       end_date
       search
+      my_reaction_emoji
     ]
   end
 
@@ -50,7 +51,8 @@ class EpicsFinder < IssuableFinder
   end
 
   def execute
-    raise ArgumentError, 'group_id argument is missing' unless group
+    raise ArgumentError, 'group_id argument is missing' unless params[:group_id]
+    return Epic.none unless Ability.allowed?(current_user, :read_epic, group)
 
     items = init_collection
     items = by_created_at(items)
@@ -62,6 +64,7 @@ class EpicsFinder < IssuableFinder
     items = by_parent(items)
     items = by_iids(items)
     items = starts_with_iid(items)
+    items = by_my_reaction_emoji(items)
 
     # This has to be last as we use a CTE as an optimization fence
     # for counts by passing the force_cte param and enabling the
@@ -70,19 +73,6 @@ class EpicsFinder < IssuableFinder
     items = by_search(items)
 
     sort(items)
-  end
-
-  def group
-    return unless params[:group_id]
-    return @group if defined?(@group)
-
-    group = Group.find(params[:group_id])
-
-    unless Ability.allowed?(current_user, :read_epic, group)
-      raise ActiveRecord::RecordNotFound.new("Could not find a Group with ID #{params[:group_id]}")
-    end
-
-    @group = group
   end
 
   # rubocop: disable CodeReuse/ActiveRecord
@@ -103,6 +93,13 @@ class EpicsFinder < IssuableFinder
   # rubocop: enable CodeReuse/ActiveRecord
 
   private
+
+  def group
+    return unless params[:group_id]
+    return @group if defined?(@group)
+
+    @group = Group.find(params[:group_id])
+  end
 
   def starts_with_iid(items)
     return items unless params[:iid_starts_with].present?

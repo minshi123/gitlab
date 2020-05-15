@@ -26,7 +26,7 @@ gem 'marginalia', '~> 1.8.0'
 
 # Authentication libraries
 gem 'devise', '~> 4.6'
-gem 'doorkeeper', '~> 5.0.2'
+gem 'doorkeeper', '~> 5.0.3'
 gem 'doorkeeper-openid_connect', '~> 1.6.3'
 gem 'omniauth', '~> 1.8'
 gem 'omniauth-auth0', '~> 2.0.0'
@@ -138,7 +138,7 @@ gem 'faraday_middleware-aws-signers-v4'
 # Markdown and HTML processing
 gem 'html-pipeline', '~> 2.12'
 gem 'deckar01-task_list', '2.3.1'
-gem 'gitlab-markup', '~> 1.7.0'
+gem 'gitlab-markup', '~> 1.7.1'
 gem 'github-markup', '~> 1.7.0', require: 'github/markup'
 gem 'commonmarker', '~> 0.20'
 gem 'RedCloth', '~> 4.3.2'
@@ -149,7 +149,7 @@ gem 'wikicloth', '0.8.1'
 gem 'asciidoctor', '~> 2.0.10'
 gem 'asciidoctor-include-ext', '~> 0.3.1', require: false
 gem 'asciidoctor-plantuml', '0.0.10'
-gem 'rouge', '~> 3.18.0'
+gem 'rouge', '~> 3.19.0'
 gem 'truncato', '~> 0.7.11'
 gem 'bootstrap_form', '~> 4.2.0'
 gem 'nokogiri', '~> 1.10.9'
@@ -230,7 +230,7 @@ gem 'discordrb-webhooks-blackst0ne', '~> 3.3', require: false
 gem 'hipchat', '~> 1.5.0'
 
 # Jira integration
-gem 'jira-ruby', '~> 1.7'
+gem 'jira-ruby', '~> 2.0.0'
 gem 'atlassian-jwt', '~> 0.2.0'
 
 # Flowdock integration
@@ -481,8 +481,6 @@ gem 'countries', '~> 3.0'
 
 gem 'retriable', '~> 3.1.2'
 
-gem 'liquid', '~> 4.0'
-
 # LRU cache
 gem 'lru_redux'
 
@@ -498,3 +496,6 @@ gem 'lockbox', '~> 0.3.3'
 
 # Email validation
 gem 'valid_email', '~> 0.1'
+
+# JSON
+gem 'json', '~> 2.3.0'

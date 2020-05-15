@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 module ProjectsHelper
-  prepend_if_ee('::EE::ProjectsHelper') # rubocop: disable Cop/InjectEnterpriseEditionModule
-
   def project_incident_management_setting
     @project_incident_management_setting ||= @project.incident_management_setting ||
       @project.build_incident_management_setting
@@ -297,11 +295,11 @@ module ProjectsHelper
   end
 
   def show_merge_request_count?(disabled: false, compact_mode: false)
-    !disabled && !compact_mode && Feature.enabled?(:project_list_show_mr_count, default_enabled: true)
+    !disabled && !compact_mode
   end
 
   def show_issue_count?(disabled: false, compact_mode: false)
-    !disabled && !compact_mode && Feature.enabled?(:project_list_show_issue_count, default_enabled: true)
+    !disabled && !compact_mode
   end
 
   # overridden in EE
@@ -448,7 +446,7 @@ module ProjectsHelper
       clusters:         :read_cluster,
       serverless:       :read_cluster,
       error_tracking:   :read_sentry_issue,
-      alert_management:   :read_alert_management,
+      alert_management: :read_alert_management_alert,
       labels:           :read_label,
       issues:           :read_issue,
       project_members:  :read_project_member,
@@ -676,6 +674,7 @@ module ProjectsHelper
       services#edit
       hooks#index
       hooks#edit
+      access_tokens#index
       hook_logs#show
       repository#show
       ci_cd#show

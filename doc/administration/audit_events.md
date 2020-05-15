@@ -1,3 +1,9 @@
+---
+stage: Monitor
+group: APM
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Audit Events **(STARTER)**
 
 GitLab offers a way to view the changes made within the GitLab server for owners and administrators on a [paid plan](https://about.gitlab.com/pricing/).
@@ -44,6 +50,7 @@ From there, you can see the following actions:
 - User sign-in via [Group SAML](../user/group/saml_sso/index.md)
 - Permissions changes of a user assigned to a group
 - Removed user from group
+- Project imported in to group
 - Project added to group and with which visibility level
 - Project removed from group
 - [Project shared with group](../user/project/members/share_project_with_groups.md)

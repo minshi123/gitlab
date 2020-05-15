@@ -1,3 +1,9 @@
+---
+stage: Monitor
+group: APM
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Monitoring GitLab with Prometheus
 
 > **Notes:**
@@ -108,7 +114,7 @@ prometheus['scrape_configs'] = [
 NOTE: **Note:**
 Prometheus and most exporters don't support authentication. We don't recommend exposing them outside the local network.
 
-A few configuration changes are required to allow GitLab to be monitored by an external Prometheus server. External servers are recommended for highly available deployments of GitLab with multiple nodes.
+A few configuration changes are required to allow GitLab to be monitored by an external Prometheus server. External servers are recommended for [GitLab deployments with multiple nodes](../../reference_architectures/index.md).
 
 To use an external Prometheus server:
 

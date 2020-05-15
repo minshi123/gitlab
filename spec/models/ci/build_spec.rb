@@ -106,10 +106,10 @@ describe Ci::Build do
     end
   end
 
-  describe '.with_artifacts_archive' do
-    subject { described_class.with_artifacts_archive }
+  describe '.with_downloadable_artifacts' do
+    subject { described_class.with_downloadable_artifacts }
 
-    context 'when job does not have an archive' do
+    context 'when job does not have a downloadable artifact' do
       let!(:job) { create(:ci_build) }
 
       it 'does not return the job' do
@@ -117,15 +117,23 @@ describe Ci::Build do
       end
     end
 
-    context 'when job has a job artifact archive' do
-      let!(:job) { create(:ci_build, :artifacts) }
+    ::Ci::JobArtifact::DOWNLOADABLE_TYPES.each do |type|
+      context "when job has a #{type} artifact" do
+        it 'returns the job' do
+          job = create(:ci_build)
+          create(
+            :ci_job_artifact,
+            file_format: ::Ci::JobArtifact::TYPE_AND_FORMAT_PAIRS[type.to_sym],
+            file_type: type,
+            job: job
+          )
 
-      it 'returns the job' do
-        is_expected.to include(job)
+          is_expected.to include(job)
+        end
       end
     end
 
-    context 'when job has a job artifact trace' do
+    context 'when job has a non-downloadable artifact' do
       let!(:job) { create(:ci_build, :trace_artifact) }
 
       it 'does not return the job' do
@@ -2884,6 +2892,19 @@ describe Ci::Build do
       it { is_expected.to include(deployment_variable) }
     end
 
+    context 'when build has a freeze period' do
+      let(:freeze_variable) { { key: 'CI_DEPLOY_FREEZE', value: 'true', masked: false, public: true } }
+
+      before do
+        expect_next_instance_of(Ci::FreezePeriodStatus) do |freeze_period|
+          expect(freeze_period).to receive(:execute)
+            .and_return(true)
+        end
+      end
+
+      it { is_expected.to include(freeze_variable) }
+    end
+
     context 'when project has default CI config path' do
       let(:ci_config_path) { { key: 'CI_CONFIG_PATH', value: '.gitlab-ci.yml', public: true, masked: false } }
 
@@ -4088,6 +4109,28 @@ describe Ci::Build do
 
       it { is_expected.to include(:upload_multiple_artifacts) }
     end
+
+    context 'when artifacts exclude is defined and the is feature enabled' do
+      let(:options) do
+        { artifacts: { exclude: %w[something] } }
+      end
+
+      context 'when a feature flag is enabled' do
+        before do
+          stub_feature_flags(ci_artifacts_exclude: true)
+        end
+
+        it { is_expected.to include(:artifacts_exclude) }
+      end
+
+      context 'when a feature flag is disabled' do
+        before do
+          stub_feature_flags(ci_artifacts_exclude: false)
+        end
+
+        it { is_expected.not_to include(:artifacts_exclude) }
+      end
+    end
   end
 
   describe '#supported_runner?' do
@@ -4410,6 +4453,33 @@ describe Ci::Build do
 
     context 'when build option does not have environment auto_stop_in' do
       let(:build) { create(:ci_build) }
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#degradation_threshold' do
+    subject { build.degradation_threshold }
+
+    context 'when threshold variable is defined' do
+      before do
+        build.yaml_variables = [
+          { key: 'SOME_VAR_1', value: 'SOME_VAL_1' },
+          { key: 'DEGRADATION_THRESHOLD', value: '5' },
+          { key: 'SOME_VAR_2', value: 'SOME_VAL_2' }
+        ]
+      end
+
+      it { is_expected.to eq(5) }
+    end
+
+    context 'when threshold variable is not defined' do
+      before do
+        build.yaml_variables = [
+          { key: 'SOME_VAR_1', value: 'SOME_VAL_1' },
+          { key: 'SOME_VAR_2', value: 'SOME_VAL_2' }
+        ]
+      end
 
       it { is_expected.to be_nil }
     end

@@ -1,4 +1,4 @@
-# Service Desk **(Starter)**
+# Service Desk **(STARTER)**
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/149) in [GitLab Premium 9.1](https://about.gitlab.com/releases/2017/04/22/gitlab-9-1-released/#service-desk-eep).
 
@@ -151,6 +151,7 @@ service_desk_email:
   log_path: "log/mailroom.log"
   mailbox: "inbox"
   idle_timeout: 60
+  expunge_deleted: true
 ```
 
 In this case, suppose the `mygroup/myproject` project Service Desk settings has the project name

@@ -97,7 +97,7 @@ module EE
 
       with_scope :subject
       condition(:license_scanning_enabled) do
-        @subject.feature_available?(:license_scanning) || @subject.feature_available?(:license_management)
+        @subject.feature_available?(:license_scanning)
       end
 
       with_scope :subject
@@ -181,6 +181,7 @@ module EE
         enable :destroy_feature_flag
         enable :admin_feature_flag
         enable :admin_feature_flags_user_lists
+        enable :read_ci_minutes_quota
       end
 
       rule { can?(:developer_access) & iterations_available }.policy do
@@ -369,6 +370,7 @@ module EE
 
       rule { compliance_framework_available & can?(:admin_project) }.enable :admin_compliance_framework
 
+      rule { status_page_available & can?(:owner_access) }.enable :mark_issue_for_publication
       rule { status_page_available & can?(:developer_access) }.enable :publish_status_page
     end
 

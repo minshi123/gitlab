@@ -6,12 +6,17 @@ module Types
       graphql_name 'AlertManagementAlert'
       description "Describes an alert from the project's Alert Management"
 
-      authorize :read_alert_management_alerts
+      authorize :read_alert_management_alert
 
       field :iid,
             GraphQL::ID_TYPE,
             null: false,
             description: 'Internal ID of the alert'
+
+      field :issue_iid,
+            GraphQL::ID_TYPE,
+            null: true,
+            description: 'Internal ID of the GitLab issue attached to the alert'
 
       field :title,
             GraphQL::STRING_TYPE,

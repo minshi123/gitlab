@@ -7,7 +7,7 @@ describe Issue do
 
   describe "Associations" do
     it { is_expected.to belong_to(:milestone) }
-    it { is_expected.to belong_to(:sprint) }
+    it { is_expected.to belong_to(:iteration) }
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:moved_to).class_name('Issue') }
     it { is_expected.to have_one(:moved_from).class_name('Issue') }
@@ -19,6 +19,8 @@ describe Issue do
     it { is_expected.to have_many(:design_versions) }
     it { is_expected.to have_one(:sentry_issue) }
     it { is_expected.to have_one(:alert_management_alert) }
+    it { is_expected.to have_many(:resource_milestone_events) }
+    it { is_expected.to have_many(:resource_state_events) }
 
     describe 'versions.most_recent' do
       it 'returns the most recent version' do
@@ -38,6 +40,8 @@ describe Issue do
     it { is_expected.to include_module(Referable) }
     it { is_expected.to include_module(Sortable) }
     it { is_expected.to include_module(Taskable) }
+    it { is_expected.to include_module(MilestoneEventable) }
+    it { is_expected.to include_module(StateEventable) }
 
     it_behaves_like 'AtomicInternalId' do
       let(:internal_id_attribute) { :iid }
@@ -1024,6 +1028,26 @@ describe Issue do
       let!(:design_c) { create(:design, :with_file, issue: issue) }
 
       it { is_expected.to contain_exactly(design_a, design_c) }
+    end
+  end
+
+  describe '.with_label_attributes' do
+    subject { described_class.with_label_attributes(label_attributes) }
+
+    let(:label_attributes) { { title: 'hello world', description: 'hi' } }
+
+    it 'gets issues with given label attributes' do
+      label = create(:label, **label_attributes)
+      labeled_issue = create(:labeled_issue, project: label.project, labels: [label])
+
+      expect(subject).to include(labeled_issue)
+    end
+
+    it 'excludes issues without given label attributes' do
+      label = create(:label, title: 'GitLab', description: 'tanuki')
+      labeled_issue = create(:labeled_issue, project: label.project, labels: [label])
+
+      expect(subject).not_to include(labeled_issue)
     end
   end
 end

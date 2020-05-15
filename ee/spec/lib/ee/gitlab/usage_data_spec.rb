@@ -107,9 +107,6 @@ describe Gitlab::UsageData do
         sast_jobs
         status_page_projects
         status_page_issues
-        design_management_designs_create
-        design_management_designs_update
-        design_management_designs_delete
         user_preferences_group_overview_details
         user_preferences_group_overview_security_dashboard
         template_repositories
@@ -670,6 +667,14 @@ describe Gitlab::UsageData do
           end
         end
       end
+    end
+  end
+
+  describe '.recording_ee_finished_at' do
+    subject { described_class.recording_ee_finish_data }
+
+    it 'gathers time ee recording finishes at' do
+      expect(subject[:recording_ee_finished_at]).to be_a(Time)
     end
   end
 

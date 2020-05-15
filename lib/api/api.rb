@@ -120,6 +120,7 @@ module API
 
       # Keep in alphabetical order
       mount ::API::AccessRequests
+      mount ::API::Admin::Ci::Variables
       mount ::API::Admin::Sidekiq
       mount ::API::Appearance
       mount ::API::Applications
@@ -140,6 +141,7 @@ module API
       mount ::API::Events
       mount ::API::Features
       mount ::API::Files
+      mount ::API::FreezePeriods
       mount ::API::GroupBoards
       mount ::API::GroupClusters
       mount ::API::GroupExport
@@ -162,6 +164,7 @@ module API
       mount ::API::MergeRequestDiffs
       mount ::API::MergeRequests
       mount ::API::Metrics::Dashboard::Annotations
+      mount ::API::Metrics::UserStarredDashboards
       mount ::API::Namespaces
       mount ::API::Notes
       mount ::API::Discussions
@@ -178,6 +181,7 @@ module API
       mount ::API::ProjectImport
       mount ::API::ProjectHooks
       mount ::API::ProjectMilestones
+      mount ::API::ProjectRepositoryStorageMoves
       mount ::API::Projects
       mount ::API::ProjectSnapshots
       mount ::API::ProjectSnippets

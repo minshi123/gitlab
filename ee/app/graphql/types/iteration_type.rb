@@ -25,7 +25,7 @@ module Types
           description: 'Web path of the iteration'
 
     field :web_url, GraphQL::STRING_TYPE, null: false, method: :iteration_url,
-          description: 'Web url of the iteration'
+          description: 'Web URL of the iteration'
 
     field :due_date, Types::TimeType, null: true,
           description: 'Timestamp of the iteration due date'

@@ -20,8 +20,8 @@ describe Resolvers::IterationsResolver do
         group.add_developer(current_user)
       end
 
-      it 'calls SprintsFinder#execute' do
-        expect_next_instance_of(SprintsFinder) do |finder|
+      it 'calls IterationsFinder#execute' do
+        expect_next_instance_of(IterationsFinder) do |finder|
           expect(finder).to receive(:execute)
         end
 
@@ -29,9 +29,9 @@ describe Resolvers::IterationsResolver do
       end
 
       context 'without parameters' do
-        it 'calls SprintsFinder to retrieve all iterations' do
-          expect(SprintsFinder).to receive(:new)
-                                          .with(group_ids: group.id, state: 'all', start_date: nil, end_date: nil)
+        it 'calls IterationsFinder to retrieve all iterations' do
+          expect(IterationsFinder).to receive(:new)
+                                          .with(group_ids: group.id, state: 'all', start_date: nil, end_date: nil, search_title: nil)
                                           .and_call_original
 
           resolve_group_iterations
@@ -39,15 +39,16 @@ describe Resolvers::IterationsResolver do
       end
 
       context 'with parameters' do
-        it 'calls SprintsFinder with correct parameters' do
+        it 'calls IterationsFinder with correct parameters' do
           start_date = now
           end_date = start_date + 1.hour
+          search = 'wow'
 
-          expect(SprintsFinder).to receive(:new)
-                                          .with(group_ids: group.id, state: 'closed', start_date: start_date, end_date: end_date)
+          expect(IterationsFinder).to receive(:new)
+                                          .with(group_ids: group.id, state: 'closed', start_date: start_date, end_date: end_date, search_title: search)
                                           .and_call_original
 
-          resolve_group_iterations(start_date: start_date, end_date: end_date, state: 'closed')
+          resolve_group_iterations(start_date: start_date, end_date: end_date, state: 'closed', title: search)
         end
       end
 
