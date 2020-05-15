@@ -65,7 +65,7 @@ module Vulnerabilities
     def projects_filter
       Vulnerabilities::Stats.unscoped
                             .select(:project_id)
-                            .from("(#{Vulnerabilities::Stats.all.to_sql}) as stats")
+                            .from(Vulnerabilities::Stats.all)
                             .where(letter_grade_condition)
     end
 
