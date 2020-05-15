@@ -10951,33 +10951,68 @@ type VulnerabilityEdge {
 }
 
 """
-Represents vulnerable project counts for each grade
+Represents vulnerability letter grades
 """
 type VulnerabilityGrades {
   """
-  Number of vulnerable projects with no vulnerabilities and security scanning enabled
+  Projects with no vulnerabilities and security scanning enabled
   """
-  a: Int!
+  a: VulnerabilityLetterGrade!
 
   """
-  Number of vulnerable projects with low severities
+  Vulnerable projects with low severities
   """
-  b: Int!
+  b: VulnerabilityLetterGrade!
 
   """
-  Number of vulnerable projects with medium severities
+  Vulnerable projects with medium severities
   """
-  c: Int!
+  c: VulnerabilityLetterGrade!
 
   """
-  Number of vulnerable projects with high or unknown severities
+  Vulnerable projects with high or unknown severities
   """
-  d: Int!
+  d: VulnerabilityLetterGrade!
 
   """
-  Number of vulnerable projects with critical severities
+  Vulnerable projects with critical severities
   """
-  f: Int!
+  f: VulnerabilityLetterGrade!
+}
+
+"""
+Represents vulnerable projects and count for the letter grade
+"""
+type VulnerabilityLetterGrade {
+  """
+  Number of vulnerable projects in this vulnerability letter grade
+  """
+  count: Int!
+
+  """
+  Projects in this vulnerability letter grade
+  """
+  projects(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+  ): ProjectConnection!
 }
 
 """
