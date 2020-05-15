@@ -3,6 +3,8 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import { RichViewer, SimpleViewer } from '~/vue_shared/components/blob_viewers';
 import BlobContentError from './blob_content_error.vue';
 
+import { BLOB_RENDER_ERROR_EVENTS } from './constants';
+
 export default {
   components: {
     GlLoadingIcon,
@@ -42,6 +44,7 @@ export default {
       return this.activeViewer.renderError;
     },
   },
+  BLOB_RENDER_ERROR_EVENTS,
 };
 </script>
 <template>
@@ -49,7 +52,15 @@ export default {
     <gl-loading-icon v-if="loading" size="md" color="dark" class="my-4 mx-auto" />
 
     <template v-else>
-      <blob-content-error v-if="viewerError" :viewer-error="viewerError" :blob="blob" />
+      <blob-content-error
+        v-if="viewerError"
+        :viewer-error="viewerError"
+        :blob="blob"
+        @[$options.BLOB_RENDER_ERROR_EVENTS.LOAD]="$emit($options.BLOB_RENDER_ERROR_EVENTS.LOAD)"
+        @[$options.BLOB_RENDER_ERROR_EVENTS.SHOW_SOURCE]="
+          $emit($options.BLOB_RENDER_ERROR_EVENTS.SHOW_SOURCE)
+        "
+      />
       <component
         :is="viewer"
         v-else

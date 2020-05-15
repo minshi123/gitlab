@@ -7,7 +7,11 @@ import CloneDropdownButton from '~/vue_shared/components/clone_dropdown.vue';
 
 import GetBlobContent from '../queries/snippet.blob.content.query.graphql';
 
-import { SIMPLE_BLOB_VIEWER, RICH_BLOB_VIEWER } from '~/blob/components/constants';
+import {
+  SIMPLE_BLOB_VIEWER,
+  RICH_BLOB_VIEWER,
+  BLOB_RENDER_ERROR_EVENTS,
+} from '~/blob/components/constants';
 
 export default {
   components: {
@@ -68,13 +72,14 @@ export default {
   },
   methods: {
     switchViewer(newViewer) {
-      this.activeViewerType = newViewer;
+      this.activeViewerType = newViewer || SIMPLE_BLOB_VIEWER;
     },
     forceQuery() {
       this.$apollo.queries.blobContent.skip = false;
       this.$apollo.queries.blobContent.refetch();
     },
   },
+  BLOB_RENDER_ERROR_EVENTS,
 };
 </script>
 <template>
@@ -96,7 +101,8 @@ export default {
         :content="blobContent"
         :active-viewer="viewer"
         :blob="blob"
-        @force-content-fetch="forceQuery"
+        @[$options.BLOB_RENDER_ERROR_EVENTS.LOAD]="forceQuery"
+        @[$options.BLOB_RENDER_ERROR_EVENTS.SHOW_SOURCE]="switchViewer"
       />
     </article>
   </div>
