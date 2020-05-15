@@ -1,7 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 import BlobContent from '~/blob/components/blob_content.vue';
 import BlobContentError from '~/blob/components/blob_content_error.vue';
+import { BLOB_RENDER_ERROR_EVENTS, BLOB_RENDER_ERRORS } from '~/blob/components/constants';
 import {
+  Blob,
   RichViewerMock,
   SimpleViewerMock,
   RichBlobContentMock,
@@ -65,6 +67,34 @@ describe('Blob Content component', () => {
     `('renders correct content that is passed to the component', ({ content, mock, viewer }) => {
       createComponent({ content }, mock);
       expect(wrapper.find(viewer).html()).toContain(content);
+    });
+  });
+
+  describe('functionality', () => {
+    describe('render error', () => {
+      const findErrorEl = () => wrapper.find(BlobContentError);
+
+      beforeEach(() => {
+        const renderError = BLOB_RENDER_ERRORS.REASONS.COLLAPSED.id;
+        const viewer = { ...SimpleViewerMock, renderError };
+        createComponent({ blob: Blob }, viewer);
+      });
+
+      it('correctly sets blob on the blob-content-error component', () => {
+        expect(findErrorEl().props('blob')).toEqual(Blob);
+      });
+
+      it(`properly proxies ${BLOB_RENDER_ERROR_EVENTS.LOAD} event`, () => {
+        expect(wrapper.emitted(BLOB_RENDER_ERROR_EVENTS.LOAD)).toBeUndefined();
+        findErrorEl().vm.$emit(BLOB_RENDER_ERROR_EVENTS.LOAD);
+        expect(wrapper.emitted(BLOB_RENDER_ERROR_EVENTS.LOAD)).toBeTruthy();
+      });
+
+      it(`properly proxies ${BLOB_RENDER_ERROR_EVENTS.SHOW_SOURCE} event`, () => {
+        expect(wrapper.emitted(BLOB_RENDER_ERROR_EVENTS.SHOW_SOURCE)).toBeUndefined();
+        findErrorEl().vm.$emit(BLOB_RENDER_ERROR_EVENTS.SHOW_SOURCE);
+        expect(wrapper.emitted(BLOB_RENDER_ERROR_EVENTS.SHOW_SOURCE)).toBeTruthy();
+      });
     });
   });
 });

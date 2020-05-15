@@ -1,8 +1,10 @@
+import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import SnippetBlobView from '~/snippets/components/snippet_blob_view.vue';
 import BlobHeader from '~/blob/components/blob_header.vue';
 import BlobEmbeddable from '~/blob/components/blob_embeddable.vue';
 import BlobContent from '~/blob/components/blob_content.vue';
+import { BLOB_RENDER_ERROR_EVENTS } from '~/blob/components/constants';
 import { RichViewer, SimpleViewer } from '~/vue_shared/components/blob_viewers';
 import {
   SNIPPET_VISIBILITY_PRIVATE,
@@ -29,6 +31,8 @@ describe('Blob Embeddable', () => {
       queries: {
         blobContent: {
           loading: contentLoading,
+          refetch: jest.fn(),
+          skip: true,
         },
       },
     };
@@ -140,6 +144,39 @@ describe('Blob Embeddable', () => {
               expect(wrapper.find(SimpleViewer).exists()).toBe(true);
             });
         });
+      });
+    });
+  });
+
+  describe('functionality', () => {
+    describe('render error', () => {
+      const findContentEl = () => wrapper.find(BlobContent);
+
+      it('correctly sets blob on the blob-content-error component', () => {
+        createComponent();
+        expect(findContentEl().props('blob')).toEqual(BlobMock);
+      });
+
+      it(`refetches blob content on ${BLOB_RENDER_ERROR_EVENTS.LOAD} event`, () => {
+        createComponent();
+
+        expect(wrapper.vm.$apollo.queries.blobContent.refetch).not.toHaveBeenCalled();
+        findContentEl().vm.$emit(`${BLOB_RENDER_ERROR_EVENTS.LOAD}`);
+        return nextTick().then(() => {
+          expect(wrapper.vm.$apollo.queries.blobContent.refetch).toHaveBeenCalledTimes(1);
+        });
+      });
+
+      it(`sets '${SimpleViewerMock.type}' as active on ${BLOB_RENDER_ERROR_EVENTS.SHOW_SOURCE} event`, () => {
+        createComponent(
+          {},
+          {
+            activeViewerType: RichViewerMock.type,
+          },
+        );
+
+        findContentEl().vm.$emit(BLOB_RENDER_ERROR_EVENTS.SHOW_SOURCE);
+        expect(wrapper.vm.activeViewerType).toEqual(SimpleViewerMock.type);
       });
     });
   });
