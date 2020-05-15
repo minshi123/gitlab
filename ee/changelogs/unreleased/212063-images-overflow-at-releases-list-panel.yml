@@ -1,0 +1,5 @@
+---
+title: Resolve image overflow at releases list panel
+merge_request: 212063
+author:
+type: fixed
