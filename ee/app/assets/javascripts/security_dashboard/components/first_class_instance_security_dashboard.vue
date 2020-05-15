@@ -148,7 +148,7 @@ export default {
       <gl-loading-icon v-else size="lg" class="mt-4" />
     </div>
     <template #aside>
-      <vulnerability-chart v-if="shouldShowDashboard" />
+      <vulnerability-chart v-if="shouldShowDashboard" class="mb-4" />
       <vulnerability-severity v-if="shouldShowDashboard" :endpoint="vulnerableProjectsEndpoint" />
     </template>
   </security-dashboard-layout>
