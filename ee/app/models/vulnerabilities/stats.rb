@@ -10,7 +10,7 @@
 # reasons.
 module Vulnerabilities
   class Stats < ApplicationRecord
-    STATIC_SELECT_ATTRS = ['project_id', 'COUNT(*) AS count_all']
+    STATIC_SELECT_ATTRS = ['project_id', 'COUNT(*) AS count_all'].freeze
 
     self.table_name = 'vulnerabilities'
     self.primary_key = 'project_id'

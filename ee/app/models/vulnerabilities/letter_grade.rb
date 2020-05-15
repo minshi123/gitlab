@@ -51,7 +51,7 @@ module Vulnerabilities
     end
 
     def projects
-      vulnerable.projects.where("id IN (#{filter_sql})")
+      vulnerable.projects.where(id: projects_filter)
     end
 
     def ==(other)
@@ -62,11 +62,11 @@ module Vulnerabilities
 
     private
 
-    def filter_sql
+    def projects_filter
       Vulnerabilities::Stats.unscoped
                             .select(:project_id)
                             .from("(#{Vulnerabilities::Stats.all.to_sql}) as stats")
-                            .where(letter_grade_condition).to_sql
+                            .where(letter_grade_condition)
     end
 
     def letter_grade_condition
