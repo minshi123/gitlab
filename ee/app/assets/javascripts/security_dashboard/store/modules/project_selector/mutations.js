@@ -1,10 +1,6 @@
 import * as types from './mutation_types';
 
 export default {
-  [types.SET_PROJECT_ENDPOINTS](state, endpoints) {
-    state.projectEndpoints.add = endpoints.add;
-    state.projectEndpoints.list = endpoints.list;
-  },
   [types.SET_SEARCH_QUERY](state, query) {
     state.searchQuery = query;
   },

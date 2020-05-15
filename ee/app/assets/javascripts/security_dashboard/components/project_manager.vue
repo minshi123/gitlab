@@ -42,7 +42,7 @@ export default {
       this.toggleSelectedProject(project);
     },
     projectRemoved(project) {
-      this.removeProject(project.remove_path);
+      this.removeProject(project.id);
     },
   },
 };

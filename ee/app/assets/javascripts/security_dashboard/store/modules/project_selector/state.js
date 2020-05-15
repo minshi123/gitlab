@@ -3,10 +3,6 @@ export default () => ({
   isLoadingProjects: false,
   isAddingProjects: false,
   isRemovingProject: false,
-  projectEndpoints: {
-    list: null,
-    add: null,
-  },
   searchQuery: '',
   projects: [],
   projectSearchResults: [],
