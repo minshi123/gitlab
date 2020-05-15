@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import HeaderApp from 'ee/vulnerabilities/components/header.vue';
+import DetailsApp from 'ee/vulnerabilities/components/details.vue';
 import FooterApp from 'ee/vulnerabilities/components/footer.vue';
 
 function createHeaderApp() {
@@ -23,6 +24,18 @@ function createHeaderApp() {
           createIssueUrl,
         },
       }),
+  });
+}
+
+function createDetailsApp() {
+  const el = document.getElementById('js-vulnerability-details');
+
+  const vulnerability = JSON.parse(el.dataset.vulnerabilityJson);
+  const finding = JSON.parse(el.dataset.findingJson);
+
+  return new Vue({
+    el,
+    render: h => h(DetailsApp, { props: { vulnerability, finding } }),
   });
 }
 
@@ -70,5 +83,6 @@ function createFooterApp() {
 
 window.addEventListener('DOMContentLoaded', () => {
   createHeaderApp();
+  createDetailsApp();
   createFooterApp();
 });
