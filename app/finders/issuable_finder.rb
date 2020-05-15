@@ -139,13 +139,7 @@ class IssuableFinder
     # API endpoints send in `nil` values so we test if there are any non-nil
     return items unless not_params.present? && not_params.values.any?
 
-    items = by_negated_author(items)
-    items = by_negated_assignee(items)
-    items = by_negated_label(items)
-    items = by_negated_milestone(items)
-    items = by_negated_release(items)
-    items = by_negated_my_reaction_emoji(items)
-    by_negated_iids(items)
+    by_negated_items(items)
   end
 
   def row_count
@@ -244,6 +238,16 @@ class IssuableFinder
     # last item because it's added as the last one to the query.
     value = Array(value).last
     klass.available_states.key(value)
+  end
+
+  def by_negated_items(items)
+    items = by_negated_author(items)
+    items = by_negated_assignee(items)
+    items = by_negated_label(items)
+    items = by_negated_milestone(items)
+    items = by_negated_release(items)
+    items = by_negated_my_reaction_emoji(items)
+    by_negated_iids(items)
   end
 
   # rubocop: disable CodeReuse/ActiveRecord

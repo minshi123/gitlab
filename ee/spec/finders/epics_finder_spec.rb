@@ -287,6 +287,39 @@ describe EpicsFinder do
             end
           end
         end
+
+        context 'with negated params' do
+          context 'with negated labels' do
+            let(:label) { create(:label) }
+            let(:label2) { create(:label) }
+            let!(:negated_epic) { create(:labeled_epic, group: group, labels: [label]) }
+            let!(:negated_epic2) { create(:labeled_epic, group: group, labels: [label2]) }
+
+            it 'returns all epics if no negated labels are present' do
+              expect(epics).to contain_exactly(negated_epic, negated_epic2, epic1, epic2, epic3)
+            end
+
+            it 'returns all epics without negated label' do
+              params = { not: { label_name: [label.title, label2.title].join(',') } }
+
+              expect(epics(params)).to contain_exactly(epic1, epic2, epic3)
+            end
+          end
+
+          context 'with negated author' do
+            let(:author) { create(:user) }
+            let!(:authored_epic) { create(:epic, group: group, author: author) }
+
+            it 'returns all epics if no negated author is present' do
+              expect(epics).to contain_exactly(authored_epic, epic1, epic2, epic3)
+            end
+
+            it 'returns all epics without given author' do
+              params = { not: { author_id: author.id } }
+              expect(epics(params)).to contain_exactly(epic1, epic2, epic3)
+            end
+          end
+        end
       end
     end
   end

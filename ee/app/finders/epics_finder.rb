@@ -54,15 +54,10 @@ class EpicsFinder < IssuableFinder
     return Epic.none unless Ability.allowed?(current_user, :read_epic, group)
 
     items = init_collection
-    items = by_created_at(items)
-    items = by_updated_at(items)
-    items = by_author(items)
-    items = by_timeframe(items)
-    items = by_state(items)
-    items = by_label(items)
-    items = by_parent(items)
-    items = by_iids(items)
-    items = starts_with_iid(items)
+    items = filter_items(items)
+
+    # Let's see if we have to negate anything
+    items = filter_negated_items(items)
 
     # This has to be last as we use a CTE as an optimization fence
     # for counts by passing the force_cte param and enabling the
@@ -89,6 +84,18 @@ class EpicsFinder < IssuableFinder
     Epic.where(group: groups)
   end
   # rubocop: enable CodeReuse/ActiveRecord
+
+  def filter_items(items)
+    items = by_created_at(items)
+    items = by_updated_at(items)
+    items = by_author(items)
+    items = by_timeframe(items)
+    items = by_state(items)
+    items = by_label(items)
+    items = by_parent(items)
+    items = by_iids(items)
+    starts_with_iid(items)
+  end
 
   private
 
@@ -144,4 +151,9 @@ class EpicsFinder < IssuableFinder
     items.where(parent_id: params[:parent_id])
   end
   # rubocop: enable CodeReuse/ActiveRecord
+
+  def by_negated_items(items)
+    items = by_negated_label(items)
+    by_negated_author(items)
+  end
 end
