@@ -16,10 +16,12 @@ module IntegrationsActions
 
   def update
     saved = integration.update(service_params[:service])
+    update_only_inherited = ActiveRecord::Type::Boolean.new.cast(params[:update_only_inherited])
 
     respond_to do |format|
       format.html do
         if saved
+          PropagateIntegrationWorker.perform_async(integration.id, update_only_inherited)
           redirect_to scoped_edit_integration_path(integration), notice: success_message
         else
           render 'shared/integrations/edit'
