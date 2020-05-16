@@ -513,42 +513,6 @@ BUNDLER_AUDIT_ADVISORY_DB_REF_NAME: "master"
 BUNDLER_AUDIT_ADVISORY_DB_URL: "gitlab.example.com/ruby-advisory-db.git"
 ```
 
-#### Java (Maven) projects
-
-When using self-signed certificates, add the following job section to the `.gitlab-ci.yml`:
-
-```yaml
-gemnasium-maven-dependency_scanning:
-  variables:
-    MAVEN_CLI_OPTS: "-s settings.xml -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true"
-```
-
-#### Java (Gradle) projects
-
-When using self-signed certificates, add the following job section to the `.gitlab-ci.yml`:
-
-```yaml
-gemnasium-maven-dependency_scanning:
-  before_script:
-    - echo -n | openssl s_client -connect maven-repo.example.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/internal.crt
-    - keytool -importcert -file /tmp/internal.crt -cacerts -storepass changeit -noprompt
-```
-
-This adds the self-signed certificates of your Maven repository to the Java KeyStore of the analyzer's Docker image.
-
-#### Scala (sbt) projects
-
-When using self-signed certificates, add the following job section to the `.gitlab-ci.yml`:
-
-```yaml
-gemnasium-maven-dependency_scanning:
-  before_script:
-    - echo -n | openssl s_client -connect maven-repo.example.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/internal.crt
-    - keytool -importcert -file /tmp/internal.crt -cacerts -storepass changeit -noprompt
-```
-
-This adds the self-signed certificates of your Maven repository to the Java KeyStore of the analyzer's Docker image.
-
 #### Python (pip) and Python (Pipfile) projects
 
 Add the following `pip.conf` to your repository to define your index URL and trust its self-signed
