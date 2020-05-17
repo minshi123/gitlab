@@ -97,6 +97,45 @@ during the `sast` job. It runs regardless of the programming
 language of your app, and you don't need to change your
 CI/CD configuration file to enable it. Results are available in the SAST report.
 
+### Customizing settings
+
+The Secret Detection Scan settings can be changed through [environment variables](#available-variables)
+by using the
+[`variables`](../../../ci/yaml/README.md#variables) parameter in `.gitlab-ci.yml`.
+
+To override a job definition, (for example, change properties like `variables` or `dependencies`),
+declare a job with the same name as the SAST job to override. Place this new job after the template
+inclusion and specify any additional keys under it.
+
+In the following example, we include the Secret Detection template and at the same time we
+override the `secret-scan ` bob with the `SAST_GITLEAKS_HISTORIC_SCAN` variable to `true`:
+
+```yaml
+include:
+  - template: Secret-Detection.gitlab-ci.yml
+
+secrets-scan:
+  variables:
+    SAST_GITLEAKS_HISTORIC_SCAN: true
+```
+
+Because the template is [evaluated before](../../../ci/yaml/README.md#include)
+the pipeline configuration, the last mention of the variable takes precedence.
+
+CAUTION: **Deprecation:**
+Beginning in GitLab 13.0, the use of [`only` and `except`](../../../ci/yaml/README.md#onlyexcept-basic)
+is no longer supported. When overriding the template, you must use [`rules`](../../../ci/yaml/README.md#rules) instead.
+
+#### Availble Variables
+
+Secret Detection make it possible to further customize how it works. Below are currently availible variables 
+
+| Environment variable    | Default value | Description |
+|-------------------------|---------------|-------------|
+| `SAST_GITLEAKS_COMMIT_FROM` | -     | The commit a Gitleaks scan starts at. |
+| `SAST_GITLEAKS_COMMIT_TO` | -       | The commit a Gitleaks scan ends at. |
+| `SAST_GITLEAKS_HISTORIC_SCAN` | false | Flag to enable a historic Gitleaks scan. |
+
 ## Full History Secret Scan
 
 GitLab 12.11 introduced support for scanning the full history of a reposity. This new functionality
