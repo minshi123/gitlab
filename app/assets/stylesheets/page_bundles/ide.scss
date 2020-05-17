@@ -65,6 +65,7 @@ $ide-commit-header-height: 48px;
   flex-direction: column;
   flex: 1;
   border-left: 1px solid $white-dark;
+  border-right: 1px solid $white-dark;
   overflow: hidden;
 }
 
@@ -592,14 +593,15 @@ $ide-commit-header-height: 48px;
       background: $white;
     }
 
-    &.is-right {
-      padding-right: $gl-padding;
-      padding-left: $gl-padding + 1px;
+  }
 
-      &::after {
-        right: auto;
-        left: -1px;
-      }
+  &.is-right {
+    padding-right: $gl-padding;
+    padding-left: $gl-padding + 1px;
+
+    &::after {
+      right: auto;
+      left: -1px;
     }
   }
 }
@@ -885,15 +887,11 @@ $ide-commit-header-height: 48px;
 }
 
 .ide-right-sidebar {
-  .ide-activity-bar {
-    border-left: 1px solid $white-dark;
-  }
-
   .multi-file-commit-panel-inner {
     width: 350px;
     padding: $grid-size 0;
     background-color: $white;
-    border-left: 1px solid $white-dark;
+    border-right: 1px solid $white-dark;
   }
 
   .ide-right-sidebar-jobs-detail {
