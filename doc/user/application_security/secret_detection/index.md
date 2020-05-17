@@ -99,7 +99,7 @@ CI/CD configuration file to enable it. Results are available in the SAST report.
 
 ### Customizing settings
 
-The Secret Detection Scan settings can be changed through [environment variables](#available-variables)
+The Secret Detection scan settings can be changed through [environment variables](#available-variables)
 by using the
 [`variables`](../../../ci/yaml/README.md#variables) parameter in `.gitlab-ci.yml`.
 
