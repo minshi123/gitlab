@@ -568,4 +568,66 @@ describe Vulnerabilities::Occurrence do
       it { is_expected.to eq(vulnerabilities_occurrence.remediations.dig(0, 'summary')) }
     end
   end
+
+  describe '#evidence' do
+    it 'has an evidence summary when present' do
+      occurrence = create(:vulnerabilities_occurrence)
+
+      expect(occurrence.evidence).to eq(occurrence.metadata['evidence']['summary'])
+    end
+
+    it 'has no evidence summary when evidence is present, summary is not' do
+      occurrence = create(:vulnerabilities_occurrence, raw_metadata: { evidence: {} })
+
+      expect(occurrence.evidence).to be_nil
+    end
+
+    it 'has no evidence summary when evidence is not present' do
+      occurrence = create(:vulnerabilities_occurrence, raw_metadata: {})
+
+      expect(occurrence.evidence).to be_nil
+    end
+  end
+
+  describe '#message' do
+    let(:occurrence) { build(:vulnerabilities_occurrence) }
+    let(:expected_message) { occurrence.metadata['message'] }
+
+    subject { occurrence.message }
+
+    it { is_expected.to eql(expected_message) }
+  end
+
+  describe '#cve' do
+    let(:occurrence) { build(:vulnerabilities_occurrence) }
+    let(:expected_cve) { occurrence.metadata['cve'] }
+
+    subject { occurrence.cve }
+
+    it { is_expected.to eql(expected_cve) }
+  end
+
+  describe "#metadata" do
+    let(:occurrence) { build(:vulnerabilities_occurrence) }
+
+    subject { occurrence.metadata }
+
+    it "handles bool JSON data" do
+      allow(occurrence).to receive(:raw_metadata) { "true" }
+
+      expect(subject).to eq({})
+    end
+
+    it "handles string JSON data" do
+      allow(occurrence).to receive(:raw_metadata) { '"test"' }
+
+      expect(subject).to eq({})
+    end
+
+    it "parses JSON data" do
+      allow(occurrence).to receive(:raw_metadata) { '{ "test": true }' }
+
+      expect(subject).to eq({ "test" => true })
+    end
+  end
 end

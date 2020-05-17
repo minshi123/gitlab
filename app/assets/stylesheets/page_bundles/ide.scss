@@ -2,6 +2,9 @@
 @import 'framework/mixins';
 @import './ide_mixins';
 @import './ide_monaco_overrides';
+@import './ide_theme_overrides';
+
+@import './ide_themes/dark';
 
 $search-list-icon-width: 18px;
 $ide-activity-bar-width: 60px;
@@ -888,9 +891,13 @@ $ide-commit-header-height: 48px;
 
   .multi-file-commit-panel-inner {
     width: 350px;
-    padding: $grid-size $gl-padding;
+    padding: $grid-size 0;
     background-color: $white;
     border-left: 1px solid $white-dark;
+  }
+
+  .ide-right-sidebar-jobs-detail {
+    padding-bottom: 0;
   }
 
   .ide-right-sidebar-clientside {
@@ -913,15 +920,12 @@ $ide-commit-header-height: 48px;
       margin: 0;
     }
   }
-
-  .build-trace {
-    margin-left: -$gl-padding;
-  }
 }
 
 .ide-pipeline-list {
   flex: 1;
   overflow: auto;
+  padding: 0 $gl-padding;
 }
 
 .ide-pipeline-header {
@@ -964,6 +968,7 @@ $ide-commit-header-height: 48px;
 
 .ide-job-header {
   min-height: 60px;
+  padding: 0 $gl-padding;
 }
 
 .ide-nav-form {

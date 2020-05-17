@@ -325,3 +325,36 @@ describe Snippet, 'Mentionable' do
     end
   end
 end
+
+describe PersonalSnippet, 'Mentionable' do
+  describe '#store_mentions!' do
+    it_behaves_like 'mentions in description', :personal_snippet
+    it_behaves_like 'mentions in notes', :personal_snippet do
+      let(:note) { create(:note_on_personal_snippet) }
+      let(:mentionable) { note.noteable }
+    end
+  end
+
+  describe 'load mentions' do
+    it_behaves_like 'load mentions from DB', :personal_snippet do
+      let(:note) { create(:note_on_personal_snippet) }
+      let(:mentionable) { note.noteable }
+    end
+  end
+end
+
+describe DesignManagement::Design do
+  describe '#store_mentions!' do
+    it_behaves_like 'mentions in notes', :design do
+      let(:note) { create(:diff_note_on_design) }
+      let(:mentionable) { note.noteable }
+    end
+  end
+
+  describe 'load mentions' do
+    it_behaves_like 'load mentions from DB', :design do
+      let(:note) { create(:diff_note_on_design) }
+      let(:mentionable) { note.noteable }
+    end
+  end
+end

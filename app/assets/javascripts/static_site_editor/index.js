@@ -1,29 +1,50 @@
 import Vue from 'vue';
-import StaticSiteEditor from './components/static_site_editor.vue';
+import { parseBoolean } from '~/lib/utils/common_utils';
+import App from './components/app.vue';
 import createStore from './store';
+import createRouter from './router';
+import createApolloProvider from './graphql';
 
 const initStaticSiteEditor = el => {
-  const { projectId, path: sourcePath, returnUrl } = el.dataset;
-  const isSupportedContent = 'isSupportedContent' in el.dataset;
+  const {
+    isSupportedContent,
+    projectId,
+    path: sourcePath,
+    baseUrl,
+    namespace,
+    project,
+  } = el.dataset;
+  const { current_username: username } = window.gon;
+  const returnUrl = el.dataset.returnUrl || null;
 
   const store = createStore({
     initialState: {
-      isSupportedContent,
+      isSupportedContent: parseBoolean(isSupportedContent),
       projectId,
       returnUrl,
       sourcePath,
-      username: window.gon.current_username,
+      username,
     },
+  });
+  const router = createRouter(baseUrl);
+  const apolloProvider = createApolloProvider({
+    isSupportedContent: parseBoolean(isSupportedContent),
+    project: `${namespace}/${project}`,
+    returnUrl,
+    sourcePath,
+    username,
   });
 
   return new Vue({
     el,
     store,
+    router,
+    apolloProvider,
     components: {
-      StaticSiteEditor,
+      App,
     },
     render(createElement) {
-      return createElement('static-site-editor', StaticSiteEditor);
+      return createElement('app');
     },
   });
 };

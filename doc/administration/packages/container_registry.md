@@ -18,12 +18,17 @@ You can read more about the Docker Registry at
 
 **Omnibus GitLab installations**
 
-If you are using the Omnibus GitLab built in [Let's Encrypt integration](https://docs.gitlab.com/omnibus/settings/ssl.html#lets-encrypt-integration), as of GitLab 12.5, the Container Registry will be automatically enabled on port 5050 of the default domain.
+If you are using the Omnibus GitLab built-in [Let's Encrypt integration](https://docs.gitlab.com/omnibus/settings/ssl.html#lets-encrypt-integration), as of GitLab 12.5, the Container Registry will be automatically enabled on port 5050 of the default domain.
 
-If you would like to use a separate domain, all you have to do is configure the domain name under which the Container
-Registry will listen to. Read
-[#container-registry-domain-configuration](#container-registry-domain-configuration)
-and pick one of the two options that fits your case.
+If you are not using GitLab 12.5 or later, or do not use GitLab's built-in Let's Encrypt
+integration, the GitLab Container Registry must be enabled and
+[configured to use an external domain](#container-registry-domain-configuration).
+
+To enable the GitLab Container Registry on your *existing* GitLab domain, refer to the section on
+[configuring Container Registry to use an existing domain](#configure-container-registry-under-an-existing-gitlab-domain).
+
+To use a *separate* domain with your Container Registry, refer to the section on
+[configuring Container Registry under its own domain](#configure-container-registry-under-its-own-domain).
 
 NOTE: **Note:**
 The container registry works under HTTPS by default. Using HTTP is possible
@@ -427,7 +432,7 @@ NOTE: **Note:**
 
 By default, users accessing a registry configured with a remote backend are redirected to the default backend for the storage driver. For example, registries can be configured using the `s3` storage driver, which redirects requests to a remote S3 bucket to alleviate load on the GitLab server.
 
-However, this behaviour is undesirable for registries used by internal hosts that usually can't access public servers. To disable redirects, set the `disable` flag to true as follows. This makes all traffic to always go through the Registry service. This results in improved security (less surface attack as the storage backend is not publicly accessible), but worse performance (all traffic is redirected via the service).
+However, this behavior is undesirable for registries used by internal hosts that usually can't access public servers. To disable redirects, set the `disable` flag to true as follows. This makes all traffic to always go through the Registry service. This results in improved security (less surface attack as the storage backend is not publicly accessible), but worse performance (all traffic is redirected via the service).
 
 **Omnibus GitLab installations**
 
@@ -650,13 +655,13 @@ notifications:
 
 NOTE: **Note:**
 The garbage collection tools are only available when you've installed GitLab
-via an Omnibus package or the cloud native chart.
+via an Omnibus package or the [cloud native chart](https://docs.gitlab.com/charts/charts/registry/#garbage-collection).
 
 DANGER: **Danger:**
 By running the built-in garbage collection command, it will cause downtime to
-the Container Registry. Running this command on an instance in an HA environment
-while one of your other instances is still writing to the Registry storage,
-will remove referenced manifests. To avoid that, make sure Registry is set to
+the Container Registry. If you run this command on an instance in an environment
+where one of your other instances is still writing to the Registry storage,
+referenced manifests will be removed. To avoid that, make sure Registry is set to
 [read-only mode](#performing-garbage-collection-without-downtime) before proceeding.
 
 Container Registry can use considerable amounts of disk space. To clear up

@@ -53,7 +53,7 @@ module QA
             Page::Main::Menu.act { click_settings_link }
             Page::Profile::Menu.act { click_ssh_keys }
 
-            expect(page).to have_content(key_title)
+            expect(page).to have_content(key.title)
             expect(page).to have_content(key.md5_fingerprint)
 
             # Ensure project has replicated
@@ -75,7 +75,8 @@ module QA
       end
 
       context 'git-lfs commit' do
-        it "is replicated to the secondary" do
+        it "is replicated to the secondary", quarantine:
+            { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/212632', type: :bug } do
           key_title = "key for ssh tests #{Time.now.to_f}"
           file_content = 'The rendered file could not be displayed because it is stored in LFS.'
           project = nil
@@ -126,7 +127,7 @@ module QA
             Page::Main::Menu.act { click_settings_link }
             Page::Profile::Menu.act { click_ssh_keys }
 
-            expect(page).to have_content(key_title)
+            expect(page).to have_content(key.title)
             expect(page).to have_content(key.md5_fingerprint)
 
             # Ensure project has replicated

@@ -80,7 +80,7 @@ added `gitlab.io` [in 2016](https://gitlab.com/gitlab-com/infrastructure/issues/
 ### DNS configuration
 
 GitLab Pages expect to run on their own virtual host. In your DNS server/provider
-you need to add a [wildcard DNS A record][wiki-wildcard-dns] pointing to the
+you need to add a [wildcard DNS A record](https://en.wikipedia.org/wiki/Wildcard_DNS_record) pointing to the
 host that GitLab runs. For example, an entry would look like this:
 
 ```plaintext
@@ -94,8 +94,6 @@ IPv6 address. If you don't have IPv6, you can omit the AAAA record.
 
 NOTE: **Note:**
 You should not use the GitLab domain to serve user pages. For more information see the [security section](#security).
-
-[wiki-wildcard-dns]: https://en.wikipedia.org/wiki/Wildcard_DNS_record
 
 ## Configuration
 
@@ -354,7 +352,7 @@ This usually results in this error:
 For installation from source this can be fixed by installing the custom Certificate
 Authority (CA) in the system certificate store.
 
-For Omnibus, normally this would be fixed by [installing a custom CA in GitLab Omnibus](https://docs.gitlab.com/omnibus/settings/ssl.html#install-custom-public-certificates)
+For Omnibus, normally this would be fixed by [installing a custom CA in Omnibus GitLab](https://docs.gitlab.com/omnibus/settings/ssl.html#install-custom-public-certificates)
 but a [bug](https://gitlab.com/gitlab-org/gitlab/issues/25411) is currently preventing
 that method from working. Use the following workaround:
 
@@ -365,14 +363,14 @@ that method from working. Use the following workaround:
    echo -n | openssl s_client -connect gitlab-domain-example.com:443  | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee --append /opt/gitlab/embedded/ssl/certs/cacert.pem
    ```
 
-1. [Restart](../restart_gitlab.md) the GitLab Pages Daemon. For GitLab Omnibus instances:
+1. [Restart](../restart_gitlab.md) the GitLab Pages Daemon. For Omnibus GitLab instances:
 
    ```shell
    sudo gitlab-ctl restart gitlab-pages
    ```
 
 CAUTION: **Caution:**
-Some GitLab Omnibus upgrades will revert this workaround and you'll need to apply it again.
+Some Omnibus GitLab upgrades will revert this workaround and you'll need to apply it again.
 
 ## Activate verbose logging for daemon
 
@@ -474,7 +472,7 @@ To configure GitLab Pages on a separate server:
    postgresql['enable'] = false
    redis['enable'] = false
    prometheus['enable'] = false
-   unicorn['enable'] = false
+   puma['enable'] = false
    sidekiq['enable'] = false
    gitlab_workhorse['enable'] = false
    gitaly['enable'] = false

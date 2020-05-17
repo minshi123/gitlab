@@ -8,24 +8,38 @@ describe Gitlab::Geo::Replicator do
   let_it_be(:primary_node) { create(:geo_node, :primary) }
   let_it_be(:secondary_node) { create(:geo_node) }
 
+  before(:all) do
+    ActiveRecord::Schema.define do
+      create_table :dummy_models, force: true do |t|
+        t.binary :verification_checksum
+      end
+    end
+  end
+
+  after(:all) do
+    ActiveRecord::Schema.define do
+      drop_table :dummy_models, force: true
+    end
+  end
+
   context 'with defined events' do
     before do
-      stub_const('DummyReplicator', Class.new(Gitlab::Geo::Replicator))
+      stub_const('Geo::DummyReplicator', Class.new(Gitlab::Geo::Replicator))
 
-      DummyReplicator.class_eval do
+      Geo::DummyReplicator.class_eval do
         event :test
         event :another_test
 
         protected
 
-        def publish_test(other:)
+        def consume_event_test(user:, other:)
           true
         end
       end
     end
 
     context 'event DSL' do
-      subject { DummyReplicator }
+      subject { Geo::DummyReplicator }
 
       describe '.supported_events' do
         it 'expects :test event to be supported' do
@@ -46,7 +60,7 @@ describe Gitlab::Geo::Replicator do
 
     context 'model DSL' do
       before do
-        stub_const('DummyModel', Class.new)
+        stub_const('DummyModel', Class.new(ApplicationRecord))
 
         DummyModel.class_eval do
           include ActiveModel::Model
@@ -56,8 +70,10 @@ describe Gitlab::Geo::Replicator do
 
           include Gitlab::Geo::ReplicableModel
 
-          with_replicator DummyReplicator
+          with_replicator Geo::DummyReplicator
         end
+
+        DummyModel.reset_column_information
       end
 
       subject { DummyModel.new }
@@ -67,12 +83,12 @@ describe Gitlab::Geo::Replicator do
       end
 
       it 'instantiates a replicator into the model' do
-        expect(subject.replicator).to be_a(DummyReplicator)
+        expect(subject.replicator).to be_a(Geo::DummyReplicator)
       end
     end
 
     describe '#publish' do
-      subject { DummyReplicator.new }
+      subject { Geo::DummyReplicator.new }
 
       context 'when geo_self_service_framework feature is disabled' do
         before do
@@ -103,6 +119,34 @@ describe Gitlab::Geo::Replicator do
       context 'when publishing unsupported event' do
         it 'raises an argument error' do
           expect { subject.publish(:unsupported) }.to raise_error(ArgumentError)
+        end
+      end
+    end
+
+    describe '#consume' do
+      subject { Geo::DummyReplicator.new }
+
+      it 'accepts valid attributes' do
+        expect { subject.consume(:test, user: 'something', other: 'something else') }.not_to raise_error
+      end
+
+      it 'calls corresponding method with specified named attributes' do
+        expect(subject).to receive(:consume_event_test).with(user: 'something', other: 'something else')
+
+        subject.consume(:test, user: 'something', other: 'something else')
+      end
+    end
+
+    describe '.for_class_name' do
+      context 'when given a Geo RegistryFinder' do
+        it 'returns the corresponding Replicator class' do
+          expect(described_class.for_class_name('Geo::DummyRegistryFinder')).to eq(Geo::DummyReplicator)
+        end
+      end
+
+      context 'when given a Geo RegistriesResolver"' do
+        it 'returns the corresponding Replicator class' do
+          expect(described_class.for_class_name('Geo::DummyRegistriesResolver')).to eq(Geo::DummyReplicator)
         end
       end
     end

@@ -57,7 +57,7 @@ source and target branch can be shown mixed together making it hard to
 understand which changes are being added and which already exist in the
 target branch.
 
-In GitLab 12.10, we added an **experimental** comparison mode, which
+In GitLab 12.10, we added a comparison mode, which
 shows a diff calculated by simulating how it would look like once merged - a more accurate
 representation of the changes rather than using the base of the two
 branches. The new mode is available from the comparison target drop down

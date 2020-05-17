@@ -130,6 +130,16 @@ in the jobs table.
 A few examples of known coverage tools for a variety of languages can be found
 in the pipelines settings page.
 
+### Download test coverage history
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/209121) in GitLab 12.10.
+
+If you want to see the evolution of your project code coverage over time,
+you can download a CSV file with this data. From your project:
+
+1. Go to **{chart}** **Project Analytics > Repository**.
+1. Click **Download raw data (.csv)**
+
 ### Removing color codes
 
 Some test coverage tools output with ANSI color codes that won't be
@@ -161,6 +171,9 @@ This also determines the visibility of these related features:
 - Job output logs
 - Job artifacts
 - The [pipeline security dashboard](../../user/application_security/security_dashboard/index.md#pipeline-security) **(ULTIMATE)**
+
+NOTE: **Note:**
+Currently, job logs and artifacts are [not yet visible for guest users and non-project members](https://gitlab.com/gitlab-org/gitlab/-/issues/25649).
 
 If **Public pipelines** is enabled (default):
 
@@ -287,14 +300,6 @@ https://example.gitlab.com/<namespace>/<project>/badges/<branch>/coverage.svg?st
 ## Environment Variables
 
 [Environment variables](../variables/README.md#gitlab-cicd-environment-variables) can be set in an environment to be available to a runner.
-
-## Deploy Keys
-
-With Deploy Keys, GitLab allows you to import SSH public keys. You can then have
-read only or read/write access to your project from the machines the keys were generated from.
-
-SSH keys added to your project settings will be used for continuous integration,
-staging, or production servers.
 
 <!-- ## Troubleshooting
 

@@ -9,7 +9,8 @@ import UsersCache from '~/lib/utils/users_cache';
 import ResolutionAlert from './resolution_alert.vue';
 import VulnerabilityStateDropdown from './vulnerability_state_dropdown.vue';
 import StatusDescription from './status_description.vue';
-import { VULNERABILITY_STATE_OBJECTS } from '../constants';
+import { VULNERABILITY_STATE_OBJECTS, HEADER_ACTION_BUTTONS } from '../constants';
+import VulnerabilitiesEventBus from './vulnerabilities_event_bus';
 
 export default {
   name: 'VulnerabilityHeader',
@@ -47,7 +48,7 @@ export default {
   data() {
     return {
       isLoadingVulnerability: false,
-      isCreatingIssue: false,
+      isProcessingAction: false,
       isLoadingUser: false,
       vulnerability: this.initialVulnerability,
       user: undefined,
@@ -55,6 +56,15 @@ export default {
   },
 
   computed: {
+    actionButtons() {
+      const buttons = [];
+
+      if (!this.hasIssue) {
+        buttons.push(HEADER_ACTION_BUTTONS.issueCreation);
+      }
+
+      return buttons;
+    },
     hasIssue() {
       return Boolean(this.finding.issue_feedback?.issue_iid);
     },
@@ -94,6 +104,10 @@ export default {
   },
 
   methods: {
+    triggerClick(action) {
+      const fn = this[action];
+      if (typeof fn === 'function') fn();
+    },
     changeVulnerabilityState(newState) {
       this.isLoadingVulnerability = true;
 
@@ -110,10 +124,11 @@ export default {
         })
         .finally(() => {
           this.isLoadingVulnerability = false;
+          VulnerabilitiesEventBus.$emit('VULNERABILITY_STATE_CHANGE');
         });
     },
     createIssue() {
-      this.isCreatingIssue = true;
+      this.isProcessingAction = true;
       axios
         .post(this.createIssueUrl, {
           vulnerability_feedback: {
@@ -132,7 +147,7 @@ export default {
           redirectTo(issue_url);
         })
         .catch(() => {
-          this.isCreatingIssue = false;
+          this.isProcessingAction = false;
           createFlash(
             s__('VulnerabilityManagement|Something went wrong, could not create an issue.'),
           );
@@ -146,7 +161,7 @@ export default {
   <div>
     <resolution-alert
       v-if="showResolutionAlert"
-      :default-branch-name="vulnerability.default_branch_name"
+      :default-branch-name="vulnerability.project_default_branch"
     />
     <div class="detail-page-header">
       <div class="detail-page-header-body align-items-center">
@@ -180,15 +195,14 @@ export default {
           @change="changeVulnerabilityState"
         />
         <gl-deprecated-button
-          v-if="!hasIssue"
-          ref="create-issue-btn"
+          v-if="actionButtons.length > 0"
           class="ml-2"
           variant="success"
           category="secondary"
-          :loading="isCreatingIssue"
-          @click="createIssue"
+          :loading="isProcessingAction"
+          @click="triggerClick(actionButtons[0].action)"
         >
-          {{ s__('VulnerabilityManagement|Create issue') }}
+          {{ actionButtons[0].name }}
         </gl-deprecated-button>
       </div>
     </div>

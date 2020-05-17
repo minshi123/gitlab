@@ -61,8 +61,7 @@ module EE
         after_transition started: :finished do |state, _|
           if state.project.use_elasticsearch?
             state.run_after_commit do
-              last_indexed_commit = state.project.index_status&.last_commit
-              ElasticCommitIndexerWorker.perform_async(state.project_id, last_indexed_commit)
+              ElasticCommitIndexerWorker.perform_async(state.project_id)
             end
           end
         end
@@ -97,6 +96,7 @@ module EE
 
     def mirror_update_due?
       return false unless project.mirror_with_content?
+      return false unless next_execution_timestamp?
       return false if project.archived?
       return false if hard_failed?
       return false if updating_mirror?

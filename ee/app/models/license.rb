@@ -22,6 +22,7 @@ class License < ApplicationRecord
     group_webhooks
     issuable_default_templates
     issue_weights
+    iterations
     jenkins_integration
     ldap_group_sync
     member_lock
@@ -35,6 +36,8 @@ class License < ApplicationRecord
     repository_mirrors
     repository_size_limit
     seat_link
+    send_emails_from_admin_area
+    service_desk
     scoped_issue_board
     usage_quotas
     visual_review_app
@@ -59,6 +62,7 @@ class License < ApplicationRecord
     custom_project_templates
     cycle_analytics_for_groups
     db_load_balancing
+    default_branch_protection_restriction_in_groups
     default_project_deletion_protection
     dependency_proxy
     deploy_board
@@ -95,7 +99,6 @@ class License < ApplicationRecord
     reject_unsigned_commits
     required_ci_templates
     scoped_labels
-    service_desk
     smartcard_auth
     group_timelogs
     type_of_work_analytics
@@ -117,7 +120,6 @@ class License < ApplicationRecord
     incident_management
     insights
     issuable_health_status
-    license_management
     license_scanning
     personal_access_token_expiration_policy
     prometheus_alerts
@@ -201,6 +203,7 @@ class License < ApplicationRecord
     custom_file_templates
     custom_project_templates
     db_load_balancing
+    default_branch_protection_restriction_in_groups
     elastic_search
     enterprise_templates
     extended_audit_events
@@ -227,9 +230,10 @@ class License < ApplicationRecord
 
   after_create :reset_current
   after_destroy :reset_current
+  after_commit :reset_future_dated, on: [:create, :destroy]
 
-  scope :previous, -> { order(created_at: :desc).offset(1) }
   scope :recent, -> { reorder(id: :desc) }
+  scope :last_hundred, -> { recent.limit(100) }
 
   class << self
     def features_for_plan(plan)
@@ -265,11 +269,21 @@ class License < ApplicationRecord
     def load_license
       return unless self.table_exists?
 
-      license = self.last
+      self.last_hundred.find { |license| license.valid? && license.started? }
+    end
 
-      return unless license && license.valid?
+    def future_dated
+      Gitlab::SafeRequestStore.fetch(:future_dated_license) { load_future_dated }
+    end
 
-      license
+    def reset_future_dated
+      Gitlab::SafeRequestStore.delete(:future_dated_license)
+    end
+
+    def future_dated_only?
+      return false if current.present?
+
+      future_dated.present?
     end
 
     def global_feature?(feature)
@@ -288,6 +302,16 @@ class License < ApplicationRecord
       return false unless ::Feature.enabled?(:free_period_for_pull_mirroring, default_enabled: true)
 
       ANY_PLAN_FEATURES.include?(feature)
+    end
+
+    def history
+      all.sort_by { |license| [license.starts_at, license.created_at, license.expires_at] }.reverse
+    end
+
+    private
+
+    def load_future_dated
+      self.last_hundred.find { |license| license.valid? && license.future_dated? }
     end
   end
 
@@ -414,10 +438,6 @@ class License < ApplicationRecord
     restricted_attr(:trial)
   end
 
-  def active?
-    !expired?
-  end
-
   def exclude_guests_from_active_count?
     plan == License::ULTIMATE_PLAN
   end
@@ -468,6 +488,14 @@ class License < ApplicationRecord
     [License::STARTER_PLAN, License::PREMIUM_PLAN, License::ULTIMATE_PLAN].include?(plan)
   end
 
+  def started?
+    starts_at <= Date.current
+  end
+
+  def future_dated?
+    starts_at > Date.current
+  end
+
   private
 
   def restricted_attr(name, default = nil)
@@ -478,6 +506,10 @@ class License < ApplicationRecord
 
   def reset_current
     self.class.reset_current
+  end
+
+  def reset_future_dated
+    self.class.reset_future_dated
   end
 
   def reset_license

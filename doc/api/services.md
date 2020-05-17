@@ -189,9 +189,9 @@ Parameters:
 
 | Parameter | Type | Required | Description |
 | --------- | ---- | -------- | ----------- |
-| `new_issue_url` | string | true |  New Issue url |
-| `issues_url` | string | true | Issue url |
-| `project_url` | string | true | Project url |
+| `new_issue_url` | string | true |  New Issue URL |
+| `issues_url` | string | true | Issue URL |
+| `project_url` | string | true | Project URL |
 | `description` | string | false | Description |
 | `title` | string | false | Title |
 | `push_events` | boolean | false | Enable notifications for push events |
@@ -347,11 +347,11 @@ Parameters:
 
 | Parameter | Type | Required | Description |
 | --------- | ---- | -------- | ----------- |
-| `new_issue_url` | string | true |  New Issue url
-| `issues_url` | string | true | Issue url
-| `project_url` | string | true | Project url
-| `description` | string | false | Description
-| `title` | string | false | Title
+| `new_issue_url` | string | true |  New Issue URL |
+| `issues_url` | string | true | Issue URL |
+| `project_url` | string | true | Project URL |
+| `description` | string | false | Description |
+| `title` | string | false | Title |
 | `push_events` | boolean | false | Enable notifications for push events |
 
 ### Delete Custom Issue Tracker service
@@ -567,7 +567,7 @@ Set Hangouts Chat service for a project.
 PUT /projects/:id/services/hangouts-chat
 ```
 
->**Note:** Specific event parameters (for example, `push_events` flag) were [introduced in v10.4][11435]
+>**Note:** Specific event parameters (for example, `push_events` flag) were [introduced in v10.4](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/11435)
 
 Parameters:
 
@@ -1034,9 +1034,9 @@ Parameters:
 
 | Parameter | Type | Required | Description |
 | --------- | ---- | -------- | ----------- |
-| `new_issue_url` | string | true | New Issue url |
-| `project_url` | string | true | Project url |
-| `issues_url` | string | true | Issue url |
+| `new_issue_url` | string | true | New Issue URL |
+| `project_url` | string | true | Project URL |
+| `issues_url` | string | true | Issue URL |
 | `description` | string | false | Description |
 | `push_events` | boolean | false | Enable notifications for push events |
 
@@ -1068,7 +1068,7 @@ Set Slack service for a project.
 PUT /projects/:id/services/slack
 ```
 
->**Note:** Specific event parameters (for example, `push_events` flag and `push_channel`) were [introduced in v10.4][11435]
+>**Note:** Specific event parameters (for example, `push_events` flag and `push_channel`) were [introduced in v10.4](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/11435)
 
 Parameters:
 
@@ -1177,7 +1177,7 @@ Set Mattermost service for a project.
 PUT /projects/:id/services/mattermost
 ```
 
->**Note:** Specific event parameters (for example, `push_events` flag and `push_channel`) were [introduced in v10.4][11435]
+>**Note:** Specific event parameters (for example, `push_events` flag and `push_channel`) were [introduced in v10.4](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/11435)
 
 Parameters:
 
@@ -1303,6 +1303,9 @@ GET /projects/:id/services/jenkins
 
 A continuous integration and build server
 
+NOTE: **Note:**
+This service was [removed in v13.0](https://gitlab.com/gitlab-org/gitlab/-/issues/1600)
+
 ### Create/Edit Jenkins CI (Deprecated) service
 
 Set Jenkins CI (Deprecated) service for a project.
@@ -1369,8 +1372,6 @@ Get MockCI service settings for a project.
 GET /projects/:id/services/mock-ci
 ```
 
-[11435]: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/11435
-
 ## YouTrack
 
 YouTrack issue tracker
@@ -1387,8 +1388,8 @@ Parameters:
 
 | Parameter | Type | Required | Description |
 | --------- | ---- | -------- | ----------- |
-| `issues_url` | string | true | Issue url |
-| `project_url` | string | true | Project url |
+| `issues_url` | string | true | Issue URL |
+| `project_url` | string | true | Project URL |
 | `description` | string | false | Description |
 | `push_events` | boolean | false | Enable notifications for push events |
 

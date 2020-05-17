@@ -52,7 +52,7 @@ describe ProjectImportState, type: :model do
 
         context 'no index status' do
           it 'schedules a full index of the repository' do
-            expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id, nil)
+            expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id)
 
             import_state.finish
           end
@@ -61,8 +61,8 @@ describe ProjectImportState, type: :model do
         context 'with index status' do
           let(:index_status) { IndexStatus.create!(project: project, indexed_at: Time.now, last_commit: 'foo') }
 
-          it 'schedules a progressive index of the repository' do
-            expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id, index_status.last_commit)
+          it 'schedules a full index of the repository' do
+            expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(import_state.project_id)
 
             import_state.finish
           end
@@ -267,6 +267,15 @@ describe ProjectImportState, type: :model do
     context 'mirror is updating' do
       it 'returns false when scheduled' do
         import_state = create(:import_state, :scheduled, :mirror, :repository)
+
+        expect(import_state.mirror_update_due?).to be false
+      end
+    end
+
+    context 'when next_execution_timestamp is nil' do
+      it 'returns false' do
+        import_state = create(:import_state, :finished, :mirror, :repository)
+        import_state.next_execution_timestamp = nil
 
         expect(import_state.mirror_update_due?).to be false
       end

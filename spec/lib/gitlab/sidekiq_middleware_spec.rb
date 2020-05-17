@@ -4,12 +4,16 @@ require 'spec_helper'
 require 'sidekiq/testing'
 
 describe Gitlab::SidekiqMiddleware do
-  class TestWorker
-    include Sidekiq::Worker
+  before do
+    stub_const('TestWorker', Class.new)
 
-    def perform(_arg)
-      Gitlab::SafeRequestStore['gitaly_call_actual'] = 1
-      Gitlab::GitalyClient.query_time = 5
+    TestWorker.class_eval do
+      include Sidekiq::Worker
+
+      def perform(_arg)
+        Gitlab::SafeRequestStore['gitaly_call_actual'] = 1
+        Gitlab::GitalyClient.query_time = 5
+      end
     end
   end
 
@@ -32,8 +36,7 @@ describe Gitlab::SidekiqMiddleware do
         described_class.server_configurator(
           metrics: metrics,
           arguments_logger: arguments_logger,
-          memory_killer: memory_killer,
-          request_store: request_store
+          memory_killer: memory_killer
         ).call(chain)
 
         example.run
@@ -77,13 +80,11 @@ describe Gitlab::SidekiqMiddleware do
       let(:metrics) { false }
       let(:arguments_logger) { false }
       let(:memory_killer) { false }
-      let(:request_store) { false }
       let(:disabled_sidekiq_middlewares) do
         [
           Gitlab::SidekiqMiddleware::ServerMetrics,
           Gitlab::SidekiqMiddleware::ArgumentsLogger,
-          Gitlab::SidekiqMiddleware::MemoryKiller,
-          Gitlab::SidekiqMiddleware::RequestStoreMiddleware
+          Gitlab::SidekiqMiddleware::MemoryKiller
         ]
       end
 
@@ -94,7 +95,6 @@ describe Gitlab::SidekiqMiddleware do
       let(:metrics) { true }
       let(:arguments_logger) { true }
       let(:memory_killer) { true }
-      let(:request_store) { true }
       let(:disabled_sidekiq_middlewares) { [] }
 
       it_behaves_like "a server middleware chain"

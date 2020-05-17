@@ -81,6 +81,10 @@ class Service < ApplicationRecord
     active
   end
 
+  def operating?
+    active && persisted?
+  end
+
   def show_active_box?
     true
   end
@@ -343,14 +347,6 @@ class Service < ApplicationRecord
     service.project_id = project_id
     service.active = false if service.active? && service.invalid?
     service
-  end
-
-  def deprecated?
-    false
-  end
-
-  def deprecation_message
-    nil
   end
 
   # override if needed

@@ -25,7 +25,7 @@ Access the default page for admin area settings by navigating to
 | [Terms of Service and Privacy Policy](terms.md) | Include a Terms of Service agreement and Privacy Policy that all users must accept. |
 | [External Authentication](external_authorization.md#configuration) | External Classification Policy Authorization |
 | [Web terminal](../../../administration/integration/terminal.md#limiting-websocket-connection-time) | Set max session time for web terminal. |
-| [Web IDE](../../project/web_ide/index.md#enabling-client-side-evaluation) | Manage Web IDE Features. |
+| [Web IDE](../../project/web_ide/index.md#enabling-live-preview) | Manage Web IDE Features. |
 
 ## Integrations
 
@@ -74,7 +74,6 @@ Access the default page for admin area settings by navigating to
 
 | Option | Description |
 | ------ | ----------- |
-| [Metrics - Influx](../../../administration/monitoring/performance/gitlab_configuration.md) | Enable and configure InfluxDB metrics. |
 | [Metrics - Prometheus](../../../administration/monitoring/prometheus/gitlab_metrics.md) | Enable and configure Prometheus metrics. |
 | [Metrics - Grafana](../../../administration/monitoring/performance/grafana_configuration.md#integration-with-gitlab-ui) | Enable and configure Grafana. |
 | [Profiling - Performance bar](../../../administration/monitoring/performance/performance_bar.md#enable-the-performance-bar-via-the-admin-panel) | Enable access to the Performance Bar for a given group. |
@@ -103,7 +102,7 @@ Access the default page for admin area settings by navigating to
 | Option | Description |
 | ------ | ----------- |
 | [Email](email.md) | Various email settings. |
-| [Help page](../../../customization/help_message.md) | Help page text and support page url. |
+| [Help page](../../../customization/help_message.md) | Help page text and support page URL. |
 | [Pages](../../../administration/pages/index.md#custom-domain-verification) | Size and domain settings for static websites |
 | [Real-time features](../../../administration/polling.md) | Change this value to influence how frequently the GitLab UI polls for updates. |
 | [Gitaly timeouts](gitaly_timeouts.md) | Configure Gitaly timeouts. |

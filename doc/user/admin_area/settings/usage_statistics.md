@@ -58,10 +58,10 @@ sequenceDiagram
 
 ## Usage Ping **(CORE ONLY)**
 
-> - [Introduced][ee-557] in GitLab Enterprise Edition 8.10.
-> - More statistics [were added][ee-735] in GitLab Enterprise Edition 8.12.
-> - [Moved to GitLab Core][ce-23361] in 9.1.
-> - More statistics [were added][ee-6602] in GitLab Ultimate 11.2.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/557) in GitLab Enterprise Edition 8.10.
+> - More statistics [were added](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/735) in GitLab Enterprise Edition 8.12.
+> - [Moved to GitLab Core](https://gitlab.com/gitlab-org/gitlab-foss/issues/23361) in 9.1.
+> - More statistics [were added](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/6602) in GitLab Ultimate 11.2.
 
 GitLab sends a weekly payload containing usage data to GitLab Inc. The usage
 ping uses high-level data to help our product, support, and sales teams. It does
@@ -149,11 +149,6 @@ Each scenario can be a third-level heading, e.g. `### Getting error message X`.
 If you have none to add when creating a doc, leave this section in place
 but commented out to help encourage others to add to it in the future. -->
 
-[ee-557]: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/557
-[ee-735]: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/735
-[ce-23361]: https://gitlab.com/gitlab-org/gitlab-foss/issues/23361
-[ee-6602]: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/6602
-
 ## Usage Statistics Collected
 
 | Statistic  | Section  | Stage    | Description   |
@@ -190,6 +185,7 @@ but commented out to help encourage others to add to it in the future. -->
 |auto_devops_disabled|counts||
 |deploy_keys|counts||
 |deployments|counts||
+|dast_jobs|counts||
 |successful_deployments|counts||
 |failed_deployments|counts||
 |environments|counts||
@@ -237,6 +233,7 @@ but commented out to help encourage others to add to it in the future. -->
 |protected_branches|counts||
 |releases|counts||
 |remote_mirrors|counts||
+|requirements_created|counts||
 |snippets|counts||
 |suggestions|counts||
 |todos|counts||
@@ -260,7 +257,6 @@ but commented out to help encourage others to add to it in the future. -->
 |projects_hipchat_active|counts||
 |projects_irker_active|counts||
 |projects_jenkins_active|counts||
-|projects_jenkins_deprecated_active|counts||
 |projects_jira_active -|counts||
 |projects_mattermost_active|counts||
 |projects_mattermost_slash_commands_active|counts||
@@ -308,13 +304,18 @@ but commented out to help encourage others to add to it in the future. -->
 |licenses_list_views|counts||
 |user_preferences_group_overview_details|counts||
 |user_preferences_group_overview_security_dashboard|counts||
+|ingress_modsecurity_logging|counts||
 |ingress_modsecurity_blocking|counts||
 |ingress_modsecurity_disabled|counts||
+|ingress_modsecurity_not_installed|counts||
 |dependency_list_usages_total|counts||
 |epics|counts||
 |feature_flags|counts||
 |geo_nodes|counts||
-|incident_issues|counts||
+|incident_issues|counts|monitor|Issues created by the alert bot|
+|alert_bot_incident_issues|counts|monitor|Issues created by the alert bot|
+|incident_labeled_issues|counts|monitor|Issues with the incident label|
+|issues_created_gitlab_alerts|counts|monitor|issues created from alerts by non-alert bot users|
 |ldap_group_links|counts||
 |ldap_keys|counts||
 |ldap_users|counts||
@@ -340,7 +341,6 @@ but commented out to help encourage others to add to it in the future. -->
 |dependency_proxy_enabled|||
 |gitlab_shared_runners_enabled|||
 |gravatar_enabled|||
-|influxdb_metrics_enabled|||
 |ldap_enabled|||
 |mattermost_enabled|||
 |omniauth_enabled|||

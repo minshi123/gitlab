@@ -33,10 +33,17 @@ module API
         authorize_geo_transfer!(replicable_name: params[:replicable_name], id: params[:id])
 
         decoded_params = jwt_decoder.decode
-        service = Geo::BlobUploadService.new(replicable_name: params[:replicable_name],
-                                             blob_id: params[:id],
-                                             decoded_params: decoded_params)
-        service.execute
+        service = ::Geo::BlobUploadService.new(replicable_name: params[:replicable_name],
+                                               blob_id: params[:id],
+                                               decoded_params: decoded_params)
+        response = service.execute
+
+        if response[:code] == :ok
+          file = response[:file]
+          present_carrierwave_file!(file)
+        else
+          error! response, response.delete(:code)
+        end
       end
 
       # Verify the GitLab Geo transfer request is valid
@@ -86,6 +93,51 @@ module API
       #
       resource 'proxy_git_ssh' do
         format :json
+
+        # For git clone/pull
+
+        # Responsible for making HTTP GET /repo.git/info/refs?service=git-upload-pack
+        # request *from* secondary gitlab-shell to primary
+        #
+        params do
+          requires :secret_token, type: String
+          requires :data, type: Hash do
+            requires :gl_id, type: String
+            requires :primary_repo, type: String
+          end
+        end
+        post 'info_refs_upload_pack' do
+          authenticate_by_gitlab_shell_token!
+          params.delete(:secret_token)
+
+          response = Gitlab::Geo::GitSSHProxy.new(params['data']).info_refs_upload_pack
+
+          status(response.code)
+          response.body
+        end
+
+        # Responsible for making HTTP POST /repo.git/git-upload-pack
+        # request *from* secondary gitlab-shell to primary
+        #
+        params do
+          requires :secret_token, type: String
+          requires :data, type: Hash do
+            requires :gl_id, type: String
+            requires :primary_repo, type: String
+          end
+          requires :output, type: String, desc: 'Output from git-upload-pack'
+        end
+        post 'upload_pack' do
+          authenticate_by_gitlab_shell_token!
+          params.delete(:secret_token)
+
+          response = Gitlab::Geo::GitSSHProxy.new(params['data']).upload_pack(params['output'])
+
+          status(response.code)
+          response.body
+        end
+
+        # For git push
 
         # Responsible for making HTTP GET /repo.git/info/refs?service=git-receive-pack
         # request *from* secondary gitlab-shell to primary

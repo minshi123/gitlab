@@ -7,10 +7,12 @@ import InstanceSecurityVulnerabilities from './first_class_instance_security_das
 import VulnerabilitySeverity from 'ee/security_dashboard/components/vulnerability_severity.vue';
 import Filters from 'ee/security_dashboard/components/first_class_vulnerability_filters.vue';
 import ProjectManager from './project_manager.vue';
+import CsvExportButton from './csv_export_button.vue';
 
 export default {
   components: {
     ProjectManager,
+    CsvExportButton,
     SecurityDashboardLayout,
     InstanceSecurityVulnerabilities,
     VulnerabilitySeverity,
@@ -41,6 +43,11 @@ export default {
       type: String,
       required: true,
     },
+
+    vulnerabilitiesExportEndpoint: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -64,10 +71,10 @@ export default {
       return this.showProjectSelector
         ? {
             variant: 'success',
-            text: s__('SecurityDashboard|Return to dashboard'),
+            text: s__('SecurityReports|Return to dashboard'),
           }
         : {
-            text: s__('SecurityDashboard|Edit dashboard'),
+            text: s__('SecurityReports|Edit dashboard'),
           };
     },
   },
@@ -95,9 +102,10 @@ export default {
   <security-dashboard-layout>
     <template #header>
       <header class="page-title-holder flex-fill d-flex align-items-center">
-        <h2 class="page-title">{{ s__('SecurityDashboard|Security Dashboard') }}</h2>
+        <h2 class="page-title flex-grow">{{ s__('SecurityReports|Security Dashboard') }}</h2>
+        <csv-export-button :vulnerabilities-export-endpoint="vulnerabilitiesExportEndpoint" />
         <gl-button
-          class="page-title-controls js-project-selector-toggle"
+          class="page-title-controls ml-2"
           :variant="toggleButtonProps.variant"
           @click="toggleProjectSelector"
           >{{ toggleButtonProps.text }}</gl-button
@@ -114,22 +122,22 @@ export default {
     />
     <gl-empty-state
       v-else-if="shouldShowEmptyState"
-      :title="s__('SecurityDashboard|Add a project to your dashboard')"
+      :title="s__('SecurityReports|Add a project to your dashboard')"
       :svg-path="emptyStateSvgPath"
     >
       <template #description>
         {{
           s__(
-            'SecurityDashboard|The security dashboard displays the latest security findings for projects you wish to monitor. Select "Edit dashboard" to add and remove projects.',
+            'SecurityReports|The security dashboard displays the latest security findings for projects you wish to monitor. Select "Edit dashboard" to add and remove projects.',
           )
         }}
         <gl-link :href="dashboardDocumentation">{{
-          s__('SecurityDashboard|More information')
+          s__('SecurityReports|More information')
         }}</gl-link>
       </template>
       <template #actions>
         <gl-button variant="success" @click="toggleProjectSelector">
-          {{ s__('SecurityDashboard|Add projects') }}
+          {{ s__('SecurityReports|Add projects') }}
         </gl-button>
       </template>
     </gl-empty-state>

@@ -20,7 +20,7 @@ The following tools are used:
 
 1. [`gettext_i18n_rails`](https://github.com/grosser/gettext_i18n_rails): this
    gem allow us to translate content from models, views and controllers. Also
-   it gives us access to the following raketasks:
+   it gives us access to the following Rake tasks:
    - `rake gettext:find`: Parses almost all the files from the
      Rails application looking for content that has been marked for
      translation. Finally, it updates the PO files with the new content that
@@ -30,7 +30,7 @@ The following tools are used:
 
 1. [`gettext_i18n_rails_js`](https://github.com/webhippie/gettext_i18n_rails_js):
    this gem is useful to make the translations available in JavaScript. It
-   provides the following raketask:
+   provides the following Rake task:
    - `rake gettext:po_to_json`: Reads the contents from the PO files and
      generates JSON files containing all the available translations.
 
@@ -536,9 +536,9 @@ The linter will take the following into account:
 - Variable usage
   - Only one unnamed (`%d`) variable, since the order of variables might change
     in different languages
-  - All variables used in the message-id are used in the translation
+  - All variables used in the message ID are used in the translation
   - There should be no variables used in a translation that aren't in the
-    message-id
+    message ID
 - Errors during translation.
 
 The errors are grouped per file, and per message ID:
@@ -562,7 +562,7 @@ Errors in `locale/zh_TW/gitlab.po`:
 
 In this output the `locale/zh_HK/gitlab.po` has syntax errors.
 The `locale/zh_TW/gitlab.po` has variables that are used in the translation that
-aren't in the message with id `1 pipeline`.
+aren't in the message with ID `1 pipeline`.
 
 ## Adding a new language
 

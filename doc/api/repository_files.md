@@ -47,7 +47,7 @@ Example response:
 
 Parameters:
 
-- `file_path` (required) - Url encoded full path to new file. Ex. lib%2Fclass%2Erb
+- `file_path` (required) - URL encoded full path to new file. Ex. lib%2Fclass%2Erb
 - `ref` (required) - The name of branch, tag or commit
 
 NOTE: **Note:**
@@ -122,7 +122,7 @@ Example response:
 
 Parameters:
 
-- `file_path` (required) - Url encoded full path to new file. Ex. lib%2Fclass%2Erb
+- `file_path` (required) - URL encoded full path to new file. Ex. lib%2Fclass%2Erb
 - `ref` (required) - The name of branch, tag or commit
 
 NOTE: **Note:**
@@ -161,7 +161,7 @@ curl --header 'PRIVATE-TOKEN: <your_access_token>' 'https://gitlab.example.com/a
 
 Parameters:
 
-- `file_path` (required) - Url encoded full path to new file. Ex. lib%2Fclass%2Erb
+- `file_path` (required) - URL encoded full path to new file. Ex. lib%2Fclass%2Erb
 - `ref` (required) - The name of branch, tag or commit
 
 NOTE: **Note:**
@@ -193,7 +193,7 @@ Example response:
 
 Parameters:
 
-- `file_path` (required) - Url encoded full path to new file. Ex. lib%2Fclass%2Erb
+- `file_path` (required) - URL encoded full path to new file. Ex. lib%2Fclass%2Erb
 - `branch` (required) - Name of the branch
 - `start_branch` (optional) - Name of the branch to start the new commit from
 - `encoding` (optional) - Change encoding to 'base64'. Default is text.
@@ -228,7 +228,7 @@ Example response:
 
 Parameters:
 
-- `file_path` (required) - Url encoded full path to new file. Ex. lib%2Fclass%2Erb
+- `file_path` (required) - URL encoded full path to new file. Ex. lib%2Fclass%2Erb
 - `branch` (required) - Name of the branch
 - `start_branch` (optional) - Name of the branch to start the new commit from
 - `encoding` (optional) - Change encoding to 'base64'. Default is text.
@@ -236,7 +236,7 @@ Parameters:
 - `author_name` (optional) - Specify the commit author's name
 - `content` (required) - New file content
 - `commit_message` (required) - Commit message
-- `last_commit_id` (optional) - Last known file commit id
+- `last_commit_id` (optional) - Last known file commit ID
 
 If the commit fails for any reason we return a 400 error with a non-specific
 error message. Possible causes for a failed commit include:
@@ -265,10 +265,10 @@ curl --request DELETE --header 'PRIVATE-TOKEN: <your_access_token>' --header "Co
 
 Parameters:
 
-- `file_path` (required) - Url encoded full path to new file. Ex. lib%2Fclass%2Erb
+- `file_path` (required) - URL encoded full path to new file. Ex. lib%2Fclass%2Erb
 - `branch` (required) - Name of the branch
 - `start_branch` (optional) - Name of the branch to start the new commit from
 - `author_email` (optional) - Specify the commit author's email address
 - `author_name` (optional) - Specify the commit author's name
 - `commit_message` (required) - Commit message
-- `last_commit_id` (optional) - Last known file commit id
+- `last_commit_id` (optional) - Last known file commit ID

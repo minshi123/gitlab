@@ -7,7 +7,7 @@ describe Gitlab::UsageData do
     allow(ActiveRecord::Base.connection).to receive(:transaction_open?).and_return(false)
   end
 
-  describe '#data' do
+  describe '.data' do
     # using Array.new to create a different creator User for each of the projects
     let_it_be(:projects) { Array.new(3) { create(:project, :repository, creator: create(:user, group_view: :security_dashboard)) } }
     let(:count_data) { subject[:counts] }
@@ -107,9 +107,6 @@ describe Gitlab::UsageData do
         sast_jobs
         status_page_projects
         status_page_issues
-        design_management_designs_create
-        design_management_designs_update
-        design_management_designs_delete
         user_preferences_group_overview_details
         user_preferences_group_overview_security_dashboard
         template_repositories
@@ -152,7 +149,7 @@ describe Gitlab::UsageData do
     end
   end
 
-  describe '#features_usage_data_ee' do
+  describe '.features_usage_data_ee' do
     subject { described_class.features_usage_data_ee }
 
     it 'gathers feature usage data of EE' do
@@ -162,7 +159,7 @@ describe Gitlab::UsageData do
     end
   end
 
-  describe '#license_usage_data' do
+  describe '.license_usage_data' do
     subject { described_class.license_usage_data }
 
     it 'gathers license data' do
@@ -177,6 +174,28 @@ describe Gitlab::UsageData do
       expect(subject[:license_expires_at]).to eq(license.expires_at)
       expect(subject[:license_add_ons]).to eq(license.add_ons)
       expect(subject[:license_trial]).to eq(license.trial?)
+    end
+  end
+
+  describe '.requirements_counts' do
+    subject { described_class.requirements_counts }
+
+    context 'when requirements are disabled' do
+      it 'returns empty hash' do
+        stub_licensed_features(requirements: false)
+
+        expect(subject).to eq({})
+      end
+    end
+
+    context 'when requirements are enabled' do
+      it 'returns created requirements count' do
+        stub_licensed_features(requirements: true)
+
+        create_list(:requirement, 2)
+
+        expect(subject).to eq({ requirements_created: 2 })
+      end
     end
   end
 
@@ -265,18 +284,7 @@ describe Gitlab::UsageData do
       end
 
       describe '.uncached_data' do
-        context 'when the :usage_activity_by_stage feature is not enabled' do
-          before do
-            stub_feature_flags(usage_activity_by_stage: false)
-          end
-
-          it "does not include usage_activity_by_stage data" do
-            expect(described_class.uncached_data).not_to include(:usage_activity_by_stage)
-            expect(described_class.uncached_data).not_to include(:usage_activity_by_stage_monthly)
-          end
-        end
-
-        context 'when the :usage_activity_by_stage feature is enabled' do
+        describe '.usage_activity_by_stage' do
           it 'includes usage_activity_by_stage data' do
             expect(described_class.uncached_data).to include(:usage_activity_by_stage)
             expect(described_class.uncached_data).to include(:usage_activity_by_stage_monthly)
@@ -411,6 +419,7 @@ describe Gitlab::UsageData do
                 create(:key, type: 'LDAPKey', user: user)
                 create(:group_member, ldap: true, user: user)
                 create(:cycle_analytics_group_stage)
+                create(:compliance_framework_project_setting)
               end
 
               expect(described_class.uncached_data[:usage_activity_by_stage][:manage]).to eq(
@@ -418,16 +427,18 @@ describe Gitlab::UsageData do
                 groups: 2,
                 ldap_keys: 2,
                 ldap_users: 2,
-                users_created: 6,
-                value_stream_management_customized_group_stages: 2
+                users_created: 8,
+                value_stream_management_customized_group_stages: 2,
+                projects_with_compliance_framework: 2
               )
               expect(described_class.uncached_data[:usage_activity_by_stage_monthly][:manage]).to eq(
                 events: 1,
                 groups: 1,
                 ldap_keys: 1,
                 ldap_users: 1,
-                users_created: 4,
-                value_stream_management_customized_group_stages: 2
+                users_created: 5,
+                value_stream_management_customized_group_stages: 2,
+                projects_with_compliance_framework: 2
               )
             end
           end
@@ -659,6 +670,14 @@ describe Gitlab::UsageData do
           end
         end
       end
+    end
+  end
+
+  describe '.recording_ee_finished_at' do
+    subject { described_class.recording_ee_finish_data }
+
+    it 'gathers time ee recording finishes at' do
+      expect(subject[:recording_ee_finished_at]).to be_a(Time)
     end
   end
 

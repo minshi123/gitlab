@@ -12,7 +12,7 @@ FactoryBot.define do
 
     after(:build) do |finding, evaluator|
       if evaluator.summary
-        raw_metadata = JSON.parse(finding.raw_metadata)
+        raw_metadata = Gitlab::Json.parse(finding.raw_metadata)
         raw_metadata.delete("solution")
         raw_metadata["remediations"] = [
           {
@@ -54,7 +54,10 @@ FactoryBot.define do
             name: "Cipher does not check for integrity first?",
             url: "https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first"
           }
-        ]
+        ],
+        evidence: {
+          summary: 'Credit card detected'
+        }
       }.to_json
     end
 
@@ -90,7 +93,7 @@ FactoryBot.define do
 
     trait :with_remediation do
       after(:build) do |finding|
-        raw_metadata = JSON.parse(finding.raw_metadata)
+        raw_metadata = Gitlab::Json.parse(finding.raw_metadata)
         raw_metadata.delete(:solution)
         raw_metadata[:remediations] = [
           {

@@ -13,17 +13,27 @@ changes are pushed to a branch.
 If you want the pipeline to run jobs **only** when merge requests are created or updated,
 you can use *pipelines for merge requests*.
 
-In the UI, these pipelines are labeled as `detached`.
+In the UI, these pipelines are labeled as `detached`. Otherwise, these pipelines appear the same
+as other pipelines.
+
+Any user who has developer [permissions](../../user/permissions.md)
+can run a pipeline for merge requests.
 
 ![Merge request page](img/merge_request.png)
 
-A few notes:
+NOTE: **Note**:
+If you use this feature with [merge when pipeline succeeds](../../user/project/merge_requests/merge_when_pipeline_succeeds.md),
+pipelines for merge requests take precedence over the other regular pipelines.
 
-- Pipelines for merge requests are incompatible with
-  [CI/CD for external repositories](../ci_cd_for_external_repos/index.md).
-- [Since GitLab 11.10](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/25504), pipelines for merge requests require GitLab Runner 11.9.
-- If you use this feature with [merge when pipeline succeeds](../../user/project/merge_requests/merge_when_pipeline_succeeds.md),
-  pipelines for merge requests take precedence over the other regular pipelines.
+## Prerequisites
+
+To enable pipelines for merge requests:
+
+- You must have maintainer [permissions](../../user/permissions.md).
+- Your repository must be a GitLab repository, not an
+  [external repository](../ci_cd_for_external_repos/index.md).
+- [In GitLab 11.10 and later](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/25504),
+  you must be using GitLab Runner 11.9.
 
 ## Configuring pipelines for merge requests
 
@@ -245,14 +255,68 @@ to integrate your job with [GitLab Merge Request API](../../api/merge_requests.m
 You can find the list of available variables in [the reference sheet](../variables/predefined_variables.md).
 The variable names begin with the `CI_MERGE_REQUEST_` prefix.
 
-<!-- ## Troubleshooting
+## Troubleshooting
 
-Include any troubleshooting steps that you can foresee. If you know beforehand what issues
-one might have when setting this up, or when something is changed, or on upgrading, it's
-important to describe those, too. Think of things that may go wrong and include them here.
-This is important to minimize requests for support, and to avoid doc comments with
-questions that you know someone might ask.
+### Two pipelines created when pushing to a merge request
 
-Each scenario can be a third-level heading, e.g. `### Getting error message X`.
-If you have none to add when creating a doc, leave this section in place
-but commented out to help encourage others to add to it in the future. -->
+If two pipelines are created when you push a new change to a merge request,
+check your CI configuration file.
+
+For example, with this `.gitlab-ci.yml` configuration:
+
+```yaml
+test:
+  script: ./test
+  rules:
+    - if: $CI_MERGE_REQUEST_ID                      # Include this job in pipelines for merge request
+    - if: $CI_COMMIT_BRANCH                         # Include this job in all branch pipelines
+  # Or, if you are using the `only:` keyword:
+  # only:
+  #  - merge_requests
+  #  - branches
+```
+
+Two pipelines are created when you push a commit to a branch that also has a pending
+merge request:
+
+- A merge request pipeline that runs for the changes in the merge request. In
+  **CI/CD > Pipelines**, the merge request icon (**{merge-request}**)
+  and the merge request ID are displayed. If you hover over the ID, the merge request name is displayed.
+
+  ![MR pipeline icon example](img/merge_request_pipelines_doubled_MR_v12_09.png)
+
+- A "branch" pipeline that runs for the commit pushed to the branch. In **CI/CD > Pipelines**,
+  the branch icon (**{branch}**) and branch name are displayed. This pipeline is
+  created even if no merge request exists.
+
+  ![branch pipeline icon example](img/merge_request_pipelines_doubled_branch_v12_09.png)
+
+With the example configuration above, there is overlap between these two events.
+When you push a commit to a branch that also has an open merge request pending,
+both types of pipelines are created.
+
+To fix this overlap, you must explicitly define which job should run for which
+purpose, for example:
+
+```yaml
+test:
+  script: ./test
+  rules:
+    - if: $CI_MERGE_REQUEST_ID                      # Include this job in pipelines for merge request
+    - if: $CI_COMMIT_BRANCH == 'master'             # Include this job in master branch pipelines
+```
+
+Similar `rules:` should be added to all jobs to avoid any overlapping pipelines. Alternatively,
+you can use the [`workflow:`](../yaml/README.md#exclude-jobs-with-rules-from-certain-pipelines)
+parameter to add the same rules to all jobs globally.
+
+### Two pipelines created when pushing an invalid CI configuration file
+
+Similar to above, pushing to a branch with an invalid CI configuration file can trigger
+the creation of two types of failed pipelines. One pipeline is a failed merge request
+pipeline, and the other is a failed branch pipeline, but both are caused by the same
+invalid configuration.
+
+In rare cases, duplicate pipelines are created.
+
+See [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/201845) for details.

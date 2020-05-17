@@ -40,7 +40,7 @@ module Snippets
     def save_and_commit
       snippet_saved = @snippet.save
 
-      if snippet_saved && Feature.enabled?(:version_snippets, current_user)
+      if snippet_saved
         create_repository
         create_commit
       end
@@ -60,7 +60,7 @@ module Snippets
         @snippet = @snippet.dup
       end
 
-      @snippet.errors.add(:base, e.message)
+      add_snippet_repository_error(snippet: @snippet, error: e)
 
       false
     end

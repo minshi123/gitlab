@@ -40,6 +40,15 @@ things we have found that helps this:
   of the improvements that GitLab offers, and this requires (eventually) updating
   your implementation as part of the transition.
 
+## JenkinsFile Wrapper
+
+We are building a [JenkinsFile Wrapper](https://gitlab.com/gitlab-org/jfr-container-builder/) which will allow
+you to run a complete Jenkins instance inside of a GitLab job, including plugins. This can help ease the process
+of transition, by letting you delay the migration of less urgent pipelines for a period of time.
+
+If you are interested, join our [public testing issue](https://gitlab.com/gitlab-org/gitlab/-/issues/215675) to
+If you are interested, you might be able to [help GitLab test the wrapper](https://gitlab.com/gitlab-org/gitlab/-/issues/215675).
+
 ## Important product differences
 
 There are some high level differences between the products worth mentioning:
@@ -113,7 +122,7 @@ There are some important differences in the way Runners work in comparison to ag
 
 If you are using `gitlab.com`, you can take advantage of our [shared Runner fleet](../../user/gitlab_com/index.md#shared-runners)
 to run jobs without provisioning your own Runners. We are investigating making them
-[available for self-managed instances](https://gitlab.com/gitlab-org/customers-gitlab-com/issues/414)
+[available for self-managed instances](https://gitlab.com/groups/gitlab-org/-/epics/835)
 as well.
 
 ## Groovy vs. YAML
@@ -282,7 +291,7 @@ my_job:
 
 In GitLab, we use the [`variables` keyword](../yaml/README.md#variables) to define different variables at runtime.
 These can also be set up through the GitLab UI, under CI/CD settings. See also our [general documentation on variables](../variables/README.md),
-including the section on [protected variables](../variables/README.md#protected-environment-variables) which can be used
+including the section on [protected variables](../variables/README.md#protect-a-custom-variable) which can be used
 to limit access to certain variables to certain environments or runners:
 
 ```yaml

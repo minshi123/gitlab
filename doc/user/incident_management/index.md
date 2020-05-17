@@ -1,5 +1,8 @@
 ---
 description: "GitLab - Incident Management. GitLab offers solutions for handling incidents in your applications and services"
+stage: Monitor
+group: Health
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 ---
 
 # Incident Management
@@ -47,6 +50,10 @@ Prometheus alerts can be set up in both:
 
 - [GitLab-managed Prometheus](../project/integrations/prometheus.md#setting-up-alerts-for-prometheus-metrics) and
 - [Self-managed Prometheus](../project/integrations/prometheus.md#external-prometheus-instances) installations.
+
+#### Alert Bot user
+
+Behind the scenes, Prometheus alerts are created by the special Alert Bot user creating issues. This user cannot be removed but does not count toward the license limit count.
 
 ### Alert endpoint
 

@@ -13,6 +13,7 @@ describe('Security Configuration App', () => {
         latestPipelinePath: 'http://latestPipelinePath',
         autoDevopsHelpPagePath: 'http://autoDevopsHelpPagePath',
         helpPagePath: 'http://helpPagePath',
+        autoFixSettingsProps: {},
         ...props,
       },
     });
@@ -65,7 +66,7 @@ describe('Security Configuration App', () => {
 
       createComponent({ features });
 
-      expect(wrapper.findAll({ ref: 'featureRow' }).length).toBe(5);
+      expect(wrapper.findAll({ ref: 'featureRow' })).toHaveLength(5);
     });
 
     it('displays a given feature', () => {

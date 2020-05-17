@@ -3,7 +3,7 @@
 class Vulnerabilities::OccurrenceSerializer < BaseSerializer
   include WithPagination
 
-  entity Vulnerabilities::OccurrenceEntity
+  entity Vulnerabilities::FindingEntity
 
   def represent(resource, opts = {})
     if paginated?
@@ -11,7 +11,7 @@ class Vulnerabilities::OccurrenceSerializer < BaseSerializer
     end
 
     if opts.delete(:preload)
-      resource = Gitlab::Vulnerabilities::OccurrencesPreloader.preload!(resource)
+      resource = Gitlab::Vulnerabilities::FindingsPreloader.preload!(resource)
     end
 
     super(resource, opts)

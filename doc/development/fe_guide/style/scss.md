@@ -17,7 +17,7 @@ led by the [GitLab UI WG](https://gitlab.com/gitlab-com/www-gitlab-com/-/merge_r
 #### Where are utility classes defined?
 
 - [Bootstrap's Utility Classes](https://getbootstrap.com/docs/4.3/utilities/)
-- [`common.scss`](https://gitlab.com/gitlab-org/gitlab/blob/master/app/assets/stylesheets/framework/common.scss) (old)
+- [`common.scss`](https://gitlab.com/gitlab-org/gitlab/blob/master/app/assets/stylesheets/framework/common.scss) (old, many classes are now deprecated)
 - [`utilities.scss`](https://gitlab.com/gitlab-org/gitlab/blob/master/app/assets/stylesheets/utilities.scss) (new)
 
 #### Where should I put new utility classes?
@@ -68,6 +68,24 @@ CSS classes should use the `lowercase-hyphenated` format rather than
 
 // Bad
 .className {
+  color: #fff;
+}
+
+// Good
+.class-name {
+  color: #fff;
+}
+```
+
+Class names should be used instead of tag name selectors.
+Using tag name selectors are discouraged in CSS because
+they can affect unintended elements in the hierarchy.
+Also, since they are not meaningful names, they do not
+add meaning to the code.
+
+```scss
+// Bad
+ul {
   color: #fff;
 }
 
@@ -254,8 +272,8 @@ documentation includes [a full list of their linters](https://github.com/sds/scs
 ### Fixing issues
 
 If you want to automate changing a large portion of the codebase to conform to
-the SCSS style guide, you can use [CSSComb][csscomb]. First install
-[Node][node] and [NPM][npm], then run `npm install csscomb -g` to install
+the SCSS style guide, you can use [CSSComb](https://github.com/csscomb/csscomb.js). First install
+[Node](https://github.com/nodejs/node) and [NPM](https://www.npmjs.com/), then run `npm install csscomb -g` to install
 CSSComb globally (system-wide). Run it in the GitLab directory with
 `csscomb app/assets/stylesheets` to automatically fix issues with CSS/SCSS.
 
@@ -279,7 +297,3 @@ Make sure a comment is added on the line above the `disable` rule, otherwise the
 linter will throw a warning. `DisableLinterReason` is enabled to make sure the
 style guide isn't being ignored, and to communicate to others why the style
 guide is ignored in this instance.
-
-[csscomb]: https://github.com/csscomb/csscomb.js
-[node]: https://github.com/nodejs/node
-[npm]: https://www.npmjs.com/
