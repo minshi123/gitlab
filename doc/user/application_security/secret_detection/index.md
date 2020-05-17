@@ -45,7 +45,7 @@ is **not** `19.03.0`. See [troubleshooting information](#error-response-from-dae
 ## Configuration
 
 NOTE: **Note:**
-With GitLab 13.0 Secret Detection was split into it's own CI/CD template.
+With GitLab 13.0 Secret Detection was split into its own CI/CD template.
 
 Secret Detection is performed by a [specific analyzer](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/Secret-Detection.gitlab-ci.yml)
 during the `secret-detection` job. It runs regardless of the programming
