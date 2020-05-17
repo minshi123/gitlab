@@ -126,7 +126,7 @@ Auto Secret Detection stage runs only on the
 [GitLab Runner](https://docs.gitlab.com/runner/) 11.5 or above.
 
 After creating the report, it's uploaded as an artifact which you can later
-download and check out. The merge request widget also displays any security
+download and evaluate. The merge request widget also displays any security
 warnings.
 
 To learn more about [how Secret Detection works](../../user/application_security/secret-detection/index.md),
