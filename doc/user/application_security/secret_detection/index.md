@@ -75,7 +75,7 @@ include:
   - template: Secret-Detection.gitlab-ci.yml
 ```
 
-The included template will create Secret Detection jobs in your CI/CD pipeline and scan
+The included template creates Secret Detection jobs in your CI/CD pipeline and scan
 your project's source code for secrets.
 
 The results will be saved as a
