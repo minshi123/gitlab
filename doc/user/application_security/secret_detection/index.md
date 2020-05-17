@@ -64,7 +64,7 @@ To enable Secret Detection for GitLab 13.0 and later, you must include the `Secr
 <!-- NOTE: 
 TODO: Update how AutoDevops works with Secret Detection
 
-**Note:**
+NOTE: **Note:**
 You don't have to configure Secret Detection manually as shown in this section if you're using [Auto Secret Detection](../../../topics/autodevops/stages.md#auto-sast-ultimate)
 provided by [Auto DevOps](../../../topics/autodevops/index.md). !-->
 
