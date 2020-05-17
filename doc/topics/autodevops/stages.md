@@ -129,8 +129,7 @@ After creating the report, it's uploaded as an artifact which you can later
 download and evaluate. The merge request widget also displays any security
 warnings.
 
-To learn more about [how Secret Detection works](../../user/application_security/secret-detection/index.md),
-see the documentation. !-->
+To learn more, see [Secret Detection](../../user/application_security/secret-detection/index.md).
 
 ## Auto Dependency Scanning **(ULTIMATE)**
 
