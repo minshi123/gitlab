@@ -170,7 +170,7 @@ dashboards. It's not available for download through the web interface.
 > - Introduced in GitLab 13.0.
 > - Requires GitLab Runner 11.5 and above.
 
-The `secret-detection` report collects [detected secretes](../../user/application_security/secret-detection/index.md)
+The `secret-detection` report collects [detected secrets](../../user/application_security/secret-detection/index.md)
 as artifacts.
 
 The collected Secret Detection report will be uploaded to GitLab as an artifact and will be summarized
