@@ -86,7 +86,8 @@ always take the latest Secret Detection artifact available.
 ### Using the SAST Template
 
 Prior to GitLab 13.0, Secret Detection was part of [SAST configuration](../sast#configuration).
-If you already have SAST enabled for your app configured before GitLab 13.0, you don’t need to leverage Secret Detection.
+If you already have SAST enabled for your app configured before GitLab 13.0,
+you don't need to manually configure it.
 
 CAUTION: **Planned Deprecation:**
 In a future GitLab release, configuring Secret Detection with the SAST template will be deprecated. Please begin using `Secret-Detection.gitlab-ci.yml`
