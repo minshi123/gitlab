@@ -173,7 +173,7 @@ dashboards. It's not available for download through the web interface.
 The `secret-detection` report collects [detected secrets](../../user/application_security/secret-detection/index.md)
 as artifacts.
 
-The collected Secret Detection report will be uploaded to GitLab as an artifact and will be summarized
+The collected Secret Detection report is uploaded to GitLab as an artifact and summarized
 in the merge requests and pipeline view. It's also used to provide data for security
 dashboards.
 
