@@ -114,6 +114,24 @@ warnings.
 To learn more about [how SAST works](../../user/application_security/sast/index.md),
 see the documentation.
 
+<!-- TODO
+## Auto Secret Dectection **(ULTIMATE)**
+
+> Introduced in [GitLab Ultimate](https://about.gitlab.com/pricing/) 13.0.
+
+Secret Detection uses the
+[Secret Detection Docker image](https://gitlab.com/gitlab-org/security-products/secrets-detection) to run Secret Detection on the current code, and checks for leaked secrets. The
+Auto Secret Detection stage will be skipped on licenses other than
+[Ultimate](https://about.gitlab.com/pricing/), and requires
+[GitLab Runner](https://docs.gitlab.com/runner/) 11.5 or above.
+
+After creating the report, it's uploaded as an artifact which you can later
+download and check out. The merge request widget also displays any security
+warnings.
+
+To learn more about [how Secret Detection works](../../user/application_security/secret-detection/index.md),
+see the documentation. !-->
+
 ## Auto Dependency Scanning **(ULTIMATE)**
 
 > Introduced in [GitLab Ultimate](https://about.gitlab.com/pricing/) 10.7.
