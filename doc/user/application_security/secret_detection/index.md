@@ -45,11 +45,11 @@ is **not** `19.03.0`. See [troubleshooting information](#error-response-from-dae
 ## Configuration
 
 NOTE: **Note:**
-With GitLab 13.0 Secret Detection was split into it's own CI/CD template. 
+With GitLab 13.0 Secret Detection was split into it's own CI/CD template.
 
 Secret Detection is performed by a [specific analyzer](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/Secret-Detection.gitlab-ci.yml)
 during the `secret-detection` job. It runs regardless of the programming
-language of your app. 
+language of your app.
 
 The Secret Detection analyzer includes [Gitleaks](https://github.com/zricethezav/gitleaks) and [TruffleHog](https://github.com/dxa4481/truffleHog) checks.
 
@@ -59,7 +59,7 @@ with a dollar sign (`$`) as this likely indicates the password being used is an 
 variable. For example, `https://username:$password@example.com/path/to/repo` won't be
 detected, whereas `https://username:password@example.com/path/to/repo` would be detected.
 
-To enable Secret Detection for GitLab 13.0 and later, you must include the Secret-Scanning.gitlab-ci.yml template that’s provided as a part of your GitLab installation. For GitLab versions earlier than 11.9, you can copy and use the job as defined that template.
+To enable Secret Detection for GitLab 13.0 and later, you must include the `Secret-Scanning.gitlab-ci.yml` template that’s provided as a part of your GitLab installation. For GitLab versions earlier than 11.9, you can copy and use the job as defined in that template.
 
 <!-- NOTE: 
 TODO: Update how AutoDevops works with Secret Detection
@@ -86,12 +86,12 @@ always take the latest Secret Detection artifact available.
 ### Using the SAST Template
 
 Prior to GitLab 13.0 Secret Detection was part of [SAST configuration](../sast#configuration).
-If you already have SAST enabled for your app configured prior to GitLab 13.0, you don’t need to leverage Scret Detection.
+If you already have SAST enabled for your app configured before GitLab 13.0, you don’t need to leverage Secret Detection.
 
 CAUTION: **Planned Deprecation:**
-In a future GitLab release, configuring Secret Detectoin with the SAST template will be depreceted. Please begin using `Secret-Detection.gitlab-ci.yml` 
+In a future GitLab release, configuring Secret Detection with the SAST template will be deprecated. Please begin using `Secret-Detection.gitlab-ci.yml`
 to prevent future issues.
- 
+
 When using the SAST Template, Secret Detection is performed by a [specific analyzer](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml#L180)
 during the `sast` job. It runs regardless of the programming
 language of your app, and you don't need to change your
@@ -128,7 +128,7 @@ is no longer supported. When overriding the template, you must use [`rules`](../
 
 #### Availble Variables
 
-Secret Detection make it possible to further customize how it works. Below are currently availible variables 
+Secret Detection can be customized by defining available variables:
 
 | Environment variable    | Default value | Description |
 |-------------------------|---------------|-------------|
@@ -138,11 +138,11 @@ Secret Detection make it possible to further customize how it works. Below are c
 
 ## Full History Secret Scan
 
-GitLab 12.11 introduced support for scanning the full history of a reposity. This new functionality
+GitLab 12.11 introduced support for scanning the full history of a repository. This new functionality
 is particularly useful when you are enabling Secret Detection in a repository for the first time and you
 want to perform a full secret scan. Running a secret scan on the full history can take a long time,
 especially for larger repositories with lengthy Git histories. We recommend not setting this variable
-as part of your normal job defintion.
+as part of your normal job definition.
 
 A new configuration variable ([`SAST_GITLEAKS_HISTORIC_SCAN`](../sast/#vulnerability-filters))
 can be set to change the behavior of the GitLab Secret Detection scan to run on the entire Git history of a repository.
