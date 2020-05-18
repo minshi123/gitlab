@@ -280,16 +280,16 @@ export default {
     },
   },
   created() {
-    this.setInitialState({
-      metricsEndpoint: this.metricsEndpoint,
-      deploymentsEndpoint: this.deploymentsEndpoint,
-      dashboardEndpoint: this.dashboardEndpoint,
-      dashboardsEndpoint: this.dashboardsEndpoint,
-      currentDashboard: this.currentDashboard,
-      projectPath: this.projectPath,
-      logsPath: this.logsPath,
-      currentEnvironmentName: this.currentEnvironmentName,
-    });
+    // this.setInitialState({
+    //   metricsEndpoint: this.metricsEndpoint,
+    //   deploymentsEndpoint: this.deploymentsEndpoint,
+    //   dashboardEndpoint: this.dashboardEndpoint,
+    //   dashboardsEndpoint: this.dashboardsEndpoint,
+    //   currentDashboard: this.currentDashboard,
+    //   projectPath: this.projectPath,
+    //   logsPath: this.logsPath,
+    //   currentEnvironmentName: this.currentEnvironmentName,
+    // });
     window.addEventListener('keyup', this.onKeyup);
   },
   destroyed() {
