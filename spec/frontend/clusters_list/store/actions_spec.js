@@ -37,10 +37,17 @@ describe('Clusters store actions', () => {
     it('should show flash on API error', done => {
       mock.onGet().reply(400, 'Not Found');
 
-      testAction(actions.fetchClusters, { endpoint: apiData.endpoint }, {}, [], [], () => {
-        expect(flashError).toHaveBeenCalledWith(expect.stringMatching('error'));
-        done();
-      });
+      testAction(
+        actions.fetchClusters,
+        { endpoint: apiData.endpoint },
+        {},
+        [{ type: types.SET_LOADING_STATE, payload: false }],
+        [],
+        () => {
+          expect(flashError).toHaveBeenCalledWith(expect.stringMatching('error'));
+          done();
+        },
+      );
     });
   });
 });
