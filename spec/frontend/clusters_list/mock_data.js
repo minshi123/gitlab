@@ -4,10 +4,6 @@ export const clusterList = [
     environment_scope: '*',
     cluster_type: 'group_type',
     status: 'disabled',
-    nodes: [
-      { usage: { cpu: '246155922n', memory: '1255212Ki' } },
-      { usage: { cpu: '307051934n', memory: '1379136Ki' } },
-    ],
   },
   {
     name: 'My Cluster 2',
@@ -21,6 +17,10 @@ export const clusterList = [
     environment_scope: 'development',
     cluster_type: 'project_type',
     status: 'authentication_failure',
+    nodes: [
+      { usage: { cpu: '246155922n', memory: '1255212Ki' } },
+      { usage: { cpu: '307051934n', memory: '1379136Ki' } },
+    ],
   },
   {
     name: 'My Cluster 4',

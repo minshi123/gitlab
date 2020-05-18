@@ -2,7 +2,7 @@ import axios from '~/lib/utils/axios_utils';
 import Clusters from '~/clusters_list/components/clusters.vue';
 import ClusterStore from '~/clusters_list/store';
 import MockAdapter from 'axios-mock-adapter';
-import { apiData } from '../mock_data';
+import { apiData, clusterList } from '../mock_data';
 import { mount } from '@vue/test-utils';
 import { GlTable, GlLoadingIcon } from '@gitlab/ui';
 
@@ -97,9 +97,9 @@ describe('Clusters', () => {
   describe('cluster size', () => {
     it.each`
       clusterSize | lineNumber
-      ${'2'}      | ${0}
+      ${''}       | ${0}
       ${'1'}      | ${1}
-      ${''}       | ${2}
+      ${'2'}      | ${2}
       ${''}       | ${3}
       ${''}       | ${4}
       ${''}       | ${5}
@@ -108,6 +108,29 @@ describe('Clusters', () => {
       const size = sizes.at(lineNumber);
 
       expect(size.text()).toBe(clusterSize);
+    });
+  });
+
+  describe('all nodes missing', () => {
+    beforeEach(() => {
+      const clusterWithNoNodes = clusterList[0];
+
+      mockPollingApi(
+        200,
+        {
+          clusters: [clusterWithNoNodes],
+          has_ancestor_clusters: false,
+        },
+        {},
+      );
+
+      return mountWrapper();
+    });
+
+    it('should not display cluster size column', () => {
+      const header = findTable().find('thead');
+
+      expect(header.text()).not.toContain('Size');
     });
   });
 });
