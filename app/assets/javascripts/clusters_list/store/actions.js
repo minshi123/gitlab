@@ -4,6 +4,11 @@ import flash from '~/flash';
 import { __ } from '~/locale';
 import * as types from './mutation_types';
 
+// Nodes are part of a reactive cache which may take mutliple requests to finish querying
+const nodesQueried = clusters => {
+  return clusters.length === clusters.filter(cluster => cluster.nodes != null).length;
+};
+
 export const fetchClusters = ({ state, commit }) => {
   const poll = new Poll({
     resource: {
@@ -15,7 +20,10 @@ export const fetchClusters = ({ state, commit }) => {
       if (data.clusters) {
         commit(types.SET_CLUSTERS_DATA, data);
         commit(types.SET_LOADING_STATE, false);
-        poll.stop();
+
+        if (nodesQueried(data.clusters)) {
+          poll.stop();
+        }
       }
     },
     errorCallback: () => flash(__('An error occurred while loading clusters')),

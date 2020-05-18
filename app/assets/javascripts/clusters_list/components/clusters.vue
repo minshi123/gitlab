@@ -27,25 +27,40 @@ export default {
           key: 'environment_scope',
           label: __('Environment scope'),
         },
-        // Wait for backend to send these fields
-        // {
-        //  key: 'size',
-        //  label: __('Size'),
-        // },
-        // {
-        //  key: 'cpu',
-        //  label: __('Total cores (vCPUs)'),
-        // },
-        // {
-        //  key: 'memory',
-        //  label: __('Total memory (GB)'),
-        // },
+        ...this.nodeFields,
         {
           key: 'cluster_type',
           label: __('Cluster level'),
           formatter: value => CLUSTER_TYPES[value],
         },
       ];
+    },
+    nodeFields() {
+      if (this.clusters.filter(cluster => cluster.nodes != null).length > 0) {
+        return [
+          {
+            key: 'nodes',
+            label: __('Size'),
+            formatter: nodes => {
+              if (nodes) {
+                return nodes.length;
+              }
+
+              return null;
+            },
+          },
+          // {
+          //  key: 'cpu',
+          //  label: __('Total cores (vCPUs)'),
+          // },
+          // {
+          //  key: 'memory',
+          //  label: __('Total memory (GB)'),
+          // },
+        ];
+      }
+
+      return [];
     },
   },
   mounted() {
@@ -90,7 +105,8 @@ export default {
         ></div>
       </div>
     </template>
-    <template #cell(cluster_type)="{value}">
+
+    <template #cell(node_size)="{value}">
       <gl-badge variant="light">
         {{ value }}
       </gl-badge>
