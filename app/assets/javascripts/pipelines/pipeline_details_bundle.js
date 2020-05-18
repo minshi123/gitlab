@@ -166,23 +166,6 @@ export default () => {
       .catch(() => {});
   }
 
-<<<<<<< HEAD
   createDagApp();
-=======
-  // eslint-disable-next-line no-new
-  new Vue({
-    el: '#js-pipeline-dag-vue',
-    components: {
-      Dag,
-    },
-    render(createElement) {
-      return createElement('dag',
-      {
-        props: {
-          graphUrl: undefined
-        }
-      });
-    },
->>>>>>> 9d34bbab41b... Endpoint noodling, fixup
 
 };
