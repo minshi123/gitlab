@@ -93,4 +93,21 @@ describe('Clusters', () => {
       }
     });
   });
+
+  describe('cluster size', () => {
+    it.each`
+      clusterSize | lineNumber
+      ${'2'}      | ${0}
+      ${'1'}      | ${1}
+      ${''}       | ${2}
+      ${''}       | ${3}
+      ${''}       | ${4}
+      ${''}       | ${5}
+    `('renders a status for each cluster', ({ clusterSize, lineNumber }) => {
+      const sizes = findTable().findAll('td:nth-child(3)');
+      const size = sizes.at(lineNumber);
+
+      expect(size.text()).toBe(clusterSize);
+    });
+  });
 });
