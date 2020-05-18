@@ -20,6 +20,11 @@ export default {
       type: String,
       required: true,
     },
+    resizable: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   data() {
     return {
@@ -28,7 +33,7 @@ export default {
   },
   computed: {
     panelStyle() {
-      if (!this.collapsed) {
+      if (!this.collapsed && this.resizable) {
         return {
           width: `${this.width}px`,
         };
@@ -45,9 +50,10 @@ export default {
 </script>
 
 <template>
-  <div :style="panelStyle">
+  <div class="gl-relative" :style="panelStyle">
     <slot></slot>
     <panel-resizer
+      v-show="resizable"
       :size.sync="width"
       :start-size="initialWidth"
       :min-size="minSize"

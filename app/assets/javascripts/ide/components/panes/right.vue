@@ -2,6 +2,7 @@
 import { mapGetters, mapState } from 'vuex';
 import { __ } from '~/locale';
 import CollapsibleSidebar from './collapsible_sidebar.vue';
+import ResizablePanel from '../resizable_panel.vue';
 import { rightSidebarViews } from '../../constants';
 import PipelinesList from '../pipelines/list.vue';
 import JobsDetail from '../jobs/detail.vue';
@@ -11,6 +12,7 @@ export default {
   name: 'RightPane',
   components: {
     CollapsibleSidebar,
+    ResizablePanel,
   },
   props: {
     extensionTabs: {
@@ -22,6 +24,7 @@ export default {
   computed: {
     ...mapState(['currentMergeRequestId', 'clientsidePreviewEnabled']),
     ...mapGetters(['packageJson']),
+    ...mapState('rightPane', ['isOpen']),
     showLivePreview() {
       return this.packageJson && this.clientsidePreviewEnabled;
     },
@@ -50,5 +53,13 @@ export default {
 </script>
 
 <template>
-  <collapsible-sidebar :extension-tabs="rightExtensionTabs" side="right" :width="350" />
+  <resizable-panel
+    class="gl-display-flex gl-overflow-hidden"
+    side="right"
+    :initial-width="410"
+    :min-size="400"
+    :resizable="isOpen"
+  >
+    <collapsible-sidebar class="gl-w-full" :extension-tabs="rightExtensionTabs" side="right" />
+  </resizable-panel>
 </template>
