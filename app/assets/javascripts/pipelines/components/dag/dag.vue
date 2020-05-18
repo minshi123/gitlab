@@ -23,15 +23,21 @@ export default {
     const drawGraph = this.drawGraph;
     const reportFailure = this.reportFailure;
 
-    axios.get(this.graphUrl)
-      .then(function (response) {
-        drawGraph(response.data);
-        reportFailure();
+    if (!this.graphUrl) {
+      reportFailure();
+      return;
+    }
 
+    axios.get(this.graphUrl)
+      .then((response) => {
+        drawGraph(response.data);
       })
-      .catch(function () {
-        reportFailure();
-      });
+      .catch(reportFailure);
+  },
+  computed: {
+    shouldDisplayGraph() {
+      return !this.showFailureAlert;
+    },
   },
   methods: {
     drawGraph (data) {
@@ -52,5 +58,8 @@ export default {
     <gl-alert v-if="showFailureAlert" variant="danger" @dismiss="hideAlert">
       {{__('We are currently unable to fetch data for this graph.')}}
     </gl-alert>
+    <div v-if="shouldDisplayGraph" data-testid="dag-graph-container">
+      <!-- graph goes here -->
+    </div>
   </div>
 </template>
