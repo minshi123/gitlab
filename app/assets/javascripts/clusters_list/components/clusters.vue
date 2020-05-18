@@ -106,7 +106,7 @@ export default {
       </div>
     </template>
 
-    <template #cell(node_size)="{value}">
+    <template #cell(cluster_type)="{value}">
       <gl-badge variant="light">
         {{ value }}
       </gl-badge>
