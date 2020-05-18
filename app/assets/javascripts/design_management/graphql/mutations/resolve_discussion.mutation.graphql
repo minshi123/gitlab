@@ -1,0 +1,15 @@
+#import "./designNote.fragment.graphql"
+
+mutation resolveDiscussion($id: ID!) {
+  resolveDiscussion(id: $id) @client {
+    nodes {
+      id
+      replyId
+      notes {
+        nodes {
+          ...DesignNote
+        }
+      }
+    }
+  }
+}
