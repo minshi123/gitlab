@@ -6,7 +6,7 @@ export const CLUSTER_TYPES = {
   instance_type: __('Instance'),
 };
 
-export const MAX_REQUESTS = 3;
+export const MAX_REQUESTS = 5;
 
 export const STATUSES = {
   default: { className: 'bg-white', title: __('Unknown') },

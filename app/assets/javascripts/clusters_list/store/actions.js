@@ -5,8 +5,11 @@ import { __ } from '~/locale';
 import { MAX_REQUESTS } from '../constants';
 import * as types from './mutation_types';
 
-const allNodesPresent = clusters => {
-  return clusters.length === clusters.filter(cluster => cluster.nodes != null).length;
+const allNodesPresent = (clusters, retryCount) => {
+  return (
+    retryCount > MAX_REQUESTS ||
+    clusters.length === clusters.filter(cluster => cluster.nodes != null).length
+  );
 };
 
 export const fetchClusters = ({ state, commit }) => {
@@ -25,7 +28,7 @@ export const fetchClusters = ({ state, commit }) => {
         commit(types.SET_CLUSTERS_DATA, data);
         commit(types.SET_LOADING_STATE, false);
 
-        if (allNodesPresent(data.clusters) || retryCount > MAX_REQUESTS) {
+        if (allNodesPresent(data.clusters, retryCount)) {
           poll.stop();
         }
       }
