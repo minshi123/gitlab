@@ -15,6 +15,28 @@ import axios from '~/lib/utils/axios_utils';
 
 Vue.use(Translate);
 
+const createDagApp = () => {
+  const el = document.querySelector('#js-pipeline-dag-vue');
+  const data = el.dataset;
+  console.log(data);
+  // eslint-disable-next-line no-new
+  new Vue({
+    el,
+    components: {
+      Dag,
+    },
+    render(createElement) {
+      return createElement('dag',
+      {
+        props: {
+          graphUrl: undefined
+        }
+      });
+    },
+
+  })
+}
+
 export default () => {
   const { dataset } = document.querySelector('.js-pipeline-details-vue');
 
@@ -144,20 +166,5 @@ export default () => {
       .catch(() => {});
   }
 
-  // eslint-disable-next-line no-new
-  new Vue({
-    el: '#js-pipeline-dag-vue',
-    components: {
-      Dag,
-    },
-    render(createElement) {
-      return createElement('dag',
-      {
-        props: {
-          graphUrl: undefined
-        }
-      });
-    },
-
-  })
+  createDagApp();
 };
