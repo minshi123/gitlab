@@ -108,6 +108,12 @@ export default {
     discussionParticipants() {
       return extractParticipants(this.design.issue.participants);
     },
+    resolvedDiscussions() {
+      return this.discussions.filter(discussion => discussion.notes.every(note => note.resolvedAt));
+    },
+    unresolvedDiscussions() {
+      return this.discussions.filter(discussion => discussion.notes.some(note => !note.resolvedAt));
+    },
     markdownPreviewPath() {
       return `/${this.projectPath}/preview_markdown?target_type=Issue`;
     },
