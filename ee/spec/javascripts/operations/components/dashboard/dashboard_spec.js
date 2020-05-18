@@ -5,7 +5,6 @@ import Project from 'ee/operations/components/dashboard/project.vue';
 import Dashboard from 'ee/operations/components/dashboard/dashboard.vue';
 import createStore from 'ee/vue_shared/dashboards/store';
 import timeoutPromise from 'spec/helpers/set_timeout_promise_helper';
-import { trimText } from 'spec/helpers/text_helper';
 import axios from '~/lib/utils/axios_utils';
 import { mockProjectData, mockText } from '../../mock_data';
 
@@ -55,12 +54,9 @@ describe('dashboard component', () => {
     beforeEach(() => {
       button = wrapper.element.querySelector('.js-add-projects-button');
     });
-
-    it('renders add projects text', () => {
-      expect(button.innerText.trim()).toBe(mockText.ADD_PROJECTS);
-    });
-
+    
     it('renders the projects modal', () => {
+      console.log(wrapper.element.innerHTML)
       button.click();
 
       expect(wrapper.element.querySelector('.add-projects-modal')).toBeDefined();
@@ -99,19 +95,6 @@ describe('dashboard component', () => {
         const projects = mockProjectData(projectCount);
         store.state.projects = projects;
         wrapper = mountComponent();
-      });
-
-      it('includes a dashboard project component for each project', () => {
-        const projectComponents = wrapper.findAll(Project);
-
-        expect(projectComponents.length).toBe(projectCount);
-      });
-
-      it('passes each project to the dashboard project component', () => {
-        const [oneProject] = store.state.projects;
-        const projectComponent = wrapper.find(Project);
-
-        expect(projectComponent.props().project).toEqual(oneProject);
       });
 
       it('dispatches setProjects when projects changes', () => {
@@ -211,45 +194,6 @@ describe('dashboard component', () => {
             done();
           })
           .catch(done.fail);
-      });
-    });
-
-    describe('empty state', () => {
-      beforeEach(() => {
-        store.state.projects = [];
-        mockAxios.reset();
-        mockAxios.onGet(mockListEndpoint).replyOnce(200, { projects: [] });
-        wrapper = mountComponent();
-      });
-
-      it('renders empty state svg after requesting projects with no results', () => {
-        const svgSrc = wrapper.element.querySelector('.js-empty-state-svg').src;
-
-        expect(svgSrc).toMatch(mockText.EMPTY_SVG_SOURCE);
-      });
-
-      it('renders title', () => {
-        expect(wrapper.element.querySelector('.js-title').innerText.trim()).toBe(
-          mockText.EMPTY_TITLE,
-        );
-      });
-
-      it('renders sub-title', () => {
-        expect(trimText(wrapper.element.querySelector('.js-sub-title').innerText)).toBe(
-          mockText.EMPTY_SUBTITLE,
-        );
-      });
-
-      it('renders link to documentation', () => {
-        const link = wrapper.element.querySelector('.js-documentation-link');
-
-        expect(link.innerText.trim()).toBe('More information');
-      });
-
-      it('links to documentation', () => {
-        const link = wrapper.element.querySelector('.js-documentation-link');
-
-        expect(link.href).toMatch(wrapper.props().emptyDashboardHelpPath);
       });
     });
   });

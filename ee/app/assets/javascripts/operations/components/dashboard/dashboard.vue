@@ -1,6 +1,13 @@
 <script>
 import { mapState, mapActions } from 'vuex';
-import { GlModal, GlModalDirective, GlDeprecatedButton, GlDashboardSkeleton } from '@gitlab/ui';
+import {
+  GlDashboardSkeleton,
+  GlButton,
+  GlEmptyState,
+  GlLink,
+  GlModal,
+  GlModalDirective,
+} from '@gitlab/ui';
 import VueDraggable from 'vuedraggable';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 import DashboardProject from './project.vue';
@@ -8,9 +15,11 @@ import DashboardProject from './project.vue';
 export default {
   components: {
     DashboardProject,
-    GlModal,
     GlDashboardSkeleton,
-    GlDeprecatedButton,
+    GlButton,
+    GlEmptyState,
+    GlLink,
+    GlModal,
     ProjectSelector,
     VueDraggable,
   },
@@ -131,13 +140,14 @@ export default {
       <h1 class="js-dashboard-title page-title text-nowrap flex-fill">
         {{ s__('OperationsDashboard|Operations Dashboard') }}
       </h1>
-      <gl-deprecated-button
+      <gl-button
         v-if="projects.length"
         v-gl-modal="$options.modalId"
-        class="js-add-projects-button btn btn-success"
+        variant="success"
+        class="js-add-projects-button"
       >
         {{ s__('OperationsDashboard|Add projects') }}
-      </gl-deprecated-button>
+      </gl-button>
     </div>
     <div class="prepend-top-default">
       <vue-draggable
@@ -150,34 +160,32 @@ export default {
           <dashboard-project :project="project" />
         </div>
       </vue-draggable>
-      <div v-else-if="!isLoadingProjects" class="row prepend-top-20 text-center">
-        <div class="col-12 d-flex justify-content-center svg-content">
-          <img :src="emptyDashboardSvgPath" class="js-empty-state-svg col-12 prepend-top-20" />
-        </div>
-        <h4 class="js-title col-12 prepend-top-20">
-          {{ s__('OperationsDashboard|Add a project to the dashboard') }}
-        </h4>
-        <div class="col-12 d-flex justify-content-center">
-          <span class="js-sub-title mw-460 text-tertiary text-left">
-            {{
-              s__(`OperationsDashboard|The operations dashboard provides a summary of each project's
-              operational health, including pipeline and alert statuses.`)
-            }}
-            <a :href="emptyDashboardHelpPath" class="js-documentation-link">
-              {{ s__('OperationsDashboard|More information') }}
-            </a>
-          </span>
-        </div>
-        <div class="col-12">
-          <gl-deprecated-button
-            v-gl-modal="$options.modalId"
-            class="js-add-projects-button btn btn-success prepend-top-default append-bottom-default"
-          >
+
+      <gl-dashboard-skeleton v-else-if="isLoadingProjects" />
+      
+      <gl-empty-state
+        v-else
+        class="js-empty-state"
+        :title="s__(`OperationsDashboard|Add a project to the dashboard`)"
+        :svg-path="emptyDashboardSvgPath"
+      >
+        <template #description>
+          {{
+            s__(
+              `OperationsDashboard|The operations dashboard provides a summary of each project's operational health, including pipeline and alert statuses.`,
+            )
+          }}
+          <gl-link :href="emptyDashboardHelpPath" class="js-documentation-link">{{
+            s__('OperationsDashboard|More information')
+          }}</gl-link
+          >.
+        </template>
+        <template #actions>
+          <gl-button v-gl-modal="$options.modalId" variant="success" class="js-add-projects-button">
             {{ s__('OperationsDashboard|Add projects') }}
-          </gl-deprecated-button>
-        </div>
-      </div>
-      <gl-dashboard-skeleton v-else />
+          </gl-button>
+        </template>
+      </gl-empty-state>
     </div>
   </div>
 </template>
