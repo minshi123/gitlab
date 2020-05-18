@@ -2,9 +2,9 @@
 
 module Gitlab
   module UsageDataCounters
-    class SearchCounter
-      extend RedisCounter
-
+    class SearchCounter < BaseCounter
+      KNOWN_EVENTS = %w[all_searches_count].map(&:freeze).freeze
+      PREFIX = "global_search"
       NAVBAR_SEARCHES_COUNT_KEY = 'NAVBAR_SEARCHES_COUNT'
 
       class << self
@@ -17,13 +17,11 @@ module Gitlab
         end
 
         def totals
-          {
-            navbar_searches: total_navbar_searches_count
-          }
+          super.merge({ navbar_searches: total_navbar_searches_count })
         end
 
         def fallback_totals
-          { navbar_searches: -1 }
+          super.merge({ navbar_searches: -1 })
         end
       end
     end
