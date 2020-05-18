@@ -149,8 +149,7 @@ const createTestDetails = (detailsEndpoint) => {
 
 const createDagApp = () => {
   const el = document.querySelector('#js-pipeline-dag-vue');
-  const data = el.dataset;
-  console.log(data);
+  const graphUrl = el.dataset?.pipeline_data_path;
   // eslint-disable-next-line no-new
   new Vue({
     el,
@@ -161,7 +160,7 @@ const createDagApp = () => {
       return createElement('dag',
       {
         props: {
-          graphUrl: data.pipeline_data_path
+          graphUrl
         }
       });
     },

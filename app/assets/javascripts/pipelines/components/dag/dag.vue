@@ -1,51 +1,56 @@
 <script>
+import { GlAlert } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 
 export default {
   name: 'Dag',
+  components: {
+    GlAlert,
+  },
   props: {
     graphUrl: {
       type: String,
       required: false,
-      default: '/root/auto-stop-env-test/pipelines/90/dag'
+      default: ''
+    }
+  },
+  data() {
+    return {
+      showFailureAlert: false,
     }
   },
   mounted() {
     const drawGraph = this.drawGraph;
+    const reportFailure = this.reportFailure;
 
     axios.get(this.graphUrl)
       .then(function (response) {
-        console.log(response);
-        // const {
-        //   details: { stages: simplified },
-        // } = mockDAGdata;
-        //
-        // const {
-        //   details: { stages: stages },
-        // } = gitlabDAGdata;
-        //
-        // const {
-        //   details: { stages: nestedStages },
-        // } = groupDAGdata;
-        //
-        // const {
-        //   stages: endpointStages,
-        // } = response.data;
+        drawGraph(response.data);
+        reportFailure();
 
       })
-      .catch(function (error) {
-        console.log(error);
+      .catch(function () {
+        reportFailure();
       });
   },
   methods: {
-    drawGraph(data) {
+    drawGraph (data) {
       return data;
     },
+    hideAlert() {
+      this.showFailureAlert = false;
+    },
+    reportFailure() {
+      this.showFailureAlert = true;
+    }
   },
 };
 
 </script>
 <template>
   <div>
+    <gl-alert v-if="showFailureAlert" variant="danger" @dismiss="hideAlert">
+      {{__('We are currently unable to fetch data for this graph.')}}
+    </gl-alert>
   </div>
 </template>
