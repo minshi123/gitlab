@@ -123,17 +123,13 @@ describe('NodeDetailsSectionMain', () => {
       expect(vm.$el.classList.contains('primary-section')).toBe(true);
     });
 
-    it('renders node url element', () => {
-      expect(vm.$el.querySelector('.js-node-url-title').innerText.trim()).toBe('Node URL');
-      expect(vm.$el.querySelector('.js-node-url-value').innerText.trim()).toBe(vm.node.url);
+    it('renders node url element as link', () => {
+      expect(vm.$el.querySelector('[data-testid="nodeUrl"]').innerText.trim()).toBe(vm.node.url);
+      expect(vm.$el.querySelector('[data-testid="nodeUrl"]').href).toBe(vm.node.url);
     });
 
     it('renders node version element', () => {
-      expect(vm.$el.querySelector('.js-node-version-title').innerText.trim()).toBe(
-        'GitLab version',
-      );
-
-      expect(vm.$el.querySelector('.js-node-version-value').innerText.trim()).toBe(
+      expect(vm.$el.querySelector('[data-testid="nodeVersion"]').innerText.trim()).toBe(
         MOCK_VERSION_TEXT,
       );
     });

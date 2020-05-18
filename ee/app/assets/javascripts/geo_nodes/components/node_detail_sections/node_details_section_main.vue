@@ -1,4 +1,5 @@
 <script>
+import { GlLink, GlIcon } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
 
 import GeoNodeHealthStatus from '../geo_node_health_status.vue';
@@ -6,6 +7,8 @@ import GeoNodeActions from '../geo_node_actions.vue';
 
 export default {
   components: {
+    GlLink,
+    GlIcon,
     GeoNodeHealthStatus,
     GeoNodeActions,
   },
@@ -71,8 +74,14 @@ export default {
     <div class="col-md-12">
       <div class="d-flex geo-node-actions-container">
         <div class="d-flex flex-column">
-          <span class="text-secondary-700 js-node-url-title">{{ s__('GeoNodes|Node URL') }}</span>
-          <span class="mt-1 font-weight-bold js-node-url-value">{{ node.url }}</span>
+          <span class="gl-text-gray-700">{{ s__('GeoNodes|Node URL') }}</span>
+          <gl-link
+            data-testid="nodeUrl"
+            class="gl-text-black-normal gl-font-weight-bold gl-text-decoration-underline gl-mt-1"
+            :href="node.url"
+            target="_blank"
+            >{{ node.url }} <gl-icon name="external-link"
+          /></gl-link>
         </div>
         <geo-node-actions
           class="flex-grow-1"
@@ -84,19 +93,18 @@ export default {
         />
       </div>
       <div class="d-flex flex-column mt-2">
-        <span class="text-secondary-700 js-node-version-title">{{
-          s__('GeoNodes|GitLab version')
-        }}</span>
+        <span class="gl-text-gray-700">{{ s__('GeoNodes|GitLab version') }}</span>
         <span
-          :class="{ 'text-danger-500': versionMismatch }"
-          class="mt-1 font-weight-bold js-node-version-value"
+          data-testid="nodeVersion"
+          :class="{ 'gl-text-red-500': versionMismatch }"
+          class="gl-mt-1 gl-font-weight-bold"
         >
           {{ nodeVersion }}
         </span>
       </div>
       <div v-if="selectiveSyncronization" class="d-flex flex-column mt-2">
         <span class="text-secondary-700">{{ s__('GeoNodes|Selective synchronization') }}</span>
-        <span data-testid="selectiveSync" class="mt-1 font-weight-bold">
+        <span data-testid="selectiveSync" class="gl-mt-1 gl-font-weight-bold">
           {{ selectiveSyncronization }}
         </span>
       </div>
