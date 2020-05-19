@@ -199,4 +199,56 @@ describe 'layouts/nav/sidebar/_group' do
       end
     end
   end
+
+  describe 'iterations link' do
+    let_it_be(:current_user) { create(:user) }
+
+    before do
+      group.add_guest(current_user)
+
+      allow(view).to receive(:current_user).and_return(current_user)
+    end
+
+    context 'with iterations licensed feature available' do
+      before do
+        stub_licensed_features(iterations: true)
+      end
+
+      context 'with iterations feature flag enabled' do
+        before do
+          stub_feature_flags(iterations: true)
+        end
+
+        it 'is visible' do
+          render
+
+          expect(rendered).to have_text 'Iterations'
+        end
+      end
+
+      context 'with iterations feature flag disabled' do
+        before do
+          stub_feature_flags(iterations: false)
+        end
+
+        it 'is not visible' do
+          render
+
+          expect(rendered).not_to have_text 'Iterations'
+        end
+      end
+    end
+
+    context 'with iterations licensed feature disabled' do
+      before do
+        stub_licensed_features(iterations: false)
+      end
+
+      it 'is not visible' do
+        render
+
+        expect(rendered).not_to have_text 'Iterations'
+      end
+    end
+  end
 end

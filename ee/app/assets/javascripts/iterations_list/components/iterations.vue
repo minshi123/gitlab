@@ -29,7 +29,7 @@ export default {
   apollo: {
     iterations: {
       query: GroupIterationQuery,
-      update: data => data.group.sprints.nodes,
+      update: data => data.group.iterations.nodes,
       variables() {
         return {
           fullPath: this.groupPath,
@@ -90,8 +90,7 @@ export default {
         :loading="loading"
       />
     </gl-tab>
-    <!-- TODO: check canAdmin or appropriate permission for create iteration -->
-    <template #tabs-end>
+    <template v-if="canAdmin" #tabs-end>
       <li class="ml-auto d-flex align-items-center">
         <gl-button variant="success" :href="newIterationPath">{{ __('New iteration') }}</gl-button>
       </li>

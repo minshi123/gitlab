@@ -6,8 +6,8 @@ describe 'Iterations list', :js do
   let(:now) { Time.now }
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
-  let!(:started_group_sprint) { create(:sprint, :skip_future_date_validation, group: group, title: 'one test', start_date: now - 1.day, due_date: now) }
-  let!(:upcoming_group_sprint) { create(:sprint, group: group, start_date: now + 1.day, due_date: now + 2.days) }
+  let!(:started_group_iteration) { create(:iteration, :skip_future_date_validation, group: group, title: 'one test', start_date: now - 1.day, due_date: now) }
+  let!(:upcoming_group_iteration) { create(:iteration, group: group, start_date: now + 1.day, due_date: now + 2.days) }
 
   context 'as guest' do
     before do
@@ -22,7 +22,7 @@ describe 'Iterations list', :js do
   context 'as user' do
     before do
       stub_licensed_features(iterations: true)
-      group.add_owner(user)
+      group.add_developer(user)
       sign_in(user)
       visit group_iterations_path(group)
     end
