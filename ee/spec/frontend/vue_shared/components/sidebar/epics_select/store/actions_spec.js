@@ -341,6 +341,10 @@ describe('EpicsSelect', () => {
                 type: 'requestIssueUpdate',
               },
               {
+                type: 'updateEpicInBoardsStore',
+                payload: mockAssignRemoveRes,
+              },
+              {
                 type: 'receiveIssueUpdateSuccess',
                 payload: { data: mockAssignRemoveRes, epic: normalizedEpics[0] },
               },

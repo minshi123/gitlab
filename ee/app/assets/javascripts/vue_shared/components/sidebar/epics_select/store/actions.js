@@ -7,6 +7,8 @@ import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 
 import * as types from './mutation_types';
 
+import boardsStore from '~/boards/stores/boards_store';
+
 export const setInitialData = ({ commit }, data) => commit(types.SET_INITIAL_DATA, data);
 export const setIssueId = ({ commit }, issueId) => commit(types.SET_ISSUE_ID, issueId);
 
@@ -60,6 +62,9 @@ export const receiveIssueUpdateSuccess = ({ state, commit }, { data, epic, isRem
     });
   }
 };
+export const updateEpicInBoardsStore = data => {
+  boardsStore.detail.issue.updateEpic(data);
+};
 /**
  * Shows provided errorMessage in flash banner and
  * fires `RECEIVE_ISSUE_UPDATE_FAILURE` mutation
@@ -80,6 +85,7 @@ export const assignIssueToEpic = ({ state, dispatch }, epic) => {
     epicIid: epic.iid,
   })
     .then(({ data }) => {
+      dispatch('updateEpicInBoardsStore', data);
       dispatch('receiveIssueUpdateSuccess', {
         data,
         epic,
