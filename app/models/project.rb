@@ -177,6 +177,7 @@ class Project < ApplicationRecord
   has_one :packagist_service
   has_one :hangouts_chat_service
   has_one :unify_circuit_service
+  has_one :webex_teams_service
 
   has_one :root_of_fork_network,
           foreign_key: 'root_project_id',
@@ -2015,6 +2016,14 @@ class Project < ApplicationRecord
       result.on_environment(environment)
     else
       result.where(environment_scope: '*')
+    end
+  end
+
+  def ci_instance_variables_for(ref:)
+    if protected_for?(ref)
+      Ci::InstanceVariable.all_cached
+    else
+      Ci::InstanceVariable.unprotected_cached
     end
   end
 

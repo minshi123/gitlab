@@ -829,6 +829,9 @@ msgstr ""
 msgid "<strong>%{group_name}</strong> group members"
 msgstr ""
 
+msgid "<strong>%{label_name}</strong> <span>will be permanently deleted from %{subject_name}. This cannot be undone.</span>"
+msgstr ""
+
 msgid "<strong>Deletes</strong> source branch"
 msgstr ""
 
@@ -874,7 +877,10 @@ msgstr ""
 msgid "A fork is a copy of a project.<br />Forking a repository allows you to make changes without affecting the original project."
 msgstr ""
 
-msgid "A group represents your organization in GitLab."
+msgid "A group is a collection of several projects"
+msgstr ""
+
+msgid "A group represents your organization in GitLab. Groups allow you to manage users and collaborate across multiple projects."
 msgstr ""
 
 msgid "A member of the abuse team will review your report as soon as possible."
@@ -1717,6 +1723,15 @@ msgid "After a successful password update you will be redirected to login screen
 msgstr ""
 
 msgid "After a successful password update, you will be redirected to the login page where you can log in with your new password."
+msgstr ""
+
+msgid "After that, you will not to be able to use merge approvals or code quality as well as many other features."
+msgstr ""
+
+msgid "After that, you will not to be able to use merge approvals or epics as well as many other features."
+msgstr ""
+
+msgid "After that, you will not to be able to use merge approvals or epics as well as many security features."
 msgstr ""
 
 msgid "Alert"
@@ -2779,6 +2794,9 @@ msgstr ""
 msgid "Assigned Merge Requests"
 msgstr ""
 
+msgid "Assigned to %{assignee_name}"
+msgstr ""
+
 msgid "Assigned to me"
 msgstr ""
 
@@ -3761,6 +3779,12 @@ msgstr ""
 msgid "Change permissions"
 msgstr ""
 
+msgid "Change status"
+msgstr ""
+
+msgid "Change subscription"
+msgstr ""
+
 msgid "Change template"
 msgstr ""
 
@@ -4571,6 +4595,9 @@ msgstr ""
 msgid "ClusterIntegration|Cluster name is required."
 msgstr ""
 
+msgid "ClusterIntegration|Cluster_applications artifact too big. Maximum allowable size: %{human_size}"
+msgstr ""
+
 msgid "ClusterIntegration|Clusters are utilized by selecting the nearest ancestor with a matching environment scope. For example, project clusters will override group clusters."
 msgstr ""
 
@@ -4751,6 +4778,9 @@ msgstr ""
 msgid "ClusterIntegration|Helm Tiller"
 msgstr ""
 
+msgid "ClusterIntegration|Helm release failed to install"
+msgstr ""
+
 msgid "ClusterIntegration|Helm streamlines installing and managing Kubernetes applications. Tiller runs inside of your Kubernetes Cluster, and manages releases of your charts."
 msgstr ""
 
@@ -4911,6 +4941,9 @@ msgid "ClusterIntegration|No Key Pairs found"
 msgstr ""
 
 msgid "ClusterIntegration|No VPCs found"
+msgstr ""
+
+msgid "ClusterIntegration|No deployment cluster found for this job"
 msgstr ""
 
 msgid "ClusterIntegration|No instance type found"
@@ -5596,6 +5629,9 @@ msgstr ""
 msgid "ComplianceFramework|SOX - Sarbanes-Oxley"
 msgstr ""
 
+msgid "ComplianceFramework|This project is regulated by %{framework}."
+msgstr ""
+
 msgid "Confidence: %{confidence}"
 msgstr ""
 
@@ -5708,6 +5744,9 @@ msgid "Connection timed out"
 msgstr ""
 
 msgid "Contact sales to upgrade"
+msgstr ""
+
+msgid "Contact support"
 msgstr ""
 
 msgid "Container Registry"
@@ -6237,9 +6276,6 @@ msgstr ""
 msgid "Create a Mattermost team for this group"
 msgstr ""
 
-msgid "Create a group for your organization"
-msgstr ""
-
 msgid "Create a local proxy for storing frequently used upstream images. %{link_start}Learn more%{link_end} about dependency proxies."
 msgstr ""
 
@@ -6361,6 +6397,9 @@ msgid "Create wildcard: %{searchTerm}"
 msgstr ""
 
 msgid "Create your first page"
+msgstr ""
+
+msgid "Create your group"
 msgstr ""
 
 msgid "CreateGroup|You don’t have permission to create a subgroup in this group."
@@ -6912,6 +6951,12 @@ msgid "Delete comment"
 msgstr ""
 
 msgid "Delete domain"
+msgstr ""
+
+msgid "Delete label"
+msgstr ""
+
+msgid "Delete label: %{label_name} ?"
 msgstr ""
 
 msgid "Delete license"
@@ -8147,6 +8192,9 @@ msgstr ""
 msgid "Enter merge request URLs"
 msgstr ""
 
+msgid "Enter new %{field_title}"
+msgstr ""
+
 msgid "Enter new AWS Secret Access Key"
 msgstr ""
 
@@ -8828,6 +8876,9 @@ msgstr ""
 msgid "Existing members and groups"
 msgstr ""
 
+msgid "Existing projects may be moved into a group"
+msgstr ""
+
 msgid "Existing projects will be able to use expiration policies. Avoid enabling this if an external Container Registry is being used, as there is a performance risk if many images exist on one project."
 msgstr ""
 
@@ -9480,6 +9531,9 @@ msgid "Filter by commit message"
 msgstr ""
 
 msgid "Filter by issues that are currently closed."
+msgstr ""
+
+msgid "Filter by label"
 msgstr ""
 
 msgid "Filter by merge requests that are currently closed and unmerged."
@@ -10634,7 +10688,7 @@ msgstr ""
 msgid "Group export link has expired. Please generate a new export from your group settings."
 msgstr ""
 
-msgid "Group export started. A download link will be sent by email."
+msgid "Group export started. A download link will be sent by email and made available on this page."
 msgstr ""
 
 msgid "Group has been already marked for deletion"
@@ -10655,7 +10709,7 @@ msgstr ""
 msgid "Group name"
 msgstr ""
 
-msgid "Group name (Your organization)"
+msgid "Group name (your organization)"
 msgstr ""
 
 msgid "Group overview"
@@ -10671,6 +10725,9 @@ msgid "Group path is available."
 msgstr ""
 
 msgid "Group pipeline minutes were successfully reset."
+msgstr ""
+
+msgid "Group project URLs are prefixed with the group namespace"
 msgstr ""
 
 msgid "Group requires separate account"
@@ -12218,6 +12275,9 @@ msgstr ""
 msgid "Just me"
 msgstr ""
 
+msgid "Keep divergent refs"
+msgstr ""
+
 msgid "Key"
 msgstr ""
 
@@ -12714,6 +12774,9 @@ msgstr ""
 msgid "License|License"
 msgstr ""
 
+msgid "License|Licensed user count exceeded"
+msgstr ""
+
 msgid "License|You can restore access to the Gold features at any time by upgrading."
 msgstr ""
 
@@ -12727,6 +12790,9 @@ msgid "License|Your License"
 msgstr ""
 
 msgid "License|Your free trial of GitLab Ultimate expired on %{trial_ends_on}."
+msgstr ""
+
+msgid "License|Your instance has exceeded your subscription's number of licensed users by %{extra_users_count}. You can continue to add more users and we'll include the overage in your next bill."
 msgstr ""
 
 msgid "Limit display of time tracking units to hours."
@@ -13214,6 +13280,9 @@ msgstr ""
 msgid "Members of <strong>%{project_name}</strong>"
 msgstr ""
 
+msgid "Members of a group may only view projects they have permission to access"
+msgstr ""
+
 msgid "Members with access to %{strong_start}%{group_name}%{strong_end}"
 msgstr ""
 
@@ -13677,6 +13746,12 @@ msgstr ""
 msgid "Milestones| You’re about to permanently delete the milestone %{milestoneTitle}. This milestone is not currently used in any issues or merge requests."
 msgstr ""
 
+msgid "Milestones|Close Milestone"
+msgstr ""
+
+msgid "Milestones|Completed Issues (closed)"
+msgstr ""
+
 msgid "Milestones|Delete milestone"
 msgstr ""
 
@@ -13686,7 +13761,16 @@ msgstr ""
 msgid "Milestones|Failed to delete milestone %{milestoneTitle}"
 msgstr ""
 
+msgid "Milestones|Group Milestone"
+msgstr ""
+
 msgid "Milestones|Milestone %{milestoneTitle} was not found"
+msgstr ""
+
+msgid "Milestones|Ongoing Issues (open and assigned)"
+msgstr ""
+
+msgid "Milestones|Project Milestone"
 msgstr ""
 
 msgid "Milestones|Promote %{milestoneTitle} to group milestone?"
@@ -13695,10 +13779,19 @@ msgstr ""
 msgid "Milestones|Promote Milestone"
 msgstr ""
 
+msgid "Milestones|Promote to Group Milestone"
+msgstr ""
+
 msgid "Milestones|Promoting %{milestoneTitle} will make it available for all projects inside %{groupName}. Existing project milestones with the same title will be merged."
 msgstr ""
 
+msgid "Milestones|Reopen Milestone"
+msgstr ""
+
 msgid "Milestones|This action cannot be reversed."
+msgstr ""
+
+msgid "Milestones|Unstarted Issues (open and unassigned)"
 msgstr ""
 
 msgid "Minimum capacity to be available before we schedule more mirrors preemptively."
@@ -16369,7 +16462,7 @@ msgstr ""
 msgid "Project export link has expired. Please generate a new export from your project settings."
 msgstr ""
 
-msgid "Project export started. A download link will be sent by email."
+msgid "Project export started. A download link will be sent by email and made available on this page."
 msgstr ""
 
 msgid "Project has too many %{label_for_message} to search"
@@ -17030,9 +17123,6 @@ msgid "Promote issue to an epic"
 msgstr ""
 
 msgid "Promote these project milestones into a group milestone."
-msgstr ""
-
-msgid "Promote to Group Milestone"
 msgstr ""
 
 msgid "Promote to group label"
@@ -18535,6 +18625,9 @@ msgstr ""
 msgid "Search an environment spec"
 msgstr ""
 
+msgid "Search authors"
+msgstr ""
+
 msgid "Search branches"
 msgstr ""
 
@@ -19032,6 +19125,9 @@ msgstr ""
 msgid "Select an existing Kubernetes cluster or create a new one"
 msgstr ""
 
+msgid "Select assignee"
+msgstr ""
+
 msgid "Select branch"
 msgstr ""
 
@@ -19083,7 +19179,13 @@ msgstr ""
 msgid "Select source branch"
 msgstr ""
 
+msgid "Select status"
+msgstr ""
+
 msgid "Select strategy activation method"
+msgstr ""
+
+msgid "Select subscription"
 msgstr ""
 
 msgid "Select target branch"
@@ -20519,6 +20621,9 @@ msgstr ""
 msgid "Subkeys"
 msgstr ""
 
+msgid "Submit %{humanized_resource_name}"
+msgstr ""
+
 msgid "Submit Changes"
 msgstr ""
 
@@ -21779,6 +21884,9 @@ msgstr ""
 msgid "This commit was signed with an <strong>unverified</strong> signature."
 msgstr ""
 
+msgid "This content could not be displayed because %{reason}. You can %{options} instead."
+msgstr ""
+
 msgid "This date is after the due date, so this epic won't appear in the roadmap."
 msgstr ""
 
@@ -22410,6 +22518,9 @@ msgid "Timeago|right now"
 msgstr ""
 
 msgid "Timeout"
+msgstr ""
+
+msgid "Timeout connecting to the Google API. Please try again."
 msgstr ""
 
 msgid "Time|hr"
@@ -24948,7 +25059,7 @@ msgstr ""
 msgid "YouTube"
 msgstr ""
 
-msgid "Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}. After that, you will not to be able to create issues or merge requests as well as many other features."
+msgid "Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}."
 msgstr ""
 
 msgid "Your %{strong}%{plan_name}%{strong_close} subscription will expire on %{strong}%{expires_on}%{strong_close}. After that, you will not to be able to create issues or merge requests as well as many other features."
@@ -25466,6 +25577,9 @@ msgstr[1] ""
 msgid "ciReport|View full report"
 msgstr ""
 
+msgid "closed issue"
+msgstr ""
+
 msgid "comment"
 msgstr ""
 
@@ -25535,6 +25649,9 @@ msgid "does not have a supported extension. Only %{extension_list} are supported
 msgstr ""
 
 msgid "done"
+msgstr ""
+
+msgid "download it"
 msgstr ""
 
 msgid "draft"
@@ -25741,6 +25858,12 @@ msgstr ""
 msgid "issues on track"
 msgstr ""
 
+msgid "it is larger than %{limit}"
+msgstr ""
+
+msgid "it is stored as a job artifact"
+msgstr ""
+
 msgid "it is stored externally"
 msgstr ""
 
@@ -25778,6 +25901,9 @@ msgid "level: %{level}"
 msgstr ""
 
 msgid "limit of %{project_limit} reached"
+msgstr ""
+
+msgid "load it anyway"
 msgstr ""
 
 msgid "locked by %{path_lock_user_name} %{created_at}"
@@ -26169,6 +26295,9 @@ msgstr ""
 msgid "on track"
 msgstr ""
 
+msgid "open issue"
+msgstr ""
+
 msgid "opened %{timeAgoString} by %{user}"
 msgstr ""
 
@@ -26455,6 +26584,9 @@ msgid "view it on GitLab"
 msgstr ""
 
 msgid "view the blob"
+msgstr ""
+
+msgid "view the source"
 msgstr ""
 
 msgid "vulnerability|Add a comment"

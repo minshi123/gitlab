@@ -106,7 +106,7 @@ The following table lists available parameters for jobs:
 | [`when`](#when)                                    | When to run job. Also available: `when:manual` and `when:delayed`.                                                                                                                  |
 | [`environment`](#environment)                      | Name of an environment to which the job deploys. Also available: `environment:name`, `environment:url`, `environment:on_stop`, `environment:auto_stop_in` and `environment:action`. |
 | [`cache`](#cache)                                  | List of files that should be cached between subsequent runs. Also available: `cache:paths`, `cache:key`, `cache:untracked`, and `cache:policy`.                                     |
-| [`artifacts`](#artifacts)                          | List of files and directories to attach to a job on success. Also available: `artifacts:paths`, `artifacts:expose_as`, `artifacts:name`, `artifacts:untracked`, `artifacts:when`, `artifacts:expire_in`, `artifacts:reports`, `artifacts:reports:junit`, `artifacts:reports:cobertura`, and `artifacts:reports:terraform`.<br><br>In GitLab [Enterprise Edition](https://about.gitlab.com/pricing/), these are available: `artifacts:reports:codequality`, `artifacts:reports:sast`, `artifacts:reports:dependency_scanning`, `artifacts:reports:container_scanning`, `artifacts:reports:dast`, `artifacts:reports:license_scanning`, `artifacts:reports:license_management` (removed in 13.0),`artifacts:reports:performance` and `artifacts:reports:metrics`. |
+| [`artifacts`](#artifacts)                          | List of files and directories to attach to a job on success. Also available: `artifacts:paths`, `artifacts:expose_as`, `artifacts:name`, `artifacts:untracked`, `artifacts:when`, `artifacts:expire_in`, `artifacts:reports`, `artifacts:reports:junit`, `artifacts:reports:cobertura`, and `artifacts:reports:terraform`.<br><br>In GitLab [Enterprise Edition](https://about.gitlab.com/pricing/), these are available: `artifacts:reports:codequality`, `artifacts:reports:sast`, `artifacts:reports:dependency_scanning`, `artifacts:reports:container_scanning`, `artifacts:reports:dast`, `artifacts:reports:license_scanning`, `artifacts:reports:license_management` (removed in GitLab 13.0),`artifacts:reports:performance` and `artifacts:reports:metrics`. |
 | [`dependencies`](#dependencies)                    | Restrict which artifacts are passed to a specific job by providing a list of jobs to fetch artifacts from.                                                                          |
 | [`coverage`](#coverage)                            | Code coverage settings for a given job.                                                                                                                                             |
 | [`retry`](#retry)                                  | When and how many times a job can be auto-retried in case of a failure.                                                                                                             |
@@ -2770,7 +2770,7 @@ These are the available report types:
 | [`artifacts:reports:dependency_scanning`](../pipelines/job_artifacts.md#artifactsreportsdependency_scanning-ultimate) **(ULTIMATE)** | The `dependency_scanning` report collects Dependency Scanning vulnerabilities.   |
 | [`artifacts:reports:container_scanning`](../pipelines/job_artifacts.md#artifactsreportscontainer_scanning-ultimate) **(ULTIMATE)**   | The `container_scanning` report collects Container Scanning vulnerabilities.     |
 | [`artifacts:reports:dast`](../pipelines/job_artifacts.md#artifactsreportsdast-ultimate) **(ULTIMATE)**                               | The `dast` report collects Dynamic Application Security Testing vulnerabilities. |
-| [`artifacts:reports:license_management`](../pipelines/job_artifacts.md#artifactsreportslicense_management-ultimate) **(ULTIMATE)**   | The `license_management` report collects Licenses (*removed from 13.0*).                |
+| [`artifacts:reports:license_management`](../pipelines/job_artifacts.md#artifactsreportslicense_management-ultimate) **(ULTIMATE)**   | The `license_management` report collects Licenses (*removed from GitLab 13.0*).  |
 | [`artifacts:reports:license_scanning`](../pipelines/job_artifacts.md#artifactsreportslicense_scanning-ultimate) **(ULTIMATE)**       | The `license_scanning` report collects Licenses.                                 |
 | [`artifacts:reports:performance`](../pipelines/job_artifacts.md#artifactsreportsperformance-premium) **(PREMIUM)**                   | The `performance` report collects Performance metrics.                           |
 | [`artifacts:reports:metrics`](../pipelines/job_artifacts.md#artifactsreportsmetrics-premium) **(PREMIUM)**                           | The `metrics` report collects Metrics.                                           |
@@ -3617,7 +3617,7 @@ Read more about the various [YAML features](https://learnxinyminutes.com/docs/ya
 
 YAML has a handy feature called 'anchors', which lets you easily duplicate
 content across your document. Anchors can be used to duplicate/inherit
-properties, and is a perfect example to be used with [hidden keys](#hide-jobs)
+properties, and is a perfect example to be used with [hidden jobs](#hide-jobs)
 to provide templates for your jobs.
 
 The following example uses anchors and map merging. It will create two jobs,
@@ -3731,7 +3731,7 @@ test:mysql:
     - ruby
 ```
 
-You can see that the hidden keys are conveniently used as templates.
+You can see that the hidden jobs are conveniently used as templates.
 
 NOTE: **Note:**
 You can't use YAML anchors across multiple files when leveraging the [`include`](#include)
@@ -3829,7 +3829,7 @@ GitLab CI/CD. In the following example, `.hidden_job` will be ignored:
 ```
 
 Use this feature to ignore jobs, or use the
-[special YAML features](#special-yaml-features) and transform the hidden keys
+[special YAML features](#special-yaml-features) and transform the hidden jobs
 into templates.
 
 ## Skip Pipeline

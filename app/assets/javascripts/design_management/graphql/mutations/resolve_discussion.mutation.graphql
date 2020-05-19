@@ -1,15 +1,15 @@
-#import "./designNote.fragment.graphql"
+#import "../fragments/designNote.fragment.graphql"
 
 mutation resolveDiscussion($id: ID!) {
-  resolveDiscussion(id: $id) @client {
-    nodes {
+  discussionResolve(input: { id: $id }) {
+    discussion {
       id
-      replyId
       notes {
         nodes {
           ...DesignNote
         }
       }
     }
+    errors
   }
 }

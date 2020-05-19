@@ -36,6 +36,7 @@ describe Project do
     it { is_expected.to have_one(:mattermost_service) }
     it { is_expected.to have_one(:hangouts_chat_service) }
     it { is_expected.to have_one(:unify_circuit_service) }
+    it { is_expected.to have_one(:webex_teams_service) }
     it { is_expected.to have_one(:packagist_service) }
     it { is_expected.to have_one(:pushover_service) }
     it { is_expected.to have_one(:asana_service) }
@@ -3134,6 +3135,45 @@ describe Project do
              partially_matched_variable,
              perfectly_matched_variable])
         end
+      end
+    end
+  end
+
+  describe '#ci_instance_variables_for' do
+    let(:project) { create(:project) }
+
+    let!(:instance_variable) do
+      create(:ci_instance_variable, value: 'secret')
+    end
+
+    let!(:protected_instance_variable) do
+      create(:ci_instance_variable, :protected, value: 'protected')
+    end
+
+    subject { project.ci_instance_variables_for(ref: 'ref') }
+
+    before do
+      stub_application_setting(
+        default_branch_protection: Gitlab::Access::PROTECTION_NONE)
+    end
+
+    context 'when the ref is not protected' do
+      before do
+        allow(project).to receive(:protected_for?).with('ref').and_return(false)
+      end
+
+      it 'contains only the CI variables' do
+        is_expected.to contain_exactly(instance_variable)
+      end
+    end
+
+    context 'when the ref is protected' do
+      before do
+        allow(project).to receive(:protected_for?).with('ref').and_return(true)
+      end
+
+      it 'contains all the variables' do
+        is_expected.to contain_exactly(instance_variable, protected_instance_variable)
       end
     end
   end
