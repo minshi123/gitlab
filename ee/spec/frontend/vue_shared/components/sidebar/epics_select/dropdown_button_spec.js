@@ -3,16 +3,37 @@ import { shallowMount } from '@vue/test-utils';
 import DropdownButton from 'ee/vue_shared/components/sidebar/epics_select/dropdown_button.vue';
 import Icon from '~/vue_shared/components/icon.vue';
 
+import { mockEpic1 } from '../mock_data';
+
 describe('EpicsSelect', () => {
   describe('DropdownButton', () => {
     let wrapper;
+    let wrapperWithEpic;
 
     beforeEach(() => {
       wrapper = shallowMount(DropdownButton);
+      wrapperWithEpic = shallowMount(DropdownButton, {
+        propsData: {
+          selectedEpic: mockEpic1,
+        },
+      });
     });
 
     afterEach(() => {
       wrapper.destroy();
+      wrapperWithEpic.destroy();
+    });
+
+    describe('computed', () => {
+      describe('buttonText', () => {
+        it('returns string "Epic" when `selectedEpic` prop is null', () => {
+          expect(wrapper.vm.buttonText).toBe('Epic');
+        });
+
+        it('returns string containing `selectedEpic.title`', () => {
+          expect(wrapperWithEpic.vm.buttonText).toBe(mockEpic1.title);
+        });
+      });
     });
 
     describe('template', () => {
@@ -30,6 +51,21 @@ describe('EpicsSelect', () => {
 
         expect(titleEl.exists()).toBe(true);
         expect(titleEl.text()).toBe('Epic');
+
+        const titleWithEpicEl = wrapperWithEpic.find('.dropdown-toggle-text');
+
+        expect(titleWithEpicEl.exists()).toBe(true);
+        expect(titleWithEpicEl.text()).toBe(mockEpic1.title);
+      });
+
+      it('should render button title with toggleTextClass prop value', () => {
+        wrapper.setProps({
+          toggleTextClass: 'is-default',
+        });
+
+        return wrapper.vm.$nextTick(() => {
+          expect(wrapper.find('.dropdown-toggle-text').classes()).toContain('is-default');
+        });
       });
 
       it('should render Icon component', () => {
