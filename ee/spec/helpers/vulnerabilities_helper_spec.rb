@@ -62,8 +62,7 @@ describe VulnerabilitiesHelper do
         create_mr_url: "/#{project.full_path}/-/vulnerability_feedback",
         discussions_url: "/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}/discussions",
         notes_url: "/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}/notes",
-        vulnerability_feedback_help_path: kind_of(String),
-        pipeline_json: kind_of(String)
+        vulnerability_feedback_help_path: kind_of(String)
       )
     end
   end
@@ -73,15 +72,14 @@ describe VulnerabilitiesHelper do
 
     describe 'when pipeline exists' do
       let(:pipeline) { create(:ci_pipeline) }
-      let(:pipelineData) { Gitlab::Json.parse(subject[:pipeline_json]) }
 
       include_examples 'vulnerability properties'
 
       it 'returns expected pipeline data' do
-        expect(pipelineData).to include(
-          'id' => pipeline.id,
-          'created_at' => pipeline.created_at.iso8601,
-          'url' => be_present
+        expect(subject[:pipeline]).to include(
+          id: pipeline.id,
+          created_at: pipeline.created_at.iso8601,
+          url: be_present
         )
       end
     end

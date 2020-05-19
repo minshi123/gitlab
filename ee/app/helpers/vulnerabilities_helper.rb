@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module VulnerabilitiesHelper
+  def vulnerability_details_json(vulnerability, pipeline)
+    vulnerability_details(vulnerability, pipeline).to_json
+  end
+
   def vulnerability_details(vulnerability, pipeline)
     return unless vulnerability
 
@@ -12,7 +16,7 @@ module VulnerabilitiesHelper
       discussions_url: discussions_project_security_vulnerability_path(vulnerability.project, vulnerability),
       notes_url: project_security_vulnerability_notes_path(vulnerability.project, vulnerability),
       vulnerability_feedback_help_path: help_page_path('user/application_security/index', anchor: 'interacting-with-the-vulnerabilities'),
-      pipeline_json: vulnerability_pipeline_data(pipeline).to_json
+      pipeline: vulnerability_pipeline_data(pipeline)
     }
 
     result.merge(vulnerability_data(vulnerability), vulnerability_finding_data(vulnerability.finding))
