@@ -1,0 +1,15 @@
+#import "../fragments/designNote.fragment.graphql"
+
+mutation unresolveDiscussion($id: ID!) {
+  discussionUnresolve(input: { id: $id }) {
+    discussion {
+      id
+      notes {
+        nodes {
+          ...DesignNote
+        }
+      }
+    }
+    errors
+  }
+}

@@ -10,6 +10,8 @@ fragment DesignNote on Note {
   body
   bodyHtml
   createdAt
+  resolvable
+  resolvedAt
   position {
     diffRefs {
       ...DesignDiffRefs

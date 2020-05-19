@@ -1,8 +1,11 @@
 <script>
 import { ApolloMutation } from 'vue-apollo';
+import { s__ } from '~/locale';
 import ReplyPlaceholder from '~/notes/components/discussion_reply_placeholder.vue';
 import allVersionsMixin from '../../mixins/all_versions';
 import createNoteMutation from '../../graphql/mutations/createNote.mutation.graphql';
+import resolveDiscussionMutation from '../../graphql/mutations/resolve_discussion.mutation.graphql';
+import unresolveDiscussionMutation from '../../graphql/mutations/unresolve_discussion.mutation.graphql';
 import getDesignQuery from '../../graphql/queries/getDesign.query.graphql';
 import activeDiscussionQuery from '../../graphql/queries/active_discussion.query.graphql';
 import DesignNote from './design_note.vue';
@@ -87,6 +90,14 @@ export default {
     isDiscussionHighlighted() {
       return this.discussion.notes[0].id === this.activeDiscussion.id;
     },
+    isDiscussionResolved() {
+      return this.discussion.notes.every(note => note.resolvedAt);
+    },
+    resolveButtonText() {
+      return this.isDiscussionResolved
+        ? s__('DesignManagement|Unresolve discussion')
+        : s__('DesignManagement|Resolve discussion');
+    },
   },
   methods: {
     addDiscussionComment(
@@ -117,6 +128,15 @@ export default {
     showForm() {
       this.isFormRendered = true;
     },
+    toggleDiscussion() {
+      const mutation = this.isDiscussionResolved
+        ? unresolveDiscussionMutation
+        : resolveDiscussionMutation;
+      this.$apollo.mutate({
+        mutation,
+        variables: { id: this.discussion.id },
+      });
+    },
   },
   createNoteMutation,
 };
@@ -127,6 +147,7 @@ export default {
     <div class="badge badge-pill" type="button">{{ discussionIndex }}</div>
     <div
       class="design-discussion bordered-box position-relative"
+      :class="{ resolved: isDiscussionResolved }"
       data-qa-selector="design_discussion_content"
     >
       <design-note
@@ -164,6 +185,13 @@ export default {
           />
         </apollo-mutation>
       </div>
+      <button @click="toggleDiscussion">{{ resolveButtonText }}</button>
     </div>
   </div>
 </template>
+
+<style scoped>
+.resolved {
+  border: 1px solid green;
+}
+</style>
