@@ -5,6 +5,9 @@ module Ci
     extend Gitlab::Ci::Model
     include Ci::NewHasVariable
     include Ci::Maskable
+    include Limitable
+
+    self.limit_name = 'ci_instance_level_variables'
 
     alias_attribute :secret_value, :value
 

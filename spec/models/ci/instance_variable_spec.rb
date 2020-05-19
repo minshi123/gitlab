@@ -10,6 +10,10 @@ describe Ci::InstanceVariable do
   it { is_expected.to include_module(Ci::Maskable) }
   it { is_expected.to validate_uniqueness_of(:key).with_message(/\(\w+\) has already been taken/) }
 
+  it_behaves_like 'includes Limitable concern' do
+    subject { build(:ci_instance_variable) }
+  end
+
   describe '.unprotected' do
     subject { described_class.unprotected }
 
