@@ -547,3 +547,16 @@ html.group-epics-roadmap-html {
     }
   }
 }
+
+.milestone-item-type {
+  @include gl-line-height-normal;
+
+  & > span {
+    @include gl-vertical-align-middle;
+  }
+
+  .gl-icon {
+    @include gl-vertical-align-middle;
+    padding-right: $gl-spacing-scale-1;
+  }
+}

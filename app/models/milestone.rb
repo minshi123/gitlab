@@ -179,6 +179,22 @@ class Milestone < ApplicationRecord
     end
   end
 
+  def project_milestone
+    project_milestone?
+  end
+
+  def group_milestone
+    group_milestone?
+  end
+
+  def subgroup_milestone
+    if group_milestone? && parent.subgroup?
+      true
+    else
+      false
+    end
+  end
+
   private
 
   def milestone_format_reference(format = :iid)

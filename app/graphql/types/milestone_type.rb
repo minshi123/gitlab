@@ -35,5 +35,14 @@ module Types
 
     field :updated_at, Types::TimeType, null: false,
           description: 'Timestamp of last milestone update'
+
+    field :project_milestone, GraphQL::BOOLEAN_TYPE, null: false,
+      description: 'Indicates if milestone is at project level'
+
+    field :group_milestone, GraphQL::BOOLEAN_TYPE, null: false,
+      description: 'Indicates if milestone is at group level'
+
+    field :subgroup_milestone, GraphQL::BOOLEAN_TYPE, null: false,
+      description: 'Indicates if milestone is at subgroup level'
   end
 end

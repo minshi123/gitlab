@@ -1,5 +1,6 @@
 <script>
-import { GlPopover } from '@gitlab/ui';
+import { __ } from '~/locale';
+import { GlIcon, GlPopover } from '@gitlab/ui';
 import CommonMixin from '../mixins/common_mixin';
 import QuartersPresetMixin from '../mixins/quarters_preset_mixin';
 import MonthsPresetMixin from '../mixins/months_preset_mixin';
@@ -9,6 +10,7 @@ import { TIMELINE_CELL_MIN_WIDTH, SCROLL_BAR_SIZE } from '../constants';
 export default {
   cellWidth: TIMELINE_CELL_MIN_WIDTH,
   components: {
+    GlIcon,
     GlPopover,
   },
   mixins: [CommonMixin, QuartersPresetMixin, MonthsPresetMixin, WeeksPresetMixin],
@@ -97,6 +99,18 @@ export default {
       }
       return '';
     },
+    milestoneType() {
+      const { subgroupMilestone, projectMilestone } = this.milestone;
+      if (projectMilestone) return __('Project milestone');
+      else if (subgroupMilestone) return __('Subgroup milestone');
+      return __('Group milestone');
+    },
+    typeIcon() {
+      const { subgroupMilestone, projectMilestone } = this.milestone;
+      if (projectMilestone) return 'project';
+      else if (subgroupMilestone) return 'subgroup';
+      return 'group';
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -144,7 +158,10 @@ export default {
         triggers="hover"
         :title="milestone.title"
       >
-        {{ timeframeString(milestone) }}
+        <div class="milestone-item-type">
+          <gl-icon :name="typeIcon" /><span class="d-inline-block">{{ milestoneType }}</span>
+        </div>
+        <div>{{ timeframeString(milestone) }}</div>
       </gl-popover>
     </span>
   </div>

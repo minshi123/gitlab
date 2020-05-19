@@ -10706,6 +10706,9 @@ msgstr ""
 msgid "Group members"
 msgstr ""
 
+msgid "Group milestone"
+msgstr ""
+
 msgid "Group name"
 msgstr ""
 
@@ -16471,6 +16474,9 @@ msgstr ""
 msgid "Project members"
 msgstr ""
 
+msgid "Project milestone"
+msgstr ""
+
 msgid "Project name"
 msgstr ""
 
@@ -20592,6 +20598,9 @@ msgid "Storage:"
 msgstr ""
 
 msgid "StorageSize|Unknown"
+msgstr ""
+
+msgid "Subgroup milestone"
 msgstr ""
 
 msgid "Subgroup overview"
