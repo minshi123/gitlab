@@ -486,6 +486,61 @@ describe Gitlab::Ci::Config::Entry::Job do
             expect(entry.errors).to include "release description can't be blank"
           end
         end
+        
+        context "tag_name is $CI_COMMIT_TAG and `only: tags` is absent" do
+          let(:config) do
+            {
+              script: ["make changelog | tee release_changelog.txt"],
+              release: {
+                tag_name: "$CI_COMMIT_TAG",
+                name: "Release $CI_TAG_NAME",
+                description: "./release_changelog.txt"
+              }
+            }
+          end
+
+          it "returns error about incorrect $CI_COMMIT_TAG configuration" do
+            expect(entry).not_to be_valid
+            expect(entry.errors).to include 'job config `only: tags` must be specified with $CI_COMMIT_TAG'.downcase
+          end
+        end
+
+        context "tag_name includes $CI_COMMIT_TAG and `only: tags` is absent" do
+          let(:config) do
+            {
+              script: ["make changelog | tee release_changelog.txt"],
+              release: {
+                tag_name: "v$CI_COMMIT_TAG December 2019",
+                name: "Release $CI_TAG_NAME",
+                description: "./release_changelog.txt"
+              }
+            }
+          end
+
+          it "returns error about incorrect $CI_COMMIT_TAG configuration" do
+            expect(entry).not_to be_valid
+            expect(entry.errors).to include 'job config `only: tags` must be specified with $CI_COMMIT_TAG'.downcase
+          end
+        end
+
+        context "tag_name is $CI_COMMIT_TAG and `only` is present but `tags` are absent" do
+          let(:config) do
+            {
+              script: ["make changelog | tee release_changelog.txt"],
+              only: ['web'],
+              release: {
+                tag_name: "$CI_COMMIT_TAG",
+                name: "Release $CI_TAG_NAME",
+                description: "./release_changelog.txt"
+              }
+            }
+          end
+
+          it "returns error about incorrect $CI_COMMIT_TAG configuration" do
+            expect(entry).not_to be_valid
+            expect(entry.errors).to include 'job config `only: tags` must be specified with $CI_COMMIT_TAG'.downcase
+          end
+        end
       end
     end
   end

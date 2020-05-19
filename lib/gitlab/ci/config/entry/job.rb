@@ -57,7 +57,7 @@ module Gitlab
                 errors.add(:dependencies, "the #{missing_needs.join(", ")} should be part of needs")
               end
             end
-            
+
             validate do
               next unless has_commit_tag?
 
@@ -166,7 +166,7 @@ module Gitlab
           def ignored?
             allow_failure.nil? ? manual_action? : allow_failure
           end
-          
+
           def has_commit_tag?
             return false unless @config.try(:key?, :release)
 
