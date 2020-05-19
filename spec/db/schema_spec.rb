@@ -72,7 +72,6 @@ describe 'Database schema' do
     slack_integrations: %w[team_id user_id],
     snippets: %w[author_id],
     spam_logs: %w[user_id],
-    sprints: %w[state_id],
     subscriptions: %w[user_id subscribable_id],
     suggestions: %w[commit_id],
     taggings: %w[tag_id taggable_id tagger_id],
