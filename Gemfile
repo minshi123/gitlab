@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 6.0.2.2'
+gem 'rails', '~> 6.0.3'
 
 gem 'bootsnap', '~> 1.4.6'
 
@@ -148,7 +148,7 @@ gem 'creole', '~> 0.5.0'
 gem 'wikicloth', '0.8.1'
 gem 'asciidoctor', '~> 2.0.10'
 gem 'asciidoctor-include-ext', '~> 0.3.1', require: false
-gem 'asciidoctor-plantuml', '0.0.10'
+gem 'asciidoctor-plantuml', '~> 0.0.12'
 gem 'rouge', '~> 3.19.0'
 gem 'truncato', '~> 0.7.11'
 gem 'bootstrap_form', '~> 4.2.0'
@@ -293,7 +293,7 @@ gem 'base32', '~> 0.3.0'
 gem "gitlab-license", "~> 1.0"
 
 # Protect against bruteforcing
-gem 'rack-attack', '~> 6.2.0'
+gem 'rack-attack', '~> 6.3.0'
 
 # Sentry integration
 gem 'sentry-raven', '~> 2.9'
@@ -318,13 +318,9 @@ gem 'peek', '~> 1.1'
 # Snowplow events tracking
 gem 'snowplow-tracker', '~> 0.6.1'
 
-# Memory benchmarks
-gem 'derailed_benchmarks', require: false
-
 # Metrics
 group :metrics do
   gem 'method_source', '~> 0.8', require: false
-  gem 'influxdb', '~> 0.2', require: false
 
   # Prometheus
   gem 'prometheus-client-mmap', '~> 0.10.0'
@@ -414,6 +410,9 @@ group :test do
   gem 'test-prof', '~> 0.10.0'
   gem 'rspec_junit_formatter'
   gem 'guard-rspec'
+
+  # Moved in `test` because https://gitlab.com/gitlab-org/gitlab/-/issues/217527
+  gem 'derailed_benchmarks', require: false
 end
 
 gem 'octokit', '~> 4.15'

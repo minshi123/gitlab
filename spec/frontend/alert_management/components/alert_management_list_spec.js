@@ -5,10 +5,11 @@ import {
   GlAlert,
   GlLoadingIcon,
   GlDropdown,
+  GlDropdownItem,
   GlIcon,
   GlTab,
-  GlDropdownItem,
 } from '@gitlab/ui';
+import { visitUrl } from '~/lib/utils/url_utility';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import createFlash from '~/flash';
 import AlertManagementList from '~/alert_management/components/alert_management_list.vue';
@@ -17,6 +18,11 @@ import updateAlertStatus from '~/alert_management/graphql/mutations/update_alert
 import mockAlerts from '../mocks/alerts.json';
 
 jest.mock('~/flash');
+
+jest.mock('~/lib/utils/url_utility', () => ({
+  visitUrl: jest.fn().mockName('visitUrlMock'),
+  joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
+}));
 
 describe('AlertManagementList', () => {
   let wrapper;
@@ -49,7 +55,9 @@ describe('AlertManagementList', () => {
         ...props,
       },
       provide: {
-        glFeatures: { alertListStatusFilteringEnabled },
+        glFeatures: {
+          alertListStatusFilteringEnabled,
+        },
       },
       data() {
         return data;
@@ -209,6 +217,19 @@ describe('AlertManagementList', () => {
           .at(0)
           .text(),
       ).toBe('Critical');
+    });
+
+    it('navigates to the detail page when alert row is clicked', () => {
+      mountComponent({
+        props: { alertManagementEnabled: true, userCanEnableAlertManagement: true },
+        data: { alerts: mockAlerts, errored: false },
+        loading: false,
+      });
+
+      findAlerts()
+        .at(0)
+        .trigger('click');
+      expect(visitUrl).toHaveBeenCalledWith('/1527542/details');
     });
 
     describe('handle date fields', () => {

@@ -100,7 +100,7 @@ For GitLab versions earlier than 11.9, you can copy and use the job as defined
 that template.
 
 NOTE: **Note:**
-In GitLab 13.0, the `License-Management.gitlab-ci.yml` template is scheduled to be removed.
+GitLab 13.0 removes the `License-Management.gitlab-ci.yml` template.
 Use `License-Scanning.gitlab-ci.yml` instead.
 
 Add the following to your `.gitlab-ci.yml` file:
@@ -115,7 +115,7 @@ and scan your dependencies to find their licenses.
 
 NOTE: **Note:**
 Before GitLab 12.8, the `license_scanning` job was named `license_management`.
-In GitLab 13.0, the `license_management` job is scheduled to be removed completely,
+GitLab 13.0 removes the `license_management` job,
 so you're advised to migrate to the `license_scanning` job and used the new
 `License-Scanning.gitlab-ci.yml` template.
 
@@ -329,13 +329,13 @@ strict-ssl = false
 ### Migration from `license_management` to `license_scanning`
 
 In GitLab 12.8 a new name for `license_management` job was introduced. This change was made to improve clarity around the purpose of the scan, which is to scan and collect the types of licenses present in a projects dependencies.
-The support of `license_management` is scheduled to be dropped in GitLab 13.0.
+GitLab 13.0 drops support for `license_management`.
 If you're using a custom setup for License Compliance, you're required
 to update your CI config accordingly:
 
 1. Change the CI template to `License-Scanning.gitlab-ci.yml`.
 1. Change the job name to `license_scanning` (if you mention it in `.gitlab-ci.yml`).
-1. Change the artifact name to `gl-license-scanning-report.json` (if you mention it in `.gitlab-ci.yml`).
+1. Change the artifact name to `license_scanning`, and the file name to `gl-license-scanning-report.json` (if you mention it in `.gitlab-ci.yml`).
 
 For example, the following `.gitlab-ci.yml`:
 
@@ -360,6 +360,16 @@ license_scanning:
     reports:
       license_scanning: gl-license-scanning-report.json
 ```
+
+If you use the `license_management` artifact in GitLab 13.0 or later, the License Compliance job generates this error:
+
+```text
+WARNING: Uploading artifacts to coordinator... failed id=:id responseStatus=400 Bad Request status=400 Bad Request token=:sha
+
+FATAL: invalid_argument
+```
+
+If you encounter this error, follow the instructions described in this section.
 
 ## Running License Compliance in an offline environment
 
@@ -467,7 +477,7 @@ Searching for Licenses:
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/5491) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 11.2.
 
 From your project's left sidebar, navigate to **CI/CD > Pipelines** and click on the
-pipeline ID that has a `license_management` job to see the Licenses tab with the listed
+pipeline ID that has a `license_scanning` job to see the Licenses tab with the listed
 licenses (if any).
 
 ![License Compliance Pipeline Tab](img/license_compliance_pipeline_tab_v13_0.png)

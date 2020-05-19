@@ -479,7 +479,9 @@ CREATE TABLE public.approval_merge_request_rules (
     code_owner boolean DEFAULT false NOT NULL,
     name character varying NOT NULL,
     rule_type smallint DEFAULT 1 NOT NULL,
-    report_type smallint
+    report_type smallint,
+    section text,
+    CONSTRAINT check_6fca5928b2 CHECK ((char_length(section) <= 255))
 );
 
 CREATE TABLE public.approval_merge_request_rules_approved_approvers (
@@ -5252,7 +5254,9 @@ CREATE TABLE public.project_settings (
     project_id integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    push_rule_id bigint
+    push_rule_id bigint,
+    show_default_award_emojis boolean DEFAULT true,
+    CONSTRAINT check_bde223416c CHECK ((show_default_award_emojis IS NOT NULL))
 );
 
 CREATE TABLE public.project_statistics (
@@ -5810,6 +5814,7 @@ CREATE TABLE public.resource_state_events (
     merge_request_id bigint,
     created_at timestamp with time zone NOT NULL,
     state smallint NOT NULL,
+    epic_id integer,
     CONSTRAINT resource_state_events_must_belong_to_issue_or_merge_request CHECK ((((issue_id <> NULL::bigint) AND (merge_request_id IS NULL)) OR ((merge_request_id <> NULL::bigint) AND (issue_id IS NULL))))
 );
 
@@ -10519,6 +10524,8 @@ CREATE INDEX index_resource_milestone_events_on_milestone_id ON public.resource_
 
 CREATE INDEX index_resource_milestone_events_on_user_id ON public.resource_milestone_events USING btree (user_id);
 
+CREATE INDEX index_resource_state_events_on_epic_id ON public.resource_state_events USING btree (epic_id);
+
 CREATE INDEX index_resource_state_events_on_issue_id_and_created_at ON public.resource_state_events USING btree (issue_id, created_at);
 
 CREATE INDEX index_resource_state_events_on_merge_request_id ON public.resource_state_events USING btree (merge_request_id);
@@ -12410,6 +12417,9 @@ ALTER TABLE ONLY public.vulnerability_occurrences
 ALTER TABLE ONLY public.project_export_jobs
     ADD CONSTRAINT fk_rails_c88d8db2e1 FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.resource_state_events
+    ADD CONSTRAINT fk_rails_c913c64977 FOREIGN KEY (epic_id) REFERENCES public.epics(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY public.resource_milestone_events
     ADD CONSTRAINT fk_rails_c940fb9fc5 FOREIGN KEY (milestone_id) REFERENCES public.milestones(id) ON DELETE CASCADE;
 
@@ -13659,6 +13669,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200319203901
 20200320112455
 20200320123839
+20200320212400
 20200323011225
 20200323011955
 20200323071918
@@ -13806,6 +13817,8 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200506154421
 20200507221434
 20200508091106
+20200511092246
+20200511092505
 20200511092714
 20200511115430
 20200511115431
@@ -13820,6 +13833,8 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200512085150
 20200512164334
 20200513160930
+20200513171959
+20200513224143
 20200513234502
 20200513235347
 20200513235532

@@ -13,6 +13,7 @@ import {
 } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
+import { joinPaths, visitUrl } from '~/lib/utils/url_utility';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import getAlerts from '../graphql/queries/getAlerts.query.graphql';
 import { ALERTS_STATUS, ALERTS_STATUS_TABS, ALERTS_SEVERITY_LABELS } from '../constants';
@@ -21,8 +22,11 @@ import updateAlertStatus from '../graphql/mutations/update_alert_status.graphql'
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 
 const tdClass = 'table-col d-flex d-md-table-cell align-items-center';
+const bodyTrClass =
+  'gl-border-1 gl-border-t-solid gl-border-gray-100 hover-bg-blue-50 hover-gl-cursor-pointer hover-gl-border-b-solid hover-gl-border-blue-200';
 
 export default {
+  bodyTrClass,
   i18n: {
     noAlertsMsg: s__(
       "AlertManagement|No alerts available to display. If you think you're seeing this message in error, refresh the page.",
@@ -62,9 +66,8 @@ export default {
     {
       key: 'status',
       thClass: 'w-15p',
-      trClass: 'w-15p',
       label: s__('AlertManagement|Status'),
-      tdClass: `${tdClass} rounded-bottom text-capitalize`,
+      tdClass: `${tdClass} rounded-bottom`,
     },
   ],
   statuses: {
@@ -162,6 +165,9 @@ export default {
             projectPath: this.projectPath,
           },
         })
+        .then(() => {
+          this.$apollo.queries.alerts.refetch();
+        })
         .catch(() => {
           createFlash(
             s__(
@@ -170,10 +176,12 @@ export default {
           );
         });
     },
+    navigateToAlertDetails({ iid }) {
+      return visitUrl(joinPaths(window.location.pathname, iid, 'details'));
+    },
   },
 };
 </script>
-
 <template>
   <div>
     <div v-if="alertManagementEnabled" class="alert-management-list">
@@ -201,8 +209,9 @@ export default {
         :fields="$options.fields"
         :show-empty="true"
         :busy="loading"
-        fixed
         stacked="md"
+        :tbody-tr-class="$options.bodyTrClass"
+        @row-clicked="navigateToAlertDetails"
       >
         <template #cell(severity)="{ item }">
           <div

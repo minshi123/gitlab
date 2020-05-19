@@ -55,29 +55,41 @@ module EE
       end
 
       with_scope :global
-      condition(:owner_cannot_modify_approvers_rules) do
-        License.feature_available?(:admin_merge_request_approvers_rules) &&
-          ::Gitlab::CurrentSettings.current_application_settings
-            .disable_overriding_approvers_per_merge_request
-      end
-
-      with_scope :global
-      condition(:owner_cannot_modify_merge_request_author_setting) do
-        License.feature_available?(:admin_merge_request_approvers_rules) &&
-          ::Gitlab::CurrentSettings.current_application_settings
-            .prevent_merge_requests_author_approval
-      end
-
-      with_scope :global
-      condition(:owner_cannot_modify_merge_request_committer_setting) do
-        License.feature_available?(:admin_merge_request_approvers_rules) &&
-          ::Gitlab::CurrentSettings.current_application_settings
-            .prevent_merge_requests_committers_approval
+      condition(:admin_merge_request_approvers_rules_available) do
+        License.feature_available?(:admin_merge_request_approvers_rules)
       end
 
       with_scope :global
       condition(:cluster_health_available) do
         License.feature_available?(:cluster_health)
+      end
+
+      with_scope :subject
+      condition(:group_push_rules_enabled) do
+        @subject.group && ::Feature.enabled?(:group_push_rules, @subject.group.root_ancestor)
+      end
+
+      with_scope :subject
+      condition(:group_push_rule_present) do
+        group_push_rules_enabled? && subject.group.push_rule
+      end
+
+      with_scope :subject
+      condition(:reject_unsigned_commits_disabled_by_group) do
+        if group_push_rule_present?
+          !subject.group.push_rule.reject_unsigned_commits
+        else
+          true
+        end
+      end
+
+      with_scope :subject
+      condition(:commit_committer_check_disabled_by_group) do
+        if group_push_rule_present?
+          !subject.group.push_rule.commit_committer_check
+        else
+          true
+        end
       end
 
       with_scope :subject
@@ -273,13 +285,13 @@ module EE
 
       rule { ~can?(:push_code) }.prevent :push_code_to_protected_branches
 
-      rule { admin | (reject_unsigned_commits_disabled_globally & can?(:maintainer_access)) }.enable :change_reject_unsigned_commits
+      rule { admin | (reject_unsigned_commits_disabled_globally & reject_unsigned_commits_disabled_by_group & can?(:maintainer_access)) }.enable :change_reject_unsigned_commits
 
       rule { reject_unsigned_commits_available }.enable :read_reject_unsigned_commits
 
       rule { ~reject_unsigned_commits_available }.prevent :change_reject_unsigned_commits
 
-      rule { admin | (commit_committer_check_disabled_globally & can?(:maintainer_access)) }.policy do
+      rule { admin | (commit_committer_check_disabled_globally & commit_committer_check_disabled_by_group & can?(:maintainer_access)) }.policy do
         enable :change_commit_committer_check
       end
 
@@ -334,23 +346,14 @@ module EE
         prevent :read_project
       end
 
-      rule { owner_cannot_modify_approvers_rules & ~admin }.policy do
+      rule { admin_merge_request_approvers_rules_available & ~admin }.policy do
         prevent :modify_approvers_rules
-      end
-
-      rule { owner_cannot_modify_merge_request_author_setting & ~admin }.policy do
+        prevent :modify_approvers_list
         prevent :modify_merge_request_author_setting
-      end
-
-      rule { owner_cannot_modify_merge_request_committer_setting & ~admin }.policy do
         prevent :modify_merge_request_committer_setting
       end
 
       rule { can?(:read_cluster) & cluster_health_available }.enable :read_cluster_health
-
-      rule { owner_cannot_modify_approvers_rules & ~admin }.policy do
-        prevent :modify_approvers_list
-      end
 
       rule { web_ide_terminal_available & can?(:create_pipeline) & can?(:maintainer_access) }.enable :create_web_ide_terminal
 

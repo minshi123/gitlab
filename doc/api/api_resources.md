@@ -26,6 +26,7 @@ The following API resources are available in the project context:
 | [Custom attributes](custom_attributes.md)                           | `/projects/:id/custom_attributes` (also available for groups and users)                                                                                                                               |
 | [Dependencies](dependencies.md) **(ULTIMATE)**                      | `/projects/:id/dependencies`                                                                                                                                                                          |
 | [Deploy keys](deploy_keys.md)                                       | `/projects/:id/deploy_keys` (also available standalone)                                                                                                                                               |
+| [Freeze Periods](freeze_periods.md)                                 | `/projects/:id/freeze_periods`                                                                                                                                                                        |
 | [Deployments](deployments.md)                                       | `/projects/:id/deployments`                                                                                                                                                                           |
 | [Discussions](discussions.md) (threaded comments)                   | `/projects/:id/issues/.../discussions`, `/projects/:id/snippets/.../discussions`, `/projects/:id/merge_requests/.../discussions`, `/projects/:id/commits/.../discussions` (also available for groups) |
 | [Environments](environments.md)                                     | `/projects/:id/environments`                                                                                                                                                                          |
@@ -113,7 +114,7 @@ The following API resources are available outside of project and group contexts 
 
 | Resource                                           | Available endpoints                                                     |
 |:---------------------------------------------------|:------------------------------------------------------------------------|
-| [Instance-level CI/CD variables](admin_ci_instance_level_variables.md) | `/admin/ci/variables`                               |
+| [Instance-level CI/CD variables](instance_level_ci_variables.md) | `/admin/ci/variables`                                     |
 | [Admin Sidekiq queues](admin_sidekiq_queues.md)    | `/admin/sidekiq/queues/:queue_name`                                     |
 | [Appearance](appearance.md) **(CORE ONLY)**        | `/application/appearance`                                               |
 | [Applications](applications.md)                    | `/applications`                                                         |
