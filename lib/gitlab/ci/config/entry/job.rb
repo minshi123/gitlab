@@ -57,6 +57,14 @@ module Gitlab
                 errors.add(:dependencies, "the #{missing_needs.join(", ")} should be part of needs")
               end
             end
+            
+            validate do
+              next unless has_commit_tag?
+
+              unless only_tags_present?
+                errors.add(:config, '`only: tags` must be specified with $CI_COMMIT_TAG')
+              end
+            end
           end
 
           entry :before_script, Entry::Script,
@@ -157,6 +165,16 @@ module Gitlab
 
           def ignored?
             allow_failure.nil? ? manual_action? : allow_failure
+          end
+          
+          def has_commit_tag?
+            return false unless @config.try(:key?, :release)
+
+            @config.dig(:release, :tag_name)&.include?('$CI_COMMIT_TAG')
+          end
+
+          def only_tags_present?
+            @config.try(:key?, :only) && @config[:only].map(&:to_sym).include?(:tags)
           end
 
           def value
