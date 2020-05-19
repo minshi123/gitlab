@@ -31,5 +31,10 @@ module Types
           null: true,
           description: 'Snippets authored by the user',
           resolver: Resolvers::Users::SnippetsResolver
+
+    field :memberships,
+          Types::MemberType.connection_type,
+          null: true,
+          resolve: -> (obj, _, _) { obj.members }
   end
 end
