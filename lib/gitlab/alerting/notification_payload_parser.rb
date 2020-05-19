@@ -35,6 +35,17 @@ module Gitlab
         payload[:severity].presence || DEFAULT_SEVERITY
       end
 
+      def fingerprint
+        fingerprint_payload = payload[:fingerprint].presence
+        return unless fingerprint_payload
+
+        if fingerprint_payload.is_a?(Array)
+          fingerprint_payload.flatten.map!(&:to_s).join
+        end
+
+        Digest::SHA1.hexdigest(fingerprint_payload)
+      end
+
       def annotations
         primary_params
           .reverse_merge(flatten_secondary_params)
@@ -49,7 +60,8 @@ module Gitlab
           'monitoring_tool' => payload[:monitoring_tool],
           'service' => payload[:service],
           'hosts' => hosts.presence,
-          'severity' => severity
+          'severity' => severity,
+          'fingerprint' => fingerprint
         }
       end
 

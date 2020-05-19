@@ -26,11 +26,23 @@ module Projects
       delegate :alerts_service, :alerts_service_activated?, to: :project
 
       def am_alert_params
-        Gitlab::AlertManagement::AlertParams.from_generic_alert(project: project, payload: params.to_h)
+        strong_memoize(:am_alert_params) do
+          Gitlab::AlertManagement::AlertParams.from_generic_alert(project: project, payload: params.to_h)
+        end
       end
 
       def create_alert
-        AlertManagement::Alert.create(am_alert_params)
+        if existing_alert = existing_alert(am_alert_params[:fingerprint])
+          existing_alert.update(count: existing_alert.count + 1)
+        else
+          AlertManagement::Alert.create(am_alert_params)
+        end
+      end
+
+      def existing_alert(fingerprint)
+        return unless fingerprint
+
+        AlertManagement::Alert.for_fingerprint(project, fingerprint).first
       end
 
       def send_email?
