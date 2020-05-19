@@ -36,6 +36,7 @@ module Gitlab
           .merge(cycle_analytics_usage_data)
           .merge(object_store_usage_data)
           .merge(recording_ce_finish_data)
+          .merge(merge_requests_usage_data(default_time_period))
       end
 
       def to_json(force_refresh: false)
@@ -382,6 +383,24 @@ module Gitlab
         {} # augmented in EE
       end
 
+      def merge_requests_usage_data(time_period)
+        query =
+          Event
+            .where(target_type: Event::TARGET_TYPES[:merge_request].to_s)
+            .where(time_period)
+
+        merge_request_users = distinct_count(
+          query,
+          :author_id,
+          start: User.minimum(:id),
+          finish: User.maximum(:id)
+        )
+
+        {
+          merge_requests_users: merge_request_users
+        }
+      end
+
       def count(relation, column = nil, batch: true, start: nil, finish: nil)
         if batch && Feature.enabled?(:usage_ping_batch_counter, default_enabled: true)
           Gitlab::Database::BatchCount.batch_count(relation, column, start: start, finish: finish)
@@ -440,6 +459,10 @@ module Gitlab
         else
           "gitlab-development-kit"
         end
+      end
+
+      def default_time_period
+        { created_at: 28.days.ago..Time.current }
       end
     end
   end
