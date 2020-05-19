@@ -9,12 +9,13 @@ class Plan < ApplicationRecord
   DEFAULT_PLANS = [DEFAULT].freeze
   private_constant :ALL_PLANS, :DEFAULT_PLANS
 
-  # This always returns an object
+  # This always returns an object for non-gitlab-com installations
   def self.default
     Gitlab::SafeRequestStore.fetch(:plan_default) do
       # find_by allows us to find object (cheaply) against replica DB
       # safe_find_or_create_by does stick to primary DB
-      find_by(name: DEFAULT) || safe_find_or_create_by(name: DEFAULT)
+      find_by(name: DEFAULT) ||
+        (::Gitlab.com? ? nil : safe_find_or_create_by(name: DEFAULT) )
     end
   end
 
