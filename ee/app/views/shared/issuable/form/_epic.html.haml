@@ -1,0 +1,14 @@
+- project = local_assigns.fetch(:project)
+-# - issuable = local_assigns.fetch(:issuable)
+
+-# TODO: Add Epic feature check below
+-# - return unless issuable.supports_weight?
+- form = local_assigns.fetch(:form)
+
+.form-group.row.issue-epic
+  = form.label :label_ids, class: "col-form-label col-md-2 col-lg-4" do
+    = _('Epic')
+  .col-md-10.col-lg-8
+    .issuable-form-select-holder
+      = form.hidden_field :epic
+      #js-epic-select-root{ data: { group_id: project.group.id } }
