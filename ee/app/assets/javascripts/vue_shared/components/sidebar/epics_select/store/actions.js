@@ -62,9 +62,7 @@ export const receiveIssueUpdateSuccess = ({ state, commit }, { data, epic, isRem
     });
   }
 };
-export const updateEpicInBoardsStore = data => {
-  boardsStore.detail.issue.updateEpic(data);
-};
+
 /**
  * Shows provided errorMessage in flash banner and
  * fires `RECEIVE_ISSUE_UPDATE_FAILURE` mutation
@@ -85,7 +83,9 @@ export const assignIssueToEpic = ({ state, dispatch }, epic) => {
     epicIid: epic.iid,
   })
     .then(({ data }) => {
-      dispatch('updateEpicInBoardsStore', data);
+      if (boardsStore.detail.issue.updateEpic) {
+        boardsStore.detail.issue.updateEpic(data);
+      }
       dispatch('receiveIssueUpdateSuccess', {
         data,
         epic,
