@@ -109,6 +109,14 @@ describe 'layouts/nav/sidebar/_project' do
     end
   end
 
+  describe 'members entry tab' do
+    it 'renders members link' do
+      render
+
+      expect(rendered).to have_link('Members', href: project_project_members_path(project))
+    end
+  end
+
   describe 'ci/cd settings tab' do
     before do
       project.update!(archived: project_archived)
