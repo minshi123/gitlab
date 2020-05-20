@@ -19,7 +19,7 @@ module Gitlab
       name: :snippet,
       access_checker_class: Gitlab::GitAccessSnippet,
       repository_resolver: -> (snippet) { snippet&.repository },
-      container_resolver: -> (id) { Snippet.find_by_id(id) },
+      container_class: Snippet,
       project_resolver: -> (snippet) { snippet&.project },
       guest_read_ability: :read_snippet
     ).freeze
@@ -42,14 +42,10 @@ module Gitlab
     end
 
     def self.parse(gl_repository)
-      type_name, _id = gl_repository.split('-').first
-      type = types[type_name]
+      result = ::Gitlab::GlRepository::IdentifierParser.new(gl_repository)
 
-      unless type
-        raise ArgumentError, "Invalid GL Repository \"#{gl_repository}\""
-      end
-
-      container = type.fetch_container!(gl_repository)
+      type = result.type
+      container = result.fetch_container!
 
       [container, type.project_for(container), type]
     end
