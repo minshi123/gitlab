@@ -8,6 +8,7 @@ import {
   GlLoadingIcon,
   GlDropdown,
   GlDropdownItem,
+  GlDropdownDivider,
   GlModal,
   GlModalDirective,
   GlTooltip,
@@ -43,6 +44,7 @@ export default {
     GlTooltip,
     GlDropdown,
     GlDropdownItem,
+    GlDropdownDivider,
     GlModal,
   },
   directives: {
@@ -362,6 +364,16 @@ export default {
             >
               {{ __('Alerts') }}
             </gl-dropdown-item>
+            <template v-if="graphData.links.length">
+              <gl-dropdown-divider />
+              <gl-dropdown-item
+                v-for="(link, index) in graphData.links"
+                :key="index"
+                :href="link.url"
+              >
+                <a class="text-nowrap">{{ link.title }}</a>
+              </gl-dropdown-item>
+            </template>
           </gl-dropdown>
         </div>
       </div>

@@ -137,6 +137,13 @@ const mapYAxisToViewModel = ({
   };
 };
 
+const mapLinksToVieModel = ({ title = '', url }) => {
+  return {
+    title: title || String(url),
+    url: url ? String(url) : '#',
+  };
+};
+
 /**
  * Maps a metrics panel to its view model
  *
@@ -152,6 +159,7 @@ const mapPanelToViewModel = ({
   y_label,
   y_axis = {},
   metrics = [],
+  links = [],
   max_value,
 }) => {
   // Both `x_axis.name` and `x_label` are supported for now
@@ -171,6 +179,7 @@ const mapPanelToViewModel = ({
     yAxis,
     xAxis,
     maxValue: max_value,
+    links: links.map(mapLinksToVieModel),
     metrics: mapToMetricsViewModel(metrics, yAxis.name),
   };
 };
