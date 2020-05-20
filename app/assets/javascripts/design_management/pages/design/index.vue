@@ -1,7 +1,8 @@
 <script>
 import { ApolloMutation } from 'vue-apollo';
 import Mousetrap from 'mousetrap';
-import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
+import { s__ } from '~/locale';
+import { GlLoadingIcon, GlAlert, GlCollapse, GlButton } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { fetchPolicies } from '~/lib/graphql';
 import allVersionsMixin from '../../mixins/all_versions';
@@ -52,6 +53,8 @@ export default {
     GlLoadingIcon,
     GlAlert,
     Participants,
+    GlCollapse,
+    GlButton,
   },
   mixins: [allVersionsMixin],
   props: {
@@ -69,6 +72,7 @@ export default {
       errorMessage: '',
       issueIid: '',
       scale: 1,
+      resolvedDiscussionsExpanded: false,
     };
   },
   apollo: {
@@ -158,6 +162,9 @@ export default {
     },
     isAnnotating() {
       return Boolean(this.annotationCoordinates);
+    },
+    resolvedCommentsToggleIcon() {
+      return this.resolvedDiscussionsExpanded ? 'chevron-down' : 'chevron-right';
     },
   },
   mounted() {
@@ -287,9 +294,13 @@ export default {
         },
       });
     },
+    toggleResolvedComments() {
+      this.resolvedDiscussionsExpanded = !this.resolvedDiscussionsExpanded;
+    },
   },
   createImageDiffNoteMutation,
   DESIGNS_ROUTE_NAME,
+  resolveCommentsToggleText: s__('DesignManagement|ResolvedComments'),
 };
 </script>
 
@@ -351,8 +362,28 @@ export default {
           class="mb-4"
         />
         <template v-if="renderDiscussions">
+          <gl-button
+            :icon="resolvedCommentsToggleIcon"
+            variant="link"
+            class="resolved-comments-toggle gl-text-black-normal gl-text-decoration-none gl-font-weight-bold"
+            @click="toggleResolvedComments"
+            >{{ $options.resolveCommentsToggleText }} ({{ resolvedDiscussions.length }})
+          </gl-button>
+          <gl-collapse v-model="resolvedDiscussionsExpanded" class="gl-mt-3">
+            <design-discussion
+              v-for="discussion in resolvedDiscussions"
+              :key="discussion.id"
+              :discussion="discussion"
+              :design-id="id"
+              :noteable-id="design.id"
+              :markdown-preview-path="markdownPreviewPath"
+              @error="onDesignDiscussionError"
+              @updateNoteError="onUpdateNoteError"
+              @click.native.stop="updateActiveDiscussion(discussion.notes[0].id)"
+            />
+          </gl-collapse>
           <design-discussion
-            v-for="discussion in discussions"
+            v-for="discussion in unresolvedDiscussions"
             :key="discussion.id"
             :discussion="discussion"
             :design-id="id"

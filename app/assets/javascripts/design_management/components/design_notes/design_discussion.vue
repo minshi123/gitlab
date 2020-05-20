@@ -143,7 +143,6 @@ export default {
     <div class="badge badge-pill" type="button">{{ discussion.index }}</div>
     <div
       class="design-discussion bordered-box position-relative"
-      :class="{ resolved: isDiscussionResolved }"
       data-qa-selector="design_discussion_content"
     >
       <design-note
@@ -185,9 +184,3 @@ export default {
     </div>
   </div>
 </template>
-
-<style scoped>
-.resolved {
-  border: 1px solid green;
-}
-</style>
