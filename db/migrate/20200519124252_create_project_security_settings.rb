@@ -1,6 +1,8 @@
 class CreateProjectSecuritySettings < ActiveRecord::Migration[6.0]
   include Gitlab::Database::MigrationHelpers
 
+  DOWNTIME = false
+
   def up
     with_lock_retries do
       create_table :project_security_settings do |t|
