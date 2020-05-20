@@ -1,3 +1,9 @@
+---
+stage: Package
+group: Package
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # GitLab Container Registry
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/4040) in GitLab 8.8.
@@ -154,14 +160,14 @@ docker push registry.example.com/group/project/image
 
 Your image will be named after the following scheme:
 
-```text
+```plaintext
 <registry URL>/<namespace>/<project>/<image>
 ```
 
 GitLab supports up to three levels of image repository names.
 The following examples of image tags are valid:
 
-```text
+```plaintext
 registry.example.com/group/project:some-tag
 registry.example.com/group/project/image:latest
 registry.example.com/group/project/my/image:rc1
