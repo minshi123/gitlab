@@ -10,7 +10,7 @@ class CreateProjectSecuritySettings < ActiveRecord::Migration[6.0]
         t.boolean :auto_fix_dependency_scanning, default: true
         t.boolean :auto_fix_sast, default: true
 
-        t.timestamps
+        t.timestamps_with_timezone
       end
     end
   end
