@@ -1,13 +1,6 @@
 <script>
 import { GlAlert } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
-import { parseData, createSankey, removeOrphanNodes } from './utils';
-import longDAGdata from './longDAGdata.json'
-import shortDAGdata from './shortDAGdata.json'
-import fabioDAGone from './fabioDAGone.json'
-import fabioDAGtwo from './fabioDAGtwo.json'
-import groupDAGdata from './groupDAGdata.json'
-
 
 export default {
   // eslint-disable-next-line @gitlab/require-i18n-strings
@@ -39,15 +32,6 @@ export default {
       reportFailure();
       return;
     }
-
-    const layoutSettings = {
-      width: 200,
-      height: 200,
-      nodeWidth: 10,
-      nodePadding: 20,
-      paddingForLabels: 100,
-    };
-    // console.log(parseData(longDAGdata.stages));
 
     axios
       .get(this.graphUrl)

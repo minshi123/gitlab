@@ -1,14 +1,9 @@
-import longNoParallel from './long_no_parallel.json';
-import * as longNoParallelOutput from './long_no_parallel_output';
-import mixedParallel from './mixed_parallel.json';
-import parallelNeesdsSingle from './parallel_needs_single.json';
-
 /**
   It is important that the simple base include parallel jobs
   as well as non-parallel jobs with spaces in the name to prevent
   us relying on spaces as an indicator.
 **/
-const simpleBase = {
+export default {
   stages: [
     {
       name: 'test',
@@ -56,13 +51,3 @@ const simpleBase = {
     }
   ]
 }
-
-export {
-  longNoParallel,
-  longNoParallelOutput,
-  mixedParallel,
-  // mixedParallelOutput,
-  parallelNeesdsSingle,
-  // parallelNeesdsSingleOutput,
-  simpleBase,
-};

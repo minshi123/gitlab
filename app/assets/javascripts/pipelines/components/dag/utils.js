@@ -137,11 +137,8 @@ export const filterByAncestors = (links, nodeDict) => links.filter((link) => {
 export const parseData = (data) => {
 
   const { nodes, nodeDict } = createNodesStructure(data);
-  // console.log(nodeDict);
   const allLinks = makeLinksFromNodes(nodes, nodeDict);
-  // console.log(allLinks);
   const filteredLinks = filterByAncestors(allLinks, nodeDict);
-  // console.log(filteredLinks);
   const links = uniqWith(filteredLinks, isEqual);
 
   return { nodes, links };
