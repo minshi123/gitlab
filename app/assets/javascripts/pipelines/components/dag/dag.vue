@@ -3,7 +3,11 @@ import { GlAlert } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import { parseData } from './utils';
 import longDAGdata from './longDAGdata.json'
+import shortDAGdata from './shortDAGdata.json'
+import fabioDAGone from './fabioDAGone.json'
 import fabioDAGtwo from './fabioDAGtwo.json'
+import groupDAGdata from './groupDAGdata.json'
+
 
 export default {
   // eslint-disable-next-line @gitlab/require-i18n-strings
@@ -31,8 +35,6 @@ export default {
   mounted() {
     const { drawGraph, reportFailure } = this;
 
-    console.log(parseData(fabioDAGtwo.stages));
-
     if (!this.graphUrl) {
       reportFailure();
       return;
@@ -47,7 +49,6 @@ export default {
   },
   methods: {
     drawGraph(data) {
-      // console.log(parseData(longDAGdata.stages));
       return data;
     },
     hideAlert() {

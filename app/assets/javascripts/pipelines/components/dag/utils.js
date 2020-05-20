@@ -67,12 +67,8 @@ const createNodesStructure = (data) => {
 }
 
 const makeLinksFromNodes = (nodes, nodeDict) => {
-  console.log('ND', nodeDict);
-
   return nodes
     .map((group) => {
-
-
 
       return group.jobs.map((job) => {
         if (!job.needs) {
@@ -80,8 +76,6 @@ const makeLinksFromNodes = (nodes, nodeDict) => {
         }
 
         return job.needs.map((needed) => {
-          const sourceNode = nodeDict[needed];
-          console.log('SOURCE NODE', sourceNode);
           return {
             source: nodeDict[needed]?.name,
             target: group.name,
@@ -115,7 +109,7 @@ const filterByAncestors = (links, nodeDict) => links.filter((link) => {
   then drop the current link source from that list
 
   call a function to get all ancestors, recursively
-  is the current link's source in the list of all parents
+  is the current link's source in the list of all parents?
   then we drop this link
 
   */
@@ -134,7 +128,7 @@ export const parseData = (data) => {
   const { nodes, nodeDict } = createNodesStructure(data);
   const allLinks = makeLinksFromNodes(nodes, nodeDict);
   const filteredLinks = filterByAncestors(allLinks, nodeDict);
-  const links = uniqWith(filterByAncestors, isEqual);
+  const links = uniqWith(filteredLinks, isEqual);
 
   return { nodes, links };
 };
