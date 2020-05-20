@@ -5,9 +5,11 @@
 <% if vulnerability.severity.present? %>
 * Severity: <%= vulnerability.severity %>
 <% end %>
+
 <% if vulnerability.confidence.present? %>
 * Confidence: <%= vulnerability.confidence %>
 <% end %>
+
 <% if defined?(vulnerability.file) && vulnerability.file.present? %>
 * Location: [<%= vulnerability.location_text %>](<%= vulnerability.location_link %>)
 <% end %>
@@ -39,5 +41,20 @@
 <% else %>
 * <%= link[:url] %>
 <% end %>
+<% end %>
+<% end %>
+
+<% if vulnerability.remediations.any? %>
+### Remediations:
+
+<% vulnerability.remediations.each do |remediation| %>
+  <details>
+  <summary>Patch to apply</summary>
+
+  ```diff
+  <%= Base64.decode64(remediation[:diff]) %>
+  ```
+
+  </details>
 <% end %>
 <% end %>
