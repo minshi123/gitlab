@@ -89,6 +89,38 @@ describe Gitlab::Alerting::NotificationPayloadParser do
       end
     end
 
+    context 'with fingerprint' do
+      before do
+        payload[:fingerprint] = fingerprint
+      end
+
+      context 'blank fingerprint' do
+        let(:fingerprint) { '   ' }
+
+        it 'sets fingerprint to nil' do
+          expect(subject.dig('annotations', 'fingerprint')).to be_nil
+        end
+      end
+
+      context 'fingerprint given' do
+        let(:fingerprint) { 'fingerprint' }
+
+        it 'hashes the fingerprint' do
+          expected_fingerprint = Digest::SHA1.hexdigest(fingerprint)
+          expect(subject.dig('annotations', 'fingerprint')).to eq(expected_fingerprint)
+        end
+      end
+
+      context 'array fingerprint given' do
+        let(:fingerprint) { [1, 'fingerprint', 'given'] }
+
+        it 'flattens and hashes the array' do
+          expected_fingerprint = Digest::SHA1.hexdigest(fingerprint.flatten.map!(&:to_s).join)
+          expect(subject.dig('annotations', 'fingerprint')).to eq(expected_fingerprint)
+        end
+      end
+    end
+
     context 'when payload attributes have blank lines' do
       let(:payload) do
         {

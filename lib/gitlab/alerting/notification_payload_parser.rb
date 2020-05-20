@@ -40,7 +40,7 @@ module Gitlab
         return unless fingerprint_payload
 
         if fingerprint_payload.is_a?(Array)
-          fingerprint_payload.flatten.map!(&:to_s).join
+          fingerprint_payload = fingerprint_payload.flatten.map!(&:to_s).join
         end
 
         Digest::SHA1.hexdigest(fingerprint_payload)
