@@ -33,7 +33,7 @@ module Projects
 
       def create_alert
         if existing_alert = existing_alert(am_alert_params[:fingerprint])
-          existing_alert.update(count: existing_alert.count + 1)
+          existing_alert.increment!(:events, 1)
         else
           AlertManagement::Alert.create(am_alert_params)
         end
