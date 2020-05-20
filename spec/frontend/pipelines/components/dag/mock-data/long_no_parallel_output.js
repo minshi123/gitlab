@@ -476,7 +476,7 @@ export const nodeDict = {
   }
 };
 
-export const unfilterdLinks = [
+export const unfilteredLinks = [
   {
     "source": "build_a",
     "target": "test_a",
@@ -581,3 +581,7 @@ export const filteredLinks = [
     "value": 10
   }
 ];
+
+// export const links = [];
+//
+// export const sankeyfied =

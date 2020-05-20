@@ -1,5 +1,3 @@
-// expect createNodesStructure to return all nodes and dict
-// expect makeLinksFromNodes to return all links and dict
 // expect filterByAncestors to filter links
 // expect parseData to create expected data structures given array of inputs
 // expect createSankey to return a sankeyfied data structure
@@ -50,22 +48,22 @@ const countGraph = (graph) => {
   };
 };
 
+const layoutSettings = {
+  width: 200,
+  height: 200,
+  nodeWidth: 10,
+  nodePadding: 20,
+  paddingForLabels: 100,
+};
+
 
 describe('DAG visualization parsing utilities', () => {
 
-  fdescribe('simple data tests', () => {
+  describe('simple data tests', () => {
     const { nodes, nodeDict } = createNodesStructure(simpleBase.stages);
     const unfilteredLinks = makeLinksFromNodes(nodes, nodeDict);
-    const settings = {
-      width: 200,
-      height: 200,
-      nodeWidth: 10,
-      nodePadding: 20,
-      paddingForLabels: 100,
-    };
-
     const parsed = parseData(simpleBase.stages);
-    const sankeyLayout = createSankey(settings)(parsed);
+    const sankeyLayout = createSankey(layoutSettings)(parsed);
 
     describe('createNodesStructure', () => {
       const parallelGroupName = 'jest';
@@ -103,21 +101,6 @@ describe('DAG visualization parsing utilities', () => {
       });
     });
 
-    describe('parseData parent function', () => {
-      it('returns an object containing a list of nodes and links', () => {
-        const parsed = parseData(simpleBase.stages);
-
-        // an array of nodes exist and the values are defined
-        expect(parsed).toHaveProperty('nodes');
-        expect(Array.isArray(parsed.nodes)).toBe(true);
-        expect(parsed.nodes.filter(Boolean)).not.toHaveLength(0);
-
-        // an array of links exist and the values are defined
-        expect(parsed).toHaveProperty('links');
-        expect(Array.isArray(parsed.links)).toBe(true);
-        expect(parsed.links.filter(Boolean)).not.toHaveLength(0);
-      });
-    });
 
     describe('filterByAncestors', () => {
       const allLinks = [
@@ -148,6 +131,22 @@ describe('DAG visualization parsing utilities', () => {
 
       it('dedupes links', () => {
         expect(filterByAncestors(allLinks, nodeDict)).toMatchObject(dedupedLinks);
+      });
+    });
+
+    describe('parseData parent function', () => {
+      it('returns an object containing a list of nodes and links', () => {
+        const parsed = parseData(simpleBase.stages);
+
+        // an array of nodes exist and the values are defined
+        expect(parsed).toHaveProperty('nodes');
+        expect(Array.isArray(parsed.nodes)).toBe(true);
+        expect(parsed.nodes.filter(Boolean)).not.toHaveLength(0);
+
+        // an array of links exist and the values are defined
+        expect(parsed).toHaveProperty('links');
+        expect(Array.isArray(parsed.links)).toBe(true);
+        expect(parsed.links.filter(Boolean)).not.toHaveLength(0);
       });
     });
 
@@ -214,15 +213,25 @@ describe('DAG visualization parsing utilities', () => {
       These tests check the same functions as above, but in a more snapshot-like function,
       with more complex generated data.
     **/
+
+    // it.each`
+    //   data |
+    // `('', ({ })) => {
+    //   // expect
+    // }
+
+    const { nodes, nodeDict } = createNodesStructure(longNoParallel.stages);
+    const unfilteredLinks = makeLinksFromNodes(nodes, nodeDict);
+    const { countNodes, countNodeDict, countLinks } = countGraph(longNoParallel);
+    const parsed = parseData(longNoParallel.stages);
+    const sankeyLayout = createSankey(layoutSettings)(parsed);
+
     describe('createNodesStructure', () => {
       // it.each`
       //   data |
       // `('', ({ })) => {
       //   // expect
       // }
-
-      const { nodes, nodeDict } = createNodesStructure(longNoParallel.stages);
-      const { countNodes, countNodeDict } = countGraph(longNoParallel);
 
       it('returns the expected node structure', () => {
         expect(nodes[0]).toHaveProperty('category');
@@ -244,18 +253,73 @@ describe('DAG visualization parsing utilities', () => {
     });
 
     describe('makeLinksFromNodes', () => {
-      const links = makeLinksFromNodes(longNoParallelOutput.nodes, longNoParallelOutput.nodeDict);
-      const { countLinks } = countGraph(longNoParallel);
 
       it('returns the expected link structure', () => {
-        expect(links[0]).toHaveProperty('source');
-        expect(links[0]).toHaveProperty('target');
-        expect(links[0]).toHaveProperty('value');
+        expect(unfilteredLinks[0]).toHaveProperty('source');
+        expect(unfilteredLinks[0]).toHaveProperty('target');
+        expect(unfilteredLinks[0]).toHaveProperty('value');
       });
 
       it('returns the initial list of links', () => {
-        expect(links).toHaveLength(countLinks());
-        expect(links).toMatchObject(longNoParallelOutput.unfilterdLinks);
+        expect(unfilteredLinks).toHaveLength(countLinks());
+        expect(unfilteredLinks).toMatchObject(longNoParallelOutput.unfilteredLinks);
+      });
+    });
+
+    describe('filterByAncestors', () => {
+      it('dedupes links', () => {
+        console.log(longNoParallel.filteredLinks);
+        expect(filterByAncestors(unfilteredLinks, nodeDict)).toMatchObject(longNoParallelOutput.filteredLinks);
+      });
+    });
+
+    describe('parseData parent function', () => {
+      it('returns an object containing a list of nodes and links', () => {
+
+        // an array of nodes exist and the values are defined
+        expect(parsed).toHaveProperty('nodes');
+        expect(Array.isArray(parsed.nodes)).toBe(true);
+        expect(parsed.nodes.filter(Boolean)).not.toHaveLength(0);
+
+        // an array of links exist and the values are defined
+        expect(parsed).toHaveProperty('links');
+        expect(Array.isArray(parsed.links)).toBe(true);
+        expect(parsed.links.filter(Boolean)).not.toHaveLength(0);
+      });
+    });
+
+
+    describe('createSankey', () => {
+
+      it('returns a nodes data structure with expected d3-added properties and they are defined', () => {
+        expect(sankeyLayout.nodes[0].sourceLinks).not.toBeUndefined();
+        expect(sankeyLayout.nodes[0].targetLinks).not.toBeUndefined();
+        expect(sankeyLayout.nodes[0].depth).not.toBeUndefined();
+        expect(sankeyLayout.nodes[0].layer).not.toBeUndefined();
+        expect(sankeyLayout.nodes[0].x0).not.toBeUndefined();
+        expect(sankeyLayout.nodes[0].x1).not.toBeUndefined();
+        expect(sankeyLayout.nodes[0].y0).not.toBeUndefined();
+        expect(sankeyLayout.nodes[0].y1).not.toBeUndefined();
+      });
+
+      it('returns a links data structure with expected d3-added properties', () => {
+        expect(sankeyLayout.links[0].source).not.toBeUndefined();
+        expect(sankeyLayout.links[0].target).not.toBeUndefined();
+        expect(sankeyLayout.links[0].width).not.toBeUndefined();
+        expect(sankeyLayout.links[0].y0).not.toBeUndefined();
+        expect(sankeyLayout.links[0].y1).not.toBeUndefined();
+      });
+
+      it('returns the expected data structure', () => {
+        expect(sankeyLayout).toMatchSnapshot();
+      })
+    });
+
+    describe('removeOrphanNodes', () => {
+      it('removes sankey nodes that have no needs and are not needed', () => {
+        const cleanedNodes = removeOrphanNodes(sankeyLayout.nodes);
+        expect(cleanedNodes.length <= sankeyLayout.nodes.length).toBe(true);
+        expect(cleanedNodes).toMatchSnapshot();
       });
     });
   });

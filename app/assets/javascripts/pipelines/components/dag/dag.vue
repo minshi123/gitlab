@@ -1,7 +1,7 @@
 <script>
 import { GlAlert } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
-import { parseData } from './utils';
+import { parseData, createSankey, removeOrphanNodes } from './utils';
 import longDAGdata from './longDAGdata.json'
 import shortDAGdata from './shortDAGdata.json'
 import fabioDAGone from './fabioDAGone.json'
@@ -40,7 +40,14 @@ export default {
       return;
     }
 
-    console.log(parseData(longDAGdata.stages));
+    const layoutSettings = {
+      width: 200,
+      height: 200,
+      nodeWidth: 10,
+      nodePadding: 20,
+      paddingForLabels: 100,
+    };
+    // console.log(parseData(longDAGdata.stages));
 
     axios
       .get(this.graphUrl)

@@ -141,6 +141,7 @@ export const parseData = (data) => {
   const allLinks = makeLinksFromNodes(nodes, nodeDict);
   // console.log(allLinks);
   const filteredLinks = filterByAncestors(allLinks, nodeDict);
+  // console.log(filteredLinks);
   const links = uniqWith(filteredLinks, isEqual);
 
   return { nodes, links };
