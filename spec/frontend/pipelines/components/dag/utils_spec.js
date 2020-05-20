@@ -208,120 +208,112 @@ describe('DAG visualization parsing utilities', () => {
 
   });
 
-  describe('complex data tests', () => {
+  fdescribe('complex data tests', () => {
     /**
       These tests check the same functions as above, but in a more snapshot-like function,
       with more complex generated data.
     **/
 
-    // it.each`
-    //   data |
-    // `('', ({ })) => {
-    //   // expect
-    // }
+    describe.each`
+      name             | data              | output
+      ${'longNoParallel'} | ${longNoParallel} | ${longNoParallelOutput}
+    `('parses $name example as expected', ({ data, output }) => {
 
-    const { nodes, nodeDict } = createNodesStructure(longNoParallel.stages);
-    const unfilteredLinks = makeLinksFromNodes(nodes, nodeDict);
-    const { countNodes, countNodeDict, countLinks } = countGraph(longNoParallel);
-    const parsed = parseData(longNoParallel.stages);
-    const sankeyLayout = createSankey(layoutSettings)(parsed);
+      const { nodes, nodeDict } = createNodesStructure(data.stages);
+      const unfilteredLinks = makeLinksFromNodes(nodes, nodeDict);
+      const { countNodes, countNodeDict, countLinks } = countGraph(data);
+      const parsed = parseData(data.stages);
+      const sankeyLayout = createSankey(layoutSettings)(parsed);
 
-    describe('createNodesStructure', () => {
-      // it.each`
-      //   data |
-      // `('', ({ })) => {
-      //   // expect
-      // }
 
-      it('returns the expected node structure', () => {
-        expect(nodes[0]).toHaveProperty('category');
-        expect(nodes[0]).toHaveProperty('name');
-        expect(nodes[0]).toHaveProperty('jobs');
-        expect(nodes[0]).toHaveProperty('size');
+      describe('createNodesStructure', () => {
+        it('returns the expected node structure', () => {
+          expect(nodes[0]).toHaveProperty('category');
+          expect(nodes[0]).toHaveProperty('name');
+          expect(nodes[0]).toHaveProperty('jobs');
+          expect(nodes[0]).toHaveProperty('size');
+        });
+
+        it('transforms nodes as expected', () => {
+          expect(nodes).toHaveLength(countNodes());
+          expect(nodes).toMatchObject(output.nodes);
+        });
+
+        it('returns the expected nodeDict structure, with entries for both parallel jobs and the enclosing group', () => {
+          expect(Object.keys(nodeDict)).toHaveLength(countNodeDict());
+          expect(nodeDict).toMatchObject(output.nodeDict);
+        });
+
       });
 
-      it('transforms nodes as expected', () => {
-        expect(nodes).toHaveLength(countNodes());
-        expect(nodes).toMatchObject(longNoParallelOutput.nodes);
+      describe('makeLinksFromNodes', () => {
+
+        it('returns the expected link structure', () => {
+          expect(unfilteredLinks[0]).toHaveProperty('source');
+          expect(unfilteredLinks[0]).toHaveProperty('target');
+          expect(unfilteredLinks[0]).toHaveProperty('value');
+        });
+
+        it('returns the initial list of links', () => {
+          expect(unfilteredLinks).toHaveLength(countLinks());
+          expect(unfilteredLinks).toMatchObject(output.unfilteredLinks);
+        });
       });
 
-      it('returns the expected nodeDict structure, with entries for both parallel jobs and the enclosing group', () => {
-        expect(Object.keys(nodeDict)).toHaveLength(countNodeDict());
-        expect(nodeDict).toMatchObject(longNoParallelOutput.nodeDict);
+      describe('filterByAncestors', () => {
+        it('dedupes links', () => {
+          expect(filterByAncestors(unfilteredLinks, nodeDict)).toMatchObject(output.filteredLinks);
+        });
       });
 
-    });
+      describe('parseData parent function', () => {
+        it('returns an object containing a list of nodes and links', () => {
 
-    describe('makeLinksFromNodes', () => {
+          // an array of nodes exist and the values are defined
+          expect(parsed).toHaveProperty('nodes');
+          expect(Array.isArray(parsed.nodes)).toBe(true);
+          expect(parsed.nodes.filter(Boolean)).not.toHaveLength(0);
 
-      it('returns the expected link structure', () => {
-        expect(unfilteredLinks[0]).toHaveProperty('source');
-        expect(unfilteredLinks[0]).toHaveProperty('target');
-        expect(unfilteredLinks[0]).toHaveProperty('value');
+          // an array of links exist and the values are defined
+          expect(parsed).toHaveProperty('links');
+          expect(Array.isArray(parsed.links)).toBe(true);
+          expect(parsed.links.filter(Boolean)).not.toHaveLength(0);
+        });
       });
 
-      it('returns the initial list of links', () => {
-        expect(unfilteredLinks).toHaveLength(countLinks());
-        expect(unfilteredLinks).toMatchObject(longNoParallelOutput.unfilteredLinks);
-      });
-    });
+      describe('createSankey', () => {
 
-    describe('filterByAncestors', () => {
-      it('dedupes links', () => {
-        console.log(longNoParallel.filteredLinks);
-        expect(filterByAncestors(unfilteredLinks, nodeDict)).toMatchObject(longNoParallelOutput.filteredLinks);
-      });
-    });
+        it('returns a nodes data structure with expected d3-added properties and they are defined', () => {
+          expect(sankeyLayout.nodes[0].sourceLinks).not.toBeUndefined();
+          expect(sankeyLayout.nodes[0].targetLinks).not.toBeUndefined();
+          expect(sankeyLayout.nodes[0].depth).not.toBeUndefined();
+          expect(sankeyLayout.nodes[0].layer).not.toBeUndefined();
+          expect(sankeyLayout.nodes[0].x0).not.toBeUndefined();
+          expect(sankeyLayout.nodes[0].x1).not.toBeUndefined();
+          expect(sankeyLayout.nodes[0].y0).not.toBeUndefined();
+          expect(sankeyLayout.nodes[0].y1).not.toBeUndefined();
+        });
 
-    describe('parseData parent function', () => {
-      it('returns an object containing a list of nodes and links', () => {
+        it('returns a links data structure with expected d3-added properties', () => {
+          expect(sankeyLayout.links[0].source).not.toBeUndefined();
+          expect(sankeyLayout.links[0].target).not.toBeUndefined();
+          expect(sankeyLayout.links[0].width).not.toBeUndefined();
+          expect(sankeyLayout.links[0].y0).not.toBeUndefined();
+          expect(sankeyLayout.links[0].y1).not.toBeUndefined();
+        });
 
-        // an array of nodes exist and the values are defined
-        expect(parsed).toHaveProperty('nodes');
-        expect(Array.isArray(parsed.nodes)).toBe(true);
-        expect(parsed.nodes.filter(Boolean)).not.toHaveLength(0);
-
-        // an array of links exist and the values are defined
-        expect(parsed).toHaveProperty('links');
-        expect(Array.isArray(parsed.links)).toBe(true);
-        expect(parsed.links.filter(Boolean)).not.toHaveLength(0);
-      });
-    });
-
-
-    describe('createSankey', () => {
-
-      it('returns a nodes data structure with expected d3-added properties and they are defined', () => {
-        expect(sankeyLayout.nodes[0].sourceLinks).not.toBeUndefined();
-        expect(sankeyLayout.nodes[0].targetLinks).not.toBeUndefined();
-        expect(sankeyLayout.nodes[0].depth).not.toBeUndefined();
-        expect(sankeyLayout.nodes[0].layer).not.toBeUndefined();
-        expect(sankeyLayout.nodes[0].x0).not.toBeUndefined();
-        expect(sankeyLayout.nodes[0].x1).not.toBeUndefined();
-        expect(sankeyLayout.nodes[0].y0).not.toBeUndefined();
-        expect(sankeyLayout.nodes[0].y1).not.toBeUndefined();
+        it('returns the expected data structure', () => {
+          expect(sankeyLayout).toMatchSnapshot();
+        });
       });
 
-      it('returns a links data structure with expected d3-added properties', () => {
-        expect(sankeyLayout.links[0].source).not.toBeUndefined();
-        expect(sankeyLayout.links[0].target).not.toBeUndefined();
-        expect(sankeyLayout.links[0].width).not.toBeUndefined();
-        expect(sankeyLayout.links[0].y0).not.toBeUndefined();
-        expect(sankeyLayout.links[0].y1).not.toBeUndefined();
-      });
-
-      it('returns the expected data structure', () => {
-        expect(sankeyLayout).toMatchSnapshot();
-      })
-    });
-
-    describe('removeOrphanNodes', () => {
-      it('removes sankey nodes that have no needs and are not needed', () => {
-        const cleanedNodes = removeOrphanNodes(sankeyLayout.nodes);
-        expect(cleanedNodes.length <= sankeyLayout.nodes.length).toBe(true);
-        expect(cleanedNodes).toMatchSnapshot();
+      describe('removeOrphanNodes', () => {
+        it('removes sankey nodes that have no needs and are not needed', () => {
+          const cleanedNodes = removeOrphanNodes(sankeyLayout.nodes);
+          expect(cleanedNodes.length <= sankeyLayout.nodes.length).toBe(true);
+          expect(cleanedNodes).toMatchSnapshot();
+        });
       });
     });
   });
-
 });

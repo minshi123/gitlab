@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DAG visualization parsing utilities complex data tests createSankey returns the expected data structure 1`] = `
+exports[`DAG visualization parsing utilities complex data tests parses longNoParallel example as expected createSankey returns the expected data structure 1`] = `
 Object {
   "links": Array [
     Object {
@@ -4989,7 +4989,7 @@ Object {
 }
 `;
 
-exports[`DAG visualization parsing utilities complex data tests removeOrphanNodes removes sankey nodes that have no needs and are not needed 1`] = `
+exports[`DAG visualization parsing utilities complex data tests parses longNoParallel example as expected removeOrphanNodes removes sankey nodes that have no needs and are not needed 1`] = `
 Array [
   Object {
     "category": "build",

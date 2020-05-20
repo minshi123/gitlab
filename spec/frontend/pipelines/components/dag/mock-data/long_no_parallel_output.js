@@ -581,7 +581,3 @@ export const filteredLinks = [
     "value": 10
   }
 ];
-
-// export const links = [];
-//
-// export const sankeyfied =
