@@ -35,4 +35,26 @@ export default {
       message: () => message,
     };
   },
+  toMatchInterpolatedText(received, match) {
+    const clearReceived = received
+      .replace(/\s\s+/gm, ' ')
+      .replace(/\s\./gm, '.')
+      .trim();
+
+    const clearMatch = match.replace(/%{\w+}/gm, '').trim();
+    const pass = clearReceived === clearMatch;
+    const message = pass
+      ? () => `
+          \n\n
+          Expected: not ${this.utils.printExpected(clearReceived)}
+          Received: ${this.utils.printReceived(clearMatch)}
+          `
+      : () => `
+        \n\n
+        Expected: ${this.utils.printExpected(clearReceived)}
+        Received: ${this.utils.printReceived(clearMatch)}
+        `;
+
+    return { actual: received, message, pass };
+  },
 };
