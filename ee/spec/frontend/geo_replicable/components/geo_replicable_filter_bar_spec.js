@@ -3,7 +3,7 @@ import { createLocalVue, mount } from '@vue/test-utils';
 import { GlDropdown, GlDropdownItem, GlSearchBoxByType, GlButton } from '@gitlab/ui';
 import GeoReplicableFilterBar from 'ee/geo_replicable/components/geo_replicable_filter_bar.vue';
 import store from 'ee/geo_replicable/store';
-import { DEFAULT_SEARCH_DELAY } from 'ee/geo_replicable/store/constants';
+import { DEFAULT_SEARCH_DELAY } from 'ee/geo_replicable/constants';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);

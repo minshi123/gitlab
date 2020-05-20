@@ -7,7 +7,7 @@ import {
   STATUS_ICON_NAMES,
   STATUS_ICON_CLASS,
   DEFAULT_STATUS,
-} from 'ee/geo_replicable/store/constants';
+} from 'ee/geo_replicable/constants';
 import Icon from '~/vue_shared/components/icon.vue';
 
 const localVue = createLocalVue();
