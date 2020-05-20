@@ -2,12 +2,11 @@
 
 require 'spec_helper'
 
-describe Geo::RegistryConsistencyService, :geo_fdw, :use_clean_rails_memory_store_caching do
+describe Geo::RegistryConsistencyService, :geo, :use_clean_rails_memory_store_caching do
   include EE::GeoHelpers
 
   let(:secondary) { create(:geo_node) }
 
-  subject { described_class.new(registry_class, batch_size: batch_size) }
 
   before do
     stub_current_geo_node(secondary)
@@ -15,8 +14,13 @@ describe Geo::RegistryConsistencyService, :geo_fdw, :use_clean_rails_memory_stor
 
   ::Geo::Secondary::RegistryConsistencyWorker::REGISTRY_CLASSES.each do |klass|
     let(:registry_class) { klass }
+    let(:registry_class_factory) { registry_class.underscore.tr('/', '_').to_sym }
     let(:model_class) { registry_class::MODEL_CLASS }
+    let(:model_class_factory) { model_class.underscore.tr('/', '_').to_sym }
+    let(:model_foreign_key) { registry_class::MODEL_FOREIGN_KEY }
     let(:batch_size) { 2 }
+
+    subject { described_class.new(registry_class, batch_size: batch_size) }
 
     describe 'registry_class interface' do
       it 'defines a MODEL_CLASS constant' do
@@ -82,8 +86,8 @@ describe Geo::RegistryConsistencyService, :geo_fdw, :use_clean_rails_memory_stor
                 expect(registry_class.model_id_in(expected).count).to eq(2)
               end
 
-              it 'calls #create_missing_in_range only once' do
-                expect(subject).to receive(:create_missing_in_range).once.and_call_original
+              it 'calls #handle_differences_in_range only once' do
+                expect(subject).to receive(:handle_differences_in_range).once.and_call_original
 
                 subject.execute
               end
@@ -104,8 +108,8 @@ describe Geo::RegistryConsistencyService, :geo_fdw, :use_clean_rails_memory_stor
                 expect(registry_class.model_id_in(expected).count).to eq(4)
               end
 
-              it 'calls #create_missing_in_range twice' do
-                expect(subject).to receive(:create_missing_in_range).twice.and_call_original
+              it 'calls #handle_differences_in_range twice' do
+                expect(subject).to receive(:handle_differences_in_range).twice.and_call_original
 
                 subject.execute
               end
@@ -124,8 +128,8 @@ describe Geo::RegistryConsistencyService, :geo_fdw, :use_clean_rails_memory_stor
               end.to change { registry_class.count }.by(batch_size)
             end
 
-            it 'calls #create_missing_in_range once' do
-              expect(subject).to receive(:create_missing_in_range).once.and_call_original
+            it 'calls #handle_differences_in_range once' do
+              expect(subject).to receive(:handle_differences_in_range).once.and_call_original
 
               subject.execute
             end
@@ -133,11 +137,34 @@ describe Geo::RegistryConsistencyService, :geo_fdw, :use_clean_rails_memory_stor
         end
 
         context 'when the number of records is less than 6 batches' do
-          it 'calls #create_missing_in_range once' do
-            expect(subject).to receive(:create_missing_in_range).once.and_call_original
+          it 'calls #handle_differences_in_range once' do
+            expect(subject).to receive(:handle_differences_in_range).once.and_call_original
 
             subject.execute
           end
+        end
+      end
+
+      context 'when there are unused registries' do
+        let(:records) { create_list(model_class_factory, batch_size) }
+        let(:unused_registry_ids) { [records.first].map(&:id) }
+
+        let!(:registries) do
+          records.map do |record|
+            create(registry_class_factory, model_foreign_key => record.id)
+          end
+        end
+
+        before do
+          model_class.where(id: unused_registry_ids).delete_all
+        end
+
+        xit 'enqueues a DeleteRegistryWorker for each unused registry' do
+          subject.execute
+        end
+
+        it 'returns truthy' do
+          expect(subject.execute).to be_truthy
         end
       end
 
