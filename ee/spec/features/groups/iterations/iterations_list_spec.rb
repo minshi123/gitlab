@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe 'Iterations list', :js do  
+describe 'Iterations list', :js do
   let(:now) { Time.now }
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
