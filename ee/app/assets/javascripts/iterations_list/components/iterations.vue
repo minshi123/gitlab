@@ -56,7 +56,7 @@ export default {
         case 2:
           return undefined;
       }
-    }
+    },
   },
 };
 </script>
@@ -67,28 +67,19 @@ export default {
       <template #title>
         {{ s__('Open') }}
       </template>
-      <iterations-list
-        :iterations="iterations"
-        :loading="loading"
-      />
+      <iterations-list :iterations="iterations" :loading="loading" />
     </gl-tab>
     <gl-tab>
-       <template #title>
+      <template #title>
         {{ s__('Closed') }}
       </template>
-      <iterations-list
-        :iterations="iterations"
-        :loading="loading"
-      />
+      <iterations-list :iterations="iterations" :loading="loading" />
     </gl-tab>
     <gl-tab>
-       <template #title>
+      <template #title>
         {{ s__('All') }}
       </template>
-      <iterations-list
-        :iterations="iterations"
-        :loading="loading"
-      />
+      <iterations-list :iterations="iterations" :loading="loading" />
     </gl-tab>
     <template v-if="canAdmin" #tabs-end>
       <li class="ml-auto d-flex align-items-center">

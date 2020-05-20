@@ -8,7 +8,7 @@ Vue.use(VueApollo);
 
 export default function initIterationsList() {
   const el = document.querySelector('.js-iterations-list');
-  
+
   if (!el) {
     return null;
   }
@@ -30,4 +30,4 @@ export default function initIterationsList() {
       });
     },
   });
-};
+}

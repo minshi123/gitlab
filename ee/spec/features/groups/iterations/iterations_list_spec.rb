@@ -22,6 +22,7 @@ describe 'Iterations list', :js do
   context 'as user' do
     before do
       stub_licensed_features(iterations: true)
+      stub_feature_flags(iterations: true)
       group.add_developer(user)
       sign_in(user)
       visit group_iterations_path(group)
