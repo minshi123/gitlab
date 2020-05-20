@@ -23,7 +23,7 @@ module EE
     override :group_issues_sub_menu_items
     def group_issues_sub_menu_items
       controllers = %w(issues_analytics#show)
-      if @group.feature_available?(:iterations)
+      if @group.beta_feature_available?(:iterations)
         controllers = %w(iterations#index)
       end
       super.concat(controllers)
