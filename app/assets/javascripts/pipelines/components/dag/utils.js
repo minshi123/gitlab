@@ -41,32 +41,43 @@ import { uniqWith, isEqual } from 'lodash';
   10 -> value (constant)
 **/
 
-const createNodesStructure = (data) => {
-
-  const nodes = data
+export const createNodes = (data) => {
+  return data
     .map(({ groups }, idx, stages) => {
       return groups.map((group) => {
         return { ...group, category: stages[idx].name };
       });
     })
     .flat();
+};
 
-    const nodeDict = nodes.reduce((acc, node) => {
+export const createNodeDict = (nodes) => {
+  return nodes.reduce((acc, node) => {
+    const newNode = {
+      ...node,
+      needs: node.jobs.map(job => job.needs || []).flat()
+    }
 
-      if (node.size > 1) {
-        node.jobs.forEach((job) => {
-          acc[job.name] = node;
-        });
-      }
+    if (node.size > 1) {
+      node.jobs.forEach((job) => {
+        acc[job.name] = newNode;
+      });
+    }
 
-      acc[node.name] = node;
-      return acc;
-    }, {});
+    acc[node.name] = newNode;
+    return acc;
+  }, {});
+};
 
-    return { nodes, nodeDict };
+export const createNodesStructure = (data) => {
+
+  const nodes = createNodes(data);
+  const nodeDict = createNodeDict(nodes);
+
+  return { nodes, nodeDict };
 }
 
-const makeLinksFromNodes = (nodes, nodeDict) => {
+export const makeLinksFromNodes = (nodes, nodeDict) => {
   return nodes
     .map((group) => {
 
@@ -86,7 +97,7 @@ const makeLinksFromNodes = (nodes, nodeDict) => {
     }).flat(2)
 }
 
-const getAllAncestors = (nodes, nodeDict) => {
+export const getAllAncestors = (nodes, nodeDict) => {
   const needs = nodes
     .map((node) => {
       return nodeDict[node].needs || '';
@@ -101,7 +112,7 @@ const getAllAncestors = (nodes, nodeDict) => {
   return [];
 };
 
-const filterByAncestors = (links, nodeDict) => links.filter((link) => {
+export const filterByAncestors = (links, nodeDict) => links.filter((link) => {
   /*
 
   for every link, check out it's target
@@ -114,19 +125,21 @@ const filterByAncestors = (links, nodeDict) => links.filter((link) => {
 
   */
   const targetNode = link.target;
-  const targetNodeNeeds = nodeDict[targetNode].jobs.map(({ needs }) => needs || []).flat();
+  const targetNodeNeeds = nodeDict[targetNode].needs;
   const targetNodeNeedsMinusSource = targetNodeNeeds.filter(
     (need) => need !== link.source
   );
-  const allAncestors = getAllAncestors(targetNodeNeedsMinusSource, nodeDict);
 
+  const allAncestors = getAllAncestors(targetNodeNeedsMinusSource, nodeDict);
   return !allAncestors.includes(link.source);
 });
 
 export const parseData = (data) => {
 
   const { nodes, nodeDict } = createNodesStructure(data);
+  // console.log(nodeDict);
   const allLinks = makeLinksFromNodes(nodes, nodeDict);
+  // console.log(allLinks);
   const filteredLinks = filterByAncestors(allLinks, nodeDict);
   const links = uniqWith(filteredLinks, isEqual);
 

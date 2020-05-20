@@ -40,6 +40,8 @@ export default {
       return;
     }
 
+    console.log(parseData(longDAGdata.stages));
+
     axios
       .get(this.graphUrl)
       .then(response => {
