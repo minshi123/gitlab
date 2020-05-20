@@ -288,7 +288,6 @@ CREATE TABLE public.application_settings (
     geo_status_timeout integer DEFAULT 10,
     uuid character varying,
     polling_interval_multiplier numeric DEFAULT 1.0 NOT NULL,
-    elasticsearch_experimental_indexer boolean,
     cached_markdown_version integer,
     check_namespace_plan boolean DEFAULT false NOT NULL,
     mirror_max_delay integer DEFAULT 300 NOT NULL,
@@ -4656,6 +4655,16 @@ CREATE TABLE public.packages_nuget_dependency_link_metadata (
     CONSTRAINT packages_nuget_dependency_link_metadata_target_framework_constr CHECK ((char_length(target_framework) <= 255))
 );
 
+CREATE TABLE public.packages_nuget_metadata (
+    package_id bigint NOT NULL,
+    license_url text,
+    project_url text,
+    icon_url text,
+    CONSTRAINT packages_nuget_metadata_icon_url_constraint CHECK ((char_length(icon_url) <= 255)),
+    CONSTRAINT packages_nuget_metadata_license_url_constraint CHECK ((char_length(license_url) <= 255)),
+    CONSTRAINT packages_nuget_metadata_project_url_constraint CHECK ((char_length(project_url) <= 255))
+);
+
 CREATE TABLE public.packages_package_files (
     id bigint NOT NULL,
     package_id bigint NOT NULL,
@@ -8538,6 +8547,9 @@ ALTER TABLE ONLY public.packages_maven_metadata
 ALTER TABLE ONLY public.packages_nuget_dependency_link_metadata
     ADD CONSTRAINT packages_nuget_dependency_link_metadata_pkey PRIMARY KEY (dependency_link_id);
 
+ALTER TABLE ONLY public.packages_nuget_metadata
+    ADD CONSTRAINT packages_nuget_metadata_pkey PRIMARY KEY (package_id);
+
 ALTER TABLE ONLY public.packages_package_files
     ADD CONSTRAINT packages_package_files_pkey PRIMARY KEY (id);
 
@@ -10088,6 +10100,8 @@ CREATE INDEX index_namespaces_on_trial_ends_on ON public.namespaces USING btree 
 
 CREATE INDEX index_namespaces_on_type_partial ON public.namespaces USING btree (type) WHERE (type IS NOT NULL);
 
+CREATE INDEX index_non_requested_project_members_on_source_id_and_type ON public.members USING btree (source_id, source_type) WHERE ((requested_at IS NULL) AND ((type)::text = 'ProjectMember'::text));
+
 CREATE UNIQUE INDEX index_note_diff_files_on_diff_note_id ON public.note_diff_files USING btree (diff_note_id);
 
 CREATE INDEX index_notes_on_author_id_and_created_at_and_id ON public.notes USING btree (author_id, created_at, id);
@@ -11550,6 +11564,9 @@ ALTER TABLE ONLY public.personal_access_tokens
 ALTER TABLE ONLY public.project_settings
     ADD CONSTRAINT fk_project_settings_push_rule_id FOREIGN KEY (push_rule_id) REFERENCES public.push_rules(id) ON DELETE SET NULL;
 
+ALTER TABLE ONLY public.projects
+    ADD CONSTRAINT fk_projects_namespace_id FOREIGN KEY (namespace_id) REFERENCES public.namespaces(id) ON DELETE RESTRICT;
+
 ALTER TABLE ONLY public.protected_branch_merge_access_levels
     ADD CONSTRAINT fk_protected_branch_merge_access_levels_user_id FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
@@ -12605,6 +12622,9 @@ ALTER TABLE ONLY public.serverless_domain_cluster
 
 ALTER TABLE ONLY public.ci_job_variables
     ADD CONSTRAINT fk_rails_fbf3b34792 FOREIGN KEY (job_id) REFERENCES public.ci_builds(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.packages_nuget_metadata
+    ADD CONSTRAINT fk_rails_fc0c19f5b4 FOREIGN KEY (package_id) REFERENCES public.packages_packages(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.cluster_groups
     ADD CONSTRAINT fk_rails_fdb8648a96 FOREIGN KEY (cluster_id) REFERENCES public.clusters(id) ON DELETE CASCADE;
@@ -13802,6 +13822,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200424101920
 20200424135319
 20200427064130
+20200428134356
 20200429001827
 20200429002150
 20200429015603
@@ -13809,6 +13830,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200429181955
 20200429182245
 20200430103158
+20200430130048
 20200505164958
 20200505171834
 20200505172405
@@ -13817,6 +13839,8 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200506154421
 20200507221434
 20200508091106
+20200511080113
+20200511083541
 20200511092246
 20200511092505
 20200511092714
@@ -13830,6 +13854,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200511145545
 20200511162057
 20200511162115
+20200511220023
 20200512085150
 20200512164334
 20200513160930
@@ -13841,5 +13866,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200514000009
 20200514000132
 20200514000340
+20200515155620
 \.
 
