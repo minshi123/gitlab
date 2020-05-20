@@ -255,9 +255,9 @@ export default {
       @mouseup="onAddCommentMouseup"
     ></button>
     <design-note-pin
-      v-for="(note, index) in notes"
+      v-for="note in notes"
       :key="note.id"
-      :label="`${index + 1}`"
+      :label="note.index"
       :repositioning="isMovingNote(note.id)"
       :position="
         isMovingNote(note.id) && movingNoteNewPosition

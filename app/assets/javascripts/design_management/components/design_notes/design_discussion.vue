@@ -34,10 +34,6 @@ export default {
       type: String,
       required: true,
     },
-    discussionIndex: {
-      type: Number,
-      required: true,
-    },
     markdownPreviewPath: {
       type: String,
       required: false,
@@ -144,7 +140,7 @@ export default {
 
 <template>
   <div class="design-discussion-wrapper">
-    <div class="badge badge-pill" type="button">{{ discussionIndex }}</div>
+    <div class="badge badge-pill" type="button">{{ discussion.index }}</div>
     <div
       class="design-discussion bordered-box position-relative"
       :class="{ resolved: isDiscussionResolved }"

@@ -54,7 +54,10 @@ export default {
   },
   computed: {
     discussionStartingNotes() {
-      return this.discussions.map(discussion => discussion.notes[0]);
+      return this.discussions.map(discussion => ({
+        ...discussion.notes[0],
+        index: discussion.index,
+      }));
     },
     currentCommentForm() {
       return (this.isAnnotating && this.currentAnnotationPosition) || null;

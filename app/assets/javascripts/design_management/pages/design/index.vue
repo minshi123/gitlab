@@ -352,12 +352,11 @@ export default {
         />
         <template v-if="renderDiscussions">
           <design-discussion
-            v-for="(discussion, index) in discussions"
+            v-for="discussion in discussions"
             :key="discussion.id"
             :discussion="discussion"
             :design-id="id"
             :noteable-id="design.id"
-            :discussion-index="index + 1"
             :markdown-preview-path="markdownPreviewPath"
             @error="onDesignDiscussionError"
             @updateNoteError="onUpdateNoteError"
