@@ -98,10 +98,6 @@ class ListIssue {
     this.isLoading[key] = value;
   }
 
-  updateEpic(newData) {
-    return boardsStore.updateIssueEpic(this, newData);
-  }
-
   update() {
     return boardsStore.updateIssue(this);
   }

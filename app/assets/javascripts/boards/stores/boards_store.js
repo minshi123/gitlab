@@ -14,7 +14,6 @@ import {
 } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
-import { formatDate, timeFor } from '~/lib/utils/datetime_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import eventHub from '../eventhub';
 import { ListType } from '../constants';
@@ -718,33 +717,6 @@ const boardsStore = {
     if (obj.assignees) {
       issue.assignees = obj.assignees.map(a => new ListAssignee(a));
     }
-  },
-
-  updateIssueEpic(issue, newData) {
-    function insertStrongTag(humanReadableTimestamp) {
-      if (humanReadableTimestamp === __('Past due')) {
-        return `<strong>${humanReadableTimestamp}</strong>`;
-      }
-
-      // Insert strong tag for the number in "[Number] days remaining"
-      if (/\d+ days remaining/.test(humanReadableTimestamp)) {
-        const days = humanReadableTimestamp.split(' ')[0];
-        return `<strong>${days}</strong> days remaining`;
-      }
-
-      return humanReadableTimestamp;
-    }
-
-    issue.epic = {
-      epic_issue_id: newData.id,
-      group_id: newData.epic.group_id,
-      human_readable_end_date: formatDate(newData.epic.end_date, 'mmm d, yyyy'),
-      human_readable_timestamp: insertStrongTag(timeFor(newData.epic.end_date)),
-      id: newData.epic.id,
-      iid: newData.epic.iid,
-      title: newData.epic.title,
-      url: `/groups/${newData.epic.web_url.replace(/.+groups\//, '')}`,
-    };
   },
 
   updateIssue(issue) {

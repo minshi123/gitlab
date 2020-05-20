@@ -1,10 +1,16 @@
-/* eslint-disable class-methods-use-this */
+/* eslint-disable class-methods-use-this, no-param-reassign */
+/*
+  no-param-reassign is disabled because one method of BoardsStoreEE 
+  modify the passed parameter in conformity with non-ee BoardsStore.
+*/
+
 import { sortBy } from 'lodash';
 import Cookies from 'js-cookie';
 import { __, sprintf } from '~/locale';
 import sidebarEventHub from '~/sidebar/event_hub';
 import createFlash from '~/flash';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import { formatDate, timeFor } from '~/lib/utils/datetime_utility';
 import axios from '~/lib/utils/axios_utils';
 
 class BoardsStoreEE {
@@ -67,6 +73,8 @@ class BoardsStoreEE {
         window.history.pushState(null, null, `?${this.store.filter.path}`);
       }
     };
+
+    this.store.updateIssueEpic = this.updateIssueEpic;
 
     sidebarEventHub.$on('updateWeight', this.updateWeight.bind(this));
 
@@ -177,6 +185,33 @@ class BoardsStoreEE {
 
   setMaxIssueCountOnList(id, maxIssueCount) {
     this.store.findList('id', id).maxIssueCount = maxIssueCount;
+  }
+
+  updateIssueEpic(issue, newData) {
+    function insertStrongTag(humanReadableTimestamp) {
+      if (humanReadableTimestamp === __('Past due')) {
+        return `<strong>${humanReadableTimestamp}</strong>`;
+      }
+
+      // Insert strong tag for the number in "[Number] days remaining"
+      if (/\d+ days remaining/.test(humanReadableTimestamp)) {
+        const days = humanReadableTimestamp.split(' ')[0];
+        return `<strong>${days}</strong> days remaining`;
+      }
+
+      return humanReadableTimestamp;
+    }
+
+    issue.epic = {
+      epic_issue_id: newData.id,
+      group_id: newData.epic.group_id,
+      human_readable_end_date: formatDate(newData.epic.end_date, 'mmm d, yyyy'),
+      human_readable_timestamp: insertStrongTag(timeFor(newData.epic.end_date)),
+      id: newData.epic.id,
+      iid: newData.epic.iid,
+      title: newData.epic.title,
+      url: `/groups/${newData.epic.web_url.replace(/.+groups\//, '')}`,
+    };
   }
 
   updateWeight(newWeight, id) {
