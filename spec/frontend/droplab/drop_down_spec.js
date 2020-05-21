@@ -301,7 +301,7 @@ describe('DropLab DropDown', () => {
     });
 
     it('should call .classList.remove for all items', () => {
-      testContext.items.forEach((item, i) => {
+      testContext.items.forEach((_, i) => {
         expect(testContext.items[i].classList.remove).toHaveBeenCalledWith(SELECTED_CLASS);
       });
     });
