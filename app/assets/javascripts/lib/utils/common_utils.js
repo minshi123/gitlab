@@ -244,7 +244,7 @@ export const contentTop = () => {
   );
 };
 
-export const scrollToElement = element => {
+export const scrollToElement = (element, offset = 0) => {
   let $el = element;
   if (!(element instanceof $)) {
     $el = $(element);
@@ -254,7 +254,7 @@ export const scrollToElement = element => {
   // eslint-disable-next-line no-jquery/no-animate
   return $('body, html').animate(
     {
-      scrollTop: top - contentTop(),
+      scrollTop: top - offset - contentTop(),
     },
     200,
   );

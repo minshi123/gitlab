@@ -1,10 +1,12 @@
 import Cookies from 'js-cookie';
 import { getParameterValues } from '~/lib/utils/url_utility';
+import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { INLINE_DIFF_VIEW_TYPE, DIFF_VIEW_COOKIE_NAME } from '../../constants';
 
 const viewTypeFromQueryString = getParameterValues('view')[0];
 const viewTypeFromCookie = Cookies.get(DIFF_VIEW_COOKIE_NAME);
 const defaultViewType = INLINE_DIFF_VIEW_TYPE;
+const breakpoint = bp.getBreakpointSize();
 
 export default () => ({
   isLoading: true,
@@ -34,4 +36,5 @@ export default () => ({
   dismissEndpoint: '',
   showSuggestPopover: true,
   useSingleDiffStyle: false,
+  breakpoint,
 });

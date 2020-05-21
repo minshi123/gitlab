@@ -38,7 +38,7 @@ export default {
     },
     oldSha: {
       type: String,
-      required: true,
+      required: false, // SAM: looks like oldSha sometimes is null 🤔 (REMOVE BEFORE REVIEW)
     },
     oldSize: {
       type: Number,
