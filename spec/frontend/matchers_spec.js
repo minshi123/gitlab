@@ -1,5 +1,22 @@
 describe('Custom jest matchers', () => {
   describe('toMatchInterpolatedText', () => {
+    describe('malformed input', () => {
+      it.each([null, 1, Symbol, Array, Object])(
+        'fails graciously if the expected value is %s',
+        expected => {
+          expect(expected).not.toMatchInterpolatedText('null');
+        },
+      );
+    });
+    describe('malformed matcher', () => {
+      it.each([null, 1, Symbol, Array, Object])(
+        'fails graciously if the matcher is %s',
+        matcher => {
+          expect('null').not.toMatchInterpolatedText(matcher);
+        },
+      );
+    });
+
     describe('positive assertion', () => {
       it.each`
         htmlString         | templateString
@@ -15,6 +32,7 @@ describe('Custom jest matchers', () => {
         expect(htmlString).toMatchInterpolatedText(templateString);
       });
     });
+
     describe('negative assertion', () => {
       it.each`
         htmlString  | templateString
