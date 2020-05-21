@@ -16,7 +16,7 @@ describe('Pipeline DAG graph', () => {
   const createComponent = (propsData = {}, method = mount) => {
     axiosMock = new MockAdapter(axios);
 
-    if (wrapper && wrapper.destroy) {
+    if (wrapper?.destroy) {
       wrapper.destroy();
     }
 
