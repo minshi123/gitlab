@@ -6501,7 +6501,8 @@ CREATE TABLE public.todos (
     updated_at timestamp without time zone,
     note_id integer,
     commit_id character varying,
-    group_id integer
+    group_id integer,
+    resolved_by_action smallint
 );
 
 CREATE SEQUENCE public.todos_id_seq
@@ -13915,5 +13916,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200514000340
 20200515155620
 20200519115908
+20200520103514
 \.
 

@@ -349,8 +349,8 @@ class IssuableBaseService < BaseService
     when 'add'
       todo_service.mark_todo(issuable, current_user)
     when 'done'
-      todo = TodosFinder.new(current_user).find_by(target: issuable)
-      todo_service.mark_todos_as_done_by_ids(todo, current_user) if todo
+      todos = TodosFinder.new(current_user).find_by(target: issuable)
+      todo_service.resolve_todos(todos, current_user) if todos
     end
   end
   # rubocop: enable CodeReuse/ActiveRecord
