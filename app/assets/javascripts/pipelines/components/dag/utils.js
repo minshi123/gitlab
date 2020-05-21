@@ -1,8 +1,5 @@
 import * as d3 from 'd3';
-import {
-  sankey,
-  sankeyLeft,
-} from 'd3-sankey';
+import { sankey, sankeyLeft } from 'd3-sankey';
 import { uniqWith, isEqual } from 'lodash';
 
 /**
@@ -41,25 +38,25 @@ import { uniqWith, isEqual } from 'lodash';
   10 -> value (constant)
 **/
 
-export const createNodes = (data) => {
+export const createNodes = data => {
   return data
     .map(({ groups }, idx, stages) => {
-      return groups.map((group) => {
+      return groups.map(group => {
         return { ...group, category: stages[idx].name };
       });
     })
     .flat();
 };
 
-export const createNodeDict = (nodes) => {
+export const createNodeDict = nodes => {
   return nodes.reduce((acc, node) => {
     const newNode = {
       ...node,
-      needs: node.jobs.map(job => job.needs || []).flat()
-    }
+      needs: node.jobs.map(job => job.needs || []).flat(),
+    };
 
     if (node.size > 1) {
-      node.jobs.forEach((job) => {
+      node.jobs.forEach(job => {
         acc[job.name] = newNode;
       });
     }
@@ -69,37 +66,37 @@ export const createNodeDict = (nodes) => {
   }, {});
 };
 
-export const createNodesStructure = (data) => {
-
+export const createNodesStructure = data => {
   const nodes = createNodes(data);
   const nodeDict = createNodeDict(nodes);
 
   return { nodes, nodeDict };
-}
+};
 
 export const makeLinksFromNodes = (nodes, nodeDict) => {
+  const constantLinkValue = 10; // all links are the same weight
   return nodes
-    .map((group) => {
-
-      return group.jobs.map((job) => {
+    .map(group => {
+      return group.jobs.map(job => {
         if (!job.needs) {
           return [];
         }
 
-        return job.needs.map((needed) => {
+        return job.needs.map(needed => {
           return {
             source: nodeDict[needed]?.name,
             target: group.name,
-            value: 10,
+            value: constantLinkValue,
           };
         });
-      })
-    }).flat(2)
-}
+      });
+    })
+    .flat(2);
+};
 
 export const getAllAncestors = (nodes, nodeDict) => {
   const needs = nodes
-    .map((node) => {
+    .map(node => {
       return nodeDict[node].needs || '';
     })
     .flat()
@@ -112,8 +109,9 @@ export const getAllAncestors = (nodes, nodeDict) => {
   return [];
 };
 
-export const filterByAncestors = (links, nodeDict) => links.filter((link) => {
-  /*
+export const filterByAncestors = (links, nodeDict) =>
+  links.filter(link => {
+    /*
 
   for every link, check out it's target
   for every target, get the target node's needs
@@ -124,18 +122,15 @@ export const filterByAncestors = (links, nodeDict) => links.filter((link) => {
   then we drop this link
 
   */
-  const targetNode = link.target;
-  const targetNodeNeeds = nodeDict[targetNode].needs;
-  const targetNodeNeedsMinusSource = targetNodeNeeds.filter(
-    (need) => need !== link.source
-  );
+    const targetNode = link.target;
+    const targetNodeNeeds = nodeDict[targetNode].needs;
+    const targetNodeNeedsMinusSource = targetNodeNeeds.filter(need => need !== link.source);
 
-  const allAncestors = getAllAncestors(targetNodeNeedsMinusSource, nodeDict);
-  return !allAncestors.includes(link.source);
-});
+    const allAncestors = getAllAncestors(targetNodeNeedsMinusSource, nodeDict);
+    return !allAncestors.includes(link.source);
+  });
 
-export const parseData = (data) => {
-
+export const parseData = data => {
   const { nodes, nodeDict } = createNodesStructure(data);
   const allLinks = makeLinksFromNodes(nodes, nodeDict);
   const filteredLinks = filterByAncestors(allLinks, nodeDict);
@@ -151,7 +146,7 @@ export const parseData = (data) => {
 
 export const createSankey = ({ width, height, nodeWidth, nodePadding, paddingForLabels }) => {
   const sankeyGenerator = sankey()
-    .nodeId((d) => d.name)
+    .nodeId(d => d.name)
     .nodeAlign(sankeyLeft)
     .nodeWidth(nodeWidth)
     .nodePadding(nodePadding)
@@ -161,8 +156,8 @@ export const createSankey = ({ width, height, nodeWidth, nodePadding, paddingFor
     ]);
   return ({ nodes, links }) =>
     sankeyGenerator({
-      nodes: nodes.map((d) => ({ ...d })),
-      links: links.map((d) => ({ ...d })),
+      nodes: nodes.map(d => ({ ...d })),
+      links: links.map(d => ({ ...d })),
     });
 };
 
@@ -170,9 +165,8 @@ export const createSankey = ({ width, height, nodeWidth, nodePadding, paddingFor
   The number of nodes in the most populous generation drives the height of the graph.
 **/
 
-export const getMaxNodes = (nodes) => {
+export const getMaxNodes = nodes => {
   const counts = nodes.reduce((acc, currentNode) => {
-
     if (!acc[currentNode.layer]) {
       acc[currentNode.layer] = 0;
     }
@@ -180,11 +174,10 @@ export const getMaxNodes = (nodes) => {
     acc[currentNode.layer] += 1;
 
     return acc;
-
   }, []);
 
   return Math.max(...counts);
-}
+};
 
 /**
   Because we cannot know if a node is part of a relationship until after we
@@ -192,6 +185,6 @@ export const getMaxNodes = (nodes) => {
   to find nodes that have no relations.
 **/
 
-export const removeOrphanNodes = (sankeyfiedNodes) => {
-  return sankeyfiedNodes.filter((node) => node.sourceLinks.length || node.targetLinks.length)
-}
+export const removeOrphanNodes = sankeyfiedNodes => {
+  return sankeyfiedNodes.filter(node => node.sourceLinks.length || node.targetLinks.length);
+};

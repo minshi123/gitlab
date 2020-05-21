@@ -11,7 +11,6 @@ import {
 import mockGraphData from './mock-data.js';
 
 describe('DAG visualization parsing utilities', () => {
-
   const { nodes, nodeDict } = createNodesStructure(mockGraphData.stages);
   const unfilteredLinks = makeLinksFromNodes(nodes, nodeDict);
   const parsed = parseData(mockGraphData.stages);
@@ -31,11 +30,13 @@ describe('DAG visualization parsing utilities', () => {
     const parallelJobName = 'jest 1/2';
     const singleJobName = 'frontend fixtures';
 
+    const { name, jobs, size } = mockGraphData.stages[0].groups[0];
+
     it('returns the expected node structure', () => {
       expect(nodes[0]).toHaveProperty('category', mockGraphData.stages[0].name);
-      expect(nodes[0]).toHaveProperty('name', mockGraphData.stages[0].groups[0].name);
-      expect(nodes[0]).toHaveProperty('jobs', mockGraphData.stages[0].groups[0].jobs);
-      expect(nodes[0]).toHaveProperty('size', mockGraphData.stages[0].groups[0].size);
+      expect(nodes[0]).toHaveProperty('name', name);
+      expect(nodes[0]).toHaveProperty('jobs', jobs);
+      expect(nodes[0]).toHaveProperty('size', size);
     });
 
     it('adds needs to top level of nodeDict entries', () => {
@@ -45,7 +46,6 @@ describe('DAG visualization parsing utilities', () => {
     });
 
     it('makes entries in nodeDict for jobs and parallel jobs', () => {
-
       const nodeNames = Object.keys(nodeDict);
 
       expect(nodeNames.includes(parallelGroupName)).toBe(true);
@@ -62,18 +62,14 @@ describe('DAG visualization parsing utilities', () => {
     });
   });
 
-
   describe('filterByAncestors', () => {
     const allLinks = [
-      { source: 'job1' , target: 'job4' },
-      { source: 'job1' , target: 'job2' },
-      { source: 'job2' , target: 'job4' },
+      { source: 'job1', target: 'job4' },
+      { source: 'job1', target: 'job2' },
+      { source: 'job2', target: 'job4' },
     ];
 
-    const dedupedLinks = [
-      { source: 'job1' , target: 'job2' },
-      { source: 'job2' , target: 'job4' },
-    ];
+    const dedupedLinks = [{ source: 'job1', target: 'job2' }, { source: 'job2', target: 'job4' }];
 
     const nodeDict = {
       job1: {
@@ -86,9 +82,9 @@ describe('DAG visualization parsing utilities', () => {
       job4: {
         name: 'job4',
         needs: ['job1', 'job2'],
-        category: 'build'
+        category: 'build',
       },
-    }
+    };
 
     it('dedupes links', () => {
       expect(filterByAncestors(allLinks, nodeDict)).toMatchObject(dedupedLinks);
@@ -112,7 +108,6 @@ describe('DAG visualization parsing utilities', () => {
   });
 
   describe('createSankey', () => {
-
     it('returns a nodes data structure with expected d3-added properties', () => {
       expect(sankeyLayout.nodes[0]).toHaveProperty('sourceLinks');
       expect(sankeyLayout.nodes[0]).toHaveProperty('targetLinks');
@@ -132,12 +127,21 @@ describe('DAG visualization parsing utilities', () => {
       expect(sankeyLayout.links[0]).toHaveProperty('y1');
     });
 
-    it('does not propagate changes back to the original', () => {
+    describe('data structure integrity', () => {
       const newObject = { name: 'bad-actor' };
-      sankeyLayout.nodes.unshift(newObject);
-      expect(sankeyLayout.nodes[0]).toBe(newObject);
-      expect(parsed.nodes[0]).not.toBe(newObject);
-      sankeyLayout.nodes.shift();
+
+      beforeEach(() => {
+        sankeyLayout.nodes.unshift(newObject);
+      });
+
+      it('sankey does not propagate changes back to the original', () => {
+        expect(sankeyLayout.nodes[0]).toBe(newObject);
+        expect(parsed.nodes[0]).not.toBe(newObject);
+      });
+
+      afterEach(() => {
+        sankeyLayout.nodes.shift();
+      });
     });
   });
 
@@ -162,7 +166,7 @@ describe('DAG visualization parsing utilities', () => {
         { layer: 1 },
         { layer: 3 },
         { layer: 4 },
-      ]
+      ];
       expect(getMaxNodes(layerNodes)).toBe(3);
     });
   });
