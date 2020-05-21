@@ -339,7 +339,7 @@ setting to specify its location.
 
 For example:
 
-```text
+```plaintext
 npmRegistryServer: "https://npm.example.com"
 ```
 
@@ -361,7 +361,7 @@ setting to specify its location.
 
 For example:
 
-```text
+```plaintext
 {
   "registry": "https://registry.bower.io"
 }
