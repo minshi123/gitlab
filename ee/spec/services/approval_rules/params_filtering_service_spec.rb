@@ -220,6 +220,84 @@ describe ApprovalRules::ParamsFilteringService do
           expect(params[:approval_rules_attributes].size).to eq(1)
           expect(params[:approval_rules_attributes].first[:name]).to eq('foo')
         end
+
+        context 'when reset_approval_rules_to_defaults is true' do
+          let(:params) do
+            {
+              approval_rules_attributes: [
+                { id: rule1.id, name: 'foo', user_ids: [project_member.id, outsider.id] }
+              ],
+              reset_approval_rules_to_defaults: true
+            }
+          end
+
+          context 'when multiple_approval_rules feature is available' do
+            before do
+              stub_licensed_features(multiple_approval_rules: true)
+            end
+
+            it 'adds inapplicable user defined rules' do
+              params = service.execute
+              approval_rules_attrs = params[:approval_rules_attributes]
+
+              aggregate_failures do
+                expect(approval_rules_attrs.size).to eq(2)
+
+                expect(approval_rules_attrs.first).to include(
+                  id: rule1.id,
+                  name: 'foo'
+                )
+
+                expect(approval_rules_attrs.last).to include(
+                  name: source_rule.name,
+                  approval_project_rule_id: source_rule.id,
+                  user_ids: source_rule.user_ids,
+                  group_ids: source_rule.group_ids,
+                  approvals_required: source_rule.approvals_required,
+                  rule_type: source_rule.rule_type
+                )
+              end
+            end
+
+            context 'when scoped_approval_rules feature is disabled' do
+              before do
+                stub_feature_flags(scoped_approval_rules: false)
+              end
+
+              it 'does not add inapplicable user defined rules' do
+                params = service.execute
+                approval_rules_attrs = params[:approval_rules_attributes]
+
+                aggregate_failures do
+                  expect(approval_rules_attrs.size).to eq(1)
+                  expect(approval_rules_attrs.first).to include(
+                    id: rule1.id,
+                    name: 'foo'
+                  )
+                end
+              end
+            end
+          end
+
+          context 'when multiple_approval_rules feature is not available' do
+            before do
+              stub_licensed_features(multiple_approval_rules: false)
+            end
+
+            it 'does not add inapplicable user defined rules' do
+              params = service.execute
+              approval_rules_attrs = params[:approval_rules_attributes]
+
+              aggregate_failures do
+                expect(approval_rules_attrs.size).to eq(1)
+                expect(approval_rules_attrs.first).to include(
+                  id: rule1.id,
+                  name: 'foo'
+                )
+              end
+            end
+          end
+        end
       end
 
       context 'with remove_hidden_groups being true' do

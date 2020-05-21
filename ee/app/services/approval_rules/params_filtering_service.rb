@@ -119,8 +119,8 @@ module ApprovalRules
       end
     end
 
-    # Append inapplicable rules on create so they're still associated to the MR
-    # and will be available when the MR's target branch changes.
+    # Append inapplicable rules on create or reset so they're still associated
+    # to the MR and will be available when the MR's target branch changes.
     #
     # Inapplicable rules are approval rules scoped to protected branches that
     # does not match the specified `target_branch`.
@@ -130,7 +130,7 @@ module ApprovalRules
     # inapplicable. But in case the MR's `target_branch` changes to `master`, the
     # `master` rule should be available.
     def append_user_defined_inapplicable_rules(source_rule_ids)
-      return if updating?
+      return if updating? && !params[:reset_approval_rules_to_defaults]
       return unless project.scoped_approval_rules_enabled? && project.multiple_approval_rules_available?
 
       project
