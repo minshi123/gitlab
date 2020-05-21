@@ -3,7 +3,7 @@
 module RuboCop
   module Cop
     # Cop that blacklists the injecting of EE specific modules anywhere but on
-    # the last line of a file. It allows multiple prepends as long as they're all at the end.
+    # the last line of a file. It allows multiple EE injections as long as they're all at the end.
     class InjectEnterpriseEditionModule < RuboCop::Cop::Cop
       INVALID_LINE = 'Injecting EE modules must be done on the last line of this file' \
           ', outside of any class or module definitions'
@@ -44,7 +44,7 @@ module RuboCop
         buffer = node.location.expression.source_buffer
         last_line = buffer.last_line
 
-        # We allow multiple prepends as long as they're all ath the end.
+        # We allow multiple includes, extends and prepends as long as they're all ath the end.
         allowed_line = true
         index_line = last_line - line + 1
         content = buffer.source.split("\n")
