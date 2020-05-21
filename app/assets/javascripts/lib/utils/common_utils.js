@@ -244,12 +244,13 @@ export const contentTop = () => {
   );
 };
 
-export const scrollToElement = (element, offset = 0) => {
+export const scrollToElement = (element, options = {}) => {
   let $el = element;
   if (!(element instanceof $)) {
     $el = $(element);
   }
   const { top } = $el.offset();
+  const { offset = 0 } = options;
 
   // eslint-disable-next-line no-jquery/no-animate
   return $('body, html').animate(
@@ -258,6 +259,11 @@ export const scrollToElement = (element, offset = 0) => {
     },
     200,
   );
+};
+
+export const scrollToElementWithContext = (element, offset) => {
+  const contextOffset = offset || window.innerHeight * 0.05;
+  scrollToElement(element, { offset: contextOffset });
 };
 
 /**

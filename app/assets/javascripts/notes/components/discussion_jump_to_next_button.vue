@@ -2,7 +2,6 @@
 import { GlTooltipDirective } from '@gitlab/ui';
 import icon from '~/vue_shared/components/icon.vue';
 import discussionNavigation from '../mixins/discussion_navigation';
-import { mapState } from 'vuex';
 
 export default {
   name: 'JumpToNextDiscussionButton',
@@ -13,12 +12,6 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [discussionNavigation],
-  computed: {
-    ...mapState('diffs', ['breakpoint']),
-    isMobile() {
-      return ['md', 'sm', 'xs'].includes(this.breakpoint);
-    },
-  },
   props: {
     fromDiscussionId: {
       type: String,
@@ -38,7 +31,7 @@ export default {
       data-track-event="click_button"
       data-track-label="mr_next_unresolved_thread"
       data-track-property="click_next_unresolved_thread"
-      @click="jumpToNextRelativeDiscussion(fromDiscussionId, isMobile)"
+      @click="jumpToNextRelativeDiscussion(fromDiscussionId)"
     >
       <icon name="comment-next" />
     </button>
