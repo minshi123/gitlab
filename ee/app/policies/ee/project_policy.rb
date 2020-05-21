@@ -270,7 +270,10 @@ module EE
         enable :modify_merge_request_committer_setting
       end
 
-      rule { license_scanning_enabled & can?(:maintainer_access) }.enable :admin_software_license_policy
+      rule { license_scanning_enabled & can?(:maintainer_access) }.policy do
+        enable :admin_software_license_policy
+        enable :modify_auto_fix_setting
+      end
 
       rule { auditor }.policy do
         enable :public_user_access
