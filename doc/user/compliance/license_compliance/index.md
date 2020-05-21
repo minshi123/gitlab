@@ -370,8 +370,9 @@ For example:
 #### Custom root certificates for Bower
 
 You can supply a custom root certificate to complete TLS verification by using the
-`ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variables) or by
-specifying a `ca` setting in a [`.bowerrc`](https://bower.io/docs/config/#bowerrc-specification).
+`ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variables), or by
+specifying a `ca` setting in a [`.bowerrc`](https://bower.io/docs/config/#bowerrc-specification)
+file.
 
 ### Migration from `license_management` to `license_scanning`
 
