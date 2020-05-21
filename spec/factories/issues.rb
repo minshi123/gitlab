@@ -25,6 +25,10 @@ FactoryBot.define do
       closed_at { Time.now }
     end
 
+    trait :incident do
+      labels { create_list(:label, 1, **IncidentManagement::CreateIssueService::INCIDENT_LABEL) }
+    end
+
     after(:build) do |issue, evaluator|
       issue.state_id = Issue.available_states[evaluator.state]
     end

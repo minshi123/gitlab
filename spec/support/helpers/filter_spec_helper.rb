@@ -45,7 +45,7 @@ module FilterSpecHelper
   # Run text through HTML::Pipeline with the current filter and return the
   # result Hash
   #
-  # body     - String text to run through the pipeline
+  # body     - String of markdown text to run through the pipeline
   # context - Hash context for the filter. (default: {project: project})
   #
   # Returns the Hash
