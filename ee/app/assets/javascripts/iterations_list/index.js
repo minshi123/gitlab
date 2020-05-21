@@ -9,10 +9,6 @@ Vue.use(VueApollo);
 export default function initIterationsList() {
   const el = document.querySelector('.js-iterations-list');
 
-  if (!el) {
-    return null;
-  }
-
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(),
   });

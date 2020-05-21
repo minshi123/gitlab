@@ -54,7 +54,7 @@ export default {
         case 1:
           return 'closed';
         case 2:
-          return undefined;
+          return 'all';
       }
     },
   },
@@ -82,7 +82,7 @@ export default {
       <iterations-list :iterations="iterations" :loading="loading" />
     </gl-tab>
     <template v-if="canAdmin" #tabs-end>
-      <li class="ml-auto d-flex align-items-center">
+      <li class="gl-ml-auto gl-display-flex gl-align-items-center">
         <gl-button variant="success" :href="newIterationPath">{{ __('New iteration') }}</gl-button>
       </li>
     </template>
