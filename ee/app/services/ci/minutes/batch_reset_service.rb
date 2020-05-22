@@ -27,13 +27,14 @@ module Ci
           reset_ci_minutes_notifications!(namespaces)
         end
       rescue ActiveRecord::ActiveRecordError
-        # We don't need to print a thousand of namespace_ids
-        # in the message if all batches failed.
-        # A small batch would be sufficient for investigation.
-        failed_namespace_ids = namespaces.limit(10).ids # rubocop: disable CodeReuse/ActiveRecord
+        exception = BatchNotResetError.new(
+          'Some namespace shared runner minutes were not reset and the transaction was rolled back'
+        )
 
-        raise BatchNotResetError.new(
-          "#{namespaces.size} namespace shared runner minutes were not reset and the transaction was rolled back. Namespace Ids: #{failed_namespace_ids}")
+        Gitlab::ErrorTracking.track_and_raise_for_dev_exception(
+          exception, { namespace_count: namespaces.size,
+                       first_namespace_id: namespaces.first.id,
+                       last_namespace_id: namespaces.last.id })
       end
 
       def recalculate_extra_shared_runners_minutes_limits!(namespaces)
