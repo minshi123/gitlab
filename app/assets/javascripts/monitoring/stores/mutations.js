@@ -61,8 +61,28 @@ export default {
     state.emptyState = 'loading';
     state.showEmptyState = true;
   },
-  [types.RECEIVE_METRICS_DASHBOARD_SUCCESS](state, dashboard) {
-    state.dashboard = mapToDashboardViewModel(dashboard);
+  [types.RECEIVE_METRICS_DASHBOARD_SUCCESS](state, dashboardYML) {
+    const { dashboard, panelGroups, variables, links } = mapToDashboardViewModel(dashboardYML);
+    state.dashboard = {
+      dashboard,
+      panelGroups,
+    };
+    state.variables = variables;
+    state.links = links;
+    // state = {
+    //   ...state,
+    //   dashboard: {
+    //     dashboard,
+    //     panelGroups,
+    //   },
+    //   links,
+    //   variables,
+    // };
+
+    // state.dashboard = mapToDashboardViewModel(dashboardYML);
+
+    // console.log('links', links);
+    // console.log(state);
 
     if (!state.dashboard.panelGroups.length) {
       state.emptyState = 'noData';

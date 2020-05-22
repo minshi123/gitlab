@@ -2,6 +2,7 @@ import { slugify } from '~/lib/utils/text_utility';
 import createGqClient, { fetchPolicies } from '~/lib/graphql';
 import { SUPPORTED_FORMATS } from '~/lib/utils/unit_format';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { parseTemplatingVariables } from './variable_mapping';
 import { NOT_IN_DB_PREFIX } from '../constants';
 
 export const gqClient = createGqClient(
@@ -137,6 +138,13 @@ const mapYAxisToViewModel = ({
   };
 };
 
+const mapLinksToVieModel = ({ title = '', url }) => {
+  return {
+    title: title || String(url),
+    url: url ? String(url) : '#',
+  };
+};
+
 /**
  * Maps a metrics panel to its view model
  *
@@ -197,9 +205,16 @@ const mapToPanelGroupViewModel = ({ group = '', panels = [] }, i) => {
  * @param {Array} dashboard.panel_groups - Panel groups array
  * @returns {Object}
  */
-export const mapToDashboardViewModel = ({ dashboard = '', panel_groups = [] }) => {
+export const mapToDashboardViewModel = ({
+  dashboard = '',
+  templating = {},
+  links = [],
+  panel_groups = [],
+}) => {
   return {
     dashboard,
+    variables: parseTemplatingVariables(templating),
+    links: links.map(mapLinksToVieModel),
     panelGroups: panel_groups.map(mapToPanelGroupViewModel),
   };
 };

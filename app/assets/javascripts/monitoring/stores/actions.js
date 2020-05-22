@@ -161,7 +161,7 @@ export const receiveMetricsDashboardSuccess = ({ commit, dispatch }, { response 
 
   commit(types.SET_ALL_DASHBOARDS, all_dashboards);
   commit(types.RECEIVE_METRICS_DASHBOARD_SUCCESS, dashboard);
-  commit(types.SET_VARIABLES, mergeURLVariables(parseTemplatingVariables(dashboard.templating)));
+  // commit(types.SET_VARIABLES, mergeURLVariables(parseTemplatingVariables(dashboard.templating)));
   commit(types.SET_ENDPOINTS, convertObjectPropsToCamelCase(metrics_data));
 
   return dispatch('fetchDashboardData');
@@ -335,6 +335,7 @@ export const fetchAnnotations = ({ state, dispatch }) => {
       dispatch('receiveAnnotationsSuccess', annotations);
     })
     .catch(err => {
+      console.log(err);
       Sentry.captureException(err);
       dispatch('receiveAnnotationsFailure');
       createFlash(s__('Metrics|There was an error getting annotations information.'));
