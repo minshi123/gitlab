@@ -40,6 +40,8 @@ The following quick actions are applicable to descriptions, discussions and thre
 | `/unassign @user1 @user2`             | ✓     | ✓             |      | Remove assignee(s) **(STARTER)** |
 | `/milestone %milestone`               | ✓     | ✓             |      | Set milestone |
 | `/remove_milestone`                   | ✓     | ✓             |      | Remove milestone |
+| `/iteration *iteration:iteration`     | ✓     |               |      | Set iteration ([Introduced in GitLab 13.1](https://gitlab.com/gitlab-org/gitlab/-/issues/196795)) **(STARTER)** |
+| `/remove_iteration`                   | ✓     |               |      | Remove iteration ([Introduced in GitLab 13.1](https://gitlab.com/gitlab-org/gitlab/-/issues/196795)) **(STARTER)** |
 | `/label ~label1 ~label2`              | ✓     | ✓             | ✓    | Add label(s). Label names can also start without `~` but mixed syntax is not supported |
 | `/relabel ~label1 ~label2`            | ✓     | ✓             | ✓    | Replace existing label(s) with those specified |
 | `/unlabel ~label1 ~label2` or `/remove_label ~label1 ~label2` | ✓     | ✓             | ✓    | Remove all or specific label(s) |
