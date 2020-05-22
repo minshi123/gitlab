@@ -4,7 +4,17 @@ module Gitlab
   module InstrumentationHelper
     extend self
 
-    KEYS = %i(gitaly_calls gitaly_duration_s rugged_calls rugged_duration_s redis_calls redis_duration_s).freeze
+    KEYS = %i(
+    gitaly_calls
+    gitaly_duration_s
+    rugged_calls
+    rugged_duration_s
+    redis_calls
+    redis_duration_s
+    elasticsearch_calls
+    elasticsearch_duration_s
+    ).freeze
+
     DURATION_PRECISION = 6 # microseconds
 
     def add_instrumentation_data(payload)
@@ -27,6 +37,15 @@ module Gitlab
       if redis_calls > 0
         payload[:redis_calls] = redis_calls
         payload[:redis_duration_s] = Gitlab::Instrumentation::Redis.query_time
+      end
+
+      # Elasticsearch integration is only available in EE but instrumentation
+      # only depends on the Gem which is also available in FOSS.
+      elasticsearch_calls  = Gitlab::Instrumentation::ElasticsearchTransport.get_request_count
+
+      if elasticsearch_calls > 0
+        payload[:elasticsearch_calls] = elasticsearch_calls
+        payload[:elasticsearch_duration_s] = Gitlab::Instrumentation::ElasticsearchTransport.query_time
       end
     end
 
