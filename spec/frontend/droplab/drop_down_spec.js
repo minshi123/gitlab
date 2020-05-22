@@ -579,7 +579,7 @@ describe('DropLab DropDown', () => {
       });
 
       it('should return undefined', () => {
-        expect(testContext.show).toEqual(undefined);
+        expect(testContext.show).toBeUndefined();
       });
 
       it('should not set .list display to block', () => {
