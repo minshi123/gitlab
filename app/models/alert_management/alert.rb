@@ -24,7 +24,7 @@ module AlertManagement
     belongs_to :project
     belongs_to :issue, optional: true
 
-    has_many :alert_assignees
+    has_many :alert_assignees, inverse_of: :alert
     has_many :assignees, through: :alert_assignees
 
     has_internal_id :iid, scope: :project, init: ->(s) { s.project.alert_management_alerts.maximum(:iid) }
