@@ -19,7 +19,7 @@ module Ci
     validates :ref, presence: true
 
     # rubocop:disable Cop/ActiveRecordSerialize
-    serialize :options
+    serialize :options, Hash
     serialize :yaml_variables, ::Gitlab::Serializer::Ci::Variables
     # rubocop:enable Cop/ActiveRecordSerialize
 
