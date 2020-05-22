@@ -691,4 +691,36 @@ describe('Api', () => {
       });
     });
   });
+
+  describe('updateIssue', () => {
+    it('update an issue with the given payload', done => {
+      const project_id = 8;
+      const issue_iid = 1;
+      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/${project_id}/issues/${issue_iid}`;
+      mock.onPut(expectedUrl).reply(200, { assignee_ids: [1, 2, 3] });
+
+      Api.updateIssue(project_id, issue_iid, { assignee_ids: [1, 2, 3] })
+        .then(({ data }) => {
+          expect(data.assignee_ids).toBe([1, 2, 3]);
+          done();
+        })
+        .catch(done.fail);
+    });
+  });
+
+  describe('updateMergeRequest', () => {
+    it('update an issue with the given payload', done => {
+      const project_id = 8;
+      const mr_id = 1;
+      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/${project_id}/merge_requests/${mr_id}`;
+      mock.onPut(expectedUrl).reply(200, { foo: 'bar' });
+
+      Api.updateMergeRequest(project_id, mr_id, { assignee_ids: [1, 2, 3] })
+        .then(({ data }) => {
+          expect(data.assignee_ids).toBe([1, 2, 3]);
+          done();
+        })
+        .catch(done.fail);
+    });
+  });
 });

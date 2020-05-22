@@ -51,6 +51,7 @@ const Api = {
   pipelinesPath: '/api/:version/projects/:id/pipelines/',
   environmentsPath: '/api/:version/projects/:id/environments',
   rawFilePath: '/api/:version/projects/:id/repository/files/:path/raw',
+  issuePath: '/api/:version/projects/:id/issues/:issue_iid',
 
   group(groupId, callback) {
     const url = Api.buildUrl(Api.groupPath).replace(':id', groupId);
@@ -538,6 +539,22 @@ const Api = {
       .replace(':path', encodeURIComponent(path));
 
     return axios.get(url, { params });
+  },
+
+  updateIssue(id, issue_iid, data = {}) {
+    const url = Api.buildUrl(Api.issuePath)
+      .replace(':id', encodeURIComponent(id))
+      .replace(':issue_iid', encodeURIComponent(issue_iid));
+
+    return axios.put(url, data);
+  },
+
+  updateMergeRequest(id, merge_request_iid, data = {}) {
+    const url = Api.buildUrl(Api.projectMergeRequestPath)
+      .replace(':id', encodeURIComponent(id))
+      .replace(':mrid', encodeURIComponent(merge_request_iid));
+
+    return axios.put(url, data);
   },
 
   buildUrl(url) {
