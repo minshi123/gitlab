@@ -167,41 +167,36 @@ describe('DropLab DropDown', () => {
       testContext.classList.contains.mockReturnValue(false);
     });
 
-    it('should call event.target.closest', () => {
-      DropDown.prototype.clickEvent.call(testContext.dropdown, testContext.event);
+    describe('normal click event', () => {
+      beforeEach(() => {
+        DropDown.prototype.clickEvent.call(testContext.dropdown, testContext.event);
+      });
+      it('should call event.target.closest', () => {
+        expect(testContext.event.target.closest).toHaveBeenCalledWith('.droplab-item-ignore');
+        expect(testContext.event.target.closest).toHaveBeenCalledWith('li');
+      });
 
-      expect(testContext.event.target.closest).toHaveBeenCalledWith('.droplab-item-ignore');
-      expect(testContext.event.target.closest).toHaveBeenCalledWith('li');
-    });
+      it('should call addSelectedClass', () => {
+        expect(testContext.dropdown.addSelectedClass).toHaveBeenCalledWith(
+          testContext.dummyListItem,
+        );
+      });
 
-    it('should call addSelectedClass', () => {
-      DropDown.prototype.clickEvent.call(testContext.dropdown, testContext.event);
+      it('should call .preventDefault', () => {
+        expect(testContext.event.preventDefault).toHaveBeenCalled();
+      });
 
-      expect(testContext.dropdown.addSelectedClass).toHaveBeenCalledWith(testContext.dummyListItem);
-    });
+      it('should call .hide', () => {
+        expect(testContext.dropdown.hide).toHaveBeenCalled();
+      });
 
-    it('should call .preventDefault', () => {
-      DropDown.prototype.clickEvent.call(testContext.dropdown, testContext.event);
+      it('should construct CustomEvent', () => {
+        expect(window.CustomEvent).toHaveBeenCalledWith('click.dl', expect.any(Object));
+      });
 
-      expect(testContext.event.preventDefault).toHaveBeenCalled();
-    });
-
-    it('should call .hide', () => {
-      DropDown.prototype.clickEvent.call(testContext.dropdown, testContext.event);
-
-      expect(testContext.dropdown.hide).toHaveBeenCalled();
-    });
-
-    it('should construct CustomEvent', () => {
-      DropDown.prototype.clickEvent.call(testContext.dropdown, testContext.event);
-
-      expect(window.CustomEvent).toHaveBeenCalledWith('click.dl', expect.any(Object));
-    });
-
-    it('should call .dispatchEvent with the customEvent', () => {
-      DropDown.prototype.clickEvent.call(testContext.dropdown, testContext.event);
-
-      expect(testContext.list.dispatchEvent).toHaveBeenCalledWith({});
+      it('should call .dispatchEvent with the customEvent', () => {
+        expect(testContext.list.dispatchEvent).toHaveBeenCalledWith({});
+      });
     });
 
     describe('if the target is a UL element', () => {
