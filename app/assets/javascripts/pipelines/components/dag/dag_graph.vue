@@ -22,6 +22,14 @@ export default {
     baseOpacity: 0.8,
     highlightIn: 1,
     highlightOut: 0.2,
+
+    containerClasses: [
+      'dag-graph-container',
+      'gl-relative',
+      'gl-display-flex',
+      'gl-justify-content-start',
+      'gl-flex-direction-column',
+    ].join(' ')
   },
   gitLabColorRotation: [
     '#e17223',
@@ -111,6 +119,15 @@ export default {
         textAlign,
       } = this.labelPosition(d);
 
+      const labelClasses = [
+        'dag-label',
+        'gl-display-flex',
+        'gl-pointer-events-none',
+        'gl-flex-direction-column',
+        'gl-justify-content-center',
+        'gl-overflow-wrap-break',
+      ]
+
       return d3.select(currentNode)
         .attr('requiredFeatures', 'http://www.w3.org/TR/SVG11/feature#Extensibility')
         .attr('height', height)
@@ -119,7 +136,7 @@ export default {
         .attr('y', y)
         .style('overflow', 'visible')
         .append('xhtml:div')
-        .classed('dag-label gl-pointer-events-none', true)
+        .classed(labelClasses.join(' '), true)
         .style('height', height)
         .style('width', width)
         .style('text-align', textAlign)
@@ -334,7 +351,9 @@ export default {
 
 </script>
 <template>
-  <div class='dag-graph-container' data-testid="dag-graph-container">
+  <div
+    :class="$options.viewOptions.containerClasses"
+    data-testid="dag-graph-container">
     <!-- graph goes here -->
   </div>
 </template>

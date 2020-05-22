@@ -7,6 +7,8 @@ import { PARSE_FAILURE, LOAD_FAILURE, UNSUPPORTED_DATA } from './constants';
 import { parseData } from './utils'
 
 import longDAGdata from './longDAGdata.json'
+import testDAGdata from './testDAGdata.json'
+
 
 export default {
   // eslint-disable-next-line @gitlab/require-i18n-strings
@@ -70,7 +72,7 @@ export default {
       .get(this.graphUrl)
       .then(response => {
         // processGraphData(response.data);
-        processGraphData(longDAGdata);
+        processGraphData(testDAGdata);
       })
       .catch(reportFailure.bind(null, LOAD_FAILURE));
   },
