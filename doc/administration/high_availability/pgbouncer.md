@@ -179,7 +179,7 @@ Refer to your preferred Load Balancer's documentation for further guidance.
 
 ## Enable Monitoring
 
-> [Introduced](https://gitlab.com/gitlab-org/omnibus-gitlab/issues/3786) in GitLab 12.0.
+> [Introduced](https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/3786) in GitLab 12.0.
 
 If you enable Monitoring, it must be enabled on **all** PgBouncer servers.
 
@@ -215,7 +215,7 @@ To start a session, run
 ```shell
 # gitlab-ctl pgb-console
 Password for user pgbouncer:
-psql (9.6.8, server 1.7.2/bouncer)
+psql (11.7, server 1.7.2/bouncer)
 Type "help" for help.
 
 pgbouncer=#

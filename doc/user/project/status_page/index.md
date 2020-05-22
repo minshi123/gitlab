@@ -4,9 +4,9 @@ group: Health
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 ---
 
-# GitLab Status Page
+# GitLab Status Page **(ULTIMATE)**
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/2479) in GitLab 12.10.
+> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/2479) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.10.
 
 GitLab Status Page allows you to create and deploy a static website to communicate efficiently to users during an incident.
 
@@ -70,8 +70,8 @@ The Status Page landing page shows you an overview of the recent incidents. Clic
 The incident detail page shows detailed information about a particular incident. For example:
 
 - Status on the incident, including when the incident was last updated.
-- The incident title.
-- The description of the incident.
+- The incident title, including any emojis.
+- The description of the incident, including emojis and static images.
 - A chronological ordered list of updates to the incident.
 
 ![Status Page detail](../img/status_page_detail_v12_10.png)

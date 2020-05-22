@@ -177,6 +177,7 @@ class Project < ApplicationRecord
   has_one :packagist_service
   has_one :hangouts_chat_service
   has_one :unify_circuit_service
+  has_one :webex_teams_service
 
   has_one :root_of_fork_network,
           foreign_key: 'root_project_id',
@@ -329,6 +330,7 @@ class Project < ApplicationRecord
 
   accepts_nested_attributes_for :variables, allow_destroy: true
   accepts_nested_attributes_for :project_feature, update_only: true
+  accepts_nested_attributes_for :project_setting, update_only: true
   accepts_nested_attributes_for :import_data
   accepts_nested_attributes_for :auto_devops, update_only: true
   accepts_nested_attributes_for :ci_cd_settings, update_only: true
@@ -352,6 +354,9 @@ class Project < ApplicationRecord
     :wiki_access_level, :snippets_access_level, :builds_access_level,
     :repository_access_level, :pages_access_level, :metrics_dashboard_access_level,
     to: :project_feature, allow_nil: true
+  delegate :show_default_award_emojis, :show_default_award_emojis=,
+    :show_default_award_emojis?,
+    to: :project_setting, allow_nil: true
   delegate :scheduled?, :started?, :in_progress?, :failed?, :finished?,
     prefix: :import, to: :import_state, allow_nil: true
   delegate :no_import?, to: :import_state, allow_nil: true
@@ -501,6 +506,10 @@ class Project < ApplicationRecord
     left_outer_joins(:pages_metadatum)
       .where(project_pages_metadata: { project_id: nil })
   end
+  scope :with_api_entity_associations, -> {
+    preload(:project_feature, :route, :tags,
+            group: :ip_restrictions, namespace: [:route, :owner])
+  }
 
   enum auto_cancel_pending_pipelines: { disabled: 0, enabled: 1 }
 
@@ -1031,7 +1040,7 @@ class Project < ApplicationRecord
     remote_mirrors.stuck.update_all(
       update_status: :failed,
       last_error: _('The remote mirror took to long to complete.'),
-      last_update_at: Time.now
+      last_update_at: Time.current
     )
   end
 
@@ -1262,16 +1271,7 @@ class Project < ApplicationRecord
   def find_or_initialize_service(name)
     return if disabled_services.include?(name)
 
-    service = find_service(services, name)
-    return service if service
-
-    template = find_service(services_templates, name)
-
-    if template
-      Service.build_from_template(id, template)
-    else
-      public_send("build_#{name}_service") # rubocop:disable GitlabSecurity/PublicSend
-    end
+    find_service(services, name) || build_from_instance_or_template(name) || public_send("build_#{name}_service") # rubocop:disable GitlabSecurity/PublicSend
   end
 
   # rubocop: disable CodeReuse/ServiceClass
@@ -2014,6 +2014,14 @@ class Project < ApplicationRecord
     end
   end
 
+  def ci_instance_variables_for(ref:)
+    if protected_for?(ref)
+      Ci::InstanceVariable.all_cached
+    else
+      Ci::InstanceVariable.unprotected_cached
+    end
+  end
+
   def protected_for?(ref)
     raise Repository::AmbiguousRefError if repository.ambiguous_ref?(ref)
 
@@ -2431,6 +2439,22 @@ class Project < ApplicationRecord
     services.find { |service| service.to_param == name }
   end
 
+  def build_from_instance_or_template(name)
+    instance = find_service(services_instances, name)
+    return Service.build_from_integration(id, instance) if instance
+
+    template = find_service(services_templates, name)
+    return Service.build_from_integration(id, template) if template
+  end
+
+  def services_templates
+    @services_templates ||= Service.templates
+  end
+
+  def services_instances
+    @services_instances ||= Service.instances
+  end
+
   def closest_namespace_setting(name)
     namespace.closest_setting(name)
   end
@@ -2557,10 +2581,6 @@ class Project < ApplicationRecord
         end
       end
     end
-  end
-
-  def services_templates
-    @services_templates ||= Service.where(template: true)
   end
 
   def ensure_pages_metadatum

@@ -14,9 +14,11 @@ import TypeOfWorkCharts from './type_of_work_charts.vue';
 import UrlSyncMixin from '../../shared/mixins/url_sync_mixin';
 import { toYmd } from '../../shared/utils';
 import RecentActivityCard from './recent_activity_card.vue';
+import TimeMetricsCard from './time_metrics_card.vue';
 import StageTableNav from './stage_table_nav.vue';
 import CustomStageForm from './custom_stage_form.vue';
 import PathNavigation from './path_navigation.vue';
+import MetricCard from '../../shared/components/metric_card.vue';
 
 export default {
   name: 'CycleAnalytics',
@@ -30,9 +32,11 @@ export default {
     StageTable,
     TypeOfWorkCharts,
     RecentActivityCard,
+    TimeMetricsCard,
     CustomStageForm,
     StageTableNav,
     PathNavigation,
+    MetricCard,
   },
   mixins: [glFeatureFlagsMixin(), UrlSyncMixin],
   props: {
@@ -70,14 +74,9 @@ export default {
       'endDate',
       'medians',
     ]),
-    ...mapState('customStages', [
-      'isSavingCustomStage',
-      'isCreatingCustomStage',
-      'isEditingCustomStage',
-      'formEvents',
-      'formErrors',
-      'formInitialData',
-    ]),
+    // NOTE: formEvents are fetched in the same request as the list of stages (fetchGroupStagesAndEvents)
+    // so i think its ok to bind formEvents here even though its only used as a prop to the custom-stage-form
+    ...mapState('customStages', ['isCreatingCustomStage', 'formEvents']),
     ...mapGetters([
       'hasNoAccessError',
       'currentGroupPath',
@@ -105,9 +104,6 @@ export default {
     },
     isLoadingTypeOfWork() {
       return this.isLoadingTasksByTypeChartTopLabels || this.isLoadingTasksByTypeChart;
-    },
-    isUpdatingCustomStage() {
-      return this.isEditingCustomStage && this.isSavingCustomStage;
     },
     hasDateRangeSet() {
       return this.startDate && this.endDate;
@@ -169,6 +165,7 @@ export default {
       this.showCreateForm();
     },
     onShowEditStageForm(initData = {}) {
+      this.setSelectedStage(initData);
       this.showEditForm(initData);
     },
     onCreateCustomStage(data) {
@@ -272,11 +269,22 @@ export default {
         "
       />
       <div v-else-if="!errorCode">
-        <div class="js-recent-activity mt-3">
-          <recent-activity-card
-            :group-path="currentGroupPath"
-            :additional-params="cycleAnalyticsRequestParams"
-          />
+        <div class="js-recent-activity gl-mt-3 gl-display-flex">
+          <div class="gl-flex-fill-1 gl-pr-2">
+            <time-metrics-card
+              #default="{ metrics, loading }"
+              :group-path="currentGroupPath"
+              :additional-params="cycleAnalyticsRequestParams"
+            >
+              <metric-card :title="__('Time')" :metrics="metrics" :is-loading="loading" />
+            </time-metrics-card>
+          </div>
+          <div class="gl-flex-fill-1 gl-pl-2">
+            <recent-activity-card
+              :group-path="currentGroupPath"
+              :additional-params="cycleAnalyticsRequestParams"
+            />
+          </div>
         </div>
         <div v-if="isLoading">
           <gl-loading-icon class="mt-4" size="md" />
@@ -299,7 +307,6 @@ export default {
                 :stages="activeStages"
                 :medians="medians"
                 :is-creating-custom-stage="isCreatingCustomStage"
-                :custom-stage-form-active="customStageFormActive"
                 :can-edit-stages="true"
                 :custom-ordering="enableCustomOrdering"
                 @reorderStage="onStageReorder"
@@ -311,14 +318,8 @@ export default {
               />
             </template>
             <template v-if="customStageFormActive" #content>
-              <gl-loading-icon v-if="isUpdatingCustomStage" class="mt-4" size="md" />
               <custom-stage-form
-                v-else
                 :events="formEvents"
-                :is-saving-custom-stage="isSavingCustomStage"
-                :initial-fields="formInitialData"
-                :is-editing-custom-stage="isEditingCustomStage"
-                :errors="formErrors"
                 @createStage="onCreateCustomStage"
                 @updateStage="onUpdateCustomStage"
                 @clearErrors="$emit('clearFormErrors')"

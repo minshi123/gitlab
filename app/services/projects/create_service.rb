@@ -108,8 +108,22 @@ module Projects
     # users in the background
     def setup_authorizations
       if @project.group
-        @project.group.refresh_members_authorized_projects(blocking: false)
         current_user.refresh_authorized_projects
+
+        if Feature.enabled?(:specialized_project_authorization_workers)
+          AuthorizedProjectUpdate::ProjectCreateWorker.perform_async(@project.id)
+          # AuthorizedProjectsWorker uses an exclusive lease per user but
+          # specialized workers might have synchronization issues. Until we
+          # compare the inconsistency rates of both approaches, we still run
+          # AuthorizedProjectsWorker but with some delay and lower urgency as a
+          # safety net.
+          @project.group.refresh_members_authorized_projects(
+            blocking: false,
+            priority: UserProjectAccessChangedService::LOW_PRIORITY
+          )
+        else
+          @project.group.refresh_members_authorized_projects(blocking: false)
+        end
       else
         @project.add_maintainer(@project.namespace.owner, current_user: current_user)
       end
@@ -152,7 +166,7 @@ module Projects
       log_message = message.dup
 
       log_message << " Project ID: #{@project.id}" if @project&.id
-      Rails.logger.error(log_message) # rubocop:disable Gitlab/RailsLogger
+      Gitlab::AppLogger.error(log_message)
 
       if @project && @project.persisted? && @project.import_state
         @project.import_state.mark_as_failed(message)
@@ -164,7 +178,7 @@ module Projects
     # rubocop: disable CodeReuse/ActiveRecord
     def create_services_from_active_templates(project)
       Service.where(template: true, active: true).each do |template|
-        service = Service.build_from_template(project.id, template)
+        service = Service.build_from_integration(project.id, template)
         service.save!
       end
     end

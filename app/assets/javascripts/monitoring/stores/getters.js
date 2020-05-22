@@ -1,5 +1,4 @@
 import { flatMap } from 'lodash';
-import { removePrefixFromLabels } from './utils';
 import { NOT_IN_DB_PREFIX } from '../constants';
 
 const metricsIdsInPanel = panel =>
@@ -14,7 +13,9 @@ const metricsIdsInPanel = panel =>
 export const selectedDashboard = state => {
   const { allDashboards } = state;
   return (
-    allDashboards.find(({ path }) => path === state.currentDashboard) || allDashboards[0] || null
+    allDashboards.find(d => d.path === state.currentDashboard) ||
+    allDashboards.find(d => d.default) ||
+    null
   );
 };
 
@@ -121,10 +122,7 @@ export const filteredEnvironments = state =>
  */
 
 export const getCustomVariablesArray = state =>
-  flatMap(state.promVariables, (val, key) => [
-    encodeURIComponent(removePrefixFromLabels(key)),
-    encodeURIComponent(val),
-  ]);
+  flatMap(state.variables, (variable, key) => [key, variable.value]);
 
 // prevent babel-plugin-rewire from generating an invalid default during karma tests
 export default () => {};

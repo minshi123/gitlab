@@ -13,6 +13,8 @@ import {
 import Editor from '../lib/editor';
 import FileTemplatesBar from './file_templates/bar.vue';
 import { __ } from '~/locale';
+import { extractMarkdownImagesFromEntries } from '../stores/utils';
+import { addFinalNewline } from '../utils';
 
 export default {
   components: {
@@ -26,6 +28,13 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      content: '',
+      images: {},
+      addFinalNewline: true,
+    };
+  },
   computed: {
     ...mapState('rightPane', {
       rightPaneIsOpen: 'isOpen',
@@ -36,6 +45,7 @@ export default {
       'currentActivityView',
       'renderWhitespaceInCode',
       'editorTheme',
+      'entries',
     ]),
     ...mapGetters([
       'currentMergeRequest',
@@ -136,6 +146,18 @@ export default {
         this.$nextTick(() => this.refreshEditorDimensions());
       }
     },
+    showContentViewer(val) {
+      if (!val) return;
+
+      if (this.fileType === 'markdown') {
+        const { content, images } = extractMarkdownImagesFromEntries(this.file, this.entries);
+        this.content = content;
+        this.images = images;
+      } else {
+        this.content = this.file.content || this.file.raw;
+        this.images = {};
+      }
+    },
   },
   beforeDestroy() {
     this.editor.dispose();
@@ -227,13 +249,14 @@ export default {
 
       this.model.onChange(model => {
         const { file } = model;
+        if (!file.active) return;
 
-        if (file.active) {
-          this.changeFileContent({
-            path: file.path,
-            content: model.getModel().getValue(),
-          });
-        }
+        const monacoModel = model.getModel();
+        const content = monacoModel.getValue();
+        this.changeFileContent({
+          path: file.path,
+          content: this.addFinalNewline ? addFinalNewline(content, monacoModel.getEOL()) : content,
+        });
       });
 
       // Handle Cursor Position
@@ -310,7 +333,8 @@ export default {
     ></div>
     <content-viewer
       v-if="showContentViewer"
-      :content="file.content || file.raw"
+      :content="content"
+      :images="images"
       :path="file.rawPath || file.path"
       :file-path="file.path"
       :file-size="file.size"

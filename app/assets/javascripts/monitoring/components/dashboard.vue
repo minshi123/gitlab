@@ -39,6 +39,7 @@ import {
   timeRangeFromUrl,
   panelToUrl,
   expandedPanelPayloadFromUrl,
+  convertVariablesForURL,
 } from '../utils';
 import { metricStates } from '../constants';
 import { defaultTimeRange, timeRanges } from '~/vue_shared/constants';
@@ -225,16 +226,14 @@ export default {
       'allDashboards',
       'environmentsLoading',
       'expandedPanel',
-      'promVariables',
+      'variables',
       'isUpdatingStarredValue',
     ]),
-    ...mapGetters('monitoringDashboard', ['getMetricStates', 'filteredEnvironments']),
-    firstDashboard() {
-      return this.allDashboards.length > 0 ? this.allDashboards[0] : {};
-    },
-    selectedDashboard() {
-      return this.allDashboards.find(d => d.path === this.currentDashboard) || this.firstDashboard;
-    },
+    ...mapGetters('monitoringDashboard', [
+      'selectedDashboard',
+      'getMetricStates',
+      'filteredEnvironments',
+    ]),
     showRearrangePanelsBtn() {
       return !this.showEmptyState && this.rearrangePanelsAvailable;
     },
@@ -242,14 +241,17 @@ export default {
       return (
         this.customMetricsAvailable &&
         !this.showEmptyState &&
-        this.firstDashboard === this.selectedDashboard
+        // Custom metrics only avaialble on system dashboards because
+        // they are stored in the database. This can be improved. See:
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/28241
+        this.selectedDashboard?.system_dashboard
       );
     },
     shouldShowEnvironmentsDropdownNoMatchedMsg() {
       return !this.environmentsLoading && this.filteredEnvironments.length === 0;
     },
     shouldShowVariablesSection() {
-      return Object.keys(this.promVariables).length > 0;
+      return Object.keys(this.variables).length > 0;
     },
   },
   watch: {
@@ -269,9 +271,9 @@ export default {
     },
     expandedPanel: {
       handler({ group, panel }) {
-        const dashboardPath = this.currentDashboard || this.firstDashboard.path;
+        const dashboardPath = this.currentDashboard || this.selectedDashboard?.path;
         updateHistory({
-          url: panelToUrl(dashboardPath, group, panel),
+          url: panelToUrl(dashboardPath, convertVariablesForURL(this.variables), group, panel),
           title: document.title,
         });
       },
@@ -341,8 +343,8 @@ export default {
       this.selectedTimeRange = defaultTimeRange;
     },
     generatePanelUrl(groupKey, panel) {
-      const dashboardPath = this.currentDashboard || this.firstDashboard.path;
-      return panelToUrl(dashboardPath, groupKey, panel);
+      const dashboardPath = this.currentDashboard || this.selectedDashboard?.path;
+      return panelToUrl(dashboardPath, convertVariablesForURL(this.variables), groupKey, panel);
     },
     hideAddMetricModal() {
       this.$refs.addMetricModal.hide();
@@ -597,7 +599,10 @@ export default {
           </gl-modal>
         </div>
 
-        <div v-if="selectedDashboard.can_edit" class="mb-2 mr-2 d-flex d-sm-block">
+        <div
+          v-if="selectedDashboard && selectedDashboard.can_edit"
+          class="mb-2 mr-2 d-flex d-sm-block"
+        >
           <gl-deprecated-button
             class="flex-grow-1 js-edit-link"
             :href="selectedDashboard.project_blob_path"
