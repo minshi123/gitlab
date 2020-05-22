@@ -398,7 +398,7 @@ describe('DropLab DropDown', () => {
       });
 
       it('should set .data with concatination', () => {
-        expect(testContext.dropdown.data).toEqual(['data2']);
+        expect(testContext.dropdown.data).strictEqual(['data2']);
       });
     });
   });
