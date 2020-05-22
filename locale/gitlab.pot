@@ -14977,6 +14977,9 @@ msgstr ""
 msgid "Only mirror protected branches"
 msgstr ""
 
+msgid "Only one assignee is currently supported"
+msgstr ""
+
 msgid "Only policy:"
 msgstr ""
 
@@ -23518,6 +23521,9 @@ msgid "Unsubscribed from this %{quick_action_target}."
 msgstr ""
 
 msgid "Unsubscribes from this %{quick_action_target}."
+msgstr ""
+
+msgid "Unsupported operation mode"
 msgstr ""
 
 msgid "Until"
