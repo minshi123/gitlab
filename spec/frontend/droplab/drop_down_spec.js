@@ -578,7 +578,7 @@ describe('DropLab DropDown', () => {
       });
 
       it('should not set .list display to block', () => {
-        expect(testContext.list.style.display).not.toEqual('block');
+        expect(testContext.list.style.display).not.toBe('block');
       });
     });
   });
