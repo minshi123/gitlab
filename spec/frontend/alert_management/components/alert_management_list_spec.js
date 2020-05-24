@@ -239,7 +239,7 @@ describe('AlertManagementList', () => {
     it('renders Unassigned when no assignee(s) present', () => {
       mountComponent({
         props: { alertManagementEnabled: true, userCanEnableAlertManagement: true },
-        data: { alerts: mockAlerts, errored: false },
+        data: { alerts: mockAlerts, alertsCount, errored: false },
         loading: false,
       });
 
@@ -253,7 +253,7 @@ describe('AlertManagementList', () => {
     it('renders username(s) when assignee(s) present', () => {
       mountComponent({
         props: { alertManagementEnabled: true, userCanEnableAlertManagement: true },
-        data: { alerts: mockAlerts, errored: false },
+        data: { alerts: mockAlerts, alertsCount, errored: false },
         loading: false,
       });
 
