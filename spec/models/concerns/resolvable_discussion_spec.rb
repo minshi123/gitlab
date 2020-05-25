@@ -198,11 +198,25 @@ describe Discussion, ResolvableDiscussion do
           it "returns true" do
             expect(subject.can_resolve?(current_user)).to be true
           end
+
+          context "when the noteable has no author" do
+            it "returns true" do
+              expect(merge_request).to receive(:author).and_return(nil)
+              expect(subject.can_resolve?(current_user)).to be true
+            end
+          end
         end
 
         context "when the signed in user is a random user" do
           it "returns false" do
             expect(subject.can_resolve?(current_user)).to be false
+          end
+
+          context "when the noteable has no author" do
+            it "returns false" do
+              expect(merge_request).to receive(:author).and_return(nil)
+              expect(subject.can_resolve?(current_user)).to be false
+            end
           end
         end
       end
