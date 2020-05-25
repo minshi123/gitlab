@@ -275,18 +275,6 @@ export default {
 
     },
 
-    generateJunctionPath ({ x0, x1, y0, y1}) {
-      const nodeWidth = x1 - x0;
-      const halfWidth = nodeWidth / 2;
-      return `
-          M ${x0 + nodeWidth} ${y0 + halfWidth}
-          a ${halfWidth} ${halfWidth} 0 0 0 -${nodeWidth} 0
-          v ${y1 - y0 - nodeWidth}
-          a ${halfWidth} ${halfWidth} 0 0 0 ${nodeWidth} 0
-          z
-          `;
-    },
-
     generateLinks (svg, linksData) {
       const linkContainerName = 'dag-link';
 
@@ -304,19 +292,24 @@ export default {
 
     generateNodes (svg, nodeData) {
       const nodeContainerName = 'dag-node';
+      const { nodeWidth } = this.$options.viewOptions;
 
       return svg
         .append('g')
         .selectAll(`.${nodeContainerName}`)
         .data(nodeData)
         .enter()
-        .append('path')
+        .append('line')
         .classed(`${nodeContainerName} gl-cursor-pointer`, true)
         .attr('id', (d) => d.uid = uniqueId(nodeContainerName))
-        .attr('d', this.generateJunctionPath)
         .attr('stroke', this.color)
-        .attr('stroke-width', '2')
-        .attr('fill', this.color);
+        .attr('stroke-width', nodeWidth )
+        .attr('stroke-linecap', 'round')
+        .attr('x1', (d) => Math.floor((d.x1 + d.x0) / 2))
+        .attr('x2', (d) => Math.floor((d.x1 + d.x0) / 2))
+        .attr('y1', (d) =>  d.y0 + 4)
+        .attr('y2', (d) =>  d.y1 - 4)
+
     },
 
     labelNodes (svg, nodeData) {
