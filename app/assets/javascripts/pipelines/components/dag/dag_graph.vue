@@ -1,6 +1,7 @@
 <script>
 import * as d3 from 'd3';
 import { uniqueId } from 'lodash';
+import { PARSE_FAILURE, UNSUPPORTED_DATA } from './constants';
 
 import {
   createSankey,
@@ -13,7 +14,7 @@ export default {
     baseHeight: 300,
     baseWidth: 1000,
     minNodeHeight: 60,
-    nodeWidth: 15,
+    nodeWidth: 16,
     nodePadding: 25,
     paddingForLabels: 100,
     labelMargin: 8,
@@ -25,11 +26,9 @@ export default {
 
     containerClasses: [
       'dag-graph-container',
-      'gl-relative',
       'gl-display-flex',
-      'gl-justify-content-start',
       'gl-flex-direction-column',
-    ].join(' ')
+    ].join(' '),
   },
   gitLabColorRotation: [
     '#e17223',
@@ -60,7 +59,22 @@ export default {
     }
   },
   mounted() {
-    this.drawGraph(this.graphData);
+
+    let countedAndTransformed;
+
+    try {
+      countedAndTransformed = this.transformData(this.graphData);
+    } catch {
+      this.$emit('onFailure', PARSE_FAILURE);
+      return;
+    }
+
+    if (countedAndTransformed.linksAndNodes.nodes.length < 1) {
+      this.$emit('onFailure', UNSUPPORTED_DATA);
+      return;
+    }
+
+    this.drawGraph(countedAndTransformed);
   },
   methods: {
     addSvg() {
@@ -74,38 +88,14 @@ export default {
 
     appendLinks(link) {
 
-        const createLinkPath = (d, i) => {
-          const { nodeWidth } = this.$options.viewOptions;
-
-          const xValRaw = (d.source.x1 + ((i + 1) * d.width) % ((d.target.x1 - d.source.x0)));
-          const xValMin = Math.max((xValRaw + nodeWidth), d.width);
-          const overlapPoint = d.source.x1 + (d.target.x0 - d.source.x1);
-          /**
-            Math.random adds a little blur, so the  don't sit right on one another
-            Increasing the value it is multipled by will increase the blur
-          **/
-          const midPointX = Math.min(
-            xValMin,
-            (d.target.x0 - ((4 * nodeWidth * Math.random()))),
-            overlapPoint - (nodeWidth * 1.4)
-          )
-
-          return d3.line()([
-            [(d.source.x0 + d.source.x1) / 2, d.y0],
-            [midPointX, d.y0],
-            [midPointX, d.y1],
-            [(d.target.x0 + d.target.x1) / 2, d.y1],
-          ]);
-        };
-
-        link
+        return link
           .append('path')
-          .attr('d', createLinkPath)
-          .attr('stroke', (d) => `url(#${d.gradId})`)
+          .attr('d', this.createLinkPath)
+          .attr('stroke', ({ gradId }) => `url(#${gradId})`)
           .style('stroke-linejoin', 'round')
           // minus two to account for the rounded nodes
-          .attr('stroke-width', (d) => Math.max(1, d.width - 2))
-          .attr('clip-path', (d) => `url(#${d.clipId})`);
+          .attr('stroke-width', ({ width }) => Math.max(1, width - 2))
+          .attr('clip-path', ({ clipId }) => `url(#${clipId})`);
     },
 
     appendLabelAsForeignObject (d, i, n) {
@@ -120,7 +110,6 @@ export default {
       } = this.labelPosition(d);
 
       const labelClasses = [
-        'dag-label',
         'gl-display-flex',
         'gl-pointer-events-none',
         'gl-flex-direction-column',
@@ -131,16 +120,20 @@ export default {
       return d3.select(currentNode)
         .attr('requiredFeatures', 'http://www.w3.org/TR/SVG11/feature#Extensibility')
         .attr('height', height)
+        /**
+          items with a 'max-content' width will have a wrapperWidth for the foreignObject
+        **/
         .attr('width', wrapperWidth || width)
         .attr('x', x)
         .attr('y', y)
-        .style('overflow', 'visible')
+        .classed('gl-overflow-visible', true)
+        .style('overflow', 'visible') // delete before merging
         .append('xhtml:div')
         .classed(labelClasses.join(' '), true)
         .style('height', height)
         .style('width', width)
         .style('text-align', textAlign)
-        .text((d) => d.name);
+        .text(({ name }) => name);
     },
 
     createClip(link) {
@@ -148,18 +141,35 @@ export default {
         Because large link values can overrun their box, we create a clip path
         to trim off the excess in charts that have few nodes per column and are
         therefore tall.
-      */
-      const clip = (d) => `
-        M${d.source.x0}, ${d.y1}
-        V${Math.max(Math.max(d.y1, d.y0) + (d.width / 2), d.y0, d.y1)}
-        H${d.target.x1}
-        V${Math.min(Math.min(d.y0, d.y1) - (d.width / 2), d.y0, d.y1)}
-        H${d.source.x0}
-        Z`
 
-      link
+        The box is created by
+          M: moving to outside midpoint of the source node
+          V: drawing a vertical line to maximum of the bottom link edge or
+            the lowest edge of the node (can be d.y0 or d.y1 depending on the link's path)
+          H: drawing a horizontal line to the outside edge of the destination node
+          V: drawing a vertical line back up to the minimum of the top link edge or
+            the highest edge of the node (can be d.y0 or d.y1 depending on the link's path)
+          H: drawing a horizontal line back to the outside edge of the source node
+          Z: closing the path, back to the start point
+      */
+
+      const clip = ({ y0, y1, source, target, width }) => {
+
+        const bottomLinkEdge = Math.max(y1, y0) + (width / 2);
+        const topLinkEdge = Math.min(y0, y1) - (width / 2);
+
+        return `
+          M${source.x0}, ${y1}
+          V${Math.max(bottomLinkEdge, y0, y1)}
+          H${target.x1}
+          V${Math.min(topLinkEdge, y0, y1)}
+          H${source.x0}
+          Z`
+      }
+
+      return link
         .append('clipPath')
-        .attr('id', (d) => (d.clipId = uniqueId('clip')))
+        .attr('id', (d) => (d.clipId = uniqueId('dag-clip')))
         .append('path')
         .attr('d', clip)
     },
@@ -167,20 +177,62 @@ export default {
     createGradient(link) {
       const gradient = link
         .append('linearGradient')
-        .attr('id', (d) => (d.gradId = uniqueId('grad')))
+        .attr('id', (d) => (d.gradId = uniqueId('dag-grad')))
         .attr('gradientUnits', 'userSpaceOnUse')
-        .attr('x1', (d) => d.source.x1)
-        .attr('x2', (d) => d.target.x0);
+        .attr('x1', ({ source }) => source.x1)
+        .attr('x2', ({ target }) => target.x0);
 
       gradient
         .append('stop')
         .attr('offset', '0%')
-        .attr('stop-color', (d) => this.color(d.source));
+        .attr('stop-color', ({ source }) => this.color(source));
 
       gradient
         .append('stop')
         .attr('offset', '100%')
-        .attr('stop-color', (d) => this.color(d.target));
+        .attr('stop-color', ({ target }) => this.color(target));
+    },
+
+    createLinkPath ({ y0, y1, source, target, width }, idx) {
+      const { nodeWidth } = this.$options.viewOptions;
+
+      /**
+        Creates a series of staggered midpoints for the link paths, so they
+        don't run along one channel and can be distinguished.
+
+        First, get a point staggered by index and link width, modulated by the link box
+        to find a point roughly between the nodes.
+
+        Then offset it by nodeWidth, so it doesn't run under any nodes at the left.
+
+        Determine where it would overlap at the right.
+
+        Finally, select the leftmost of these options:
+          - offset from the source node based on index + fudge;
+          - a fuzzy offset from the right node, using Math.random adds a little blur
+          - a hard offset from the end node, if random pushes it over
+
+        Then draw a line from the start node to the bottom-most point of the midline
+        up to the topmost point in that line and then to the middle of the end node
+      **/
+
+      const xValRaw = source.x1 + ((idx + 1) * width) % (target.x1 - source.x0);
+      const xValMin = xValRaw + nodeWidth;
+      const overlapPoint = source.x1 + (target.x0 - source.x1);
+      const xValMax = overlapPoint - (nodeWidth * 1.4);
+
+      const midPointX = Math.min(
+        xValMin,
+        (target.x0 - ((nodeWidth * 4 * Math.random()))),
+        xValMax,
+      )
+
+      return d3.line()([
+        [(source.x0 + source.x1) / 2, y0],
+        [midPointX, y0],
+        [midPointX, y1],
+        [(target.x0 + target.x1) / 2, y1],
+      ]);
     },
 
     createLinks (svg, linksData) {
@@ -195,7 +247,7 @@ export default {
       this.labelNodes(svg, nodeData);
     },
 
-    drawGraph(initialData) {
+    drawGraph({ maxNodesPerLayer, linksAndNodes }) {
       const {
         baseWidth,
         baseHeight,
@@ -205,13 +257,11 @@ export default {
         paddingForLabels,
       } = this.$options.viewOptions;
 
-      const { maxNodesPerLayer, linksAndNodes } = this.transformData(initialData);
-
       this.width = baseWidth;
       this.height= baseHeight + (maxNodesPerLayer * minNodeHeight);
       this.color = this.initColors();
 
-      const sankey = createSankey({
+      const { links, nodes } = createSankey({
         width: this.width,
         height: this.height,
         nodeWidth,
@@ -220,64 +270,59 @@ export default {
       })(linksAndNodes);
 
       const svg = this.addSvg();
-      this.createLinks(svg, sankey.links);
-      this.createNodes(svg, sankey.nodes);
+      this.createLinks(svg, links);
+      this.createNodes(svg, nodes);
 
     },
 
-    generateJunctionPath (d) {
-      const width = d.x1 - d.x0;
-      const halfWidth = width / 2;
+    generateJunctionPath ({ x0, x1, y0, y1}) {
+      const nodeWidth = x1 - x0;
+      const halfWidth = nodeWidth / 2;
       return `
-          M ${d.x0 + width} ${d.y0 + halfWidth}
-          a ${halfWidth} ${halfWidth} 0 0 0 -${width} 0
-          v ${d.y1 - d.y0 - width}
-          a ${halfWidth} ${halfWidth} 0 0 0 ${width} 0
+          M ${x0 + nodeWidth} ${y0 + halfWidth}
+          a ${halfWidth} ${halfWidth} 0 0 0 -${nodeWidth} 0
+          v ${y1 - y0 - nodeWidth}
+          a ${halfWidth} ${halfWidth} 0 0 0 ${nodeWidth} 0
           z
           `;
     },
 
     generateLinks (svg, linksData) {
+      const linkContainerName = 'dag-link';
+
       return svg
         .append('g')
         .attr('fill', 'none')
         .attr('stroke-opacity', this.$options.viewOptions.baseOpacity)
-        .selectAll('.link')
+        .selectAll(`.${linkContainerName}`)
         .data(linksData)
         .enter()
         .append('g')
-        .attr('id', (d) => d.uid = uniqueId('link'))
-        .classed('link gl-cursor-pointer', true)
+        .attr('id', (d) => d.uid = uniqueId(linkContainerName))
+        .classed(`${linkContainerName} gl-cursor-pointer`, true)
     },
 
     generateNodes (svg, nodeData) {
-      const {
-        colorNodes,
-        strokeNodes,
-      } = this.$options.viewOptions;
+      const nodeContainerName = 'dag-node';
 
       return svg
         .append('g')
-        .attr('stroke', '#000')
-        .selectAll('.junction-points')
+        .selectAll(`.${nodeContainerName}`)
         .data(nodeData)
         .enter()
         .append('path')
-        .classed('junction-points gl-cursor-pointer', true)
-        .attr('id', (d) => d.uid = uniqueId('node'))
-        .attr('d', (d) => this.generateJunctionPath(d))
+        .classed(`${nodeContainerName} gl-cursor-pointer`, true)
+        .attr('id', (d) => d.uid = uniqueId(nodeContainerName))
+        .attr('d', this.generateJunctionPath)
         .attr('stroke', this.color)
         .attr('stroke-width', '2')
-        .attr('fill', this.color)
-        .append('title')
-        .text((d) => d.name);
+        .attr('fill', this.color);
     },
 
     labelNodes (svg, nodeData) {
       return svg
         .append('g')
-        .attr('font-family', 'sans-serif')
-        .attr('font-size', 12)
+        .classed('gl-font-sm', true)
         .selectAll('text')
         .data(nodeData)
         .enter()
@@ -291,21 +336,21 @@ export default {
       return ({ name }) => colorFn(name);
     },
 
-    labelPosition (d) {
+    labelPosition ({ x0, x1, y0, y1 }) {
       const {
         paddingForLabels,
         labelMargin,
         nodePadding,
       } = this.$options.viewOptions;
 
-      const firstCol = d.x0 <= paddingForLabels;
-      const lastCol = d.x1 >= this.width - paddingForLabels;
+      const firstCol = x0 <= paddingForLabels;
+      const lastCol = x1 >= this.width - paddingForLabels;
 
       if (firstCol) {
         return {
           x: 0 + labelMargin,
-          y: d.y0,
-          height: `${d.y1 - d.y0}px`,
+          y: y0,
+          height: `${y1 - y0}px`,
           width: paddingForLabels - (2 * labelMargin),
           textAlign: 'right',
         }
@@ -314,26 +359,25 @@ export default {
       if (lastCol) {
         return {
           x: (this.width - paddingForLabels) + labelMargin,
-          y: d.y0,
-          height: `${d.y1 - d.y0}px`,
+          y: y0,
+          height: `${y1 - y0}px`,
           width: paddingForLabels - (2 * labelMargin),
           textAlign: 'left',
         }
       }
 
       return {
-        x: (d.x1 + d.x0) / 2,
-        y: d.y0 - nodePadding,
+        x: (x1 + x0) / 2,
+        y: y0 - nodePadding,
         height: `${nodePadding}px`,
         width: 'max-content',
         wrapperWidth: paddingForLabels - (2 * labelMargin),
-        textAlign: d.x0 < this.width / 2 ? 'left' : 'right',
+        textAlign: x0 < this.width / 2 ? 'left' : 'right',
       }
     },
 
     transformData (parsed) {
-      const { nodeWidth, nodePadding } = this.$options.viewOptions;
-      const baseLayout = createSankey({ height: 10, width: 10, nodeWidth, nodePadding })(parsed);
+      const baseLayout = createSankey()(parsed);
       const cleanedNodes = removeOrphanNodes(baseLayout.nodes);
       const maxNodesPerLayer = getMaxNodes(cleanedNodes);
 

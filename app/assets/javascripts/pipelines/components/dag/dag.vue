@@ -109,6 +109,6 @@ export default {
     <gl-alert v-if="showFailureAlert" :variant="failure.variant" @dismiss="hideAlert">
       {{ failure.text }}
     </gl-alert>
-    <dag-graph v-if="shouldDisplayGraph" :graph-data="graphData"></dag-graph>
+    <dag-graph v-if="shouldDisplayGraph" :graph-data="graphData" @onFailure="reportFailure"></dag-graph>
   </div>
 </template>
