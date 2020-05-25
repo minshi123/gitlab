@@ -12,8 +12,18 @@ localVue.use(Vuex);
 describe('ide/components/panes/right.vue', () => {
   let wrapper;
   let store;
+  let terminalState;
 
   const createComponent = props => {
+    store = new Vuex.Store({
+      modules: {
+        terminal: {
+          namespaced: true,
+          state: terminalState,
+        },
+      },
+    });
+
     wrapper = shallowMount(RightPane, {
       localVue,
       store,
@@ -94,6 +104,42 @@ describe('ide/components/panes/right.vue', () => {
                 name: rightSidebarViews.clientSidePreview.name,
               }),
             ]),
+          }),
+        ]),
+      );
+    });
+  });
+
+  describe('terminal tab', () => {
+    beforeEach(() => {
+      terminalState = {};
+    });
+
+    it('adds terminal tab', () => {
+      terminalState.isVisible = true;
+
+      createComponent();
+
+      expect(wrapper.find(RightPane).props('extensionTabs')).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            show: true,
+            title: 'Terminal',
+          }),
+        ]),
+      );
+    });
+
+    it('hides terminal tab when not visible', () => {
+      terminalState.isVisible = false;
+
+      createComponent();
+
+      expect(wrapper.find(RightPane).props('extensionTabs')).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            show: false,
+            title: 'Terminal',
           }),
         ]),
       );

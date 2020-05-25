@@ -6,20 +6,15 @@ import { rightSidebarViews } from '../../constants';
 import PipelinesList from '../pipelines/list.vue';
 import JobsDetail from '../jobs/detail.vue';
 import Clientside from '../preview/clientside.vue';
+import TerminalView from '../terminal/view.vue';
 
 export default {
   name: 'RightPane',
   components: {
     CollapsibleSidebar,
   },
-  props: {
-    extensionTabs: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-  },
   computed: {
+    ...mapState('terminal', { isTerminalVisible: 'isVisible' }),
     ...mapState(['currentMergeRequestId', 'clientsidePreviewEnabled']),
     ...mapGetters(['packageJson']),
     showLivePreview() {
@@ -42,7 +37,12 @@ export default {
           views: [{ component: Clientside, ...rightSidebarViews.clientSidePreview }],
           icon: 'live-preview',
         },
-        ...this.extensionTabs,
+        {
+          show: this.isTerminalVisible,
+          title: __('Terminal'),
+          views: [{ component: TerminalView, ...rightSidebarViews.terminal }],
+          icon: 'terminal',
+        },
       ];
     },
   },
