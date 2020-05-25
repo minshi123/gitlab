@@ -54,12 +54,6 @@ describe ContainerExpirationPolicies::UpdateService do
       end
     end
 
-    RSpec.shared_examples 'creating the container expiration policy' do
-      it_behaves_like 'updating the container expiration policy attributes', mode: :create, to: { cadence: '3month', keep_n: 100, older_than: '90d' }
-
-      it_behaves_like 'returning a success'
-    end
-
     RSpec.shared_examples 'denying access to container expiration policy' do
       context 'with existing container expiration policy' do
         it_behaves_like 'not creating the container expiration policy'

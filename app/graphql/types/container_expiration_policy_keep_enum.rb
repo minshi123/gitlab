@@ -12,7 +12,7 @@ module Types
     }.freeze
 
     ::ContainerExpirationPolicy.keep_n_options.each do |option, description|
-      value OPTIONS_MAPPING[option], description, value: option.to_s
+      value OPTIONS_MAPPING[option], description, value: option
     end
   end
 end

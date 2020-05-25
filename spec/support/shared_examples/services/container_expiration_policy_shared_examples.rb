@@ -32,3 +32,9 @@ RSpec.shared_examples 'not creating the container expiration policy' do
     expect { subject }.not_to change { ContainerExpirationPolicy.count }
   end
 end
+
+RSpec.shared_examples 'creating the container expiration policy' do
+  it_behaves_like 'updating the container expiration policy attributes', mode: :create, to: { cadence: '3month', keep_n: 100, older_than: '90d' }
+
+  it_behaves_like 'returning a success'
+end
