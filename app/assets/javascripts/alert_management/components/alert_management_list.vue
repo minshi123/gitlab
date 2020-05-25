@@ -11,6 +11,7 @@ import {
   GlTabs,
   GlTab,
   GlBadge,
+  GlPagination,
 } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
@@ -27,6 +28,7 @@ const tdClass = 'table-col d-flex d-md-table-cell align-items-center';
 const bodyTrClass =
   'gl-border-1 gl-border-t-solid gl-border-gray-100 hover-bg-blue-50 hover-gl-cursor-pointer hover-gl-border-b-solid hover-gl-border-blue-200';
 const findDefaultSortColumn = () => document.querySelector('.js-started-at');
+const DEFAULT_PAGE_SIZE = 3;
 
 export default {
   i18n: {
@@ -99,6 +101,7 @@ export default {
     GlTabs,
     GlTab,
     GlBadge,
+    GlPagination,
   },
   props: {
     projectPath: {
@@ -131,10 +134,18 @@ export default {
           projectPath: this.projectPath,
           statuses: this.statusFilter,
           sort: this.sort,
+          firstPageSize: DEFAULT_PAGE_SIZE,
+          prevPageCursor: this.prevPageCursor,
+          nextPageCursor: this.nextPageCursor,
         };
       },
       update(data) {
-        return data.project?.alertManagementAlerts?.nodes;
+        const alertsData = data.project?.alertManagementAlerts;
+
+        return {
+          list: alertsData?.nodes,
+          pageInfo: alertsData?.pageInfo || {},
+        };
       },
       error() {
         this.errored = true;
@@ -159,6 +170,9 @@ export default {
       isErrorAlertDismissed: false,
       sort: 'START_TIME_ASC',
       statusFilter: this.$options.statusTabs[4].filters,
+      prevPage: null,
+      nextPage: 1,
+      currentPage: 0,
     };
   },
   computed: {
@@ -174,7 +188,7 @@ export default {
       return this.$apollo.queries.alerts.loading;
     },
     hasAlerts() {
-      return this.alerts?.length;
+      return this.alerts?.list?.length;
     },
     tbodyTrClass() {
       return !this.loading && this.hasAlerts ? bodyTrClass : '';
@@ -222,6 +236,19 @@ export default {
     navigateToAlertDetails({ iid }) {
       return visitUrl(joinPaths(window.location.pathname, iid, 'details'));
     },
+    handlePageChange(page) {
+      const { startCursor, endCursor } = this.alerts.pageInfo;
+
+      if (page > this.currentPage) {
+        this.prevPageCursor = '';
+        this.nextPageCursor = endCursor;
+      } else {
+        this.prevPageCursor = startCursor;
+        this.nextPageCursor = '';
+      }
+
+      this.currentPage = page;
+    },
   },
 };
 </script>
@@ -251,7 +278,7 @@ export default {
       </h4>
       <gl-table
         class="alert-management-table mt-3"
-        :items="alerts"
+        :items="alerts.list"
         :fields="$options.fields"
         :show-empty="true"
         :busy="loading"
@@ -324,6 +351,25 @@ export default {
           <gl-loading-icon size="lg" color="dark" class="mt-3" />
         </template>
       </gl-table>
+
+ <!--     <gl-pagination
+        v-if="true || showPaginationControls"
+        :v-model="currentPage"
+        :per-page="$options.DEFAULT_PAGE_SIZE"
+        :prev-page="prevPage"
+        :next-page="nextPage"
+        align="center"
+        class="gl-pagination prepend-top-default"
+        @input="handlePageChange"
+      />-->
+      <gl-pagination
+        :value="currentPage"
+        :prev-page="prevPage"
+        :next-page="nextPage"
+        align="center"
+        class="gl-pagination prepend-top-default"
+        @input="handlePageChange"
+      />
     </div>
     <gl-empty-state
       v-else
