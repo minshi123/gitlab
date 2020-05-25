@@ -23,8 +23,6 @@ describe('Pipeline DAG graph wrapper', () => {
       wrapper.destroy();
     }
 
-    mock = new MockAdapter(axios);
-
     wrapper = method(Dag, {
       propsData,
       data() {
@@ -34,6 +32,10 @@ describe('Pipeline DAG graph wrapper', () => {
       },
     });
   };
+
+  beforeEach(() =>  {
+    mock = new MockAdapter(axios);
+  })
 
   afterEach(() => {
     mock.restore();
@@ -75,7 +77,7 @@ describe('Pipeline DAG graph wrapper', () => {
 
     describe('but the data fetch fails', () => {
       beforeEach(() => {
-        mock.onAny(dataPath).replyOnce(500);
+        mock.onGet(dataPath).replyOnce(500);
         createComponent({ graphUrl: dataPath });
       });
 

@@ -74,22 +74,16 @@ export default {
       return;
     }
 
-    console.log('in mounted', this.graphUrl);
-
     axios
       .get(this.graphUrl)
       .then(response => {
-        console.log('in then', response);
-        // processGraphData(response.data);
-        processGraphData(longDAGdata);
+        processGraphData(response.data);
       })
-      .catch((err) => console.log(err) || reportFailure.bind(null, LOAD_FAILURE));
+      .catch(reportFailure.bind(null, LOAD_FAILURE));
   },
   methods: {
     processGraphData(data) {
       let parsed;
-
-      console.log('in process data');
 
       try {
         parsed = parseData(data.stages);
