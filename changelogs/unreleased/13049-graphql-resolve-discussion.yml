@@ -1,0 +1,5 @@
+---
+title: Add GraphQL mutations for resolving and unresolving discussions
+merge_request: 32934
+author:
+type: added
