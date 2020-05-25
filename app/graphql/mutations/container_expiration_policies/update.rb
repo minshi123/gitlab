@@ -48,7 +48,7 @@ module Mutations
 
         {
           container_expiration_policy: result[:container_expiration_policy],
-          errors: result[:status] == :error ? [result.message] : []
+          errors: result[:status] == :error ? [result[:message]] : []
         }
       end
 
