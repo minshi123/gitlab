@@ -16,7 +16,6 @@ describe('RepoTabs', () => {
     vm = createComponent(RepoTabs, {
       files: openedFiles,
       viewer: 'editor',
-      hasChanges: false,
       activeFile: file('activeFile'),
       hasMergeRequest: false,
     });

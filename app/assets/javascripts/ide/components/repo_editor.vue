@@ -45,14 +45,7 @@ export default {
       'editorTheme',
       'entries',
     ]),
-    ...mapGetters([
-      'currentMergeRequest',
-      'getStagedFile',
-      'isEditModeActive',
-      'isCommitModeActive',
-      'isReviewModeActive',
-      'currentBranch',
-    ]),
+    ...mapGetters(['currentMergeRequest', 'getStagedFile', 'isEditModeActive', 'currentBranch']),
     ...mapGetters('fileTemplates', ['showFileTemplatesBar']),
     shouldHideEditor() {
       return this.file && this.file.binary;
@@ -223,7 +216,7 @@ export default {
         if (this.viewer === viewerTypes.edit) {
           this.editor.createInstance(this.$refs.editor);
         } else {
-          this.editor.createDiffInstance(this.$refs.editor, !this.isReviewModeActive);
+          this.editor.createDiffInstance(this.$refs.editor);
         }
 
         this.setupEditor();
@@ -319,7 +312,6 @@ export default {
       v-show="showEditor"
       ref="editor"
       :class="{
-        'is-readonly': isCommitModeActive,
         'is-deleted': file.deleted,
         'is-added': file.tempFile,
       }"

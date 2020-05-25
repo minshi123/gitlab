@@ -45,7 +45,9 @@ export default {
         this.isCompact = false;
       } else {
         this.isCompact = !(
-          this.currentViewIsCommitView && window.innerHeight >= MAX_WINDOW_HEIGHT_COMPACT
+          this.currentViewIsCommitView &&
+          this.hasChanges &&
+          window.innerHeight >= MAX_WINDOW_HEIGHT_COMPACT
         );
       }
     },
@@ -124,7 +126,7 @@ export default {
       @enter="enterTransition"
       @after-enter="afterEndTransition"
     >
-      <div v-if="isCompact" ref="compactEl" class="commit-form-compact">
+      <div v-if="isCompact || !hasChanges" ref="compactEl" class="commit-form-compact">
         <button
           :disabled="!hasChanges"
           type="button"
@@ -135,7 +137,7 @@ export default {
         </button>
         <p class="text-center bold">{{ overviewText }}</p>
       </div>
-      <form v-if="!isCompact" ref="formEl" @submit.prevent.stop="commit">
+      <form v-else ref="formEl" @submit.prevent.stop="commit">
         <transition name="fade"> <success-message v-show="lastCommitMsg" /> </transition>
         <commit-message-field
           :text="commitMessage"

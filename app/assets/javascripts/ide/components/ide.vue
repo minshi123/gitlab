@@ -49,7 +49,6 @@ export default {
     ]),
     ...mapGetters([
       'activeFile',
-      'hasChanges',
       'someUncommittedChanges',
       'isCommitModeActive',
       'allBlobs',
@@ -113,7 +112,6 @@ export default {
             :active-file="activeFile"
             :files="openFiles"
             :viewer="viewer"
-            :has-changes="hasChanges"
             :merge-request-id="currentMergeRequestId"
           />
           <repo-editor :file="activeFile" class="multi-file-edit-pane-content" />
