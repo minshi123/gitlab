@@ -308,8 +308,7 @@ export default {
         .attr('x1', (d) => Math.floor((d.x1 + d.x0) / 2))
         .attr('x2', (d) => Math.floor((d.x1 + d.x0) / 2))
         .attr('y1', (d) =>  d.y0 + 4)
-        .attr('y2', (d) =>  d.y1 - 4)
-
+        .attr('y2', (d) =>  d.y1 - 4);
     },
 
     labelNodes (svg, nodeData) {
