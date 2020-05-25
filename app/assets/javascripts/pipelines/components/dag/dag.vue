@@ -3,7 +3,7 @@ import { GlAlert } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import DagGraph from './dag_graph.vue';
-import { PARSE_FAILURE, LOAD_FAILURE, UNSUPPORTED_DATA } from './constants';
+import { DEFAULT, PARSE_FAILURE, LOAD_FAILURE, UNSUPPORTED_DATA } from './constants';
 import { parseData } from './utils'
 
 import longDAGdata from './longDAGdata.json'
@@ -31,27 +31,33 @@ export default {
       graphData: null,
     };
   },
+  errorTexts: {
+    [LOAD_FAILURE]: __('We are currently unable to fetch data for this graph.'),
+    [PARSE_FAILURE]: __('There was an error parsing the data for this graph.'),
+    [UNSUPPORTED_DATA]: __('A DAG must have two dependent jobs to be visualized on this tab.'),
+    [DEFAULT]: __('An unknown error loading this graph ocurred.')
+  },
   computed: {
     failure() {
       switch (this.failureType) {
         case LOAD_FAILURE:
           return  {
-            text: __('We are currently unable to fetch data for this graph.'),
+            text: this.$options.errorTexts[LOAD_FAILURE],
             variant: 'danger',
           };
         case PARSE_FAILURE:
           return  {
-            text: __('There was an error parsing the data for this graph.'),
+            text: this.$options.errorTexts[PARSE_FAILURE],
             variant: 'danger',
           };
         case UNSUPPORTED_DATA:
           return {
-            text: __('A DAG must have two dependent jobs to be visualized on this tab.'),
+            text: this.$options.errorTexts[UNSUPPORTED_DATA],
             variant: 'info',
           }
         default:
           return  {
-            text: __('An unknown error loading this graph ocurred.'),
+            text: this.$options.errorTexts[DEFAULT],
             vatiant: 'danger',
           };
       }
@@ -71,8 +77,7 @@ export default {
     axios
       .get(this.graphUrl)
       .then(response => {
-        // processGraphData(response.data);
-        processGraphData(testDAGdata);
+        processGraphData(response.data);
       })
       .catch(reportFailure.bind(null, LOAD_FAILURE));
   },
@@ -87,7 +92,7 @@ export default {
         return;
       }
 
-      if (parsed.links < 2 ) {
+      if (parsed.links.length < 2 ) {
         this.reportFailure(UNSUPPORTED_DATA);
         return;
       }
