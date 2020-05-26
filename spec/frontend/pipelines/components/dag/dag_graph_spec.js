@@ -12,7 +12,6 @@ describe('The DAG graph', () => {
   const getAllLabels = () => wrapper.findAll('foreignObject');
 
   const createComponent = (propsData = {}) => {
-
     if (wrapper?.destroy) {
       wrapper.destroy();
     }
@@ -25,8 +24,8 @@ describe('The DAG graph', () => {
           color: () => {},
           width: 0,
           height: 0,
-        }
-      }
+        };
+      },
     });
   };
 
@@ -42,7 +41,6 @@ describe('The DAG graph', () => {
   it('renders the graph svg', () => {
     expect(getGraph().exists()).toBe(true);
   });
-
 
   describe('links', () => {
     it('renders the expected number of links', () => {
@@ -74,7 +72,11 @@ describe('The DAG graph', () => {
       });
 
       it('renders the title as text', () => {
-        expect(getAllLabels().at(0).text()).toBe(parsedData.nodes[0].name);
+        expect(
+          getAllLabels()
+            .at(0)
+            .text(),
+        ).toBe(parsedData.nodes[0].name);
       });
     });
   });
