@@ -1,9 +1,11 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import { GlAlert } from '@gitlab/ui';
 import Dag from '~/pipelines/components/dag/dag.vue';
+import DagGraph from '~/pipelines/components/dag/dag_graph.vue';
+
 import { DEFAULT, PARSE_FAILURE, LOAD_FAILURE, UNSUPPORTED_DATA } from '~/pipelines/components/dag//constants';
 import {
   mockBaseData,
@@ -15,18 +17,18 @@ describe('Pipeline DAG graph wrapper', () => {
   let wrapper;
   let mock;
   const getAlert = () => wrapper.find(GlAlert);
-  const getGraph = () => wrapper.find('[data-testid="dag-graph-container"]');
+  const getGraph = () => wrapper.find(DagGraph);
   const getErrorText = (type) => wrapper.vm.$options.errorTexts[type]
 
   const dataPath = '/root/test/pipelines/90/dag.json';
 
-  const createComponent = (propsData = {}, method = mount) => {
+  const createComponent = (propsData = {}) => {
 
     if (wrapper?.destroy) {
       wrapper.destroy();
     }
 
-    wrapper = method(Dag, {
+    wrapper = shallowMount(Dag, {
       propsData,
       data() {
         return {
