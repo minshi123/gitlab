@@ -23,7 +23,7 @@ commit_events: @service.commit_events.to_s, enable_comments: @service.comment_on
               = form.check_box service_event_field_name(event), class: 'form-check-input'
               = form.label service_event_field_name(event), class: 'form-check-label' do
                 %strong
-                  = event.humanize
+                  = service_event_human_name(event)
 
             - field = @service.event_field(event)
 

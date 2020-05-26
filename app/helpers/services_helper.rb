@@ -31,6 +31,12 @@ module ServicesHelper
     "#{event}_events"
   end
 
+  def service_event_human_name(event)
+    events_and_names = { alert: 'Alerts'}
+
+    events_and_names[event.to_sym] || event.humanize
+  end
+
   def service_event_action_field_name(action)
     "#{action}_on_event_enabled"
   end

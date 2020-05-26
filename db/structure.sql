@@ -6095,7 +6095,8 @@ CREATE TABLE public.services (
     template boolean DEFAULT false,
     instance boolean DEFAULT false NOT NULL,
     comment_detail smallint,
-    inherit_from_id bigint
+    inherit_from_id bigint,
+    alert_events boolean DEFAULT true
 );
 
 CREATE SEQUENCE public.services_id_seq

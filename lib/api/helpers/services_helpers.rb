@@ -96,6 +96,12 @@ module API
             name: :wiki_page_channel,
             type: String,
             desc: 'The name of the channel to receive wiki_page_events notifications'
+          },
+          {
+            required: false,
+            name: :alert_channel,
+            type: String,
+            desc: 'The name of the channel to receive alert_events notifications'
           }
         ].freeze
       end
@@ -155,6 +161,12 @@ module API
             name: :wiki_page_events,
             type: Boolean,
             desc: 'Enable notifications for wiki_page_events'
+          },
+          {
+            required: false,
+            name: :alert_events,
+            type: String,
+            desc: 'Enable notifications for receive alert_events'
           }
         ].freeze
       end
