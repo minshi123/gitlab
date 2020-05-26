@@ -1,8 +1,8 @@
 <script>
 import { GlResizeObserverDirective } from '@gitlab/ui';
 import { GlHeatmap } from '@gitlab/ui/dist/charts';
-import dateformat from 'dateformat';
 import { graphDataValidatorForValues } from '../../utils';
+import { formatDate, masks } from '../../dateformat';
 
 export default {
   components: {
@@ -43,7 +43,7 @@ export default {
       return this.result.values.map(val => {
         const [yLabel] = val;
 
-        return dateformat(new Date(yLabel), 'HH:MM:ss');
+        return formatDate(new Date(yLabel), masks.isoTime);
       });
     },
     result() {
