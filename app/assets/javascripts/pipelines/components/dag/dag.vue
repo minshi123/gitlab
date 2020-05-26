@@ -6,9 +6,6 @@ import DagGraph from './dag_graph.vue';
 import { DEFAULT, PARSE_FAILURE, LOAD_FAILURE, UNSUPPORTED_DATA } from './constants';
 import { parseData } from './utils';
 
-import longDAGdata from './longDAGdata.json';
-import testDAGdata from './testDAGdata.json';
-
 export default {
   // eslint-disable-next-line @gitlab/require-i18n-strings
   name: 'Dag',
