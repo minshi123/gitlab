@@ -19,6 +19,8 @@ module Types
             Types::SnippetType
           when ::DesignManagement::Design
             Types::DesignManagement::DesignType
+          when Vulnerability
+            Types::VulnerabilityType
           else
             raise "Unknown GraphQL type for #{object}"
           end
