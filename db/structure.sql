@@ -9143,7 +9143,7 @@ CREATE UNIQUE INDEX index_approval_project_rules_users_1 ON public.approval_proj
 
 CREATE INDEX index_approval_project_rules_users_2 ON public.approval_project_rules_users USING btree (user_id);
 
-CREATE UNIQUE INDEX index_approval_rule_name_for_code_owners_rule_type ON public.approval_merge_request_rules USING btree (merge_request_id, name) WHERE (rule_type = 2);
+CREATE UNIQUE INDEX index_approval_rule_name_for_sectional_code_owners_rule_type ON public.approval_merge_request_rules USING btree (merge_request_id, rule_type, name, section) WHERE (rule_type = 2);
 
 CREATE INDEX index_approval_rules_code_owners_rule_type ON public.approval_merge_request_rules USING btree (merge_request_id) WHERE (rule_type = 2);
 
@@ -13936,5 +13936,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200525114553
 20200525121014
 20200526120714
+20200526231421
 \.
 
