@@ -8987,6 +8987,21 @@ type Query {
   ): SnippetConnection
 
   """
+  Find a User
+  """
+  user(
+    """
+    The ID of a User
+    """
+    id: ID
+
+    """
+    The username of a User
+    """
+    username: String
+  ): User
+
+  """
   Vulnerabilities reported on projects on the current user's instance security dashboard
   """
   vulnerabilities(
