@@ -2,12 +2,6 @@ import dateformat from 'dateformat';
 import { __ } from '~/locale';
 
 /**
- * Valid strings for this regex are
- * 2019-10-01 and 2019-10-01 01:02:03
- */
-const dateTimePickerRegex = /^(\d{4})-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])(?: (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))?$/;
-
-/**
  * Default time ranges for the date picker.
  * @see app/assets/javascripts/lib/utils/datetime_range.js
  */
@@ -34,7 +28,6 @@ export const defaultTimeRanges = [
 export const defaultTimeRange = defaultTimeRanges.find(tr => tr.default);
 
 export const dateFormats = {
-  ISODate: "yyyy-mm-dd'T'HH:MM:ss'Z'",
   stringDate: 'yyyy-mm-dd HH:MM:ss',
 };
 
@@ -62,11 +55,19 @@ export const isValidDate = dateString => {
 /**
  * Convert the input in Time picker component to ISO date.
  *
+ * If the string is already in UTC, utc should be marked as false.
+ *
  * @param {string} val
  * @returns {string}
  */
-export const stringToISODate = val =>
-  dateformat(new Date(val.replace(/-/g, '/')), dateFormats.ISODate, true);
+export const stringToISODate = (val, utc = false) => {
+  let date = new Date(val.replace(/-/g, '/'));
+  if (utc) {
+    // Strip timezone from date, by using a string and 'Z'
+    date = dateformat(date, "yyyy-mm-dd'T'HH:MM:ss'Z'");
+  }
+  return dateformat(date, 'isoUtcDateTime');
+};
 
 /**
  * Convert the ISO date received from the URL to string
@@ -75,10 +76,8 @@ export const stringToISODate = val =>
  * @param {Date} date
  * @returns {string}
  */
-export const ISODateToString = date => dateformat(date, dateFormats.stringDate);
+export const formatIsoDate = (date, utc = false) => dateformat(date, dateFormats.stringDate, utc);
 
 export const truncateZerosInDateTime = datetime => datetime.replace(' 00:00:00', '');
-
-export const isDateTimePickerInputValid = val => dateTimePickerRegex.test(val);
 
 export default {};

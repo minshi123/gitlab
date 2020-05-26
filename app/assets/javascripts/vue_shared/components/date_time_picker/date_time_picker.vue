@@ -12,9 +12,8 @@ import {
   defaultTimeRange,
   isValidDate,
   stringToISODate,
-  ISODateToString,
+  formatIsoDate,
   truncateZerosInDateTime,
-  isDateTimePickerInputValid,
 } from './date_time_picker_lib';
 
 const events = {
@@ -48,12 +47,21 @@ export default {
       required: false,
       default: true,
     },
+    utc: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
       timeRange: this.value,
-      startDate: '',
-      endDate: '',
+
+      startDate: null,
+      startFallbackVal: '',
+
+      endDate: null,
+      endFallbackVal: '',
     };
   },
   computed: {
@@ -69,21 +77,31 @@ export default {
 
     startInput: {
       get() {
-        return this.startInputValid ? this.formatDate(this.startDate) : this.startDate;
+        return this.startDate !== null ? this.formatDate(this.startDate) : this.startFallbackVal;
       },
       set(val) {
-        // Attempt to set a formatted date if possible
-        this.startDate = isDateTimePickerInputValid(val) ? stringToISODate(val) : val;
+        try {
+          this.startDate = stringToISODate(val, this.utc);
+          this.startFallbackVal = null;
+        } catch (e) {
+          this.startDate = null;
+          this.startFallbackVal = val;
+        }
         this.timeRange = null;
       },
     },
     endInput: {
       get() {
-        return this.endInputValid ? this.formatDate(this.endDate) : this.endDate;
+        return this.endDate !== null ? this.formatDate(this.endDate) : this.endFallbackVal;
       },
       set(val) {
-        // Attempt to set a formatted date if possible
-        this.endDate = isDateTimePickerInputValid(val) ? stringToISODate(val) : val;
+        try {
+          this.endDate = stringToISODate(val, this.utc);
+          this.endFallbackVal = null;
+        } catch (e) {
+          this.endDate = null;
+          this.endFallbackVal = val;
+        }
         this.timeRange = null;
       },
     },
@@ -98,14 +116,21 @@ export default {
         const { start, end } = convertToFixedRange(this.value);
         if (isValidDate(start) && isValidDate(end)) {
           return sprintf(__('%{start} to %{end}'), {
-            start: this.formatDate(start),
-            end: this.formatDate(end),
+            start: truncateZerosInDateTime(this.formatDate(start)),
+            end: truncateZerosInDateTime(this.formatDate(end)),
           });
         }
       } catch {
         return __('Invalid date range');
       }
       return '';
+    },
+
+    customLabel() {
+      if (this.utc) {
+        return __('Custom range (UTC)');
+      }
+      return __('Custom range');
     },
   },
   watch: {
@@ -133,7 +158,7 @@ export default {
   },
   methods: {
     formatDate(date) {
-      return truncateZerosInDateTime(ISODateToString(date));
+      return formatIsoDate(date, this.utc);
     },
     closeDropdown() {
       this.$refs.dropdown.hide();
@@ -172,7 +197,7 @@ export default {
       <div class="d-flex justify-content-between gl-p-2-deprecated-no-really-do-not-use-me">
         <gl-form-group
           v-if="customEnabled"
-          :label="__('Custom range')"
+          :label="customLabel"
           label-for="custom-from-time"
           label-class="gl-pb-1-deprecated-no-really-do-not-use-me"
           class="custom-time-range-form-group col-md-7 gl-pl-1-deprecated-no-really-do-not-use-me gl-pr-0 m-0"

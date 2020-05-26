@@ -43,17 +43,15 @@ describe('DateTimePicker', () => {
     });
   });
 
-  it('renders inputs with h/m/s truncated if its all 0s', done => {
+  it('renders label with h/m/s truncated if its all 0s', () => {
     createComponent({
       value: {
         start: '2019-10-10T00:00:00.000Z',
         end: '2019-10-14T00:10:00.000Z',
       },
     });
-    dateTimePicker.vm.$nextTick(() => {
-      expect(dateTimePicker.find('#custom-time-from').element.value).toBe('2019-10-10');
-      expect(dateTimePicker.find('#custom-time-to').element.value).toBe('2019-10-14 00:10:00');
-      done();
+    return dateTimePicker.vm.$nextTick(() => {
+      expect(dropdownToggle().text()).toBe('2019-10-10 to 2019-10-14 00:10:00');
     });
   });
 
