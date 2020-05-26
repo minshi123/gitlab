@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import DagGraph from '~/pipelines/components/dag/dag_graph.vue';
-import { parsedData } from './mock_data.js';
+import { parsedData } from './mock_data';
 import { createSankey, removeOrphanNodes } from '~/pipelines/components/dag/utils';
 
 describe('The DAG graph', () => {
@@ -12,7 +12,6 @@ describe('The DAG graph', () => {
   const getAllLabels = () => wrapper.findAll('foreignObject');
 
   const createComponent = (propsData = {}) => {
-
     if (wrapper?.destroy) {
       wrapper.destroy();
     }
@@ -25,8 +24,8 @@ describe('The DAG graph', () => {
           color: () => {},
           width: 0,
           height: 0,
-        }
-      }
+        };
+      },
     });
   };
 
@@ -42,7 +41,6 @@ describe('The DAG graph', () => {
   it('renders the graph svg', () => {
     expect(getGraph().exists()).toBe(true);
   });
-
 
   describe('links', () => {
     it('renders the expected number of links', () => {
@@ -74,7 +72,11 @@ describe('The DAG graph', () => {
       });
 
       it('renders the title as text', () => {
-        expect(getAllLabels().at(0).text()).toBe(parsedData.nodes[0].name);
+        expect(
+          getAllLabels()
+            .at(0)
+            .text(),
+        ).toBe(parsedData.nodes[0].name);
       });
     });
   });

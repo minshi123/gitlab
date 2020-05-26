@@ -3,11 +3,7 @@ import * as d3 from 'd3';
 import { uniqueId } from 'lodash';
 import { PARSE_FAILURE } from './constants';
 
-import {
-  createSankey,
-  getMaxNodes,
-  removeOrphanNodes,
-} from './utils'
+import { createSankey, getMaxNodes, removeOrphanNodes } from './utils';
 
 export default {
   viewOptions: {
@@ -24,11 +20,9 @@ export default {
     highlightIn: 1,
     highlightOut: 0.2,
 
-    containerClasses: [
-      'dag-graph-container',
-      'gl-display-flex',
-      'gl-flex-direction-column',
-    ].join(' '),
+    containerClasses: ['dag-graph-container', 'gl-display-flex', 'gl-flex-direction-column'].join(
+      ' ',
+    ),
   },
   gitLabColorRotation: [
     '#e17223',
@@ -49,17 +43,16 @@ export default {
     graphData: {
       type: Object,
       required: true,
-    }
+    },
   },
-  data: function() {
+  data() {
     return {
       color: () => {},
       width: 0,
       height: 0,
-    }
+    };
   },
   mounted() {
-
     let countedAndTransformed;
 
     try {
@@ -73,7 +66,7 @@ export default {
   },
   methods: {
     addSvg() {
-       return d3
+      return d3
         .select('.dag-graph-container')
         .append('svg')
         .attr('viewBox', [0, 0, this.width, this.height])
@@ -82,27 +75,21 @@ export default {
     },
 
     appendLinks(link) {
-
-        return link
+      return (
+        link
           .append('path')
           .attr('d', this.createLinkPath)
           .attr('stroke', ({ gradId }) => `url(#${gradId})`)
           .style('stroke-linejoin', 'round')
           // minus two to account for the rounded nodes
           .attr('stroke-width', ({ width }) => Math.max(1, width - 2))
-          .attr('clip-path', ({ clipId }) => `url(#${clipId})`);
+          .attr('clip-path', ({ clipId }) => `url(#${clipId})`)
+      );
     },
 
-    appendLabelAsForeignObject (d, i, n) {
+    appendLabelAsForeignObject(d, i, n) {
       const currentNode = n[i];
-      const {
-        height,
-        wrapperWidth,
-        width,
-        x,
-        y,
-        textAlign,
-      } = this.labelPosition(d);
+      const { height, wrapperWidth, width, x, y, textAlign } = this.labelPosition(d);
 
       const labelClasses = [
         'gl-display-flex',
@@ -110,25 +97,35 @@ export default {
         'gl-flex-direction-column',
         'gl-justify-content-center',
         'gl-overflow-wrap-break',
-      ]
+      ].join(' ');
 
-      return d3.select(currentNode)
-        .attr('requiredFeatures', 'http://www.w3.org/TR/SVG11/feature#Extensibility')
-        .attr('height', height)
-        /**
-          items with a 'max-content' width will have a wrapperWidth for the foreignObject
-        **/
-        .attr('width', wrapperWidth || width)
-        .attr('x', x)
-        .attr('y', y)
-        .classed('gl-overflow-visible', true)
-        .style('overflow', 'visible') // delete before merging
-        .append('xhtml:div')
-        .classed(labelClasses.join(' '), true)
-        .style('height', height)
-        .style('width', width)
-        .style('text-align', textAlign)
-        .text(({ name }) => name);
+      return (
+        d3
+          .select(currentNode)
+          .attr('requiredFeatures', 'http://www.w3.org/TR/SVG11/feature#Extensibility')
+          .attr('height', height)
+          /*
+            items with a 'max-content' width will have a wrapperWidth for the foreignObject
+          */
+          .attr('width', wrapperWidth || width)
+          .attr('x', x)
+          .attr('y', y)
+          .classed('gl-overflow-visible', true)
+          .style('overflow', 'visible') // delete before merging
+          .append('xhtml:div')
+          .classed(labelClasses, true)
+          .style('height', height)
+          .style('width', width)
+          .style('text-align', textAlign)
+          .text(({ name }) => name)
+      );
+    },
+
+    createAndAssignId(datum, field, modifier = '') {
+      const id = uniqueId(modifier);
+      /* eslint-disable-next-line no-param-reassign */
+      datum[field] = id;
+      return id;
     },
 
     createClip(link) {
@@ -149,30 +146,35 @@ export default {
       */
 
       const clip = ({ y0, y1, source, target, width }) => {
+        const bottomLinkEdge = Math.max(y1, y0) + width / 2;
+        const topLinkEdge = Math.min(y0, y1) - width / 2;
 
-        const bottomLinkEdge = Math.max(y1, y0) + (width / 2);
-        const topLinkEdge = Math.min(y0, y1) - (width / 2);
-
+        /* eslint-disable @gitlab/require-i18n-strings */
         return `
           M${source.x0}, ${y1}
           V${Math.max(bottomLinkEdge, y0, y1)}
           H${target.x1}
           V${Math.min(topLinkEdge, y0, y1)}
           H${source.x0}
-          Z`
-      }
+          Z`;
+        /* eslint-enable @gitlab/require-i18n-strings */
+      };
 
       return link
         .append('clipPath')
-        .attr('id', (d) => (d.clipId = uniqueId('dag-clip')))
+        .attr('id', d => {
+          return this.createAndAssignId(d, 'clipId', 'dag-clip');
+        })
         .append('path')
-        .attr('d', clip)
+        .attr('d', clip);
     },
 
     createGradient(link) {
       const gradient = link
         .append('linearGradient')
-        .attr('id', (d) => (d.gradId = uniqueId('dag-grad')))
+        .attr('id', d => {
+          return this.createAndAssignId(d, 'gradId', 'dag-grad');
+        })
         .attr('gradientUnits', 'userSpaceOnUse')
         .attr('x1', ({ source }) => source.x1)
         .attr('x2', ({ target }) => target.x0);
@@ -188,10 +190,10 @@ export default {
         .attr('stop-color', ({ target }) => this.color(target));
     },
 
-    createLinkPath ({ y0, y1, source, target, width }, idx) {
+    createLinkPath({ y0, y1, source, target, width }, idx) {
       const { nodeWidth } = this.$options.viewOptions;
 
-      /**
+      /*
         Creates a series of staggered midpoints for the link paths, so they
         don't run along one channel and can be distinguished.
 
@@ -209,18 +211,14 @@ export default {
 
         Then draw a line from the start node to the bottom-most point of the midline
         up to the topmost point in that line and then to the middle of the end node
-      **/
+      */
 
-      const xValRaw = source.x1 + ((idx + 1) * width) % (target.x1 - source.x0);
+      const xValRaw = source.x1 + (((idx + 1) * width) % (target.x1 - source.x0));
       const xValMin = xValRaw + nodeWidth;
       const overlapPoint = source.x1 + (target.x0 - source.x1);
-      const xValMax = overlapPoint - (nodeWidth * 1.4);
+      const xValMax = overlapPoint - nodeWidth * 1.4;
 
-      const midPointX = Math.min(
-        xValMin,
-        (target.x0 - ((nodeWidth * 4 * Math.random()))),
-        xValMax,
-      )
+      const midPointX = Math.min(xValMin, target.x0 - nodeWidth * 4 * Math.random(), xValMax);
 
       return d3.line()([
         [(source.x0 + source.x1) / 2, y0],
@@ -230,14 +228,14 @@ export default {
       ]);
     },
 
-    createLinks (svg, linksData) {
+    createLinks(svg, linksData) {
       const link = this.generateLinks(svg, linksData);
       this.createGradient(link);
       this.createClip(link);
       this.appendLinks(link);
     },
 
-    createNodes (svg, nodeData) {
+    createNodes(svg, nodeData) {
       this.generateNodes(svg, nodeData);
       this.labelNodes(svg, nodeData);
     },
@@ -253,7 +251,7 @@ export default {
       } = this.$options.viewOptions;
 
       this.width = baseWidth;
-      this.height= baseHeight + (maxNodesPerLayer * minNodeHeight);
+      this.height = baseHeight + maxNodesPerLayer * minNodeHeight;
       this.color = this.initColors();
 
       const { links, nodes } = createSankey({
@@ -267,10 +265,9 @@ export default {
       const svg = this.addSvg();
       this.createLinks(svg, links);
       this.createNodes(svg, nodes);
-
     },
 
-    generateLinks (svg, linksData) {
+    generateLinks(svg, linksData) {
       const linkContainerName = 'dag-link';
 
       return svg
@@ -281,11 +278,13 @@ export default {
         .data(linksData)
         .enter()
         .append('g')
-        .attr('id', (d) => d.uid = uniqueId(linkContainerName))
-        .classed(`${linkContainerName} gl-cursor-pointer`, true)
+        .attr('id', d => {
+          return this.createAndAssignId(d, 'uid', linkContainerName);
+        })
+        .classed(`${linkContainerName} gl-cursor-pointer`, true);
     },
 
-    generateNodes (svg, nodeData) {
+    generateNodes(svg, nodeData) {
       const nodeContainerName = 'dag-node';
       const { nodeWidth } = this.$options.viewOptions;
 
@@ -296,17 +295,19 @@ export default {
         .enter()
         .append('line')
         .classed(`${nodeContainerName} gl-cursor-pointer`, true)
-        .attr('id', (d) => d.uid = uniqueId(nodeContainerName))
+        .attr('id', d => {
+          return this.createAndAssignId(d, 'uid', nodeContainerName);
+        })
         .attr('stroke', this.color)
-        .attr('stroke-width', nodeWidth )
+        .attr('stroke-width', nodeWidth)
         .attr('stroke-linecap', 'round')
-        .attr('x1', (d) => Math.floor((d.x1 + d.x0) / 2))
-        .attr('x2', (d) => Math.floor((d.x1 + d.x0) / 2))
-        .attr('y1', (d) =>  d.y0 + 4)
-        .attr('y2', (d) =>  d.y1 - 4);
+        .attr('x1', d => Math.floor((d.x1 + d.x0) / 2))
+        .attr('x2', d => Math.floor((d.x1 + d.x0) / 2))
+        .attr('y1', d => d.y0 + 4)
+        .attr('y2', d => d.y1 - 4);
     },
 
-    labelNodes (svg, nodeData) {
+    labelNodes(svg, nodeData) {
       return svg
         .append('g')
         .classed('gl-font-sm', true)
@@ -315,20 +316,15 @@ export default {
         .enter()
         .append('foreignObject')
         .each(this.appendLabelAsForeignObject);
-
     },
 
-    initColors (colorProp) {
+    initColors() {
       const colorFn = d3.scaleOrdinal(this.$options.gitLabColorRotation);
       return ({ name }) => colorFn(name);
     },
 
-    labelPosition ({ x0, x1, y0, y1 }) {
-      const {
-        paddingForLabels,
-        labelMargin,
-        nodePadding,
-      } = this.$options.viewOptions;
+    labelPosition({ x0, x1, y0, y1 }) {
+      const { paddingForLabels, labelMargin, nodePadding } = this.$options.viewOptions;
 
       const firstCol = x0 <= paddingForLabels;
       const lastCol = x1 >= this.width - paddingForLabels;
@@ -338,19 +334,19 @@ export default {
           x: 0 + labelMargin,
           y: y0,
           height: `${y1 - y0}px`,
-          width: paddingForLabels - (2 * labelMargin),
+          width: paddingForLabels - 2 * labelMargin,
           textAlign: 'right',
-        }
+        };
       }
 
       if (lastCol) {
         return {
-          x: (this.width - paddingForLabels) + labelMargin,
+          x: this.width - paddingForLabels + labelMargin,
           y: y0,
           height: `${y1 - y0}px`,
-          width: paddingForLabels - (2 * labelMargin),
+          width: paddingForLabels - 2 * labelMargin,
           textAlign: 'left',
-        }
+        };
       }
 
       return {
@@ -358,12 +354,12 @@ export default {
         y: y0 - nodePadding,
         height: `${nodePadding}px`,
         width: 'max-content',
-        wrapperWidth: paddingForLabels - (2 * labelMargin),
+        wrapperWidth: paddingForLabels - 2 * labelMargin,
         textAlign: x0 < this.width / 2 ? 'left' : 'right',
-      }
+      };
     },
 
-    transformData (parsed) {
+    transformData(parsed) {
       const baseLayout = createSankey()(parsed);
       const cleanedNodes = removeOrphanNodes(baseLayout.nodes);
       const maxNodesPerLayer = getMaxNodes(cleanedNodes);
@@ -372,19 +368,15 @@ export default {
         maxNodesPerLayer,
         linksAndNodes: {
           links: parsed.links,
-          nodes: cleanedNodes
-        }
-      }
+          nodes: cleanedNodes,
+        },
+      };
     },
   },
-}
-
-
+};
 </script>
 <template>
-  <div
-    :class="$options.viewOptions.containerClasses"
-    data-testid="dag-graph-container">
+  <div :class="$options.viewOptions.containerClasses" data-testid="dag-graph-container">
     <!-- graph goes here -->
   </div>
 </template>

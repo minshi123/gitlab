@@ -6,24 +6,24 @@ import { GlAlert } from '@gitlab/ui';
 import Dag from '~/pipelines/components/dag/dag.vue';
 import DagGraph from '~/pipelines/components/dag/dag_graph.vue';
 
-import { DEFAULT, PARSE_FAILURE, LOAD_FAILURE, UNSUPPORTED_DATA } from '~/pipelines/components/dag//constants';
 import {
-  mockBaseData,
-  tooSmallGraph,
-  unparseableGraph,
-} from './mock_data';
+  DEFAULT,
+  PARSE_FAILURE,
+  LOAD_FAILURE,
+  UNSUPPORTED_DATA,
+} from '~/pipelines/components/dag//constants';
+import { mockBaseData, tooSmallGraph, unparseableGraph } from './mock_data';
 
 describe('Pipeline DAG graph wrapper', () => {
   let wrapper;
   let mock;
   const getAlert = () => wrapper.find(GlAlert);
   const getGraph = () => wrapper.find(DagGraph);
-  const getErrorText = (type) => wrapper.vm.$options.errorTexts[type]
+  const getErrorText = type => wrapper.vm.$options.errorTexts[type];
 
   const dataPath = '/root/test/pipelines/90/dag.json';
 
   const createComponent = (propsData = {}) => {
-
     if (wrapper?.destroy) {
       wrapper.destroy();
     }
@@ -38,9 +38,9 @@ describe('Pipeline DAG graph wrapper', () => {
     });
   };
 
-  beforeEach(() =>  {
+  beforeEach(() => {
     mock = new MockAdapter(axios);
-  })
+  });
 
   afterEach(() => {
     mock.restore();
@@ -61,7 +61,6 @@ describe('Pipeline DAG graph wrapper', () => {
   });
 
   describe('when there is a dataUrl', () => {
-
     describe('but the data fetch fails', () => {
       beforeEach(() => {
         mock.onGet(dataPath).replyOnce(500);
@@ -105,7 +104,6 @@ describe('Pipeline DAG graph wrapper', () => {
       });
 
       it('shows the graph and not the alert', () => {
-
         return wrapper.vm
           .$nextTick()
           .then(waitForPromises)
