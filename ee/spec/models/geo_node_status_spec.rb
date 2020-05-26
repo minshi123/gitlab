@@ -435,6 +435,25 @@ describe GeoNodeStatus, :geo, :geo_fdw do
     end
   end
 
+  describe '#package_files_failed_count' do
+    before do
+      create(:geo_project_registry, :sync_failed, project: project_1)
+      create(:geo_project_registry, :sync_failed, project: project_3)
+      create(:geo_project_registry, :repository_syncing, project: project_4)
+      create(:geo_project_registry, :wiki_syncing)
+    end
+
+    it 'returns the right number of failed repos with no group restrictions' do
+      expect(subject.package_files_failed_count).to eq(2)
+    end
+
+    it 'returns the right number of failed repos with group restrictions' do
+      secondary.update!(selective_sync_type: 'namespaces', namespaces: [group])
+
+      expect(subject.package_files_failed_count).to eq(1)
+    end
+  end
+
   describe '#repositories_synced_in_percentage' do
     it 'returns 0 when no projects are available' do
       expect(subject.repositories_synced_in_percentage).to eq(0)
@@ -482,6 +501,31 @@ describe GeoNodeStatus, :geo, :geo_fdw do
       create(:geo_project_registry, :synced, project: project_1)
 
       expect(subject.wikis_synced_in_percentage).to be_within(0.0001).of(50)
+    end
+  end
+
+  describe '#package_files_synced_in_percentage' do
+    it 'returns 0 when no projects are available' do
+      expect(subject.package_files_synced_in_percentage).to eq(0)
+    end
+
+    it 'returns 0 when project count is unknown' do
+      allow(subject).to receive(:projects_count).and_return(nil)
+
+      expect(subject.package_files_synced_in_percentage).to eq(0)
+    end
+
+    it 'returns the right percentage with no group restrictions' do
+      create(:geo_project_registry, :synced, project: project_1)
+
+      expect(subject.package_files_synced_in_percentage).to be_within(0.0001).of(25)
+    end
+
+    it 'returns the right percentage with group restrictions' do
+      secondary.update!(selective_sync_type: 'namespaces', namespaces: [group])
+      create(:geo_project_registry, :synced, project: project_1)
+
+      expect(subject.package_files_synced_in_percentage).to be_within(0.0001).of(50)
     end
   end
 

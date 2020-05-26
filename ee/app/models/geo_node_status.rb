@@ -74,6 +74,8 @@ class GeoNodeStatus < ApplicationRecord
     package_files_count
     package_files_checksummed_count
     package_files_checksum_failed_count
+    package_files_synced_count
+    package_files_failed_count
   ).freeze
 
   # Be sure to keep this consistent with Prometheus naming conventions
@@ -148,7 +150,9 @@ class GeoNodeStatus < ApplicationRecord
     design_repositories_registry_count: 'Number of design repositories in the registry',
     package_files_count: 'Number of package files on primary',
     package_files_checksummed_count: 'Number of package files checksummed on primary',
-    package_files_checksum_failed_count: 'Number of package files failed to checksum on primary'
+    package_files_checksum_failed_count: 'Number of package files failed to checksum on primary',
+    package_files_synced_count: 'Number of syncable package files synced on secondary',
+    package_files_failed_count: 'Number of syncable package files failed to sync on secondary'
   }.freeze
 
   EXPIRATION_IN_MINUTES = 10
@@ -333,6 +337,7 @@ class GeoNodeStatus < ApplicationRecord
   attr_in_percentage :container_repositories_synced, :container_repositories_synced_count, :container_repositories_count
   attr_in_percentage :design_repositories_synced,    :design_repositories_synced_count,    :design_repositories_count
   attr_in_percentage :package_files_checksummed,     :package_files_checksummed_count,     :package_files_count
+  attr_in_percentage :package_files_synced,          :package_files_synced_count,          :package_files_count
 
   def storage_shards_match?
     return true if geo_node.primary?
@@ -477,6 +482,8 @@ class GeoNodeStatus < ApplicationRecord
       self.wikis_checksum_mismatch_count = registries_for_mismatch_projects(:wiki).count
       self.repositories_retrying_verification_count = registries_retrying_verification(:repository).count
       self.wikis_retrying_verification_count = registries_retrying_verification(:wiki).count
+      self.package_files_synced_count = Geo::PackageFileReplicator.synced_count
+      self.package_files_failed_count = Geo::PackageFileReplicator.failed_count
     end
   end
 
