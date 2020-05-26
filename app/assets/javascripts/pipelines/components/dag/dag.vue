@@ -92,7 +92,7 @@ export default {
         return;
       }
 
-      if (parsed.links < 2 ) {
+      if (parsed.links.length < 2 ) {
         this.reportFailure(UNSUPPORTED_DATA);
         return;
       }

@@ -1,7 +1,7 @@
 <script>
 import * as d3 from 'd3';
 import { uniqueId } from 'lodash';
-import { PARSE_FAILURE, UNSUPPORTED_DATA } from './constants';
+import { PARSE_FAILURE } from './constants';
 
 import {
   createSankey,
@@ -66,11 +66,6 @@ export default {
       countedAndTransformed = this.transformData(this.graphData);
     } catch {
       this.$emit('onFailure', PARSE_FAILURE);
-      return;
-    }
-
-    if (countedAndTransformed.linksAndNodes.nodes.length < 1) {
-      this.$emit('onFailure', UNSUPPORTED_DATA);
       return;
     }
 
