@@ -41,11 +41,13 @@ export default {
   data() {
     return {
       iterations: [],
-      loading: 0,
       tabIndex: 0,
     };
   },
   computed: {
+    loading() {
+      return this.$apollo.queries.iterations.loading;
+    },
     state() {
       switch (this.tabIndex) {
         default:

@@ -12,9 +12,9 @@ export default {
       default: () => [],
     },
     loading: {
-      type: Number,
+      type: Boolean,
       required: false,
-      default: 0,
+      default: false,
     },
   },
 };
@@ -22,7 +22,7 @@ export default {
 
 <template>
   <div class="milestones">
-    <div v-if="loading">
+    <div v-if="loading" class="gl-my-5">
       <gl-loading-icon size="lg" />
     </div>
     <ul v-else-if="iterations.length > 0" class="content-list">
