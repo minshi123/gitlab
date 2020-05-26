@@ -187,3 +187,15 @@
     }
   }
 }
+
+/**
+ * Environment dashboard
+*/
+
+.environment-dashboard-card:first-child {
+  padding-left: 0 !important;
+}
+
+.environment-dashboard-card:last-child {
+  padding-right: 0 !important;
+}
