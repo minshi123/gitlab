@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import DagGraph from '~/pipelines/components/dag/dag_graph.vue';
-import { parsedData } from './mock_data.js';
+import { parsedData } from './mock_data';
 import { createSankey, removeOrphanNodes } from '~/pipelines/components/dag/utils';
 
 describe('The DAG graph', () => {

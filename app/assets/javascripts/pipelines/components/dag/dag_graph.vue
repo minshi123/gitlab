@@ -45,7 +45,7 @@ export default {
       required: true,
     },
   },
-  data: function() {
+  data() {
     return {
       color: () => {},
       width: 0,
@@ -104,9 +104,9 @@ export default {
           .select(currentNode)
           .attr('requiredFeatures', 'http://www.w3.org/TR/SVG11/feature#Extensibility')
           .attr('height', height)
-          /**
-          items with a 'max-content' width will have a wrapperWidth for the foreignObject
-        **/
+          /*
+            items with a 'max-content' width will have a wrapperWidth for the foreignObject
+          */
           .attr('width', wrapperWidth || width)
           .attr('x', x)
           .attr('y', y)
@@ -142,6 +142,7 @@ export default {
         const bottomLinkEdge = Math.max(y1, y0) + width / 2;
         const topLinkEdge = Math.min(y0, y1) - width / 2;
 
+        /* eslint-disable @gitlab/require-i18n-strings */
         return `
           M${source.x0}, ${y1}
           V${Math.max(bottomLinkEdge, y0, y1)}
@@ -149,11 +150,17 @@ export default {
           V${Math.min(topLinkEdge, y0, y1)}
           H${source.x0}
           Z`;
+        /* eslint-enable @gitlab/require-i18n-strings */
       };
 
       return link
         .append('clipPath')
-        .attr('id', d => (d.clipId = uniqueId('dag-clip')))
+        .attr('id', d => {
+          const id = uniqueId('dag-clip');
+          /* eslint-disable-next-line no-param-reassign */
+          d.clipId = id;
+          return id;
+        })
         .append('path')
         .attr('d', clip);
     },
@@ -161,7 +168,12 @@ export default {
     createGradient(link) {
       const gradient = link
         .append('linearGradient')
-        .attr('id', d => (d.gradId = uniqueId('dag-grad')))
+        .attr('id', d => {
+          const id = uniqueId('dag-grad');
+          /* eslint-disable-next-line no-param-reassign */
+          d.gradId = id;
+          return id;
+        })
         .attr('gradientUnits', 'userSpaceOnUse')
         .attr('x1', ({ source }) => source.x1)
         .attr('x2', ({ target }) => target.x0);
@@ -180,7 +192,7 @@ export default {
     createLinkPath({ y0, y1, source, target, width }, idx) {
       const { nodeWidth } = this.$options.viewOptions;
 
-      /**
+      /*
         Creates a series of staggered midpoints for the link paths, so they
         don't run along one channel and can be distinguished.
 
@@ -198,7 +210,7 @@ export default {
 
         Then draw a line from the start node to the bottom-most point of the midline
         up to the topmost point in that line and then to the middle of the end node
-      **/
+      */
 
       const xValRaw = source.x1 + (((idx + 1) * width) % (target.x1 - source.x0));
       const xValMin = xValRaw + nodeWidth;
@@ -265,7 +277,12 @@ export default {
         .data(linksData)
         .enter()
         .append('g')
-        .attr('id', d => (d.uid = uniqueId(linkContainerName)))
+        .attr('id', d => {
+          const id = uniqueId('nodeContainerName');
+          /* eslint-disable-next-line no-param-reassign */
+          d.uid = id;
+          return id;
+        })
         .classed(`${linkContainerName} gl-cursor-pointer`, true);
     },
 
@@ -280,7 +297,12 @@ export default {
         .enter()
         .append('line')
         .classed(`${nodeContainerName} gl-cursor-pointer`, true)
-        .attr('id', d => (d.uid = uniqueId(nodeContainerName)))
+        .attr('id', d => {
+          const id = uniqueId('nodeContainerName');
+          /* eslint-disable-next-line no-param-reassign */
+          d.uid = id;
+          return id;
+        })
         .attr('stroke', this.color)
         .attr('stroke-width', nodeWidth)
         .attr('stroke-linecap', 'round')
@@ -301,7 +323,7 @@ export default {
         .each(this.appendLabelAsForeignObject);
     },
 
-    initColors(colorProp) {
+    initColors() {
       const colorFn = d3.scaleOrdinal(this.$options.gitLabColorRotation);
       return ({ name }) => colorFn(name);
     },
