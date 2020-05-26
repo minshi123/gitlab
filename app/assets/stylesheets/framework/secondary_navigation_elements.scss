@@ -370,7 +370,7 @@
   &.activities {
     display: flex;
     border-bottom: 1px solid $border-color;
-    overflow: hidden;
+    // overflow: hidden;
     align-items: center;
 
     .nav-links {

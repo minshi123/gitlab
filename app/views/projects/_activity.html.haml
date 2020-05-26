@@ -4,6 +4,8 @@
     .controls
       = link_to project_path(@project, rss_url_options), title: s_("ProjectActivityRSS|Subscribe"), class: 'btn d-none d-sm-inline-block has-tooltip' do
         = icon('rss')
+      .project-clone-holder.d-none.d-md-inline-flex.ml-2
+        = render "projects/buttons/clone", dropdown_class: 'dropdown-menu-right'
 
   .content_list.project-activity{ :"data-href" => activity_project_path(@project) }
   .loading
