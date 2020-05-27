@@ -23,6 +23,9 @@ module EE
         },
         sast: {
           name: :sast_jobs
+        },
+        secret_detection: {
+          name: :secret_detection_jobs
         }
       }.freeze
 
@@ -156,6 +159,7 @@ module EE
           super.tap do |usage_data|
             usage_data[:counts].merge!(
               {
+                confidential_epics: count(::Epic.confidential),
                 dependency_list_usages_total: redis_usage_data { ::Gitlab::UsageCounters::DependencyList.usage_totals[:total] },
                 epics: count(::Epic),
                 feature_flags: count(Operations::FeatureFlag),
@@ -344,7 +348,7 @@ module EE
         end
 
         # Currently too complicated and to get reliable counts for these stats:
-        # container_scanning_jobs, dast_jobs, dependency_scanning_jobs, license_management_jobs, sast_jobs
+        # container_scanning_jobs, dast_jobs, dependency_scanning_jobs, license_management_jobs, sast_jobs, secret_detection_jobs
         # Once https://gitlab.com/gitlab-org/gitlab/merge_requests/17568 is merged, this might be doable
         def usage_activity_by_stage_secure(time_period)
           prefix = 'user_'

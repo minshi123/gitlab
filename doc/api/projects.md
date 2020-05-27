@@ -1,3 +1,9 @@
+---
+stage: Plan
+group: Project Management
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Projects API
 
 ## Project visibility level
@@ -309,7 +315,7 @@ GET /projects?custom_attributes[key]=value&custom_attributes[other_key]=other_va
 ### Pagination limits
 
 From GitLab 13.0, [offset-based pagination](README.md#offset-based-pagination) will be
-[limited to 50,000 records](https://gitlab.com/gitlab-org/gitlab/issues/34565).
+[limited to 50,000 records](https://gitlab.com/gitlab-org/gitlab/-/issues/34565).
 [Keyset pagination](README.md#keyset-based-pagination) will be required to retrieve projects
 beyond this limit.
 
@@ -1806,7 +1812,7 @@ Example response:
 This endpoint either:
 
 - Removes a project including all associated resources (issues, merge requests etc).
-- From [GitLab 12.6](https://gitlab.com/gitlab-org/gitlab/issues/32935) on [Premium or Silver](https://about.gitlab.com/pricing/) or higher tiers, marks a project for deletion. Actual
+- From [GitLab 12.6](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) on [Premium or Silver](https://about.gitlab.com/pricing/) or higher tiers, marks a project for deletion. Actual
   deletion happens after number of days specified in
   [instance settings](../user/admin_area/settings/visibility_and_access_controls.md#default-deletion-adjourned-period-premium-only).
 
@@ -1820,7 +1826,7 @@ DELETE /projects/:id
 
 ## Restore project marked for deletion **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/32935) in GitLab 12.6.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32935) in GitLab 12.6.
 
 Restores project marked for deletion.
 
@@ -1943,6 +1949,7 @@ GET /projects/:id/hooks/:hook_id
   "merge_requests_events": true,
   "tag_push_events": true,
   "note_events": true,
+  "confidential_note_events": true,
   "job_events": true,
   "pipeline_events": true,
   "wiki_page_events": true,
@@ -1970,6 +1977,7 @@ POST /projects/:id/hooks
 | `merge_requests_events` | boolean | no | Trigger hook on merge requests events |
 | `tag_push_events` | boolean | no | Trigger hook on tag push events |
 | `note_events` | boolean | no | Trigger hook on note events |
+| `confidential_note_events` | boolean | no | Trigger hook on confidential note events |
 | `job_events` | boolean | no | Trigger hook on job events |
 | `pipeline_events` | boolean | no | Trigger hook on pipeline events |
 | `wiki_page_events` | boolean | no | Trigger hook on wiki events |
@@ -1996,6 +2004,7 @@ PUT /projects/:id/hooks/:hook_id
 | `merge_requests_events` | boolean | no | Trigger hook on merge requests events |
 | `tag_push_events` | boolean | no | Trigger hook on tag push events |
 | `note_events` | boolean | no | Trigger hook on note events |
+| `confidential_note_events` | boolean | no | Trigger hook on confidential note events |
 | `job_events` | boolean | no | Trigger hook on job events |
 | `pipeline_events` | boolean | no | Trigger hook on pipeline events |
 | `wiki_events` | boolean | no | Trigger hook on wiki events |

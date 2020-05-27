@@ -346,7 +346,7 @@ GitLab's GraphQL API is versionless, which means we maintain backwards
 compatibility with older versions of the API with every change. Rather
 than removing a field, we need to _deprecate_ the field instead. In
 future, GitLab
-[may remove deprecated fields](https://gitlab.com/gitlab-org/gitlab/issues/32292).
+[may remove deprecated fields](https://gitlab.com/gitlab-org/gitlab/-/issues/32292).
 
 Fields are deprecated using the `deprecated` property. The value
 of the property is a `Hash` of:
@@ -468,6 +468,23 @@ Example:
 field :id, GraphQL::ID_TYPE, description: 'ID of the Issue'
 field :confidential, GraphQL::BOOLEAN_TYPE, description: 'Indicates the issue is confidential'
 field :closed_at, Types::TimeType, description: 'Timestamp of when the issue was closed'
+```
+
+### `copy_field_description` helper
+
+Sometimes we want to ensure that two descriptions will always be identical.
+For example, to keep a type field description the same as a mutation argument
+when they both represent the same property.
+
+Instead of supplying a description, we can use the `copy_field_description` helper,
+passing it the type, and field name to copy the description of.
+
+Example:
+
+```ruby
+argument :title, GraphQL::STRING_TYPE,
+          required: false,
+          description: copy_field_description(Types::MergeRequestType, :title)
 ```
 
 ## Authorization
@@ -602,6 +619,31 @@ lot of dependent objects.
 
 To limit the amount of queries performed, we can use `BatchLoader`.
 
+### Correct use of `Resolver#ready?`
+
+Resolvers have two public API methods as part of the framework: `#ready?(**args)` and `#resolve(**args)`.
+We can use `#ready?` to perform set-up, validation or early-return without invoking `#resolve`.
+
+Good reasons to use `#ready?` include:
+
+- validating mutually exclusive arguments (see [validating arguments](#validating-arguments))
+- Returning `Relation.none` if we know before-hand that no results are possible
+- Performing setup such as initializing instance variables (although consider lazily initialized methods for this)
+
+Implementations of [`Resolver#ready?(**args)`](https://graphql-ruby.org/api-doc/1.10.9/GraphQL/Schema/Resolver#ready%3F-instance_method) should
+return `(Boolean, early_return_data)` as follows:
+
+```ruby
+def ready?(**args)
+  [false, 'have this instead']
+end
+```
+
+For this reason, whenever you call a resolver (mainly in tests - as framework
+abstractions Resolvers should not be considered re-usable, finders are to be
+preferred), remember to call the `ready?` method and check the boolean flag
+before calling `resolve`! An example can be seen in our [`GraphQLHelpers`](https://gitlab.com/gitlab-org/gitlab/-/blob/2d395f32d2efbb713f7bc861f96147a2a67e92f2/spec/support/helpers/graphql_helpers.rb#L20-27).
+
 ## Mutations
 
 Mutations are used to change any stored values, or to trigger
@@ -690,8 +732,9 @@ should look like this:
   # The merge request modified, this will be wrapped in the type
   # defined on the field
   merge_request: merge_request,
-  # An array if strings if the mutation failed after authorization
-  errors: merge_request.errors.full_messages
+  # An array of strings if the mutation failed after authorization.
+  # The `errors_on_object` helper collects `errors.full_messages`
+  errors: errors_on_object(merge_request)
 }
 ```
 
@@ -767,7 +810,7 @@ def ready?(**args)
   end
 
   # Always remember to call `#super`
-  super(args)
+  super
 end
 ```
 

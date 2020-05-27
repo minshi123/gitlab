@@ -33,6 +33,9 @@ There are some differences in how a subscription applies, depending if you use G
 
 On a self-managed instance, a GitLab subscription provides the same set of features for all users. On GitLab.com you can apply a subscription to either a group or a personal namespace.
 
+NOTE: **Note:**
+Subscriptions cannot be transferred between GitLab.com and GitLab self-managed. A new subscription must be purchased and applied as needed.
+
 ### Choosing a GitLab.com group or personal subscription
 
 On GitLab.com you can apply a subscription to either a group or a personal namespace.
@@ -440,7 +443,7 @@ The new subscription tier is active when the license file is uploaded.
 
 ## Subscription expiry
 
-When your subscription or trial expires, GitLab does not delete your data, but it may become inaccessible, depending on the tier at expiry. Some features may not behave as expected if you're not prepared for the expiry. For example, [environment specific variables not being passed](https://gitlab.com/gitlab-org/gitlab/issues/24759).
+When your subscription or trial expires, GitLab does not delete your data, but it may become inaccessible, depending on the tier at expiry. Some features may not behave as expected if you're not prepared for the expiry. For example, [environment specific variables not being passed](https://gitlab.com/gitlab-org/gitlab/-/issues/24759).
 
 If you renew or upgrade, your data will again be accessible.
 
@@ -508,7 +511,7 @@ Be aware that:
 ## Contact Support
 
 We also encourage all users to search our project trackers for known issues and
-existing feature requests in the [GitLab](https://gitlab.com/gitlab-org/gitlab/issues/) project.
+existing feature requests in the [GitLab](https://gitlab.com/gitlab-org/gitlab/-/issues/) project.
 
 These issues are the best avenue for getting updates on specific product plans
 and for communicating directly with the relevant GitLab team members.

@@ -811,7 +811,7 @@ For GitLab 12.1 and earlier, use `gitlab-rake gitlab:backup:restore`.
 
 CAUTION: **Warning:**
 `gitlab-rake gitlab:backup:restore` does not set the right file system permissions on your Registry directory.
-This is a [known issue](https://gitlab.com/gitlab-org/gitlab-foss/issues/62759). On GitLab 12.2 or newer, you can
+This is a [known issue](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/62759). On GitLab 12.2 or newer, you can
 use `gitlab-backup restore` to avoid this issue.
 
 Next, restore `/etc/gitlab/gitlab-secrets.json` if necessary as mentioned above.
@@ -832,7 +832,7 @@ version of GitLab, the restore command will abort with an error. Install the
 
 For GitLab installations using the Docker image or the GitLab Helm chart on
 a Kubernetes cluster, the restore task expects the restore directories to be empty.
-However, with docker and Kubernetes volume mounts, some system level directories
+However, with Docker and Kubernetes volume mounts, some system level directories
 may be created at the volume roots, like `lost+found` directory found in Linux
 operating systems. These directories are usually owned by `root`, which can
 cause access permission errors since the restore Rake task runs as `git` user.
@@ -842,7 +842,7 @@ directories are empty.
 For both these installation types, the backup tarball has to be available in the
 backup location (default location is `/var/opt/gitlab/backups`).
 
-For docker installations, the restore task can be run from host:
+For Docker installations, the restore task can be run from host:
 
 ```shell
 docker exec -it <name of container> gitlab-backup restore
@@ -853,7 +853,7 @@ For GitLab 12.1 and earlier, use `gitlab-rake gitlab:backup:restore`.
 
 CAUTION: **Warning:**
 `gitlab-rake gitlab:backup:restore` does not set the right file system permissions on your Registry directory.
-This is a [known issue](https://gitlab.com/gitlab-org/gitlab-foss/issues/62759). On GitLab 12.2 or newer, you can
+This is a [known issue](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/62759). On GitLab 12.2 or newer, you can
 use `gitlab-backup restore` to avoid this issue.
 
 The GitLab Helm chart uses a different process, documented in
@@ -1063,7 +1063,7 @@ err.message="unknown error"
 
 This is caused by the restore being run as the unprivileged user `git` which was
 unable to assign the correct ownership to the registry files during the restore
-([issue 62759](https://gitlab.com/gitlab-org/gitlab-foss/issues/62759 "Incorrect permissions on registry filesystem after restore")).
+([issue 62759](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/62759 "Incorrect permissions on registry filesystem after restore")).
 
 To get your registry working again:
 

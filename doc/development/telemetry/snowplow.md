@@ -1,3 +1,9 @@
+---
+stage: Growth
+group: Telemetry
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Snowplow Guide
 
 This guide provides a details about how Snowplow works. It includes the following sections:
@@ -40,7 +46,7 @@ From [Snowplow's documentation](https://github.com/snowplow/snowplow), Snowplow 
 
 ## Snowplow schema
 
-We currently have many definitions of Snowplow's schema. We have an active issue to [standardize this schema](https://gitlab.com/gitlab-org/gitlab/issues/207930) including the following definitions:
+We currently have many definitions of Snowplow's schema. We have an active issue to [standardize this schema](https://gitlab.com/gitlab-org/gitlab/-/issues/207930) including the following definitions:
 
 - Frontend and backend taxonomy as listed below
 - [Feature instrumentation taxonomy](https://about.gitlab.com/handbook/product/feature-instrumentation/#taxonomy)
@@ -330,7 +336,7 @@ Snowplow Inspector Chrome Extension is a browser extension for testing frontend 
 
 Snowplow Micro is a very small version of a full Snowplow data collection pipeline: small enough that it can be launched by a test suite. Events can be recorded into Snowplow Micro just as they can a full Snowplow pipeline. Micro then exposes an API that can be queried.
 
-Snowplow Micro is a docker-based solution for testing frontend and backend events in a local development environment. You need to modify GDK using the instructions below to set this up.
+Snowplow Micro is a Docker-based solution for testing frontend and backend events in a local development environment. You need to modify GDK using the instructions below to set this up.
 
 - Read [Introducing Snowplow Micro](https://snowplowanalytics.com/blog/2019/07/17/introducing-snowplow-micro/)
 - Look at the [Snowplow Micro repo](https://github.com/snowplow-incubator/snowplow-micro)

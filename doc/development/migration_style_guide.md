@@ -559,6 +559,11 @@ Before PostgreSQL 11, adding a column with a default was problematic as it would
 have caused a full table rewrite. The corresponding helper `add_column_with_default`
 has been deprecated and will be removed in a later release.
 
+NOTE: **Note:**
+If a backport adding a column with a default value is needed for %12.9 or earlier versions,
+it should use `add_column_with_default` helper. If a [large table](https://gitlab.com/gitlab-org/gitlab/-/blob/master/rubocop/migration_helpers.rb#L12)
+is involved, backporting to %12.9 is contraindicated.
+
 ## Changing the column default
 
 One might think that changing a default column with `change_column_default` is an
@@ -611,7 +616,7 @@ end
 ```
 
 If a computed update is needed, the value can be wrapped in `Arel.sql`, so Arel
-treats it as an SQL literal. It's also a required deprecation for [Rails 6](https://gitlab.com/gitlab-org/gitlab/issues/28497).
+treats it as an SQL literal. It's also a required deprecation for [Rails 6](https://gitlab.com/gitlab-org/gitlab/-/issues/28497).
 
 The below example is the same as the one above, but
 the value is set to the product of the `bar` and `baz` columns:
@@ -726,6 +731,12 @@ Rails migration example:
 ```ruby
 add_column(:projects, :foo, :integer, default: 10, limit: 8)
 ```
+
+## Strings and the Text data type
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/30453) in GitLab 13.0.
+
+See the [text data type](database/strings_and_the_text_data_type.md) style guide for more information.
 
 ## Timestamp column type
 

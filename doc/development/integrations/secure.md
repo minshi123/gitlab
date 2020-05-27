@@ -139,7 +139,7 @@ might also help with keeping the image small.
 
 As documented in the [Docker Official Images](https://github.com/docker-library/official-images#tags-and-aliases) project,
 it is strongly encouraged that version number tags be given aliases which allows the user to easily refer to the "most recent" release of a particular series.
-See also [Docker Tagging: Best practices for tagging and versioning docker images](https://docs.microsoft.com/en-us/archive/blogs/stevelasker/docker-tagging-best-practices-for-tagging-and-versioning-docker-images).
+See also [Docker Tagging: Best practices for tagging and versioning Docker images](https://docs.microsoft.com/en-us/archive/blogs/stevelasker/docker-tagging-best-practices-for-tagging-and-versioning-docker-images).
 
 ## Command line
 
@@ -448,7 +448,7 @@ Right now, GitLab cannot track a vulnerability if its location changes
 as new Git commits are pushed, and this results in user feedback being lost.
 For instance, user feedback on a SAST vulnerability is lost
 if the affected file is renamed or the affected line moves down.
-This is addressed in [issue #7586](https://gitlab.com/gitlab-org/gitlab/issues/7586).
+This is addressed in [issue #7586](https://gitlab.com/gitlab-org/gitlab/-/issues/7586).
 
 In some cases, the multiple scans executed in the same CI pipeline result in duplicates
 that are automatically merged using the vulnerability location and identifiers.
@@ -469,6 +469,10 @@ Valid values are: `Unknown`, `Info`, `Low`, `Medium`, `High`, or `Critical`
 The confidence ranges from `Low` to `Confirmed`, but it can also be `Unknown`,
 `Experimental` or even `Ignore` if the vulnerability is to be ignored.
 Valid values are: `Ignore`, `Unknown`, `Experimental`, `Low`, `Medium`, `High`, or `Confirmed`
+
+`Unknown` values means that data is unavailable to determine it's actual value. Therefore, it may be `high`, `medium`, or `low`,
+and needs to be investigated. We have [provided a chart](../../user/application_security/sast/analyzers.md#analyzers-data)
+of the available SAST Analyzers and what data is currently available.
 
 ### Remediations
 

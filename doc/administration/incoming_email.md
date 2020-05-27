@@ -1,3 +1,9 @@
+---
+stage: Plan
+group: Project Management
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Incoming email
 
 GitLab has several features based on receiving incoming emails:
@@ -92,7 +98,7 @@ authenticate solely based on access to an email domain such as `*.hooli.com.`
 Alternatively, use a dedicated domain for GitLab email communications such as
 `hooli-gitlab.com`.
 
-See GitLab issue [#30366](https://gitlab.com/gitlab-org/gitlab-foss/issues/30366)
+See GitLab issue [#30366](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/30366)
 for a real-world example of this exploit.
 
 ### Omnibus package installations

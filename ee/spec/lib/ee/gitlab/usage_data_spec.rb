@@ -24,6 +24,7 @@ describe Gitlab::UsageData do
       create(:ci_build, name: 'license_management', pipeline: pipeline)
       create(:ee_ci_build, name: 'license_scanning', pipeline: pipeline)
       create(:ci_build, name: 'sast', pipeline: pipeline)
+      create(:ci_build, name: 'secret_detection', pipeline: pipeline)
 
       create(:prometheus_alert, project: projects[0])
       create(:prometheus_alert, project: projects[0])
@@ -79,6 +80,7 @@ describe Gitlab::UsageData do
       expect(count_data[:projects]).to eq(3)
 
       expect(count_data.keys).to include(*%i(
+        confidential_epics
         container_scanning_jobs
         dast_jobs
         dependency_list_usages_total
@@ -105,6 +107,7 @@ describe Gitlab::UsageData do
         projects_with_prometheus_alerts
         projects_with_tracing_enabled
         sast_jobs
+        secret_detection_jobs
         status_page_projects
         status_page_issues
         user_preferences_group_overview_details
@@ -135,6 +138,7 @@ describe Gitlab::UsageData do
       expect(count_data[:dependency_scanning_jobs]).to eq(1)
       expect(count_data[:license_management_jobs]).to eq(2)
       expect(count_data[:sast_jobs]).to eq(1)
+      expect(count_data[:secret_detection_jobs]).to eq(1)
     end
 
     it 'correctly shows failure for combined license management' do
@@ -583,6 +587,7 @@ describe Gitlab::UsageData do
                 create(:ci_build, name: 'dependency_scanning', user: user)
                 create(:ci_build, name: 'license_management', user: user)
                 create(:ci_build, name: 'sast', user: user)
+                create(:ci_build, name: 'secret_detection', user: user)
               end
             end
 
@@ -593,7 +598,8 @@ describe Gitlab::UsageData do
                 user_dast_jobs: 1,
                 user_dependency_scanning_jobs: 1,
                 user_license_management_jobs: 1,
-                user_sast_jobs: 1
+                user_sast_jobs: 1,
+                user_secret_detection_jobs: 1
               )
             end
 
@@ -608,7 +614,8 @@ describe Gitlab::UsageData do
                 user_dast_jobs: 1,
                 user_dependency_scanning_jobs: 1,
                 user_license_management_jobs: 2,
-                user_sast_jobs: 1
+                user_sast_jobs: 1,
+                user_secret_detection_jobs: 1
               )
             end
 
@@ -622,7 +629,8 @@ describe Gitlab::UsageData do
                 user_dast_jobs: -1,
                 user_dependency_scanning_jobs: -1,
                 user_license_management_jobs: -1,
-                user_sast_jobs: -1
+                user_sast_jobs: -1,
+                user_secret_detection_jobs: -1
               )
             end
           end

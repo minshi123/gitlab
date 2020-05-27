@@ -10,23 +10,32 @@ import {
   GlDropdownItem,
   GlTabs,
   GlTab,
+  GlDeprecatedBadge as GlBadge,
 } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
 import { joinPaths, visitUrl } from '~/lib/utils/url_utility';
+import { fetchPolicies } from '~/lib/graphql';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
-import getAlerts from '../graphql/queries/getAlerts.query.graphql';
-import { ALERTS_STATUS, ALERTS_STATUS_TABS, ALERTS_SEVERITY_LABELS } from '../constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import getAlerts from '../graphql/queries/get_alerts.query.graphql';
+import getAlertsCountByStatus from '../graphql/queries/get_count_by_status.query.graphql';
+import {
+  ALERTS_STATUS,
+  ALERTS_STATUS_TABS,
+  ALERTS_SEVERITY_LABELS,
+  trackAlertListViewsOptions,
+  trackAlertStatusUpdateOptions,
+} from '../constants';
 import updateAlertStatus from '../graphql/mutations/update_alert_status.graphql';
-import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
+import { capitalizeFirstCharacter, convertToSnakeCase } from '~/lib/utils/text_utility';
+import Tracking from '~/tracking';
 
 const tdClass = 'table-col d-flex d-md-table-cell align-items-center';
 const bodyTrClass =
-  'gl-border-1 gl-border-t-solid gl-border-gray-100 hover-bg-blue-50 hover-gl-cursor-pointer hover-gl-border-b-solid hover-gl-border-blue-200';
+  'gl-border-1 gl-border-t-solid gl-border-gray-100 gl-hover-bg-blue-50 gl-hover-cursor-pointer gl-hover-border-b-solid gl-hover-border-blue-200';
+const findDefaultSortColumn = () => document.querySelector('.js-started-at');
 
 export default {
-  bodyTrClass,
   i18n: {
     noAlertsMsg: s__(
       "AlertManagement|No alerts available to display. If you think you're seeing this message in error, refresh the page.",
@@ -40,34 +49,41 @@ export default {
       key: 'severity',
       label: s__('AlertManagement|Severity'),
       tdClass: `${tdClass} rounded-top text-capitalize`,
+      sortable: true,
     },
     {
       key: 'startedAt',
       label: s__('AlertManagement|Start time'),
+      thClass: 'js-started-at',
       tdClass,
+      sortable: true,
     },
     {
       key: 'endedAt',
       label: s__('AlertManagement|End time'),
       tdClass,
+      sortable: true,
     },
     {
       key: 'title',
       label: s__('AlertManagement|Alert'),
-      thClass: 'w-30p',
+      thClass: 'w-30p alert-title',
       tdClass,
+      sortable: false,
     },
     {
       key: 'eventCount',
       label: s__('AlertManagement|Events'),
-      thClass: 'text-right event-count',
-      tdClass: `${tdClass} text-md-right event-count`,
+      thClass: 'text-right gl-pr-9 w-3rem',
+      tdClass: `${tdClass} text-md-right`,
+      sortable: true,
     },
     {
       key: 'status',
       thClass: 'w-15p',
       label: s__('AlertManagement|Status'),
       tdClass: `${tdClass} rounded-bottom`,
+      sortable: true,
     },
   ],
   statuses: {
@@ -89,8 +105,8 @@ export default {
     GlIcon,
     GlTabs,
     GlTab,
+    GlBadge,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     projectPath: {
       type: String,
@@ -115,33 +131,48 @@ export default {
   },
   apollo: {
     alerts: {
+      fetchPolicy: fetchPolicies.CACHE_AND_NETWORK,
       query: getAlerts,
       variables() {
         return {
           projectPath: this.projectPath,
           statuses: this.statusFilter,
+          sort: this.sort,
         };
       },
       update(data) {
-        return data.project.alertManagementAlerts.nodes;
+        return data.project?.alertManagementAlerts?.nodes;
       },
       error() {
         this.errored = true;
       },
     },
+    alertsCount: {
+      query: getAlertsCountByStatus,
+      variables() {
+        return {
+          projectPath: this.projectPath,
+        };
+      },
+      update(data) {
+        return data.project?.alertManagementAlertStatusCounts;
+      },
+    },
   },
   data() {
     return {
-      alerts: null,
       errored: false,
       isAlertDismissed: false,
       isErrorAlertDismissed: false,
+      sort: 'STARTED_AT_ASC',
       statusFilter: this.$options.statusTabs[4].filters,
     };
   },
   computed: {
     showNoAlertsMsg() {
-      return !this.errored && !this.loading && !this.alerts?.length && !this.isAlertDismissed;
+      return (
+        !this.errored && !this.loading && this.alertsCount?.all === 0 && !this.isAlertDismissed
+      );
     },
     showErrorMsg() {
       return this.errored && !this.isErrorAlertDismissed;
@@ -149,10 +180,29 @@ export default {
     loading() {
       return this.$apollo.queries.alerts.loading;
     },
+    hasAlerts() {
+      return this.alerts?.length;
+    },
+    tbodyTrClass() {
+      return !this.loading && this.hasAlerts ? bodyTrClass : '';
+    },
+  },
+  mounted() {
+    findDefaultSortColumn().ariaSort = 'ascending';
+    this.trackPageViews();
   },
   methods: {
     filterAlertsByStatus(tabIndex) {
       this.statusFilter = this.$options.statusTabs[tabIndex].filters;
+    },
+    fetchSortedData({ sortBy, sortDesc }) {
+      const sortDirection = sortDesc ? 'DESC' : 'ASC';
+      const sortColumn = convertToSnakeCase(sortBy).toUpperCase();
+
+      if (sortBy !== 'startedAt') {
+        findDefaultSortColumn().ariaSort = 'none';
+      }
+      this.sort = `${sortColumn}_${sortDirection}`;
     },
     capitalizeFirstCharacter,
     updateAlertStatus(status, iid) {
@@ -166,7 +216,9 @@ export default {
           },
         })
         .then(() => {
+          this.trackStatusUpdate(status);
           this.$apollo.queries.alerts.refetch();
+          this.$apollo.queries.alertsCount.refetch();
         })
         .catch(() => {
           createFlash(
@@ -178,6 +230,14 @@ export default {
     },
     navigateToAlertDetails({ iid }) {
       return visitUrl(joinPaths(window.location.pathname, iid, 'details'));
+    },
+    trackPageViews() {
+      const { category, action } = trackAlertListViewsOptions;
+      Tracking.event(category, action);
+    },
+    trackStatusUpdate(status) {
+      const { category, action, label } = trackAlertStatusUpdateOptions;
+      Tracking.event(category, action, { label, property: status });
     },
   },
 };
@@ -192,10 +252,13 @@ export default {
         {{ $options.i18n.errorMsg }}
       </gl-alert>
 
-      <gl-tabs v-if="glFeatures.alertListStatusFilteringEnabled" @input="filterAlertsByStatus">
+      <gl-tabs @input="filterAlertsByStatus">
         <gl-tab v-for="tab in $options.statusTabs" :key="tab.status">
           <template slot="title">
             <span>{{ tab.title }}</span>
+            <gl-badge v-if="alertsCount" pill size="sm" class="gl-tab-counter-badge">
+              {{ alertsCount[tab.status.toLowerCase()] }}
+            </gl-badge>
           </template>
         </gl-tab>
       </gl-tabs>
@@ -210,8 +273,11 @@ export default {
         :show-empty="true"
         :busy="loading"
         stacked="md"
-        :tbody-tr-class="$options.bodyTrClass"
+        :tbody-tr-class="tbodyTrClass"
+        :no-local-sorting="true"
+        sort-icon-left
         @row-clicked="navigateToAlertDetails"
+        @sort-changed="fetchSortedData"
       >
         <template #cell(severity)="{ item }">
           <div
@@ -234,6 +300,10 @@ export default {
 
         <template #cell(endedAt)="{ item }">
           <time-ago v-if="item.endedAt" :time="item.endedAt" />
+        </template>
+
+        <template #cell(eventCount)="{ item }">
+          {{ item.eventCount }}
         </template>
 
         <template #cell(title)="{ item }">

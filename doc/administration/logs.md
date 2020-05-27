@@ -46,6 +46,8 @@ Line breaks have been added to this example for legibility:
   "gitaly_duration_s":0.16,
   "redis_calls":115,
   "redis_duration_s":0.13,
+  "redis_read_bytes":1507378,
+  "redis_write_bytes":2920,
   "correlation_id":"O1SdybnnIq7",
   "cpu_s":17.50,
   "db_duration_s":0.08,
@@ -56,7 +58,7 @@ Line breaks have been added to this example for legibility:
 
 This example was a GET request for a specific
 issue. Each line also contains performance data, with times in
-milliseconds:
+seconds:
 
 1. `duration_s`: total time taken to retrieve the request
 1. `queue_duration_s`: total time that the request was queued inside GitLab Workhorse
@@ -67,11 +69,21 @@ milliseconds:
 1. `gitaly_duration_s`: total time taken by Gitaly calls
 1. `gitaly_calls`: total number of calls made to Gitaly
 1. `redis_calls`: total number of calls made to Redis
+1. `redis_read_bytes`: total bytes read from Redis
+1. `redis_write_bytes`: total bytes written to Redis
 
 User clone and fetch activity using HTTP transport appears in this log as `action: git_upload_pack`.
 
 In addition, the log contains the originating IP address,
 (`remote_ip`),the user's ID (`user_id`), and username (`username`).
+
+Some endpoints such as `/search` may make requests to Elasticsearch if using
+[Advanced Global Search](../user/search/advanced_global_search.md). These will
+additionally log `elasticsearch_calls` and `elasticsearch_call_duration_s`,
+which correspond to:
+
+1. `elasticsearch_calls`: total number of calls to Elasticsearch
+1. `elasticsearch_duration_s`: total time taken by Elasticsearch calls
 
 NOTE: **Note:** Starting with GitLab 12.5, if an error occurs, an
 `exception` field is included with `class`, `message`, and
@@ -218,7 +230,7 @@ October 07, 2014 11:25: Project "project133" was removed
 
 ## `application_json.log`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/22812) in GitLab 12.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/22812) in GitLab 12.7.
 
 This file lives in `/var/log/gitlab/gitlab-rails/application_json.log` for
 Omnibus GitLab packages or in `/home/git/gitlab/log/application_json.log` for
@@ -593,6 +605,16 @@ installations from source.
 
 It logs the progress of the import process.
 
+## `exporter.log`
+
+> Introduced in GitLab 13.1.
+
+This file lives in `/var/log/gitlab/gitlab-rails/exporter.log` for
+Omnibus GitLab packages or in `/home/git/gitlab/log/exporter.log` for
+installations from source.
+
+It logs the progress of the export process.
+
 ## `auth.log`
 
 > Introduced in GitLab 12.0.
@@ -608,12 +630,12 @@ This log records:
 - [Protected paths](../user/admin_area/settings/protected_paths.md) abusive requests.
 
 NOTE: **Note:**
-From [%12.1](https://gitlab.com/gitlab-org/gitlab-foss/issues/62756), user ID and username are also
+From [%12.3](https://gitlab.com/gitlab-org/gitlab/-/issues/29239), user ID and username are also
 recorded on this log, if available.
 
 ## `graphql_json.log`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/59587) in GitLab 12.0.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/59587) in GitLab 12.0.
 
 This file lives in `/var/log/gitlab/gitlab-rails/graphql_json.log` for
 Omnibus GitLab packages or in `/home/git/gitlab/log/graphql_json.log` for
@@ -724,17 +746,6 @@ Each line contains a JSON line that can be ingested by Elasticsearch. For exampl
   "severity": "ERROR",
   "time": "2019-12-17T11:49:29.485Z",
   "correlation_id": "AbDVUrrTvM1",
-  "extra.server": {
-    "os": {
-      "name": "Darwin",
-      "version": "Darwin Kernel Version 19.2.0",
-      "build": "19.2.0",
-    },
-    "runtime": {
-      "name": "ruby",
-      "version": "ruby 2.6.5p114 (2019-10-01 revision 67812) [x86_64-darwin18]"
-    }
-  },
   "extra.project_id": 55,
   "extra.relation_key": "milestones",
   "extra.relation_index": 1,

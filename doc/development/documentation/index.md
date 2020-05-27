@@ -524,7 +524,7 @@ four repositories that are the sources for <https://docs.gitlab.com>:
 
 By default all rules are enabled, so the configuration file is used to disable unwanted
 rules, and also to configure optional parameters for enabled rules as needed. You can
-also check [the issue](https://gitlab.com/gitlab-org/gitlab-foss/issues/64352) that
+also check [the issue](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/64352) that
 tracked the changes required to implement these rules, and details which rules were
 on or off when markdownlint was enabled on the docs.
 
@@ -550,7 +550,7 @@ You can also
 [configure the text editor of your choice](https://errata-ai.github.io/vale/#local-use-by-a-single-writer)
 to display the results.
 
-Vale's test results [are displayed](#testing) in CI pipelines.
+Vale's error-level test results [are displayed](#testing) in CI pipelines.
 
 ##### Disable a Vale test
 

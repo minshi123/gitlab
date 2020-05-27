@@ -55,8 +55,24 @@ module EE
       end
 
       with_scope :global
-      condition(:admin_merge_request_approvers_rules_available) do
-        License.feature_available?(:admin_merge_request_approvers_rules)
+      condition(:owner_cannot_modify_approvers_rules) do
+        License.feature_available?(:admin_merge_request_approvers_rules) &&
+          ::Gitlab::CurrentSettings.current_application_settings
+            .disable_overriding_approvers_per_merge_request
+      end
+
+      with_scope :global
+      condition(:owner_cannot_modify_merge_request_author_setting) do
+        License.feature_available?(:admin_merge_request_approvers_rules) &&
+          ::Gitlab::CurrentSettings.current_application_settings
+            .prevent_merge_requests_author_approval
+      end
+
+      with_scope :global
+      condition(:owner_cannot_modify_merge_request_committer_setting) do
+        License.feature_available?(:admin_merge_request_approvers_rules) &&
+          ::Gitlab::CurrentSettings.current_application_settings
+            .prevent_merge_requests_committers_approval
       end
 
       with_scope :global
@@ -313,14 +329,6 @@ module EE
         end
       end
 
-      condition(:web_ide_terminal_available) do
-        @subject.feature_available?(:web_ide_terminal)
-      end
-
-      condition(:build_service_proxy_enabled) do
-        ::Feature.enabled?(:build_service_proxy, @subject)
-      end
-
       condition(:needs_new_sso_session) do
         ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(subject.group)
       end
@@ -346,18 +354,23 @@ module EE
         prevent :read_project
       end
 
-      rule { admin_merge_request_approvers_rules_available & ~admin }.policy do
+      rule { owner_cannot_modify_approvers_rules & ~admin }.policy do
         prevent :modify_approvers_rules
-        prevent :modify_approvers_list
+      end
+
+      rule { owner_cannot_modify_merge_request_author_setting & ~admin }.policy do
         prevent :modify_merge_request_author_setting
+      end
+
+      rule { owner_cannot_modify_merge_request_committer_setting & ~admin }.policy do
         prevent :modify_merge_request_committer_setting
       end
 
       rule { can?(:read_cluster) & cluster_health_available }.enable :read_cluster_health
 
-      rule { web_ide_terminal_available & can?(:create_pipeline) & can?(:maintainer_access) }.enable :create_web_ide_terminal
-
-      rule { build_service_proxy_enabled }.enable :build_service_proxy_enabled
+      rule { owner_cannot_modify_approvers_rules & ~admin }.policy do
+        prevent :modify_approvers_list
+      end
 
       rule { can?(:read_merge_request) & code_review_analytics_enabled }.enable :read_code_review_analytics
 

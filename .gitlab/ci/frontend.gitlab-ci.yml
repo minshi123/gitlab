@@ -21,7 +21,6 @@
     NODE_ENV: "production"
     RAILS_ENV: "production"
     SETUP_DB: "false"
-    SKIP_STORAGE_VALIDATION: "true"
     WEBPACK_REPORT: "true"
     # we override the max_old_space_size to prevent OOM errors
     NODE_OPTIONS: --max_old_space_size=3584
@@ -334,3 +333,22 @@ webpack-dev-server:
     expire_in: 31d
     paths:
       - webpack-dev-server.json
+
+bundle-size-review:
+  extends:
+    - .default-retry
+    - .frontend:rules:bundle-size-review
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:danger
+  stage: test
+  needs: ["gitlab:assets:compile pull-cache"]
+  script:
+    - mkdir -p bundle-size-review
+    - cp webpack-report/index.html bundle-size-review/bundle-report.html
+    - yarn global add https://gitlab.com/gitlab-org/frontend/playground/webpack-memory-metrics.git
+    - danger --dangerfile=danger/bundle_size/Dangerfile --fail-on-errors=true --verbose --danger_id=bundle-size-review
+  artifacts:
+    when: always
+    name: bundle-size-review
+    expire_in: 31d
+    paths:
+      - bundle-size-review

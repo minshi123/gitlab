@@ -105,7 +105,7 @@ Including a `.golangci.yml` in the root directory of the project allows for
 configuration of `golangci-lint`. All options for `golangci-lint` are listed in
 this [example](https://github.com/golangci/golangci-lint/blob/master/.golangci.example.yml).
 
-Once [recursive includes](https://gitlab.com/gitlab-org/gitlab-foss/issues/56836)
+Once [recursive includes](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/56836)
 become available, you will be able to share job templates like this
 [analyzer](https://gitlab.com/gitlab-org/security-products/ci-templates/raw/master/includes-dev/analyzer.yml).
 
@@ -260,7 +260,7 @@ easier to debug.
 
 For example:
 
-```go
+```golang
 // Wrap the error
 return nil, fmt.Errorf("get cache %s: %w", f.Name, err)
 
@@ -390,7 +390,7 @@ builds](https://docs.docker.com/develop/develop-images/multistage-build/):
   dependencies.
 - They generate a small, self-contained image, derived from `Scratch`.
 
-Generated docker images should have the program at their `Entrypoint` to create
+Generated Docker images should have the program at their `Entrypoint` to create
 portable commands. That way, anyone can run the image, and without parameters
 it will display its help message (if `cli` has been used).
 

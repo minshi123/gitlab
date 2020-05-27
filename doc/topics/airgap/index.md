@@ -70,12 +70,11 @@ registry.
 The project using the `Secure-Binaries.gitlab-ci.yml` template should now host all the required
 images and resources needed to run GitLab Security features.
 
-The next step is to tell the offline instance to use these resources instead of the default ones on
-`gitlab.com`. This can be done by setting the right environment variables:
-`SAST_ANALYZER_IMAGE_PREFIX` for SAST analyzers, `DS_ANALYZER_IMAGE_PREFIX` for Dependency Scanning,
-and so on.
+Next, you must tell the offline instance to use these resources instead of the default ones on
+GitLab.com. To do so, set the environment variable `SECURE_ANALYZERS_PREFIX` with the URL of the
+project [container registry](../../user/packages/container_registry/index.md).
 
-You can set these variables in the project's `.gitlab-ci.yml` files by using the bundle directly, or
+You can set this variable in the projects' `.gitlab-ci.yml`, or
 in the GitLab UI at the project or group level. See the [GitLab CI/CD environment variables page](../../ci/variables/README.md#custom-environment-variables)
 for more information.
 
@@ -90,7 +89,7 @@ template:
 | `SECURE_BINARIES_DOWNLOAD_IMAGES`         | Used to disable jobs                          | `"true"`                          |
 | `SECURE_BINARIES_PUSH_IMAGES`             | Push files to the project registry            | `"true"`                          |
 | `SECURE_BINARIES_SAVE_ARTIFACTS`          | Also save image archives as artifacts         | `"false"`                         |
-| `SECURE_BINARIES_ANALYZER_VERSION`        | Default analyzer version (docker tag)         | `"2"`                             |
+| `SECURE_BINARIES_ANALYZER_VERSION`        | Default analyzer version (Docker tag)         | `"2"`                             |
 
 ### Alternate way without the official template
 

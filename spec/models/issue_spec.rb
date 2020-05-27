@@ -176,7 +176,7 @@ describe Issue do
   describe '#close' do
     subject(:issue) { create(:issue, state: 'opened') }
 
-    it 'sets closed_at to Time.now when an issue is closed' do
+    it 'sets closed_at to Time.current when an issue is closed' do
       expect { issue.close }.to change { issue.closed_at }.from(nil)
     end
 
@@ -190,7 +190,7 @@ describe Issue do
 
   describe '#reopen' do
     let(:user) { create(:user) }
-    let(:issue) { create(:issue, state: 'closed', closed_at: Time.now, closed_by: user) }
+    let(:issue) { create(:issue, state: 'closed', closed_at: Time.current, closed_by: user) }
 
     it 'sets closed_at to nil when an issue is reopend' do
       expect { issue.reopen }.to change { issue.closed_at }.to(nil)
@@ -994,7 +994,7 @@ describe Issue do
   it_behaves_like 'versioned description'
 
   describe "#previous_updated_at" do
-    let_it_be(:updated_at) { Time.new(2012, 01, 06) }
+    let_it_be(:updated_at) { Time.zone.local(2012, 01, 06) }
     let_it_be(:issue) { create(:issue, updated_at: updated_at) }
 
     it 'returns updated_at value if updated_at did not change at all' do
@@ -1010,15 +1010,15 @@ describe Issue do
     end
 
     it 'returns updated_at value if previous updated_at value is not present' do
-      allow(issue).to receive(:previous_changes).and_return({ 'updated_at' => [nil, Time.new(2013, 02, 06)] })
+      allow(issue).to receive(:previous_changes).and_return({ 'updated_at' => [nil, Time.zone.local(2013, 02, 06)] })
 
       expect(issue.previous_updated_at).to eq(updated_at)
     end
 
     it 'returns previous updated_at when present' do
-      allow(issue).to receive(:previous_changes).and_return({ 'updated_at' => [Time.new(2013, 02, 06), Time.new(2013, 03, 06)] })
+      allow(issue).to receive(:previous_changes).and_return({ 'updated_at' => [Time.zone.local(2013, 02, 06), Time.zone.local(2013, 03, 06)] })
 
-      expect(issue.previous_updated_at).to eq(Time.new(2013, 02, 06))
+      expect(issue.previous_updated_at).to eq(Time.zone.local(2013, 02, 06))
     end
   end
 
@@ -1083,6 +1083,17 @@ describe Issue do
       labeled_issue = create(:labeled_issue, project: label.project, labels: [label])
 
       expect(subject).not_to include(labeled_issue)
+    end
+  end
+
+  describe 'banzai_render_context' do
+    let(:project) { build(:project_empty_repo) }
+    let(:issue) { build :issue, project: project }
+
+    subject(:context) { issue.banzai_render_context(:title) }
+
+    it 'sets the label_url_method in the context' do
+      expect(context[:label_url_method]).to eq(:project_issues_url)
     end
   end
 end

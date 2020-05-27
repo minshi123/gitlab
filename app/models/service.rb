@@ -134,6 +134,14 @@ class Service < ApplicationRecord
     %w(active)
   end
 
+  def to_service_hash
+    as_json(methods: :type, except: %w[id template instance project_id])
+  end
+
+  def to_data_fields_hash
+    data_fields.as_json(only: data_fields.class.column_names).except('id', 'service_id')
+  end
+
   def test_data(project, user)
     Gitlab::DataBuilder::Push.build_sample(project, user)
   end
@@ -335,17 +343,18 @@ class Service < ApplicationRecord
     services_names.map { |service_name| "#{service_name}_service".camelize }
   end
 
-  def self.build_from_template(project_id, template)
-    service = template.dup
+  def self.build_from_integration(project_id, integration)
+    service = integration.dup
 
-    if template.supports_data_fields?
-      data_fields = template.data_fields.dup
+    if integration.supports_data_fields?
+      data_fields = integration.data_fields.dup
       data_fields.service = service
     end
 
     service.template = false
+    service.instance = false
     service.project_id = project_id
-    service.active = false if service.active? && service.invalid?
+    service.active = false if service.invalid?
     service
   end
 

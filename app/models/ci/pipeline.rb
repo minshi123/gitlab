@@ -163,11 +163,11 @@ module Ci
       # Create a separate worker for each new operation
 
       before_transition [:created, :waiting_for_resource, :preparing, :pending] => :running do |pipeline|
-        pipeline.started_at = Time.now
+        pipeline.started_at = Time.current
       end
 
       before_transition any => [:success, :failed, :canceled] do |pipeline|
-        pipeline.finished_at = Time.now
+        pipeline.finished_at = Time.current
         pipeline.update_duration
       end
 
@@ -401,7 +401,7 @@ module Ci
         # The `Ci::Stage` contains all up-to date data
         # as atomic processing updates all data in-bulk
         stages
-      elsif Feature.enabled?(:ci_pipeline_persisted_stages, default_enabled: true) && complete?
+      elsif complete?
         # The `Ci::Stage` contains up-to date data only for `completed` pipelines
         # this is due to asynchronous processing of pipeline, and stages possibly
         # not updated inline with processing of pipeline

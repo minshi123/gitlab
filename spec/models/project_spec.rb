@@ -117,6 +117,7 @@ describe Project do
     it { is_expected.to have_many(:jira_imports) }
     it { is_expected.to have_many(:metrics_users_starred_dashboards).inverse_of(:project) }
     it { is_expected.to have_many(:repository_storage_moves) }
+    it { is_expected.to have_many(:reviews).inverse_of(:project) }
 
     it_behaves_like 'model with repository' do
       let_it_be(:container) { create(:project, :repository, path: 'somewhere') }
@@ -770,7 +771,7 @@ describe Project do
 
     describe 'last_activity_date' do
       it 'returns the creation date of the project\'s last event if present' do
-        new_event = create(:event, :closed, project: project, created_at: Time.now)
+        new_event = create(:event, :closed, project: project, created_at: Time.current)
 
         project.reload
         expect(project.last_activity_at.to_i).to eq(new_event.created_at.to_i)
@@ -2836,48 +2837,6 @@ describe Project do
     end
   end
 
-  describe '#change_repository_storage' do
-    let(:project) { create(:project, :repository) }
-    let(:read_only_project) { create(:project, :repository, repository_read_only: true) }
-
-    before do
-      stub_storage_settings('test_second_storage' => { 'path' => 'tmp/tests/extra_storage' })
-    end
-
-    it 'schedules the transfer of the repository to the new storage and locks the project' do
-      expect(ProjectUpdateRepositoryStorageWorker).to receive(:perform_async).with(project.id, 'test_second_storage', anything)
-
-      project.change_repository_storage('test_second_storage')
-      project.save!
-
-      expect(project).to be_repository_read_only
-      expect(project.repository_storage_moves.last).to have_attributes(
-        source_storage_name: "default",
-        destination_storage_name: "test_second_storage"
-      )
-    end
-
-    it "doesn't schedule the transfer if the repository is already read-only" do
-      expect(ProjectUpdateRepositoryStorageWorker).not_to receive(:perform_async)
-
-      read_only_project.change_repository_storage('test_second_storage')
-      read_only_project.save!
-    end
-
-    it "doesn't lock or schedule the transfer if the storage hasn't changed" do
-      expect(ProjectUpdateRepositoryStorageWorker).not_to receive(:perform_async)
-
-      project.change_repository_storage(project.repository_storage)
-      project.save!
-
-      expect(project).not_to be_repository_read_only
-    end
-
-    it 'throws an error if an invalid repository storage is provided' do
-      expect { project.change_repository_storage('unknown') }.to raise_error(ArgumentError)
-    end
-  end
-
   describe '#pushes_since_gc' do
     let(:project) { create(:project) }
 
@@ -3620,7 +3579,7 @@ describe Project do
       expect(project).not_to receive(:visibility_level_allowed_as_fork).and_call_original
       expect(project).not_to receive(:visibility_level_allowed_by_group).and_call_original
 
-      project.update(updated_at: Time.now)
+      project.update(updated_at: Time.current)
     end
   end
 
@@ -5241,12 +5200,10 @@ describe Project do
     end
   end
 
-  describe "#find_or_initialize_services" do
-    subject { build(:project) }
-
+  describe '#find_or_initialize_services' do
     it 'returns only enabled services' do
-      allow(Service).to receive(:available_services_names).and_return(%w(prometheus pushover))
-      allow(subject).to receive(:disabled_services).and_return(%w(prometheus))
+      allow(Service).to receive(:available_services_names).and_return(%w[prometheus pushover])
+      allow(subject).to receive(:disabled_services).and_return(%w[prometheus])
 
       services = subject.find_or_initialize_services
 
@@ -5255,11 +5212,9 @@ describe Project do
     end
   end
 
-  describe "#find_or_initialize_service" do
-    subject { build(:project) }
-
+  describe '#find_or_initialize_service' do
     it 'avoids N+1 database queries' do
-      allow(Service).to receive(:available_services_names).and_return(%w(prometheus pushover))
+      allow(Service).to receive(:available_services_names).and_return(%w[prometheus pushover])
 
       control_count = ActiveRecord::QueryRecorder.new { subject.find_or_initialize_service('prometheus') }.count
 
@@ -5268,10 +5223,50 @@ describe Project do
       expect { subject.find_or_initialize_service('prometheus') }.not_to exceed_query_limit(control_count)
     end
 
-    it 'returns nil if service is disabled' do
-      allow(subject).to receive(:disabled_services).and_return(%w(prometheus))
+    it 'returns nil if integration is disabled' do
+      allow(subject).to receive(:disabled_services).and_return(%w[prometheus])
 
       expect(subject.find_or_initialize_service('prometheus')).to be_nil
+    end
+
+    context 'with an existing integration' do
+      subject { create(:project) }
+
+      before do
+        create(:prometheus_service, project: subject, api_url: 'https://prometheus.project.com/')
+      end
+
+      it 'retrieves the integration' do
+        expect(subject.find_or_initialize_service('prometheus').api_url).to eq('https://prometheus.project.com/')
+      end
+    end
+
+    context 'with an instance-level and template integrations' do
+      before do
+        create(:prometheus_service, :instance, api_url: 'https://prometheus.instance.com/')
+        create(:prometheus_service, :template, api_url: 'https://prometheus.template.com/')
+      end
+
+      it 'builds the service from the instance if exists' do
+        expect(subject.find_or_initialize_service('prometheus').api_url).to eq('https://prometheus.instance.com/')
+      end
+    end
+
+    context 'with an instance-level and template integrations' do
+      before do
+        create(:prometheus_service, :template, api_url: 'https://prometheus.template.com/')
+      end
+
+      it 'builds the service from the template if instance does not exists' do
+        expect(subject.find_or_initialize_service('prometheus').api_url).to eq('https://prometheus.template.com/')
+      end
+    end
+
+    context 'without an exisiting integration, nor instance-level or template' do
+      it 'builds the service if instance or template does not exists' do
+        expect(subject.find_or_initialize_service('prometheus')).to be_a(PrometheusService)
+        expect(subject.find_or_initialize_service('prometheus').api_url).to be_nil
+      end
     end
   end
 
@@ -6017,34 +6012,20 @@ describe Project do
     end
 
     shared_examples 'jira configuration base checks' do
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(jira_issue_import: false)
-        end
-
-        it_behaves_like 'raise Jira import error', 'Jira import feature is disabled.'
+      context 'when Jira service was not setup' do
+        it_behaves_like 'raise Jira import error', 'Jira integration not configured.'
       end
 
-      context 'when feature flag is enabled' do
-        before do
-          stub_feature_flags(jira_issue_import: true)
-        end
+      context 'when Jira service exists' do
+        let!(:jira_service) { create(:jira_service, project: project, active: true) }
 
-        context 'when Jira service was not setup' do
-          it_behaves_like 'raise Jira import error', 'Jira integration not configured.'
-        end
-
-        context 'when Jira service exists' do
-          let!(:jira_service) { create(:jira_service, project: project, active: true) }
-
-          context 'when Jira connection is not valid' do
-            before do
-              WebMock.stub_request(:get, 'https://jira.example.com/rest/api/2/serverInfo')
-                .to_raise(JIRA::HTTPError.new(double(message: 'Some failure.')))
-            end
-
-            it_behaves_like 'raise Jira import error', 'Unable to connect to the Jira instance. Please check your Jira integration configuration.'
+        context 'when Jira connection is not valid' do
+          before do
+            WebMock.stub_request(:get, 'https://jira.example.com/rest/api/2/serverInfo')
+              .to_raise(JIRA::HTTPError.new(double(message: 'Some failure.')))
           end
+
+          it_behaves_like 'raise Jira import error', 'Unable to connect to the Jira instance. Please check your Jira integration configuration.'
         end
       end
     end
@@ -6080,38 +6061,32 @@ describe Project do
         it_behaves_like 'jira configuration base checks'
       end
 
-      context 'when feature flag is enabled' do
+      context 'when user does not have permissions to run the import' do
         before do
-          stub_feature_flags(jira_issue_import: true)
+          create(:jira_service, project: project, active: true)
+
+          project.add_developer(user)
         end
 
-        context 'when user does not have permissions to run the import' do
-          before do
-            create(:jira_service, project: project, active: true)
+        it_behaves_like 'raise Jira import error', 'You do not have permissions to run the import.'
+      end
 
-            project.add_developer(user)
-          end
-
-          it_behaves_like 'raise Jira import error', 'You do not have permissions to run the import.'
+      context 'when user has permission to run import' do
+        before do
+          project.add_maintainer(user)
         end
 
-        context 'when user has permission to run import' do
-          before do
-            project.add_maintainer(user)
-          end
+        let!(:jira_service) { create(:jira_service, project: project, active: true) }
 
-          let!(:jira_service) { create(:jira_service, project: project, active: true) }
+        context 'when issues feature is disabled' do
+          let_it_be(:project, reload: true) { create(:project, :issues_disabled) }
 
-          context 'when issues feature is disabled' do
-            let_it_be(:project, reload: true) { create(:project, :issues_disabled) }
+          it_behaves_like 'raise Jira import error', 'Cannot import because issues are not available in this project.'
+        end
 
-            it_behaves_like 'raise Jira import error', 'Cannot import because issues are not available in this project.'
-          end
-
-          context 'when everything is ok' do
-            it 'does not return any error' do
-              expect { subject }.not_to raise_error
-            end
+        context 'when everything is ok' do
+          it 'does not return any error' do
+            expect { subject }.not_to raise_error
           end
         end
       end

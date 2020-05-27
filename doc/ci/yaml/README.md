@@ -93,8 +93,8 @@ The following table lists available parameters for jobs:
 | Keyword                                            | Description                                                                                                                                                                         |
 |:---------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [`script`](#script)                                | Shell script which is executed by Runner.                                                                                                                                           |
-| [`image`](#image)                                  | Use docker images. Also available: `image:name` and `image:entrypoint`.                                                                                                             |
-| [`services`](#services)                            | Use docker services images. Also available: `services:name`, `services:alias`, `services:entrypoint`, and `services:command`.                                                       |
+| [`image`](#image)                                  | Use Docker images. Also available: `image:name` and `image:entrypoint`.                                                                                                             |
+| [`services`](#services)                            | Use Docker services images. Also available: `services:name`, `services:alias`, `services:entrypoint`, and `services:command`.                                                       |
 | [`before_script`](#before_script-and-after_script) | Override a set of commands that are executed before job.                                                                                                                            |
 | [`after_script`](#before_script-and-after_script)  | Override a set of commands that are executed after job.                                                                                                                             |
 | [`stage`](#stage)                                  | Defines a job stage (default: `test`).                                                                                                                                              |
@@ -163,7 +163,7 @@ rspec 2.6:
 
 #### `inherit`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/207484) in GitLab 12.9.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/207484) in GitLab 12.9.
 
 You can disable inheritance of globally defined defaults
 and variables with the `inherit:` parameter.
@@ -279,7 +279,7 @@ There are also two edge cases worth mentioning:
 
 ### `workflow:rules`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/29654) in GitLab 12.5
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/29654) in GitLab 12.5
 
 The top-level `workflow:` key applies to the entirety of a pipeline, and will
 determine whether or not a pipeline is created. It currently accepts a single
@@ -310,7 +310,6 @@ include:
   - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
 ```
 
-The [`MergeRequest-Pipelines` include](https://gitlab.com/gitlab-org/gitlab/-/tree/master/lib/gitlab/ci/templates/Workflows/MergeRequest-Pipelines.gitlab-ci.yml) sets your pipelines to run for the default branch (usually `master`), tags, and
 The [`MergeRequest-Pipelines` template](https://gitlab.com/gitlab-org/gitlab/-/tree/master/lib/gitlab/ci/templates/Workflows/MergeRequest-Pipelines.gitlab-ci.yml)
 makes your pipelines run for the default branch (usually `master`), tags, and
 all types of merge request pipelines. Use this template if you use any of the
@@ -418,7 +417,7 @@ include: '.gitlab-ci-production.yml'
 
 #### `include:file`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/53903) in GitLab 11.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/53903) in GitLab 11.7.
 
 To include files from another private project under the same GitLab instance,
 use `include:file`. This file is referenced using full paths relative to the
@@ -468,7 +467,7 @@ or public project, or template, is allowed.
 
 #### `include:template`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/53445) in GitLab 11.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/53445) in GitLab 11.7.
 
 `include:template` can be used to include `.gitlab-ci.yml` templates that are
 [shipped with GitLab](https://gitlab.com/gitlab-org/gitlab/tree/master/lib/gitlab/ci/templates).
@@ -494,13 +493,13 @@ so it's possible to use project, remote or template includes.
 
 #### Nested includes
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/56836) in GitLab 11.9.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/56836) in GitLab 11.9.
 
 Nested includes allow you to compose a set of includes.
 
 A total of 100 includes is allowed, but duplicate includes are considered a configuration error.
 
-Since [GitLab 12.4](https://gitlab.com/gitlab-org/gitlab/issues/28212), the time limit
+Since [GitLab 12.4](https://gitlab.com/gitlab-org/gitlab/-/issues/28212), the time limit
 for resolving all files is 30 seconds.
 
 #### Additional `includes` examples
@@ -522,13 +521,13 @@ For:
 
 #### `image:name`
 
-An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
 For more information, see [Available settings for `image`](../docker/using_docker_images.md#available-settings-for-image).
 
 #### `image:entrypoint`
 
-An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
 For more information, see [Available settings for `image`](../docker/using_docker_images.md#available-settings-for-image).
 
@@ -544,25 +543,25 @@ For:
 
 ##### `services:name`
 
-An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
 For more information, see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
 
 ##### `services:alias`
 
-An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
 For more information, see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
 
 ##### `services:entrypoint`
 
-An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
 For more information, see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
 
 ##### `services:command`
 
-An [extended docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
 
 For more information, see [Available settings for `services`](../docker/using_docker_images.md#available-settings-for-services).
 
@@ -628,7 +627,7 @@ Scripts specified in `after_script` are executed in a new shell, separate from a
   - Changes outside of the working tree (depending on the Runner executor), like
     software installed by a `before_script` or `script` script.
 - Have a separate timeout, which is hard coded to 5 minutes. See
-  [related issue](https://gitlab.com/gitlab-org/gitlab-runner/issues/2716) for details.
+  [related issue](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2716) for details.
 - Don't affect the job's exit code. If the `script` section succeeds and the
   `after_script` times out or fails, the job will exit with code `0` (`Job Succeeded`).
 
@@ -701,7 +700,7 @@ Jobs will run on your own Runners in parallel only if:
 
 #### `.pre` and `.post`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/31441) in GitLab 12.4.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/31441) in GitLab 12.4.
 
 The following stages are available to every pipeline:
 
@@ -1032,7 +1031,7 @@ checks. After the 10000th check, rules with patterned globs will always match.
 
 #### `rules:allow_failure`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/30235) in GitLab 12.8.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/30235) in GitLab 12.8.
 
 You can use [`allow_failure: true`](#allow_failure) within `rules:` to allow a job to fail, or a manual job to
 wait for action, without stopping the pipeline itself. All jobs using `rules:` default to `allow_failure: false`
@@ -1402,7 +1401,7 @@ Learn more about [variables expressions](../variables/README.md#environment-vari
 
 #### `only:changes`/`except:changes`
 
-> `changes` policy [introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/19232) in GitLab 11.4.
+> `changes` policy [introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/19232) in GitLab 11.4.
 
 Using the `changes` keyword with `only` or `except` makes it possible to define if
 a job should be created based on files modified by a Git push event.
@@ -1548,9 +1547,9 @@ runs.
 
 ### `needs`
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/47063) in GitLab 12.2.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/47063) in GitLab 12.2.
 > - In GitLab 12.3, maximum number of jobs in `needs` array raised from five to 50.
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/30631) in GitLab 12.8, `needs: []` lets jobs start immediately.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/30631) in GitLab 12.8, `needs: []` lets jobs start immediately.
 
 The `needs:` keyword enables executing jobs out-of-order, allowing you to implement
 a [directed acyclic graph](../directed_acyclic_graph/index.md) in your `.gitlab-ci.yml`.
@@ -1620,7 +1619,7 @@ This example creates four paths of execution:
   the current job will depend on all parallel jobs created.
 - `needs:` is similar to `dependencies:` in that it needs to use jobs from prior stages,
   meaning it's impossible to create circular dependencies. Depending on jobs in the
-  current stage is not possible either, but support [is planned](https://gitlab.com/gitlab-org/gitlab/issues/30632).
+  current stage is not possible either, but support [is planned](https://gitlab.com/gitlab-org/gitlab/-/issues/30632).
 - Related to the above, stages must be explicitly defined for all jobs
   that have the keyword `needs:` or are referred to by one.
 
@@ -1643,7 +1642,7 @@ Feature::enable(:ci_dag_limit_needs)
 
 #### Artifact downloads with `needs`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/14311) in GitLab v12.6.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/14311) in GitLab v12.6.
 
 When using `needs`, artifact downloads are controlled with `artifacts: true` or `artifacts: false`.
 The `dependencies` keyword should not be used with `needs`, as this is deprecated since GitLab 12.6.
@@ -1686,7 +1685,7 @@ rspec:
 
 #### Cross project artifact downloads with `needs` **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/14311) in GitLab v12.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/14311) in GitLab v12.7.
 
 `needs` can be used to download artifacts from up to five jobs in pipelines on
 [other refs in the same project](#artifact-downloads-between-pipelines-in-the-same-project),
@@ -2144,7 +2143,7 @@ The `stop_review_app` job is **required** to have the following keywords defined
 
 #### `environment:auto_stop_in`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/20956) in GitLab 12.8.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/20956) in GitLab 12.8.
 
 The `auto_stop_in` keyword is for specifying life period of the environment,
 that when expired, GitLab automatically stops them.
@@ -2167,7 +2166,7 @@ For more information, see
 
 #### `environment:kubernetes`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/27630) in GitLab 12.6.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/27630) in GitLab 12.6.
 
 The `kubernetes` block is used to configure deployments to a
 [Kubernetes cluster](../../user/project/clusters/index.md) that is associated with your project.
@@ -2195,7 +2194,7 @@ NOTE: **Note:**
 Kubernetes configuration is not supported for Kubernetes clusters
 that are [managed by GitLab](../../user/project/clusters/index.md#gitlab-managed-clusters).
 To follow progress on support for GitLab-managed clusters, see the
-[relevant issue](https://gitlab.com/gitlab-org/gitlab/issues/38054).
+[relevant issue](https://gitlab.com/gitlab-org/gitlab/-/issues/38054).
 
 #### Dynamic environments
 
@@ -2336,7 +2335,7 @@ cache:
 
 ##### `cache:key:files`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/18986) in GitLab v12.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/18986) in GitLab v12.5.
 
 The `cache:key:files` keyword extends the `cache:key` functionality by making it easier
 to reuse some caches, and rebuild them less often, which will speed up subsequent pipeline
@@ -2366,7 +2365,7 @@ use the new cache, instead of rebuilding the dependencies.
 
 ##### `cache:key:prefix`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/18986) in GitLab v12.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/18986) in GitLab v12.5.
 
 The `prefix` parameter adds extra functionality to `key:files` by allowing the key to
 be composed of the given `prefix` combined with the SHA computed for `cache:key:files`.
@@ -2547,7 +2546,7 @@ job:
 
 #### `artifacts:expose_as`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/15018) in GitLab 12.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/15018) in GitLab 12.5.
 
 The `expose_as` keyword can be used to expose [job artifacts](../pipelines/job_artifacts.md)
 in the [merge request](../../user/project/merge_requests/index.md) UI.
@@ -2948,7 +2947,7 @@ You can specify the number of [retry attempts for certain stages of job executio
 
 ### `timeout`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/14887) in GitLab 12.3.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/14887) in GitLab 12.3.
 
 `timeout` allows you to configure a timeout for a specific job. For example:
 
@@ -3017,8 +3016,8 @@ job split into three separate jobs.
 
 ### `trigger`
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/8997) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.8.
-> - [Moved](https://gitlab.com/gitlab-org/gitlab/issues/199224) to GitLab Core in 12.8.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/8997) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.8.
+> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/199224) to GitLab Core in 12.8.
 
 `trigger` allows you to define downstream pipeline trigger. When a job created
 from `trigger` definition is started by GitLab, a downstream pipeline gets
@@ -3086,7 +3085,7 @@ upstream_bridge:
 
 #### `trigger` syntax for child pipeline
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/16094) in GitLab 12.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/16094) in GitLab 12.7.
 
 To create a [child pipeline](../parent_child_pipelines.md), specify the path to the
 YAML file containing the CI config of the child pipeline:
@@ -3110,7 +3109,7 @@ trigger_job:
 
 ##### Trigger child pipeline with generated configuration file
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/35632) in GitLab 12.9.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/35632) in GitLab 12.9.
 
 You can also trigger a child pipeline from a [dynamically generated configuration file](../parent_child_pipelines.md#dynamic-child-pipelines):
 
@@ -3217,7 +3216,7 @@ Once an uninterruptible job is running, the pipeline will never be canceled, reg
 
 ### `resource_group`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/15536) in GitLab 12.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/15536) in GitLab 12.7.
 
 Sometimes running multiples jobs or pipelines at the same time in an environment
 can lead to errors during the deployment.
@@ -3362,7 +3361,7 @@ variables:
 
 NOTE: **Note:** `GIT_STRATEGY` is not supported for
 [Kubernetes executor](https://docs.gitlab.com/runner/executors/kubernetes.html),
-but may be in the future. See the [support Git strategy with Kubernetes executor feature proposal](https://gitlab.com/gitlab-org/gitlab-runner/issues/3847)
+but may be in the future. See the [support Git strategy with Kubernetes executor feature proposal](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/3847)
 for updates.
 
 ### Git submodule strategy
@@ -3459,6 +3458,43 @@ script:
   - ls -al cache/
 ```
 
+### Git fetch extra flags
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4142) in GitLab Runner 13.1.
+
+The `GIT_FETCH_EXTRA_FLAGS` variable is used to control the behavior of
+`git fetch`. You can set it globally or per-job in the [`variables`](#variables) section.
+
+`GIT_FETCH_EXTRA_FLAGS` accepts all possible options of the [`git fetch`](https://git-scm.com/docs/git-fetch) command, but please note that `GIT_FETCH_EXTRA_FLAGS` flags will be appended after the default flags that can't be modified.
+
+The default flags are:
+
+- [GIT_DEPTH](#shallow-cloning).
+- The list of [refspecs](https://git-scm.com/book/en/v2/Git-Internals-The-Refspec).
+- A remote called `origin`.
+
+If `GIT_FETCH_EXTRA_FLAGS` is:
+
+- Not specified, `git fetch` flags default to `--prune --quiet` along with the default flags.
+- Given the value `none`, `git fetch` is executed only with the default flags.
+
+For example, the default flags are `--prune --quiet`, so you can make `git fetch` more verbose by overriding this with just `--prune`:
+
+```yaml
+variables:
+  GIT_FETCH_EXTRA_FLAGS: --prune
+script:
+  - ls -al cache/
+```
+
+The configurtion above will result in `git fetch` being called this way:
+
+```shell
+git fetch origin $REFSPECS --depth 50  --prune
+```
+
+Where `$REFSPECS` is a value provided to the Runner internally by GitLab.
+
 ### Job stages attempts
 
 > Introduced in GitLab, it requires GitLab Runner v1.9+.
@@ -3488,8 +3524,8 @@ You can set them globally or per-job in the [`variables`](#variables) section.
 
 > Introduced in GitLab 8.9 as an experimental feature.
 
-CAUTION: **Caution:**
-May change in future releases or be removed completely.
+NOTE: **Note**:
+As of GitLab 12.0, newly created projects will automatically have a [default `git depth` value of `50`](../pipelines/settings.md#git-shallow-clone).
 
 You can specify the depth of fetching and cloning using `GIT_DEPTH`. This allows
 shallow cloning of the repository which can significantly speed up cloning for
@@ -3739,7 +3775,7 @@ feature. Anchors are only valid within the file they were defined in.
 
 #### YAML anchors for `before_script` and `after_script`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/23005) in GitLab 12.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23005) in GitLab 12.5.
 
 You can use [YAML anchors](#anchors) with `before_script` and `after_script`,
 which makes it possible to include a predefined list of commands in multiple
@@ -3753,7 +3789,7 @@ Example:
 
 .something_after: &something_after
 - echo 'something after'
-
+- echo 'another thing after'
 
 job_name:
   before_script:
@@ -3766,7 +3802,7 @@ job_name:
 
 #### YAML anchors for `script`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/23005) in GitLab 12.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23005) in GitLab 12.5.
 
 You can use [YAML anchors](#anchors) with scripts, which makes it possible to
 include a predefined list of commands in multiple jobs.
@@ -3796,6 +3832,7 @@ the use of the `SAMPLE_VARIABLE` variable:
 # global variables
 variables: &global-variables
   SAMPLE_VARIABLE: sample_variable_value
+  ANOTHER_SAMPLE_VARIABLE: another_sample_variable_value
 
 # a job that needs to set the GIT_STRATEGY variable, yet depend on global variables
 job_no_git_strategy:
@@ -3819,7 +3856,7 @@ lines where the job is defined:
 #    - run test
 ```
 
-you can instead start its name with a dot (`.`) and it won't be processed by
+You can instead start its name with a dot (`.`) and it won't be processed by
 GitLab CI/CD. In the following example, `.hidden_job` will be ignored:
 
 ```yaml
@@ -3842,11 +3879,11 @@ if using Git 2.10 or newer.
 
 ## Processing Git pushes
 
-GitLab will create at most 4 branch and tags pipelines when
-doing pushing multiple changes in single `git push` invocation.
+GitLab will create at most 4 branch and tag pipelines when
+pushing multiple changes in single `git push` invocation.
 
-This limitation does not affect any of the updated Merge Request pipelines,
-all updated Merge Requests will have a pipeline created when using
+This limitation does not affect any of the updated Merge Request pipelines.
+All updated Merge Requests will have a pipeline created when using
 [pipelines for merge requests](../merge_request_pipelines/index.md).
 
 ## Deprecated parameters
