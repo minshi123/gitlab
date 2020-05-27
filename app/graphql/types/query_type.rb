@@ -47,6 +47,10 @@ module Types
           null: false,
           description: 'Fields related to design management'
 
+    field :users, Types::UserType.connection_type, null: false,
+          description: 'Find Users',
+          resolver: Resolvers::UsersResolver
+
     field :echo, GraphQL::STRING_TYPE, null: false,
           description: 'Text to echo back',
           resolver: Resolvers::EchoResolver
