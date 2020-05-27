@@ -2,9 +2,11 @@
 import SidebarHeader from './sidebar/sidebar_header.vue';
 import SidebarTodo from './sidebar/sidebar_todo.vue';
 import SidebarStatus from './sidebar/sidebar_status.vue';
+import SidebarAssignees from './sidebar/sidebar_assignees.vue';
 
 export default {
   components: {
+    SidebarAssignees,
     SidebarHeader,
     SidebarTodo,
     SidebarStatus,
@@ -28,11 +30,6 @@ export default {
       return this.sidebarCollapsed ? 'right-sidebar-collapsed' : 'right-sidebar-expanded';
     },
   },
-  methods: {
-    handleAlertSidebarError(errorMessage) {
-      this.$emit('alert-sidebar-error', errorMessage);
-    },
-  },
 };
 </script>
 
@@ -48,7 +45,13 @@ export default {
         :project-path="projectPath"
         :alert="alert"
         @toggle-sidebar="$emit('toggle-sidebar')"
-        @alert-sidebar-error="handleAlertSidebarError"
+        @alert-sidebar-error="$emit('alert-sidebar-error', $event)"
+      />
+      <sidebar-assignees
+        :project-path="projectPath"
+        :alert="alert"
+        @toggle-sidebar="$emit('toggle-sidebar')"
+        @alert-sidebar-error="$emit('alert-sidebar-error', $event)"
       />
       <!-- TODO: Remove after adding extra attribute blocks to sidebar -->
       <div class="block"></div>

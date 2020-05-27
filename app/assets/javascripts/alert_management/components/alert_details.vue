@@ -195,12 +195,14 @@ export default {
             <strong>{{ $options.severityLabels[alert.severity] }}</strong>
           </div>
           <span class="mx-2">&bull;</span>
-          <gl-sprintf :message="reportedAtMessage">
-            <template #when>
-              <time-ago-tooltip :time="alert.createdAt" class="gl-ml-3" />
-            </template>
-            <template #tool>{{ alert.monitoringTool }}</template>
-          </gl-sprintf>
+          <span>
+            <gl-sprintf :message="reportedAtMessage">
+              <template #when>
+                <time-ago-tooltip :time="alert.createdAt" />
+              </template>
+              <template #tool>{{ alert.monitoringTool }}</template>
+            </gl-sprintf>
+          </span>
         </div>
         <gl-button
           v-if="alert.issueIid"
@@ -227,7 +229,7 @@ export default {
           :aria-label="__('Toggle sidebar')"
           category="primary"
           variant="default"
-          class="d-sm-none position-absolute toggle-sidebar-mobile-button"
+          class="d-sm-none gl-absolute toggle-sidebar-mobile-button"
           type="button"
           @click="toggleSidebar"
         >
