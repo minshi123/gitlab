@@ -1,9 +1,9 @@
 <script>
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLink } from '@gitlab/ui';
 
 export default {
   components: {
-    GlLoadingIcon,
+    GlLink,
   },
   props: {
     iterations: {
@@ -11,24 +11,16 @@ export default {
       required: false,
       default: () => [],
     },
-    loading: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
   },
 };
 </script>
 
 <template>
   <div class="milestones">
-    <div v-if="loading" class="gl-my-5">
-      <gl-loading-icon size="lg" />
-    </div>
-    <ul v-else-if="iterations.length > 0" class="content-list">
-      <li v-for="iteration in iterations" :key="iteration.id" class="milestone milestone-open">
-        <a :href="iteration.webPath"
-          ><strong>{{ iteration.title }}</strong></a
+    <ul v-if="iterations.length > 0" class="content-list">
+      <li v-for="iteration in iterations" :key="iteration.id" class="milestone">
+        <gl-link :href="iteration.webPath"
+          ><strong>{{ iteration.title }}</strong></gl-link
         >
         <p class="text-secondary">{{ iteration.startDate }} - {{ iteration.dueDate }}</p>
       </li>

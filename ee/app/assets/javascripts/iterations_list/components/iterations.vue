@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlTab, GlTabs } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon, GlTab, GlTabs } from '@gitlab/ui';
 import IterationsList from './iterations_list.vue';
 import GroupIterationQuery from '../queries/group_iteration.query.graphql';
 
@@ -7,6 +7,7 @@ export default {
   components: {
     IterationsList,
     GlButton,
+    GlLoadingIcon,
     GlTab,
     GlTabs,
   },
@@ -65,23 +66,14 @@ export default {
 
 <template>
   <gl-tabs v-model="tabIndex">
-    <gl-tab>
+    <gl-tab v-for="tab in [__('Open'), __('Closed'), __('All')]" :key="tab">
       <template #title>
-        {{ s__('Open') }}
+        {{ tab }}
       </template>
-      <iterations-list :iterations="iterations" :loading="loading" />
-    </gl-tab>
-    <gl-tab>
-      <template #title>
-        {{ s__('Closed') }}
-      </template>
-      <iterations-list :iterations="iterations" :loading="loading" />
-    </gl-tab>
-    <gl-tab>
-      <template #title>
-        {{ s__('All') }}
-      </template>
-      <iterations-list :iterations="iterations" :loading="loading" />
+      <div v-if="loading" class="gl-my-5">
+        <gl-loading-icon size="lg" />
+      </div>
+      <iterations-list v-else :iterations="iterations" />
     </gl-tab>
     <template v-if="canAdmin" #tabs-end>
       <li class="gl-ml-auto gl-display-flex gl-align-items-center">
