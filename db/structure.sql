@@ -9099,9 +9099,7 @@ CREATE INDEX index_abuse_reports_on_user_id ON public.abuse_reports USING btree 
 
 CREATE INDEX index_alert_assignees_on_alert_id ON public.alert_management_alert_assignees USING btree (alert_id);
 
-CREATE UNIQUE INDEX index_alert_assignees_on_alert_id_and_user_id ON public.alert_management_alert_assignees USING btree (user_id, alert_id);
-
-CREATE INDEX index_alert_assignees_on_user_id ON public.alert_management_alert_assignees USING btree (user_id);
+CREATE UNIQUE INDEX index_alert_assignees_on_user_id_and_alert_id ON public.alert_management_alert_assignees USING btree (user_id, alert_id);
 
 CREATE INDEX index_alert_management_alerts_on_issue_id ON public.alert_management_alerts USING btree (issue_id);
 
