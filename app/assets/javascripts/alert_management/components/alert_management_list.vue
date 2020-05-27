@@ -239,8 +239,8 @@ export default {
       Tracking.event(category, action);
     },
     trackStatusUpdate(status) {
-      const {category, action, label} = trackAlertStatusUpdateOptions;
-      Tracking.event(category, action, {label, property: status});
+      const { category, action, label } = trackAlertStatusUpdateOptions;
+      Tracking.event(category, action, { label, property: status });
     },
     getAssignees(assignees) {
       // TODO: Update to show list of assignee(s) after https://gitlab.com/gitlab-org/gitlab/-/issues/218405
