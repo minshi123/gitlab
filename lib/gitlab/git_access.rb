@@ -73,6 +73,7 @@ module Gitlab
       return custom_action if custom_action
 
       check_db_accessibility!(cmd)
+      check_namespace!
       check_project!(changes, cmd)
       check_repository_existence!
 
@@ -111,7 +112,6 @@ module Gitlab
     private
 
     def check_project!(changes, cmd)
-      check_namespace!
       ensure_project_on_push!(cmd, changes)
       check_project_accessibility!
       add_project_moved_message!
