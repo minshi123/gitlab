@@ -2379,7 +2379,7 @@ msgstr ""
 msgid "An unexpected error occurred while stopping the Web Terminal."
 msgstr ""
 
-msgid "An unknown error loading this graph ocurred."
+msgid "An unknown error occurred while loading this graph."
 msgstr ""
 
 msgid "Analytics"
