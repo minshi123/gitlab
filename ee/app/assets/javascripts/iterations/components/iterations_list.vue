@@ -16,7 +16,7 @@ export default {
 </script>
 
 <template>
-  <div class="milestones">
+  <div class="milestones mt-0">
     <ul v-if="iterations.length > 0" class="content-list">
       <li v-for="iteration in iterations" :key="iteration.id" class="milestone">
         <gl-link :href="iteration.webPath"
