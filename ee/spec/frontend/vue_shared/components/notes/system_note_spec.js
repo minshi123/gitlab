@@ -108,7 +108,12 @@ describe('system note component', () => {
       })
       .then(() => waitForPromises())
       .then(() => {
-        expect(findDescriptionVersion().text()).toContain('Deleted');
+        expect(
+          wrapper
+            .find('.description-version button.delete-description-history svg.ic-remove')
+            .exists(),
+        ).toBe(false);
+        // expect(findDescriptionVersion().text()).toContain('Deleted');
         done();
       });
   });
