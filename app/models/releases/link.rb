@@ -13,6 +13,11 @@ module Releases
     validates :filepath, uniqueness: { scope: :release }, format: { with: FILEPATH_REGEX }, allow_blank: true, length: { maximum: 128 }
 
     scope :sorted, -> { order(created_at: :desc) }
+    
+    enum type: {
+      standard: 0,
+      runbook: 1
+    }
 
     def internal?
       url.start_with?(release.project.web_url)

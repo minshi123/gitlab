@@ -437,9 +437,9 @@ CREATE TABLE public.application_settings (
     namespace_storage_size_limit bigint DEFAULT 0 NOT NULL,
     seat_link_enabled boolean DEFAULT true NOT NULL,
     container_expiration_policies_enable_historic_entries boolean DEFAULT false NOT NULL,
-    issues_create_limit integer DEFAULT 300 NOT NULL,
     push_rule_id bigint,
-    group_owners_can_manage_default_branch_protection boolean DEFAULT true NOT NULL,
+    issues_create_limit integer DEFAULT 300 NOT NULL,
+    group_owners_can_manage_default_branch_protection boolean DEFAULT true,
     container_registry_vendor text DEFAULT ''::text NOT NULL,
     container_registry_version text DEFAULT ''::text NOT NULL,
     container_registry_features text[] DEFAULT '{}'::text[] NOT NULL,
@@ -447,6 +447,7 @@ CREATE TABLE public.application_settings (
     spam_check_endpoint_enabled boolean DEFAULT false NOT NULL,
     elasticsearch_pause_indexing boolean DEFAULT false NOT NULL,
     repository_storages_weighted jsonb DEFAULT '{}'::jsonb NOT NULL,
+    CONSTRAINT check_37196d7403 CHECK ((group_owners_can_manage_default_branch_protection IS NOT NULL)),
     CONSTRAINT check_d03919528d CHECK ((char_length(container_registry_vendor) <= 255)),
     CONSTRAINT check_d820146492 CHECK ((char_length(spam_check_endpoint_url) <= 255)),
     CONSTRAINT check_e5aba18f02 CHECK ((char_length(container_registry_version) <= 255))
@@ -1775,8 +1776,10 @@ CREATE TABLE public.clusters_applications_fluentd (
     version character varying(255) NOT NULL,
     host character varying(255) NOT NULL,
     status_reason text,
-    waf_log_enabled boolean DEFAULT true NOT NULL,
-    cilium_log_enabled boolean DEFAULT true NOT NULL
+    waf_log_enabled boolean DEFAULT true,
+    cilium_log_enabled boolean DEFAULT true,
+    CONSTRAINT check_9dfbb2c013 CHECK ((waf_log_enabled IS NOT NULL)),
+    CONSTRAINT check_bd071c4ebb CHECK ((cilium_log_enabled IS NOT NULL))
 );
 
 CREATE SEQUENCE public.clusters_applications_fluentd_id_seq
@@ -2117,8 +2120,10 @@ CREATE TABLE public.deploy_tokens (
     token_encrypted character varying(255),
     deploy_token_type smallint DEFAULT 2 NOT NULL,
     write_registry boolean DEFAULT false NOT NULL,
-    read_package_registry boolean DEFAULT false NOT NULL,
-    write_package_registry boolean DEFAULT false NOT NULL
+    read_package_registry boolean DEFAULT false,
+    write_package_registry boolean DEFAULT false,
+    CONSTRAINT check_6c61e9fe6a CHECK ((write_package_registry IS NOT NULL)),
+    CONSTRAINT check_dd63e830ce CHECK ((read_package_registry IS NOT NULL))
 );
 
 CREATE SEQUENCE public.deploy_tokens_id_seq
@@ -5285,8 +5290,7 @@ CREATE TABLE public.project_settings (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     push_rule_id bigint,
-    show_default_award_emojis boolean DEFAULT true,
-    CONSTRAINT check_bde223416c CHECK ((show_default_award_emojis IS NOT NULL))
+    show_default_award_emojis boolean DEFAULT true NOT NULL
 );
 
 CREATE TABLE public.project_statistics (
@@ -5700,7 +5704,8 @@ CREATE TABLE public.release_links (
     name character varying NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    filepath character varying(128)
+    filepath character varying(128),
+    type integer DEFAULT 0
 );
 
 CREATE SEQUENCE public.release_links_id_seq
@@ -9005,8 +9010,6 @@ CREATE INDEX commit_id_and_note_id_index ON public.commit_user_mentions USING bt
 CREATE UNIQUE INDEX design_management_designs_versions_uniqueness ON public.design_management_designs_versions USING btree (design_id, version_id);
 
 CREATE INDEX design_user_mentions_on_design_id_and_note_id_index ON public.design_user_mentions USING btree (design_id, note_id);
-
-CREATE INDEX dev_index_route_on_path_trigram ON public.routes USING gin (path public.gin_trgm_ops);
 
 CREATE UNIQUE INDEX epic_user_mentions_on_epic_id_and_note_id_index ON public.epic_user_mentions USING btree (epic_id, note_id);
 
@@ -13966,5 +13969,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200526120714
 20200526164946
 20200526164947
+20200527092027
 \.
 
