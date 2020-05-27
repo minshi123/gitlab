@@ -6,7 +6,7 @@ import Iterations from './components/iterations.vue';
 
 Vue.use(VueApollo);
 
-export default function initIterationsList() {
+export function initIterationsList() {
   const el = document.querySelector('.js-iterations-list');
 
   const apolloProvider = new VueApollo({
@@ -27,3 +27,5 @@ export default function initIterationsList() {
     },
   });
 }
+
+export default {};
