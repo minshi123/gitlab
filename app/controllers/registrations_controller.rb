@@ -8,12 +8,13 @@ class RegistrationsController < Devise::RegistrationsController
 
   layout :choose_layout
 
-  skip_before_action :required_signup_info, only: [:welcome, :update_registration]
+  skip_before_action :required_signup_info, :check_two_factor_requirement, only: [:welcome, :update_registration]
   prepend_before_action :check_captcha, only: :create
   before_action :whitelist_query_limiting, only: [:destroy]
   before_action :ensure_terms_accepted,
     if: -> { action_name == 'create' && Gitlab::CurrentSettings.current_application_settings.enforce_terms? }
   before_action :load_recaptcha, only: :new
+  before_action :authenticate_user!, only: :experience_level
 
   def new
     if experiment_enabled?(:signup_flow)
@@ -55,6 +56,10 @@ class RegistrationsController < Devise::RegistrationsController
   def welcome
     return redirect_to new_user_registration_path unless current_user
     return redirect_to path_for_signed_in_user(current_user) if current_user.role.present? && !current_user.setup_for_company.nil?
+  end
+
+  def experience_level
+    return access_denied! unless experiment_enabled?(:onboarding_issues)
   end
 
   def update_registration
@@ -137,7 +142,6 @@ class RegistrationsController < Devise::RegistrationsController
   def check_captcha
     ensure_correct_params!
 
-    return unless Feature.enabled?(:registrations_recaptcha, default_enabled: true) # reCAPTCHA on the UI will still display however
     return unless show_recaptcha_sign_up?
     return unless Gitlab::Recaptcha.load_configurations!
 

@@ -1,3 +1,9 @@
+---
+stage: Plan
+group: Project Management
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Project milestones API
 
 ## List project milestones
@@ -135,7 +141,7 @@ Parameters:
 
 ## Promote project milestone to a group milestone
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/53861) in GitLab 11.9
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/53861) in GitLab 11.9
 
 Only for users with Developer access to the group.
 
@@ -150,7 +156,7 @@ Parameters:
 
 ## Get all burndown chart events for a single milestone **(STARTER)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/issues/4737) in GitLab 12.1
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/4737) in GitLab 12.1
 
 Gets all burndown chart events for a single milestone.
 

@@ -40,20 +40,11 @@ describe Users::MigrateToGhostUserService do
     end
   end
 
-  context 'reviews' do
-    let!(:user)   { create(:user) }
-    let(:service) { described_class.new(user) }
-
-    include_examples "migrating a deleted user's associated records to the ghost user", Review, [:author] do
-      let(:created_record) { create(:review, author: user) }
-    end
-  end
-
   context 'requirements' do
     let!(:user)   { create(:user) }
     let(:service) { described_class.new(user) }
 
-    include_examples "migrating a deleted user's associated records to the ghost user", Requirement, [:author] do
+    include_examples "migrating a deleted user's associated records to the ghost user", RequirementsManagement::Requirement, [:author] do
       let(:created_record) { create(:requirement, author: user) }
     end
   end

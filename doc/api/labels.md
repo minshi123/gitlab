@@ -1,3 +1,9 @@
+---
+stage: Plan
+group: Project Management
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Labels API
 
 NOTE: **Note:**
@@ -6,6 +12,8 @@ The `description_html` - was added to response JSON in [GitLab 12.7](https://git
 ## List labels
 
 Get all labels for a given project.
+
+By default, this request returns 20 results at a time because the API results [are paginated](README.md#pagination).
 
 ```plaintext
 GET /projects/:id/labels
@@ -109,7 +117,7 @@ GET /projects/:id/labels/:label_id
 | Attribute     | Type           | Required | Description                                                                                                                                                                  |
 | ---------     | -------        | -------- | ---------------------                                                                                                                                                        |
 | `id`          | integer/string | yes      | The ID or [URL-encoded path of the project](README.md#namespaced-path-encoding) owned by the authenticated user                                                              |
-| `label_id` | integer or string | yes | The ID or title of a group's label. |
+| `label_id` | integer or string | yes | The ID or title of a project's label. |
 | `include_ancestor_groups` | boolean | no | Include ancestor groups. Defaults to `true`. |
 
 ```shell

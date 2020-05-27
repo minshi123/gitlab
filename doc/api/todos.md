@@ -1,3 +1,9 @@
+---
+stage: Plan
+group: Project Management
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Todos API
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/3188) in GitLab 8.10.
@@ -101,7 +107,8 @@ Example Response:
     "target_url": "https://gitlab.example.com/gitlab-org/gitlab-foss/-/merge_requests/7",
     "body": "Dolores in voluptatem tenetur praesentium omnis repellendus voluptatem quaerat.",
     "state": "pending",
-    "created_at": "2016-06-17T07:52:35.225Z"
+    "created_at": "2016-06-17T07:52:35.225Z",
+    "updated_at": "2016-06-17T07:52:35.225Z"
   },
   {
     "id": 98,
@@ -174,7 +181,8 @@ Example Response:
     "target_url": "https://gitlab.example.com/gitlab-org/gitlab-foss/-/merge_requests/7",
     "body": "Dolores in voluptatem tenetur praesentium omnis repellendus voluptatem quaerat.",
     "state": "pending",
-    "created_at": "2016-06-17T07:49:24.624Z"
+    "created_at": "2016-06-17T07:49:24.624Z",
+    "updated_at": "2016-06-17T07:49:24.624Z"
   }
 ]
 ```
@@ -272,7 +280,8 @@ Example Response:
     "target_url": "https://gitlab.example.com/gitlab-org/gitlab-foss/-/merge_requests/7",
     "body": "Dolores in voluptatem tenetur praesentium omnis repellendus voluptatem quaerat.",
     "state": "done",
-    "created_at": "2016-06-17T07:52:35.225Z"
+    "created_at": "2016-06-17T07:52:35.225Z",
+    "updated_at": "2016-06-17T07:52:35.225Z"
 }
 ```
 

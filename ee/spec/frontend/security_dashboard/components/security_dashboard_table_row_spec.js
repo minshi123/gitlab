@@ -54,7 +54,7 @@ describe('Security Dashboard Table Row', () => {
     });
 
     it('should not render action buttons', () => {
-      expect(wrapper.findAll('.action-buttons button').length).toBe(0);
+      expect(wrapper.findAll('.action-buttons button')).toHaveLength(0);
     });
   });
 
@@ -77,6 +77,14 @@ describe('Security Dashboard Table Row', () => {
       ).toContain(wrapper.props().vulnerability.severity);
     });
 
+    it('should render the scanner name', () => {
+      expect(
+        findContent(2)
+          .text()
+          .toLowerCase(),
+      ).toContain(wrapper.props().vulnerability.scanner.name.toLowerCase());
+    });
+
     describe('the project name', () => {
       it('should render the name', () => {
         expect(findContent(1).text()).toContain(wrapper.props().vulnerability.name);
@@ -89,7 +97,7 @@ describe('Security Dashboard Table Row', () => {
       it('should fire the openModal action when clicked', () => {
         jest.spyOn(store, 'dispatch').mockImplementation();
 
-        const el = wrapper.find('.vulnerability-title');
+        const el = wrapper.find({ ref: 'vulnerability-title' });
         el.trigger('click');
 
         expect(store.dispatch).toHaveBeenCalledWith('vulnerabilities/openModal', {

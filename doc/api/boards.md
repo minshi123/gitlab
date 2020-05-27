@@ -1,3 +1,9 @@
+---
+stage: Plan
+group: Project Management
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # Issue Boards API
 
 Every API call to boards must be authenticated.
@@ -229,7 +235,7 @@ Example response:
 
 ## Update a board **(STARTER)**
 
-> [Introduced][ee-5954] in [GitLab Starter](https://about.gitlab.com/pricing/) 11.1.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/5954) in [GitLab Starter](https://about.gitlab.com/pricing/) 11.1.
 
 Updates a board.
 
@@ -511,5 +517,3 @@ DELETE /projects/:id/boards/:board_id/lists/:list_id
 ```shell
 curl --request DELETE --header "PRIVATE-TOKEN: <your_access_token>" https://gitlab.example.com/api/v4/projects/5/boards/1/lists/1
 ```
-
-[ee-5954]: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/5954

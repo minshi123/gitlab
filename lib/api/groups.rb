@@ -23,13 +23,20 @@ module API
         optional :order_by, type: String, values: %w[name path id], default: 'name', desc: 'Order by name, path or id'
         optional :sort, type: String, values: %w[asc desc], default: 'asc', desc: 'Sort by asc (ascending) or desc (descending)'
         optional :min_access_level, type: Integer, values: Gitlab::Access.all_values, desc: 'Minimum access level of authenticated user'
+        optional :top_level_only, type: Boolean, desc: 'Only include top level groups'
         use :pagination
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
       def find_groups(params, parent_id = nil)
         find_params = params.slice(:all_available, :custom_attributes, :owned, :min_access_level)
-        find_params[:parent] = find_group!(parent_id) if parent_id
+
+        find_params[:parent] = if params[:top_level_only]
+                                 [nil]
+                               elsif parent_id
+                                 find_group!(parent_id)
+                               end
+
         find_params[:all_available] =
           find_params.fetch(:all_available, current_user&.can_read_all_resources?)
 
@@ -60,18 +67,14 @@ module API
           .execute
       end
 
-      def find_group_projects(params)
+      def find_group_projects(params, finder_options)
         group = find_group!(params[:id])
-        options = {
-          only_owned: !params[:with_shared],
-          include_subgroups: params[:include_subgroups]
-        }
 
         projects = GroupProjectsFinder.new(
           group: group,
           current_user: current_user,
           params: project_finder_params,
-          options: options
+          options: finder_options
         ).execute
         projects = projects.with_issues_available_for_user(current_user) if params[:with_issues_enabled]
         projects = projects.with_merge_requests_enabled if params[:with_merge_requests_enabled]
@@ -80,11 +83,22 @@ module API
         paginate(projects)
       end
 
+      def present_projects(params, projects)
+        options = {
+          with: params[:simple] ? Entities::BasicProjectDetails : Entities::Project,
+          current_user: current_user
+        }
+
+        projects, options = with_custom_attributes(projects, options)
+
+        present options[:with].prepare_relation(projects), options
+      end
+
       def present_groups(params, groups)
         options = {
           with: Entities::Group,
           current_user: current_user,
-          statistics: params[:statistics] && current_user.admin?
+          statistics: params[:statistics] && current_user&.admin?
         }
 
         groups = groups.with_statistics if options[:statistics]
@@ -226,16 +240,42 @@ module API
         use :optional_projects_params
       end
       get ":id/projects" do
-        projects = find_group_projects(params)
-
-        options = {
-          with: params[:simple] ? Entities::BasicProjectDetails : Entities::Project,
-          current_user: current_user
+        finder_options = {
+          only_owned: !params[:with_shared],
+          include_subgroups: params[:include_subgroups]
         }
 
-        projects, options = with_custom_attributes(projects, options)
+        projects = find_group_projects(params, finder_options)
 
-        present options[:with].prepare_relation(projects), options
+        present_projects(params, projects)
+      end
+
+      desc 'Get a list of shared projects in this group' do
+        success Entities::Project
+      end
+      params do
+        optional :archived, type: Boolean, default: false, desc: 'Limit by archived status'
+        optional :visibility, type: String, values: Gitlab::VisibilityLevel.string_values,
+                              desc: 'Limit by visibility'
+        optional :search, type: String, desc: 'Return list of authorized projects matching the search criteria'
+        optional :order_by, type: String, values: %w[id name path created_at updated_at last_activity_at],
+                            default: 'created_at', desc: 'Return projects ordered by field'
+        optional :sort, type: String, values: %w[asc desc], default: 'desc',
+                        desc: 'Return projects sorted in ascending and descending order'
+        optional :simple, type: Boolean, default: false,
+                          desc: 'Return only the ID, URL, name, and path of each project'
+        optional :starred, type: Boolean, default: false, desc: 'Limit by starred status'
+        optional :with_issues_enabled, type: Boolean, default: false, desc: 'Limit by enabled issues feature'
+        optional :with_merge_requests_enabled, type: Boolean, default: false, desc: 'Limit by enabled merge requests feature'
+        optional :min_access_level, type: Integer, values: Gitlab::Access.all_values, desc: 'Limit by minimum access level of authenticated user on projects'
+
+        use :pagination
+        use :with_custom_attributes
+      end
+      get ":id/projects/shared" do
+        projects = find_group_projects(params, { only_shared: true })
+
+        present_projects(params, projects)
       end
 
       desc 'Get a list of subgroups in this group.' do

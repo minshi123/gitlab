@@ -1,3 +1,9 @@
+---
+stage: Release
+group: Release Management
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+---
+
 # GitLab Pages administration for source installations
 
 >**Note:**
@@ -61,7 +67,7 @@ Before proceeding with the Pages configuration, make sure that:
 ### DNS configuration
 
 GitLab Pages expect to run on their own virtual host. In your DNS server/provider
-you need to add a [wildcard DNS A record][wiki-wildcard-dns] pointing to the
+you need to add a [wildcard DNS A record](https://en.wikipedia.org/wiki/Wildcard_DNS_record) pointing to the
 host that GitLab runs. For example, an entry would look like this:
 
 ```plaintext
@@ -74,8 +80,6 @@ and `192.0.2.1` is the IP address of your GitLab instance.
 > **Note:**
 You should not use the GitLab domain to serve user pages. For more information
 see the [security section](#security).
-
-[wiki-wildcard-dns]: https://en.wikipedia.org/wiki/Wildcard_DNS_record
 
 ## Configuration
 
@@ -372,7 +376,7 @@ server_name ~^.*\.pages\.example\.io$;
 
 ## Access control
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/issues/33422) in GitLab 11.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/33422) in GitLab 11.5.
 
 GitLab Pages access control can be configured per-project, and allows access to a Pages
 site to be controlled based on a user's membership to that project.

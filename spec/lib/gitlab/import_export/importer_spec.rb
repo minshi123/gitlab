@@ -18,6 +18,7 @@ describe Gitlab::ImportExport::Importer do
 
     FileUtils.mkdir_p(shared.export_path)
     ImportExportUpload.create(project: project, import_file: import_file)
+    allow(FileUtils).to receive(:rm_rf).and_call_original
   end
 
   after do
@@ -51,7 +52,8 @@ describe Gitlab::ImportExport::Importer do
         Gitlab::ImportExport::UploadsRestorer,
         Gitlab::ImportExport::LfsRestorer,
         Gitlab::ImportExport::StatisticsRestorer,
-        Gitlab::ImportExport::SnippetsRepoRestorer
+        Gitlab::ImportExport::SnippetsRepoRestorer,
+        Gitlab::ImportExport::DesignRepoRestorer
       ].each do |restorer|
         it "calls the #{restorer}" do
           fake_restorer = double(restorer.to_s)
@@ -77,6 +79,13 @@ describe Gitlab::ImportExport::Importer do
         expect(project.import_export_upload.import_file&.file).to be_nil
       end
 
+      it 'removes tmp files' do
+        importer.execute
+
+        expect(FileUtils).to have_received(:rm_rf).with(shared.base_path)
+        expect(Dir.exist?(shared.base_path)).to eq(false)
+      end
+
       it 'sets the correct visibility_level when visibility level is a string' do
         project.create_or_update_import_data(
           data: { override_params: { visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s } }
@@ -89,36 +98,74 @@ describe Gitlab::ImportExport::Importer do
     end
 
     context 'when project successfully restored' do
-      let!(:existing_project) { create(:project, namespace: user.namespace) }
-      let(:project) { create(:project, namespace: user.namespace, name: 'whatever', path: 'whatever') }
+      context "with a project in a user's namespace" do
+        let!(:existing_project) { create(:project, namespace: user.namespace) }
+        let(:project) { create(:project, namespace: user.namespace, name: 'whatever', path: 'whatever') }
 
-      before do
-        restorers = double(:restorers, all?: true)
+        before do
+          restorers = double(:restorers, all?: true)
 
-        allow(subject).to receive(:import_file).and_return(true)
-        allow(subject).to receive(:check_version!).and_return(true)
-        allow(subject).to receive(:restorers).and_return(restorers)
-        allow(project).to receive(:import_data).and_return(double(data: { 'original_path' => existing_project.path }))
-      end
-
-      context 'when import_data' do
-        context 'has original_path' do
-          it 'overwrites existing project' do
-            expect_any_instance_of(::Projects::OverwriteProjectService).to receive(:execute).with(existing_project)
-
-            subject.execute
-          end
+          allow(subject).to receive(:import_file).and_return(true)
+          allow(subject).to receive(:check_version!).and_return(true)
+          allow(subject).to receive(:restorers).and_return(restorers)
+          allow(project).to receive(:import_data).and_return(double(data: { 'original_path' => existing_project.path }))
         end
 
-        context 'has not original_path' do
-          before do
-            allow(project).to receive(:import_data).and_return(double(data: {}))
+        context 'when import_data' do
+          context 'has original_path' do
+            it 'overwrites existing project' do
+              expect_next_instance_of(::Projects::OverwriteProjectService) do |service|
+                expect(service).to receive(:execute).with(existing_project)
+              end
+
+              subject.execute
+            end
           end
 
-          it 'does not call the overwrite service' do
-            expect_any_instance_of(::Projects::OverwriteProjectService).not_to receive(:execute).with(existing_project)
+          context 'has not original_path' do
+            before do
+              allow(project).to receive(:import_data).and_return(double(data: {}))
+            end
+
+            it 'does not call the overwrite service' do
+              expect(::Projects::OverwriteProjectService).not_to receive(:new)
+
+              subject.execute
+            end
+          end
+        end
+      end
+
+      context "with a project in a group namespace" do
+        let(:group) { create(:group) }
+        let!(:existing_project) { create(:project, group: group) }
+        let(:project) { create(:project, creator: user, group: group, name: 'whatever', path: 'whatever') }
+
+        before do
+          restorers = double(:restorers, all?: true)
+
+          allow(subject).to receive(:import_file).and_return(true)
+          allow(subject).to receive(:check_version!).and_return(true)
+          allow(subject).to receive(:restorers).and_return(restorers)
+          allow(project).to receive(:import_data).and_return(double(data: { 'original_path' => existing_project.path }))
+        end
+
+        context 'has original_path' do
+          it 'overwrites existing project' do
+            group.add_owner(user)
+
+            expect_next_instance_of(::Projects::OverwriteProjectService) do |service|
+              expect(service).to receive(:execute).with(existing_project)
+            end
 
             subject.execute
+          end
+
+          it 'does not allow user to overwrite existing project' do
+            expect(::Projects::OverwriteProjectService).not_to receive(:new)
+
+            expect { subject.execute }.to raise_error(Projects::ImportService::Error,
+              "User #{user.username} (#{user.id}) cannot overwrite a project in #{group.path}")
           end
         end
       end

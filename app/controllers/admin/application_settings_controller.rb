@@ -5,7 +5,7 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
 
   # NOTE: Use @application_setting in this controller when you need to access
   # application_settings after it has been modified. This is because the
-  # ApplicationSetting model uses Gitlab::ThreadMemoryCache for caching and the
+  # ApplicationSetting model uses Gitlab::ProcessMemoryCache for caching and the
   # cache might be stale immediately after an update.
   # https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/30233
   before_action :set_application_setting, except: :integrations
@@ -43,7 +43,7 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
   def usage_data
     respond_to do |format|
       format.html do
-        usage_data_json = JSON.pretty_generate(Gitlab::UsageData.data)
+        usage_data_json = Gitlab::Json.pretty_generate(Gitlab::UsageData.data)
 
         render html: Gitlab::Highlight.highlight('payload.json', usage_data_json, language: 'json')
       end
@@ -214,6 +214,7 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
     [
       *::ApplicationSettingsHelper.visible_attributes,
       *::ApplicationSettingsHelper.external_authorization_service_attributes,
+      *ApplicationSetting.repository_storages_weighted_attributes,
       :lets_encrypt_notification_email,
       :lets_encrypt_terms_of_service_accepted,
       :domain_blacklist_file,

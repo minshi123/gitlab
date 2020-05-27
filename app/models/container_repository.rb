@@ -2,6 +2,7 @@
 
 class ContainerRepository < ApplicationRecord
   include Gitlab::Utils::StrongMemoize
+  include Gitlab::SQL::Pattern
 
   belongs_to :project
 
@@ -17,6 +18,7 @@ class ContainerRepository < ApplicationRecord
   scope :for_group_and_its_subgroups, ->(group) do
     where(project_id: Project.for_group_and_its_subgroups(group).with_container_registry.select(:id))
   end
+  scope :search_by_name, ->(query) { fuzzy_search(query, [:name], use_minimum_char_limit: false) }
 
   def self.exists_by_path?(path)
     where(
@@ -63,6 +65,12 @@ class ContainerRepository < ApplicationRecord
         ContainerRegistry::Tag.new(self, tag)
       end
     end
+  end
+
+  def tags_count
+    return 0 unless manifest && manifest['tags']
+
+    manifest['tags'].size
   end
 
   def blob(config)

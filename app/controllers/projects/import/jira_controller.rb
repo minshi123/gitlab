@@ -6,7 +6,6 @@ module Projects
       before_action :authenticate_user!
       before_action :check_issues_available!
       before_action :authorize_read_project!
-      before_action :jira_import_enabled?
       before_action :jira_integration_configured?
       before_action :authorize_admin_project!, only: [:import]
 
@@ -36,19 +35,13 @@ module Projects
           response = ::JiraImport::StartImportService.new(current_user, @project, jira_project_key).execute
           flash[:notice] = response.message if response.message.present?
         else
-          flash[:alert] = 'No jira project key has been provided.'
+          flash[:alert] = 'No Jira project key has been provided.'
         end
 
         redirect_to project_import_jira_path(@project)
       end
 
       private
-
-      def jira_import_enabled?
-        return if @project.jira_issues_import_feature_flag_enabled?
-
-        redirect_to project_issues_path(@project)
-      end
 
       def jira_integration_configured?
         return if Feature.enabled?(:jira_issue_import_vue, @project, default_enabled: true)

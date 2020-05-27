@@ -21,6 +21,7 @@ class Event < ApplicationRecord
   LEFT      = 9 # User left project
   DESTROYED = 10
   EXPIRED   = 11 # User left project due to expiry
+  APPROVED  = 12
 
   ACTIONS = HashWithIndifferentAccess.new(
     created:    CREATED,
@@ -33,7 +34,8 @@ class Event < ApplicationRecord
     joined:     JOINED,
     left:       LEFT,
     destroyed:  DESTROYED,
-    expired:    EXPIRED
+    expired:    EXPIRED,
+    approved:   APPROVED
   ).freeze
 
   WIKI_ACTIONS = [CREATED, UPDATED, DESTROYED].freeze
@@ -96,6 +98,8 @@ class Event < ApplicationRecord
   end
 
   scope :for_milestone_id, ->(milestone_id) { where(target_type: "Milestone", target_id: milestone_id) }
+  scope :for_wiki_meta, ->(meta) { where(target_type: 'WikiPage::Meta', target_id: meta.id) }
+  scope :created_at, ->(time) { where(created_at: time) }
 
   # Authors are required as they're used to display who pushed data.
   #
@@ -313,6 +317,10 @@ class Event < ApplicationRecord
     note? && target && target.for_personal_snippet?
   end
 
+  def design_note?
+    note? && note.for_design?
+  end
+
   def note_target
     target.noteable
   end
@@ -380,6 +388,11 @@ class Event < ApplicationRecord
 
   protected
 
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/PerceivedComplexity
+  #
+  # TODO Refactor this method so we no longer need to disable the above cops
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/216879.
   def capability
     @capability ||= begin
                       if push_action? || commit_note?
@@ -396,9 +409,13 @@ class Event < ApplicationRecord
                         :read_milestone
                       elsif wiki_page?
                         :read_wiki
+                      elsif design_note?
+                        :read_design
                       end
                     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/PerceivedComplexity
 
   private
 
