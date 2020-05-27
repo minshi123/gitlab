@@ -5700,7 +5700,8 @@ CREATE TABLE public.release_links (
     name character varying NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    filepath character varying(128)
+    filepath character varying(128),
+    type integer DEFAULT 0
 );
 
 CREATE SEQUENCE public.release_links_id_seq
@@ -13966,5 +13967,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200526120714
 20200526164946
 20200526164947
+20200527092027
 \.
 
