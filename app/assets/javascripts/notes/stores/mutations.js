@@ -322,4 +322,10 @@ export default {
   [types.RECEIVE_DELETE_DESCRIPTION_VERSION_ERROR](state) {
     state.isLoadingDescriptionVersion = false;
   },
+  [types.SET_CAN_DELETE_DESCRIPTION_VERSION](state, versionId) {
+    const selectedDiscussion = state.discussions.find(discussion => {
+      return discussion.notes[0].description_version_id === versionId;
+    });
+    selectedDiscussion.notes[0].can_delete_description_version = false;
+  },
 };

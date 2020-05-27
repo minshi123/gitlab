@@ -582,6 +582,7 @@ export const softDeleteDescriptionVersion = (
   return axios
     .delete(requestUrl)
     .then(() => {
+      dispatch('setCanDeleteDescriptionVersion', versionId);
       dispatch('receiveDeleteDescriptionVersion', versionId);
     })
     .catch(error => {
@@ -598,6 +599,9 @@ export const receiveDeleteDescriptionVersion = ({ commit }, versionId) => {
 };
 export const receiveDeleteDescriptionVersionError = ({ commit }, error) => {
   commit(types.RECEIVE_DELETE_DESCRIPTION_VERSION_ERROR, error);
+};
+export const setCanDeleteDescriptionVersion = ({ commit }, versionId) => {
+  commit(types.SET_CAN_DELETE_DESCRIPTION_VERSION, versionId);
 };
 
 // prevent babel-plugin-rewire from generating an invalid default during karma tests
