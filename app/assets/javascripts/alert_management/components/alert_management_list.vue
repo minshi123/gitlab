@@ -10,7 +10,7 @@ import {
   GlDropdownItem,
   GlTabs,
   GlTab,
-  GlDeprecatedBadge as GlBadge,
+  GlBadge,
 } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
