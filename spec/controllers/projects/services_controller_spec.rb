@@ -134,15 +134,26 @@ describe Projects::ServicesController do
   describe 'PUT #update' do
     describe 'as HTML' do
       let(:service_params) { { active: true } }
+      let(:params)         { project_params(service: service_params) }
 
       before do
-        put :update, params: project_params(service: service_params)
+        put :update, params: params
       end
 
       context 'when param `active` is set to true' do
         it 'activates the service and redirects to integrations paths' do
           expect(response).to redirect_to(project_settings_integrations_path(project))
           expect(flash[:notice]).to eq 'Jira activated.'
+        end
+
+        context 'when redirect_to param is present' do
+          let(:redirect_url) { 'htttp://gitlab.com/reedirect_here' }
+          let(:params)       { project_params(service: service_params, redirect_to: redirect_url) }
+
+          it 'redirects to the provided url with a flash notice' do
+            expect(response).to redirect_to(redirect_url)
+            expect(flash[:notice]).to eq 'Jira activated.'
+          end
         end
       end
 

@@ -26,8 +26,8 @@ class Projects::ServicesController < Projects::ApplicationController
     respond_to do |format|
       format.html do
         if saved
-          redirect_to project_settings_integrations_path(@project),
-            notice: success_message
+          target_url = params[:redirect_to] || project_settings_integrations_path(@project)
+          redirect_to target_url, notice: success_message
         else
           render 'edit'
         end
