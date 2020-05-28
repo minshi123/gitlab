@@ -143,7 +143,7 @@ Describes an alert from the project's Alert Management
 """
 type AlertManagementAlert {
   """
-  Users assigned to the alert
+  Assignees of the alert
   """
   assignees: [User!]
 

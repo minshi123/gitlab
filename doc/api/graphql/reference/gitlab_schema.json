@@ -396,7 +396,7 @@
           "fields": [
             {
               "name": "assignees",
-              "description": "Users assigned to the alert",
+              "description": "Assignees of the alert",
               "args": [
 
               ],

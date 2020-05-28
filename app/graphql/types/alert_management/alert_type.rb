@@ -87,7 +87,7 @@ module Types
       field :assignees,
             [Types::UserType],
             null: true,
-            description: 'Users assigned to the alert'
+            description: 'Assignees of the alert'
     end
   end
 end

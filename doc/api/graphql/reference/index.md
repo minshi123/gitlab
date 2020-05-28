@@ -52,7 +52,7 @@ Describes an alert from the project's Alert Management
 
 | Name  | Type  | Description |
 | ---   |  ---- | ----------  |
-| `assignees` | User! => Array | Users assigned to the alert |
+| `assignees` | User! => Array | Assignees of the alert |
 | `createdAt` | Time | Timestamp the alert was created |
 | `description` | String | Description of the alert |
 | `details` | JSON | Alert details |
