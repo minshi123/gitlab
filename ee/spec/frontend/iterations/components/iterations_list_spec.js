@@ -25,6 +25,8 @@ describe('Iterations list', () => {
     const iteration = {
       id: '123',
       title: 'Iteration #1',
+      startDate: '2020-05-27',
+      dueDate: '2020-05-28',
     };
 
     mountComponent({
