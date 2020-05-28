@@ -4,8 +4,7 @@ module Gitlab
   module Metrics
     # Rack middleware for tracking Elasticsearch metrics from Grape and Web requests.
     class ElasticsearchRackMiddleware
-
-      BUCKETS = [0.1, 0.25, 0.5, 1, 2.5, 5, 10, 60, 300, 600].freeze
+      HISTOGRAM_BUCKETS = [0.1, 0.25, 0.5, 1, 2.5, 5, 10, 60, 300, 600].freeze
 
       def initialize(app)
         @app = app
@@ -33,7 +32,7 @@ module Gitlab
         Gitlab::Metrics.histogram(:http_elasticsearch_requests_duration_seconds,
                                   'Query time for Elasticsearch servers during web requests',
                                   Gitlab::Metrics::Transaction::BASE_LABELS,
-                                  BUCKETS).observe(labels, query_time)
+                                  HISTOGRAM_BUCKETS).observe(labels, query_time)
       end
     end
   end
