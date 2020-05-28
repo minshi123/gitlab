@@ -9,7 +9,7 @@ module Mutations
         argument :assignee_usernames,
                  [GraphQL::STRING_TYPE],
                  required: true,
-                 description: 'The usernames to assign to the assignee. Replaces existing assignees by default.'
+                 description: 'The usernames to assign to the alert. Replaces existing assignees by default.'
 
         argument :operation_mode,
                  Types::MutationOperationModeEnum,

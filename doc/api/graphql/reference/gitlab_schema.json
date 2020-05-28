@@ -1092,7 +1092,7 @@
             },
             {
               "name": "assigneeUsernames",
-              "description": "The usernames to assign to the merge request. Replaces existing assignees by default.",
+              "description": "The usernames to assign to the alert. Replaces existing assignees by default.",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
