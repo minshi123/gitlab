@@ -29,8 +29,6 @@ module AlertManagement
 
     has_internal_id :iid, scope: :project, init: ->(s) { s.project.alert_management_alerts.maximum(:iid) }
 
-    self.table_name = 'alert_management_alerts'
-
     sha_attribute :fingerprint
 
     HOSTS_MAX_LENGTH = 255
