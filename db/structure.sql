@@ -2,8 +2,6 @@ SET search_path=public;
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
-CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA public;
-
 CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 
 CREATE TABLE public.abuse_reports (
@@ -8427,12 +8425,6 @@ ALTER TABLE ONLY public.issue_user_mentions
 ALTER TABLE ONLY public.issues
     ADD CONSTRAINT issues_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY public.sprints
-    ADD CONSTRAINT iteration_start_and_due_daterange_group_id_constraint EXCLUDE USING gist (group_id WITH =, daterange(start_date, due_date, '[]'::text) WITH &&) WHERE ((group_id IS NOT NULL));
-
-ALTER TABLE ONLY public.sprints
-    ADD CONSTRAINT iteration_start_and_due_daterange_project_id_constraint EXCLUDE USING gist (project_id WITH =, daterange(start_date, due_date, '[]'::text) WITH &&) WHERE ((project_id IS NOT NULL));
-
 ALTER TABLE ONLY public.jira_connect_installations
     ADD CONSTRAINT jira_connect_installations_pkey PRIMARY KEY (id);
 
@@ -9338,8 +9330,6 @@ CREATE INDEX index_ci_pipeline_schedules_on_owner_id ON public.ci_pipeline_sched
 
 CREATE INDEX index_ci_pipeline_schedules_on_project_id ON public.ci_pipeline_schedules USING btree (project_id);
 
-CREATE INDEX index_ci_pipeline_variables_on_pipeline_id ON public.ci_pipeline_variables USING btree (pipeline_id) WHERE ((key)::text = 'AUTO_DEVOPS_MODSECURITY_SEC_RULE_ENGINE'::text);
-
 CREATE UNIQUE INDEX index_ci_pipeline_variables_on_pipeline_id_and_key ON public.ci_pipeline_variables USING btree (pipeline_id, key);
 
 CREATE INDEX index_ci_pipelines_config_on_pipeline_id ON public.ci_pipelines_config USING btree (pipeline_id);
@@ -9435,8 +9425,6 @@ CREATE INDEX index_ci_trigger_requests_on_trigger_id_and_id ON public.ci_trigger
 CREATE INDEX index_ci_triggers_on_owner_id ON public.ci_triggers USING btree (owner_id);
 
 CREATE INDEX index_ci_triggers_on_project_id ON public.ci_triggers USING btree (project_id);
-
-CREATE INDEX index_ci_variables_on_project_id ON public.ci_variables USING btree (project_id) WHERE ((key)::text = 'AUTO_DEVOPS_MODSECURITY_SEC_RULE_ENGINE'::text);
 
 CREATE UNIQUE INDEX index_ci_variables_on_project_id_and_key_and_environment_scope ON public.ci_variables USING btree (project_id, key, environment_scope);
 
@@ -9677,6 +9665,8 @@ CREATE INDEX index_events_on_project_id_and_id ON public.events USING btree (pro
 CREATE INDEX index_events_on_target_type_and_target_id ON public.events USING btree (target_type, target_id);
 
 CREATE INDEX index_evidences_on_release_id ON public.evidences USING btree (release_id);
+
+CREATE INDEX index_expired_and_not_notified_personal_access_tokens ON public.personal_access_tokens USING btree (id, expires_at) WHERE ((impersonation = false) AND (revoked = false) AND (expire_notification_delivered = false));
 
 CREATE UNIQUE INDEX index_external_pull_requests_on_project_and_branches ON public.external_pull_requests USING btree (project_id, source_branch, target_branch);
 
@@ -13885,8 +13875,11 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200420172752
 20200420172927
 20200420201933
+20200421054930
+20200421054948
 20200421092907
 20200421111005
+20200421195234
 20200421233150
 20200422091541
 20200422213749
@@ -13955,9 +13948,8 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200514000009
 20200514000132
 20200514000340
-20200515152649
-20200515153633
 20200515155620
+20200518091745
 20200519115908
 20200519171058
 20200519194042

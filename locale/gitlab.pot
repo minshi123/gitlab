@@ -96,6 +96,11 @@ msgid_plural "%d comments"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d comment on this commit"
+msgid_plural "%d comments on this commit"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d commit"
 msgid_plural "%d commits"
 msgstr[0] ""
@@ -1218,6 +1223,9 @@ msgstr ""
 msgid "Add a bullet list"
 msgstr ""
 
+msgid "Add a comment to this line"
+msgstr ""
+
 msgid "Add a general comment to this %{noteableDisplayName}."
 msgstr ""
 
@@ -1417,6 +1425,9 @@ msgid "Adjust your filters/search criteria above. If you believe this may be an 
 msgstr ""
 
 msgid "Admin Area"
+msgstr ""
+
+msgid "Admin Note"
 msgstr ""
 
 msgid "Admin Overview"
@@ -2229,9 +2240,6 @@ msgid "An error occurred while loading all the files."
 msgstr ""
 
 msgid "An error occurred while loading chart data"
-msgstr ""
-
-msgid "An error occurred while loading clusters"
 msgstr ""
 
 msgid "An error occurred while loading commit signatures"
@@ -3608,7 +3616,7 @@ msgstr ""
 msgid "CI / CD"
 msgstr ""
 
-msgid "CI / CD Charts"
+msgid "CI / CD Analytics"
 msgstr ""
 
 msgid "CI / CD Settings"
@@ -4676,9 +4684,6 @@ msgstr ""
 msgid "ClusterIntegration|Copy Kubernetes cluster name"
 msgstr ""
 
-msgid "ClusterIntegration|Copy Service Token"
-msgstr ""
-
 msgid "ClusterIntegration|Could not load IAM roles"
 msgstr ""
 
@@ -4755,6 +4760,9 @@ msgid "ClusterIntegration|Enable this setting if using role-based access control
 msgstr ""
 
 msgid "ClusterIntegration|Enabled stack"
+msgstr ""
+
+msgid "ClusterIntegration|Enter new Service Token"
 msgstr ""
 
 msgid "ClusterIntegration|Enter the details for your Amazon EKS Kubernetes cluster"
@@ -4839,9 +4847,6 @@ msgid "ClusterIntegration|Helm release failed to install"
 msgstr ""
 
 msgid "ClusterIntegration|Helm streamlines installing and managing Kubernetes applications. Tiller runs inside of your Kubernetes Cluster, and manages releases of your charts."
-msgstr ""
-
-msgid "ClusterIntegration|Hide"
 msgstr ""
 
 msgid "ClusterIntegration|If you are setting up multiple clusters and are using Auto DevOps, %{help_link_start}read this first%{help_link_end}."
@@ -5240,9 +5245,6 @@ msgstr ""
 msgid "ClusterIntegration|Set the global mode for the WAF in this cluster. This can be overridden at the environmental level."
 msgstr ""
 
-msgid "ClusterIntegration|Show"
-msgstr ""
-
 msgid "ClusterIntegration|Something went wrong on our end."
 msgstr ""
 
@@ -5427,6 +5429,9 @@ msgid "ClusterIntergation|Select key pair"
 msgstr ""
 
 msgid "ClusterIntergation|Select service role"
+msgstr ""
+
+msgid "Clusters|An error occurred while loading clusters"
 msgstr ""
 
 msgid "Code"
@@ -6411,6 +6416,9 @@ msgid "Create group label"
 msgstr ""
 
 msgid "Create issue"
+msgstr ""
+
+msgid "Create iteration"
 msgstr ""
 
 msgid "Create lists from labels. Issues with that label appear in that list."
@@ -8995,6 +9003,9 @@ msgstr ""
 msgid "Expand up"
 msgstr ""
 
+msgid "Experienced"
+msgstr ""
+
 msgid "Expiration"
 msgstr ""
 
@@ -9239,6 +9250,9 @@ msgid "Failed to protect the branch"
 msgstr ""
 
 msgid "Failed to protect the environment"
+msgstr ""
+
+msgid "Failed to publish issue on status page."
 msgstr ""
 
 msgid "Failed to remove a Zoom meeting"
@@ -12085,6 +12099,9 @@ msgstr ""
 msgid "Issue or Merge Request ID is required"
 msgstr ""
 
+msgid "Issue published on status page."
+msgstr ""
+
 msgid "Issue template (optional)"
 msgstr ""
 
@@ -12202,6 +12219,12 @@ msgstr ""
 msgid "It's you"
 msgstr ""
 
+msgid "Iteration changed to"
+msgstr ""
+
+msgid "Iteration removed"
+msgstr ""
+
 msgid "Iterations"
 msgstr ""
 
@@ -12212,6 +12235,12 @@ msgid "Iteration|cannot be in the past"
 msgstr ""
 
 msgid "Iteration|cannot be more than 500 years in the future"
+msgstr ""
+
+msgid "I’m familiar with the basics of project management and DevOps."
+msgstr ""
+
+msgid "I’m not very familiar with the basics of project management and DevOps."
 msgstr ""
 
 msgid "Jaeger URL"
@@ -13472,6 +13501,9 @@ msgid "Merge request"
 msgstr ""
 
 msgid "Merge request %{iid} authored by %{authorName}"
+msgstr ""
+
+msgid "Merge request %{mr_link} was reviewed by %{mr_author}"
 msgstr ""
 
 msgid "Merge request approvals"
@@ -14803,6 +14835,9 @@ msgstr ""
 msgid "November"
 msgstr ""
 
+msgid "Novice"
+msgstr ""
+
 msgid "Now you can access the merge request navigation tabs at the top, where they’re easier to find."
 msgstr ""
 
@@ -15042,7 +15077,7 @@ msgstr ""
 msgid "Optional"
 msgstr ""
 
-msgid "Optional parameter \"variables\" must be an array of keys and values. Ex: [key1, value1, key2, value2]"
+msgid "Optional parameter \"variables\" must be a Hash. Ex: variables[key1]=value1"
 msgstr ""
 
 msgid "Optionally, you can %{link_to_customize} how FogBugz email addresses and usernames are imported into GitLab."
@@ -15496,6 +15531,9 @@ msgid "PerformanceBar|Bullet notifications"
 msgstr ""
 
 msgid "PerformanceBar|Download"
+msgstr ""
+
+msgid "PerformanceBar|Elasticsearch calls"
 msgstr ""
 
 msgid "PerformanceBar|Frontend resources"
@@ -17554,6 +17592,12 @@ msgid "Public pipelines"
 msgstr ""
 
 msgid "Public projects Minutes cost factor"
+msgstr ""
+
+msgid "Publish to status page"
+msgstr ""
+
+msgid "Publishes this issue to the associated status page."
 msgstr ""
 
 msgid "Pull"
@@ -19874,7 +19918,13 @@ msgstr ""
 msgid "Show latest version"
 msgstr ""
 
+msgid "Show me everything"
+msgstr ""
+
 msgid "Show me how"
+msgstr ""
+
+msgid "Show me more advanced stuff"
 msgstr ""
 
 msgid "Show only direct members"
@@ -22462,9 +22512,6 @@ msgstr ""
 msgid "This user will be the author of all events in the activity feed that are the result of an update, like new branches being created or new commits being pushed to existing branches."
 msgstr ""
 
-msgid "This user will be the author of all events in the activity feed that are the result of an update, like new branches being created or new commits being pushed to existing branches. Upon creation or when reassigning you can only assign yourself to be the mirror user."
-msgstr ""
-
 msgid "This variable can not be masked."
 msgstr ""
 
@@ -23304,6 +23351,9 @@ msgid "Unable to process group import file"
 msgstr ""
 
 msgid "Unable to resolve"
+msgstr ""
+
+msgid "Unable to save iteration. Please try again"
 msgstr ""
 
 msgid "Unable to save your changes. Please try again."
@@ -24654,10 +24704,19 @@ msgstr ""
 msgid "Welcome to the Guided GitLab Tour"
 msgstr ""
 
+msgid "Welcome to the guided GitLab tour"
+msgstr ""
+
 msgid "Welcome to your Issue Board!"
 msgstr ""
 
 msgid "What are you searching for?"
+msgstr ""
+
+msgid "What describes you best?"
+msgstr ""
+
+msgid "What’s your experience level?"
 msgstr ""
 
 msgid "When a deployment job is successful, skip older deployment jobs that are still pending"
@@ -25280,6 +25339,9 @@ msgstr ""
 msgid "You will be removed from existing projects/groups"
 msgstr ""
 
+msgid "You will be the author of all events in the activity feed that are the result of an update, like new branches being created or new commits being pushed to existing branches."
+msgstr ""
+
 msgid "You will first need to set up Jira Integration to use this feature."
 msgstr ""
 
@@ -25542,6 +25604,9 @@ msgid "Your project limit is %{limit} projects! Please contact your administrato
 msgstr ""
 
 msgid "Your projects"
+msgstr ""
+
+msgid "Your request for access could not be processed: %{error_meesage}"
 msgstr ""
 
 msgid "Your request for access has been queued for review."
@@ -25982,6 +26047,9 @@ msgstr ""
 msgid "email '%{email}' does not match the allowed domain of '%{email_domain}'"
 msgstr ""
 
+msgid "email '%{email}' is not a verified email."
+msgstr ""
+
 msgid "enabled"
 msgstr ""
 
@@ -26012,10 +26080,10 @@ msgstr ""
 msgid "exceeds the limit of %{bytes} bytes for directory name \"%{dirname}\""
 msgstr ""
 
-msgid "expired on %{milestone_due_date}"
+msgid "expired on %{timebox_due_date}"
 msgstr ""
 
-msgid "expires on %{milestone_due_date}"
+msgid "expires on %{timebox_due_date}"
 msgstr ""
 
 msgid "external_url"
@@ -26790,10 +26858,10 @@ msgstr ""
 msgid "started a discussion on %{design_link}"
 msgstr ""
 
-msgid "started on %{milestone_start_date}"
+msgid "started on %{timebox_start_date}"
 msgstr ""
 
-msgid "starts on %{milestone_start_date}"
+msgid "starts on %{timebox_start_date}"
 msgstr ""
 
 msgid "stuck"

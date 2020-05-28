@@ -27,6 +27,48 @@ describe Issues::UpdateService do
         end
       end
 
+      context 'updating iteration' do
+        let(:iteration) { create(:iteration, group: group) }
+
+        context 'when issue does not already have an iteration' do
+          it 'calls NotificationService#changed_iteration_issue' do
+            expect_next_instance_of(NotificationService::Async) do |ns|
+              expect(ns).to receive(:changed_iteration_issue)
+            end
+
+            update_issue(iteration: iteration)
+          end
+        end
+
+        context 'when issue already has an iteration' do
+          let(:old_iteration) { create(:iteration, group: group) }
+
+          before do
+            update_issue(iteration: old_iteration)
+          end
+
+          context 'setting to nil' do
+            it 'calls NotificationService#removed_iteration_issue' do
+              expect_next_instance_of(NotificationService::Async) do |ns|
+                expect(ns).to receive(:removed_iteration_issue)
+              end
+
+              update_issue(iteration: nil)
+            end
+          end
+
+          context 'setting to another iteration' do
+            it 'calls NotificationService#changed_iteration_issue' do
+              expect_next_instance_of(NotificationService::Async) do |ns|
+                expect(ns).to receive(:changed_iteration_issue)
+              end
+
+              update_issue(iteration: iteration)
+            end
+          end
+        end
+      end
+
       context 'updating weight' do
         before do
           project.add_maintainer(user)
@@ -216,6 +258,10 @@ describe Issues::UpdateService do
     describe 'publish to status page' do
       let(:execute) { update_issue(params) }
       let(:issue_id) { execute&.id }
+
+      before do
+        create(:status_page_published_incident, issue: issue)
+      end
 
       context 'when update succeeds' do
         let(:params) { { title: 'New title' } }
