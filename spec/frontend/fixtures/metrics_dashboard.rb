@@ -24,6 +24,7 @@ describe MetricsDashboard, '(JavaScript fixtures)', type: :controller do
     project.add_maintainer(user)
 
     allow(controller).to receive(:project).and_return(project)
+    allow(controller).to receive(:environment).and_return(environment)
     allow(controller)
         .to receive(:metrics_dashboard_params)
                 .and_return(params)

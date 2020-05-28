@@ -3,7 +3,16 @@
 exports[`Dashboard template matches the default snapshot 1`] = `
 <div
   class="prometheus-graphs"
+  currentenvironmentname="environment1"
+  dashboardendpoint="/namespace1/project1/-/environments/1/metrics_dashboard.json"
+  dashboardsendpoint="/namespace1/project1/-/performance_monitoring/dashboards.json"
   data-qa-selector="prometheus_graphs"
+  deploymentsendpoint="/namespace1/project1/-/environments/1/deployments.json"
+  environmentstate="available"
+  logspath="/namespace1/project1/-/logs?environment_name=environment1"
+  metricsendpoint="/namespace1/project1/-/environments/1/additional_metrics.json"
+  projectpath="/namespace1/project1"
+  prometheusstatus=""
 >
   <div
     class="prometheus-graphs-header d-sm-flex flex-sm-wrap pt-2 pr-1 pb-0 pl-2 border-bottom bg-gray-light"
@@ -133,15 +142,15 @@ exports[`Dashboard template matches the default snapshot 1`] = `
   <!---->
    
   <empty-state-stub
-    clusterspath="/path/to/clusters"
-    documentationpath="/path/to/docs"
-    emptygettingstartedsvgpath="/path/to/getting-started.svg"
-    emptyloadingsvgpath="/path/to/loading.svg"
-    emptynodatasmallsvgpath="/path/to/no-data-small.svg"
-    emptynodatasvgpath="/path/to/no-data.svg"
-    emptyunabletoconnectsvgpath="/path/to/unable-to-connect.svg"
+    clusterspath="/namespace1/project1/-/clusters"
+    documentationpath="/help/administration/monitoring/prometheus/index.md"
+    emptygettingstartedsvgpath="/images/illustrations/monitoring/getting_started.svg"
+    emptyloadingsvgpath="/images/illustrations/monitoring/loading.svg"
+    emptynodatasmallsvgpath="/images/illustrations/chart-empty-state-small.svg"
+    emptynodatasvgpath="/images/illustrations/monitoring/no_data.svg"
+    emptyunabletoconnectsvgpath="/images/illustrations/monitoring/unable_to_connect.svg"
     selectedstate="gettingStarted"
-    settingspath="/path/to/settings"
+    settingspath="/namespace1/project1/-/services/prometheus/edit"
   />
 </div>
 `;
