@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_dependency 'alert_management'
+
 module AlertManagement
   class Alert < ApplicationRecord
     include AtomicInternalId
