@@ -139,6 +139,10 @@ class Issue < ApplicationRecord
       issue.closed_at = nil
       issue.closed_by = nil
     end
+
+    after_transition any => :closed do |issue|
+      issue.resolve_associated_alert_management_alert
+    end
   end
 
   # Alias to state machine .with_state_id method
@@ -350,6 +354,17 @@ class Issue < ApplicationRecord
 
   def design_collection
     @design_collection ||= ::DesignManagement::DesignCollection.new(self)
+  end
+
+  def resolve_associated_alert_management_alert
+    return unless alert_management_alert
+
+    return if alert_management_alert.resolve
+
+    Gitlab::AppLogger.warn(
+      message: 'Cannot resolve an associated Alert Management Alert',
+      issue_id: id
+    )
   end
 
   private

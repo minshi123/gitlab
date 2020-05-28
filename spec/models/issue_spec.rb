@@ -174,17 +174,45 @@ describe Issue do
   end
 
   describe '#close' do
-    subject(:issue) { create(:issue, state: 'opened') }
+    let!(:issue) { create(:issue, state: 'opened') }
+
+    subject(:close) { issue.close }
 
     it 'sets closed_at to Time.current when an issue is closed' do
-      expect { issue.close }.to change { issue.closed_at }.from(nil)
+      expect { close }.to change { issue.closed_at }.from(nil)
     end
 
     it 'changes the state to closed' do
       open_state = described_class.available_states[:opened]
       closed_state = described_class.available_states[:closed]
 
-      expect { issue.close }.to change { issue.state_id }.from(open_state).to(closed_state)
+      expect { close }.to change { issue.state_id }.from(open_state).to(closed_state)
+    end
+
+    context 'when there is an associated Alert Management Alert' do
+      let!(:alert) { create(:alert_management_alert, project: issue.project, issue: issue) }
+
+      context 'when alert can be resolved' do
+        it 'resolves an alert' do
+          expect { close }.to change { alert.reload.resolved? }.to(true)
+        end
+      end
+
+      context 'when alert cannot be resolved' do
+        before do
+          allow(issue.alert_management_alert).to receive(:resolve).and_return(false)
+          allow(Gitlab::AppLogger).to receive(:warn).and_call_original
+        end
+
+        it 'writes a warning into the log' do
+          close
+
+          expect(Gitlab::AppLogger).to have_received(:warn).with(
+            message: 'Cannot resolve an associated Alert Management Alert',
+            issue_id: issue.id
+          )
+        end
+      end
     end
   end
 
