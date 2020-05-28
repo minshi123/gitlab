@@ -77,3 +77,9 @@ Navigate to the Alert Management detail view by visiting the [Alert Management l
 ### Update an Alert's status
 
 The Alert Management detail view allows users to update the Alert Status. See [Alert Management statuses](#alert-management-statuses) for more details.
+
+### GitLab Issue associated with an Alert
+
+Closing a GitLab issue associated with an alert, changes the alert's status to Resolved.
+See [Alert Management statuses](#alert-management-statuses) for more details about statuses.
+
