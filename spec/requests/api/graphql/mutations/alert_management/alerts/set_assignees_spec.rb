@@ -12,7 +12,7 @@ describe 'Setting assignees of an alert' do
 
   let(:mutation) do
     graphql_mutation(
-      :set_alert_assignees,
+      :alert_set_assignees,
       { project_path: project.full_path, iid: alert.iid.to_s }.merge(input),
       <<~QL
        clientMutationId
@@ -26,7 +26,7 @@ describe 'Setting assignees of an alert' do
     )
   end
 
-  let(:mutation_response) { graphql_mutation_response(:set_alert_assignees) }
+  let(:mutation_response) { graphql_mutation_response(:alert_set_assignees) }
 
   before do
     project.add_developer(current_user)

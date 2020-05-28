@@ -12,7 +12,7 @@ import {
 } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
-import setAlertAssignees from '../../graphql/mutations/set_alert_assignees.graphql';
+import alertSetAssignees from '../../graphql/mutations/alert_set_assignees.graphql';
 import SidebarAssignee from './sidebar_assignee.vue';
 import { debounce } from 'lodash';
 
@@ -132,7 +132,7 @@ export default {
       this.isUpdating = true;
       this.$apollo
         .mutate({
-          mutation: setAlertAssignees,
+          mutation: alertSetAssignees,
           variables: {
             iid: this.alert.iid,
             assigneeUsernames: [this.isActive(assignees) ? '' : assignees],

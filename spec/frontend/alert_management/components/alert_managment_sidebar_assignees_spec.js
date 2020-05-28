@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { GlDropdownItem } from '@gitlab/ui';
 import SidebarAssignee from '~/alert_management/components/sidebar/sidebar_assignee.vue';
 import SidebarAssignees from '~/alert_management/components/sidebar/sidebar_assignees.vue';
-import SetAlertAssignees from '~/alert_management/graphql/mutations/set_alert_assignees.graphql';
+import AlertSetAssignees from '~/alert_management/graphql/mutations/alert_set_assignees.graphql';
 import mockAlerts from '../mocks/alerts.json';
 
 const mockAlert = mockAlerts[0];
@@ -106,7 +106,7 @@ describe('Alert Details Sidebar Assignees', () => {
       });
     });
 
-    it('calls `$apollo.mutate` with `SetAlertAssignees` mutation and variables containing `iid`, `assigneeUsernames`, & `projectPath`', () => {
+    it('calls `$apollo.mutate` with `AlertSetAssignees` mutation and variables containing `iid`, `assigneeUsernames`, & `projectPath`', () => {
       jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(mockUpdatedMutationResult);
       wrapper.setData({ isDropdownSearching: false });
 
@@ -114,7 +114,7 @@ describe('Alert Details Sidebar Assignees', () => {
         wrapper.find(SidebarAssignee).vm.$emit('update-alert-assignees', 'root');
 
         expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
-          mutation: SetAlertAssignees,
+          mutation: AlertSetAssignees,
           variables: {
             iid: '1527542',
             assigneeUsernames: ['root'],

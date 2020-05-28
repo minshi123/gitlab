@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Mutations::AlertManagement::SetAlertAssignees do
+describe Mutations::AlertManagement::Alerts::SetAssignees do
   let_it_be(:user_with_permissions) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:alert) { create(:alert_management_alert, project: project) }
