@@ -1,7 +1,7 @@
 <script>
 import { escape } from 'lodash';
 import helmInstallIllustration from '@gitlab/svgs/dist/illustrations/kubernetes-installation.svg';
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlLink } from '@gitlab/ui';
 import gitlabLogo from 'images/cluster_app_logos/gitlab.png';
 import helmLogo from 'images/cluster_app_logos/helm.png';
 import jupyterhubLogo from 'images/cluster_app_logos/jupyterhub.png';
@@ -27,6 +27,7 @@ export default {
     applicationRow,
     clipboardButton,
     GlLoadingIcon,
+    GlLink,
     KnativeDomainEditor,
     CrossplaneProviderStack,
     IngressModsecuritySettings,
@@ -260,7 +261,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         s__(`ClusterIntegration|Choose which applications to install on your Kubernetes cluster.
             Helm Tiller is required to install any of the following applications.`)
       }}
-      <a :href="helpPath">{{ __('More information') }}</a>
+      <gl-link :href="helpPath">{{ __('More information') }}</gl-link>
     </p>
 
     <div class="cluster-application-list prepend-top-10">
@@ -370,9 +371,9 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
                                 generated endpoint in order to access
                                 your application after it has been deployed.`)
                   }}
-                  <a :href="ingressDnsHelpPath" target="_blank" rel="noopener noreferrer">
+                  <gl-link :href="ingressDnsHelpPath" target="_blank">
                     {{ __('More information') }}
-                  </a>
+                  </gl-link>
                 </p>
               </div>
 
@@ -382,9 +383,9 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
                               the process of being assigned. Please check your Kubernetes
                               cluster or Quotas on Google Kubernetes Engine if it takes a long time.`)
                 }}
-                <a :href="ingressDnsHelpPath" target="_blank" rel="noopener noreferrer">
+                <gl-link :href="ingressDnsHelpPath" target="_blank">
                   {{ __('More information') }}
-                </a>
+                </gl-link>
               </p>
             </template>
             <template v-else>
@@ -433,11 +434,10 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
                   s__(`ClusterIntegration|Issuers represent a certificate authority.
                                 You must provide an email address for your Issuer. `)
                 }}
-                <a
+                <gl-link
                   href="http://docs.cert-manager.io/en/latest/reference/issuers.html?highlight=email"
                   target="_blank"
-                  rel="noopener noreferrer"
-                  >{{ __('More information') }}</a
+                  >{{ __('More information') }}</gl-link
                 >
               </p>
             </div>
@@ -581,9 +581,9 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
                     s__(`ClusterIntegration|Replace this with your own hostname if you want.
                                   If you do so, point hostname to Ingress IP Address from above.`)
                   }}
-                  <a :href="ingressDnsHelpPath" target="_blank" rel="noopener noreferrer">
+                  <gl-link :href="ingressDnsHelpPath" target="_blank">
                     {{ __('More information') }}
-                  </a>
+                  </gl-link>
                 </p>
               </div>
             </template>
@@ -620,9 +620,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
                 s__(`ClusterIntegration|You must have an RBAC-enabled cluster
                 to install Knative.`)
               }}
-              <a :href="helpPath" target="_blank" rel="noopener noreferrer">
-                {{ __('More information') }}
-              </a>
+              <gl-link :href="helpPath">{{ __('More information') }}</gl-link>
             </p>
             <br />
             <p>
