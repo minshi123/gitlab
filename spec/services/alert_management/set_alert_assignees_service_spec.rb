@@ -3,10 +3,10 @@
 require 'spec_helper'
 
 describe AlertManagement::SetAlertAssigneesService do
-  let(:project) { alert.project }
   let_it_be(:starting_assignee) { create(:user) }
   let_it_be(:unassigned_user) { create(:user) }
   let_it_be(:alert, reload: true) { create(:alert_management_alert) }
+  let_it_be(:project) { alert.project }
 
   let(:current_user) { starting_assignee }
   let(:operation_mode) { nil }
@@ -14,8 +14,9 @@ describe AlertManagement::SetAlertAssigneesService do
 
   let(:service) { described_class.new(alert, current_user, assignee_usernames: assignee_usernames, operation_mode: operation_mode) }
 
-  before do
+  before_all do
     project.add_developer(starting_assignee)
+    alert.assignees = [starting_assignee]
   end
 
   it 'supports all exepected operations' do
@@ -28,10 +29,6 @@ describe AlertManagement::SetAlertAssigneesService do
 
   describe '#execute' do
     subject(:response) { service.execute }
-
-    before do
-      alert.assignees = [starting_assignee]
-    end
 
     shared_examples_for 'an assignment failure' do |error_message|
       it 'which returns an error response' do
@@ -50,6 +47,10 @@ describe AlertManagement::SetAlertAssigneesService do
     end
 
     shared_examples_for 'a successful assignment' do
+      after do
+        alert.assignees = [starting_assignee]
+      end
+
       it 'which returns a success response' do
         expect(response).to be_success
         expect(response.payload[:alert]).to eq(alert)

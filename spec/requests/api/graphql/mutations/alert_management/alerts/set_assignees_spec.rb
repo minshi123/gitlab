@@ -28,7 +28,7 @@ describe 'Setting assignees of an alert' do
 
   let(:mutation_response) { graphql_mutation_response(:alert_set_assignees) }
 
-  before do
+  before_all do
     project.add_developer(current_user)
   end
 

@@ -19,7 +19,7 @@ describe Mutations::AlertManagement::Alerts::SetAssignees do
     }
   end
 
-  before do
+  before_all do
     project.add_developer(user_with_permissions)
   end
 
