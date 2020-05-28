@@ -37,6 +37,7 @@ describe 'Setting assignees of an alert' do
 
     expect(response).to have_gitlab_http_status(:success)
     expect(mutation_response['alert']['assignees'].first['username']).to eq(current_user.username)
+    expect(alert.reload.assignees).to contain_exactly(current_user)
   end
 
   context 'with operation_mode specified' do

@@ -22,6 +22,7 @@ module AlertManagement
       when 'REPLACE' then replace
       when 'APPEND' then append
       when 'REMOVE' then remove
+      else return error_unsupported_operation
       end
 
       success

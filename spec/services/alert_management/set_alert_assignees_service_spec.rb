@@ -19,14 +19,6 @@ describe AlertManagement::SetAlertAssigneesService do
     alert.assignees = [starting_assignee]
   end
 
-  it 'supports all exepected operations' do
-    Types::MutationOperationModeEnum.enum.each_key do |method_name|
-      supports_operation = described_class.private_instance_methods.include?(method_name.to_sym)
-
-      expect(supports_operation).to be(true)
-    end
-  end
-
   describe '#execute' do
     subject(:response) { service.execute }
 
@@ -42,7 +34,7 @@ describe AlertManagement::SetAlertAssigneesService do
 
         subject
 
-        expect(alert.reload.assignees.sort).to eq(original_assignees)
+        expect(alert.reload.assignees).to match_array(original_assignees)
       end
     end
 
@@ -52,7 +44,6 @@ describe AlertManagement::SetAlertAssigneesService do
       end
 
       it 'which returns a success response' do
-        expect(response).to be_success
         expect(response.payload[:alert]).to eq(alert)
         expect(alert.reload.assignees).to eq(expected_assignees)
       end
@@ -66,6 +57,20 @@ describe AlertManagement::SetAlertAssigneesService do
 
     context 'when operation is not supported' do
       it_behaves_like 'an assignment failure', _('Unsupported operation mode')
+    end
+
+    context 'when operation is expected to be supported' do
+      Types::MutationOperationModeEnum.enum.each_value do |operation|
+        let(:operation_mode) { operation }
+
+        after do
+          alert.assignees = [starting_assignee]
+        end
+
+        it "supports the #{operation} operation mode" do
+          expect(response).to be_success
+        end
+      end
     end
 
     context 'for APPEND operation' do
