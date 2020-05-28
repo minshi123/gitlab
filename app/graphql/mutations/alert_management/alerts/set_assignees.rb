@@ -29,7 +29,7 @@ module Mutations
           operation_mode ||= Types::MutationOperationModeEnum.enum[:replace]
 
           ::AlertManagement::SetAlertAssigneesService
-            .new(alert, current_user, assignee_usernames, operation_mode)
+            .new(alert, current_user, assignee_usernames: assignee_usernames, operation_mode: operation_mode)
             .execute
         end
 

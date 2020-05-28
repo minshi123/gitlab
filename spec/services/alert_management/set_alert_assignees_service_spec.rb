@@ -12,7 +12,7 @@ describe AlertManagement::SetAlertAssigneesService do
   let(:operation_mode) { nil }
   let(:assignee_usernames) { [] }
 
-  let(:service) { described_class.new(alert, current_user, assignee_usernames, operation_mode) }
+  let(:service) { described_class.new(alert, current_user, assignee_usernames: assignee_usernames, operation_mode: operation_mode) }
 
   before do
     project.add_developer(starting_assignee)

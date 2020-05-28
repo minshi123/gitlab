@@ -31,7 +31,7 @@ describe Mutations::AlertManagement::Alerts::SetAssignees do
     shared_examples 'successful resolution' do |operation|
       it 'successfully resolves' do
         expect(::AlertManagement::SetAlertAssigneesService).to receive(:new)
-          .with(alert, current_user, assignee_usernames, operation)
+          .with(alert, current_user, assignee_usernames: assignee_usernames, operation_mode: operation)
           .and_call_original
 
         expect(resolve).to eq(alert: alert.reload, errors: [])

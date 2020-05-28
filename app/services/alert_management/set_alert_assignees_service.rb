@@ -6,7 +6,7 @@ module AlertManagement
     # @param current_user [User]
     # @param assignee_usernames [Array<String>]
     # @param operation_mode [String], one of Types::MutationOperationModeEnum
-    def initialize(alert, current_user, assignee_usernames, operation_mode)
+    def initialize(alert, current_user, assignee_usernames:, operation_mode:)
       @alert = alert
       @current_user = current_user
       @assignee_usernames = assignee_usernames
