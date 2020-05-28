@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import DagGraph from '~/pipelines/components/dag/dag_graph.vue';
-import { parsedData } from './mock_data';
 import { createSankey, removeOrphanNodes } from '~/pipelines/components/dag/utils';
+import { parsedData } from './mock_data';
 
 describe('The DAG graph', () => {
   let wrapper;
@@ -40,6 +40,7 @@ describe('The DAG graph', () => {
 
   it('renders the graph svg', () => {
     expect(getGraph().exists()).toBe(true);
+    expect(getGraph().html()).toMatchSnapshot();
   });
 
   describe('links', () => {

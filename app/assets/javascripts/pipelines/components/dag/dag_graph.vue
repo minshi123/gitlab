@@ -111,7 +111,6 @@ export default {
           .attr('x', x)
           .attr('y', y)
           .classed('gl-overflow-visible', true)
-          .style('overflow', 'visible') // delete before merging
           .append('xhtml:div')
           .classed(labelClasses, true)
           .style('height', height)
