@@ -126,7 +126,7 @@ export default {
       }
     },
     viewer() {
-      if (!this.file.pending) {
+      if (!this.file.pending && !this.file.loading) {
         this.createEditorInstance();
       }
     },
