@@ -17,6 +17,7 @@ module Gitlab
 
     class << self
       include Gitlab::Utils::UsageData
+      include Gitlab::Utils::StrongMemoize
 
       def data(force_refresh: false)
         Rails.cache.fetch('usage_data', force: force_refresh, expires_in: 2.weeks) do
@@ -25,6 +26,8 @@ module Gitlab
       end
 
       def uncached_data
+        clear_memoized_limits
+
         license_usage_data
           .merge(system_usage_data)
           .merge(features_usage_data)
@@ -388,6 +391,25 @@ module Gitlab
         else
           "gitlab-development-kit"
         end
+      end
+
+      private
+
+      def user_minimum
+        strong_memoize :user_minimum do
+          ::User.minimum(:id)
+        end
+      end
+
+      def user_maximum
+        strong_memoize :user_maximum do
+          ::User.maximum(:id)
+        end
+      end
+
+      def clear_memoized_limits
+        clear_memoization(:user_minimum)
+        clear_memoization(:user_maximum)
       end
     end
   end
