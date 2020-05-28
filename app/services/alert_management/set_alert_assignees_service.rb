@@ -30,10 +30,9 @@ module AlertManagement
     private
 
     attr_reader :alert, :current_user, :assignee_usernames, :operation_mode
-    delegate :project, to: :alert
 
     def allowed?
-      current_user.can?(:update_alert_management_alert, project)
+      current_user.can?(:update_alert_management_alert, alert)
     end
 
     def supported_operation?
