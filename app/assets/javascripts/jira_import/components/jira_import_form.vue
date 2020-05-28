@@ -1,14 +1,16 @@
 <script>
-import { GlAvatar, GlButton, GlFormGroup, GlFormSelect, GlLabel } from '@gitlab/ui';
+import { __ } from '~/locale';
+import { GlButton, GlFormGroup, GlFormSelect, GlIcon, GlLabel, GlTable } from '@gitlab/ui';
 
 export default {
   name: 'JiraImportForm',
   components: {
-    GlAvatar,
     GlButton,
     GlFormGroup,
     GlFormSelect,
+    GlIcon,
     GlLabel,
+    GlTable,
   },
   currentUserAvatarUrl: gon.current_user_avatar_url,
   currentUsername: gon.current_username,
@@ -34,6 +36,34 @@ export default {
   data() {
     return {
       selectState: null,
+      fields: [
+        {
+          key: 'jiraUser',
+          label: __('Jira users'),
+        },
+        {
+          key: 'gitlabUser',
+          label: __('GitLab users'),
+        },
+      ],
+      items: [
+        {
+          jiraUser: '@alincoln',
+          gitlabUser: '@alincoln',
+        },
+        {
+          jiraUser: '@jryan',
+          gitlabUser: '@jryan',
+        },
+        {
+          jiraUser: '@adavies',
+          gitlabUser: '@adavies',
+        },
+        {
+          jiraUser: '@kbennet',
+          gitlabUser: '@kbennet',
+        },
+      ],
     };
   },
   methods: {
@@ -79,7 +109,7 @@ export default {
       </gl-form-group>
 
       <gl-form-group
-        class="row align-items-center"
+        class="row align-items-center mb-4"
         :label="__('Issue label')"
         label-cols-sm="2"
         label-for="jira-project-label"
@@ -93,50 +123,20 @@ export default {
         />
       </gl-form-group>
 
-      <hr />
+      <h4 class="mb-4">{{ __('Jira-GitLab user mapping template') }}</h4>
 
-      <p class="offset-md-1">
-        {{
-          __(
-            "For each Jira issue successfully imported, we'll create a new GitLab issue with the following data:",
-          )
-        }}
-      </p>
-
-      <gl-form-group
-        class="row align-items-center mb-1"
-        :label="__('Title')"
-        label-cols-sm="2"
-        label-for="jira-project-title"
-      >
-        <p id="jira-project-title" class="mb-2">{{ __('jira.issue.summary') }}</p>
-      </gl-form-group>
-      <gl-form-group
-        class="row align-items-center mb-1"
-        :label="__('Reporter')"
-        label-cols-sm="2"
-        label-for="jira-project-reporter"
-      >
-        <gl-avatar
-          id="jira-project-reporter"
-          class="mb-2"
-          :src="$options.currentUserAvatarUrl"
-          :size="24"
-          :aria-label="$options.currentUsername"
-        />
-      </gl-form-group>
-      <gl-form-group
-        class="row align-items-center mb-1"
-        :label="__('Description')"
-        label-cols-sm="2"
-        label-for="jira-project-description"
-      >
-        <p id="jira-project-description" class="mb-2">{{ __('jira.issue.description.content') }}</p>
-      </gl-form-group>
+      <gl-table :fields="fields" :items="items" fixed variant="secondary" small>
+        <template #cell(jiraUser)="data">
+          <p class="gl-display-flex gl-justify-content-space-between gl-align-items-center m-0">
+            <span>{{ data.value }}</span>
+            <gl-icon name="arrow-right" />
+          </p>
+        </template>
+      </gl-table>
 
       <div class="footer-block row-content-block d-flex justify-content-between">
         <gl-button type="submit" category="primary" variant="success" class="js-no-auto-disable">
-          {{ __('Next') }}
+          {{ __('Continue') }}
         </gl-button>
         <gl-button :href="issuesPath">{{ __('Cancel') }}</gl-button>
       </div>
