@@ -6,7 +6,7 @@ import {
   createSankey,
   removeOrphanNodes,
   getMaxNodes,
-} from '~/pipelines/components/dag/utils';
+} from '~/pipelines/components/dag/parsing_utils';
 
 import { mockBaseData } from './mock_data';
 

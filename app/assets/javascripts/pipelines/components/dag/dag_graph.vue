@@ -3,7 +3,8 @@ import * as d3 from 'd3';
 import { uniqueId } from 'lodash';
 import { PARSE_FAILURE } from './constants';
 
-import { createSankey, getMaxNodes, removeOrphanNodes } from './utils';
+import { getMaxNodes, removeOrphanNodes } from './parsing_utils';
+import { calculateClip, createSankey, labelPosition } from './drawing_utils';
 
 export default {
   viewOptions: {
@@ -57,7 +58,8 @@ export default {
 
     try {
       countedAndTransformed = this.transformData(this.graphData);
-    } catch {
+    } catch (err) {
+      console.log('inner parse', err);
       this.$emit('onFailure', PARSE_FAILURE);
       return;
     }
@@ -89,7 +91,7 @@ export default {
 
     appendLabelAsForeignObject(d, i, n) {
       const currentNode = n[i];
-      const { height, wrapperWidth, width, x, y, textAlign } = this.labelPosition(d);
+      const { height, wrapperWidth, width, x, y, textAlign } = labelPosition(d, {...this.$options.viewOptions, width: this.width});
 
       const labelClasses = [
         'gl-display-flex',
@@ -128,44 +130,13 @@ export default {
     },
 
     createClip(link) {
-      /*
-        Because large link values can overrun their box, we create a clip path
-        to trim off the excess in charts that have few nodes per column and are
-        therefore tall.
-
-        The box is created by
-          M: moving to outside midpoint of the source node
-          V: drawing a vertical line to maximum of the bottom link edge or
-            the lowest edge of the node (can be d.y0 or d.y1 depending on the link's path)
-          H: drawing a horizontal line to the outside edge of the destination node
-          V: drawing a vertical line back up to the minimum of the top link edge or
-            the highest edge of the node (can be d.y0 or d.y1 depending on the link's path)
-          H: drawing a horizontal line back to the outside edge of the source node
-          Z: closing the path, back to the start point
-      */
-
-      const clip = ({ y0, y1, source, target, width }) => {
-        const bottomLinkEdge = Math.max(y1, y0) + width / 2;
-        const topLinkEdge = Math.min(y0, y1) - width / 2;
-
-        /* eslint-disable @gitlab/require-i18n-strings */
-        return `
-          M${source.x0}, ${y1}
-          V${Math.max(bottomLinkEdge, y0, y1)}
-          H${target.x1}
-          V${Math.min(topLinkEdge, y0, y1)}
-          H${source.x0}
-          Z`;
-        /* eslint-enable @gitlab/require-i18n-strings */
-      };
-
       return link
         .append('clipPath')
         .attr('id', d => {
           return this.createAndAssignId(d, 'clipId', 'dag-clip');
         })
         .append('path')
-        .attr('d', clip);
+        .attr('d', calculateClip);
     },
 
     createGradient(link) {
@@ -322,41 +293,6 @@ export default {
       return ({ name }) => colorFn(name);
     },
 
-    labelPosition({ x0, x1, y0, y1 }) {
-      const { paddingForLabels, labelMargin, nodePadding } = this.$options.viewOptions;
-
-      const firstCol = x0 <= paddingForLabels;
-      const lastCol = x1 >= this.width - paddingForLabels;
-
-      if (firstCol) {
-        return {
-          x: 0 + labelMargin,
-          y: y0,
-          height: `${y1 - y0}px`,
-          width: paddingForLabels - 2 * labelMargin,
-          textAlign: 'right',
-        };
-      }
-
-      if (lastCol) {
-        return {
-          x: this.width - paddingForLabels + labelMargin,
-          y: y0,
-          height: `${y1 - y0}px`,
-          width: paddingForLabels - 2 * labelMargin,
-          textAlign: 'left',
-        };
-      }
-
-      return {
-        x: (x1 + x0) / 2,
-        y: y0 - nodePadding,
-        height: `${nodePadding}px`,
-        width: 'max-content',
-        wrapperWidth: paddingForLabels - 2 * labelMargin,
-        textAlign: x0 < this.width / 2 ? 'left' : 'right',
-      };
-    },
 
     transformData(parsed) {
       const baseLayout = createSankey()(parsed);
