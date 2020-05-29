@@ -6,6 +6,10 @@ describe Packages::Nuget::PackageMetadataPresenter do
   let_it_be(:package) { create(:nuget_package, :with_metadatum) }
   let_it_be(:tag1) { create(:packages_tag, name: 'tag1', package: package) }
   let_it_be(:tag2) { create(:packages_tag, name: 'tag2', package: package) }
+  let_it_be(:dependency1) { create(:packages_dependency, name: 'Newtonsoft.Json', version_pattern: '12.0.3') }
+  let_it_be(:dependency2) { create(:packages_dependency, name: 'Castle.Core', version_pattern: '4.4.1') }
+  let_it_be(:dependency_link1) { create(:packages_dependency_link, :with_nuget_metadatum, package: package, dependency: dependency1) }
+  let_it_be(:dependency_link2) { create(:packages_dependency_link, package: package, dependency: dependency2) }
   let_it_be(:presenter) { described_class.new(package) }
 
   describe '#json_url' do
@@ -27,13 +31,41 @@ describe Packages::Nuget::PackageMetadataPresenter do
   describe '#catalog_entry' do
     subject { presenter.catalog_entry }
 
+    let(:expected_dependency_groups) do
+      [
+        {
+          id: "http://localhost/api/v4/projects/1/packages/nuget/metadata/NugetPackage1/1.0.1.json#dependencyGroup/.netstandard2.0",
+          target_framework: ".NETStandard2.0",
+          type: "PackageDependencyGroup",
+          dependencies: [
+            {
+              id: "http://localhost/api/v4/projects/1/packages/nuget/metadata/NugetPackage1/1.0.1.json#dependencyGroup/.netstandard2.0/newtonsoft.json",
+              range: "12.0.3",
+              type: "PackageDependency"
+            }
+          ]
+        },
+        {
+          id: "http://localhost/api/v4/projects/1/packages/nuget/metadata/NugetPackage1/1.0.1.json#dependencyGroup",
+          type: "PackageDependencyGroup",
+          dependencies: [
+            {
+              id: "http://localhost/api/v4/projects/1/packages/nuget/metadata/NugetPackage1/1.0.1.json#dependencyGroup/castle.core",
+              range: "4.4.1",
+              type: "PackageDependency"
+            }
+          ]
+        }
+      ]
+    end
+
     it 'returns an entry structure' do
       entry = subject
 
       expect(entry).to be_a Hash
       %i[json_url archive_url].each { |field| expect(entry[field]).not_to be_blank }
       %i[authors summary].each { |field| expect(entry[field]).to be_blank }
-      expect(entry[:dependencies]).to eq []
+      expect(entry[:dependency_groups]).to eq expected_dependency_groups
       expect(entry[:package_name]).to eq package.name
       expect(entry[:package_version]).to eq package.version
       expect(entry[:tags].split(::Packages::Tag::NUGET_TAGS_SEPARATOR)).to contain_exactly('tag1', 'tag2')

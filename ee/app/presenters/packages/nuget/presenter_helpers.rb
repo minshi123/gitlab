@@ -6,7 +6,8 @@ module Packages
       include ::API::Helpers::RelatedResourcesHelpers
 
       BLANK_STRING = ''
-      EMPTY_ARRAY = [].freeze
+      PACKAGE_DEPENDENCY_GROUP = 'PackageDependencyGroup'
+      PACKAGE_DEPENDENCY = 'PackageDependency'
 
       private
 
@@ -42,7 +43,7 @@ module Packages
         {
           json_url: json_url_for(package),
           authors: BLANK_STRING,
-          dependencies: EMPTY_ARRAY,
+          dependency_groups: dependency_groups_for(package),
           package_name: package.name,
           package_version: package.version,
           archive_url: archive_url_for(package),
@@ -50,6 +51,38 @@ module Packages
           tags: tags_for(package),
           metadatum: metadatum_for(package)
         }
+      end
+
+      def dependency_groups_for(package)
+        base_id = "#{json_url_for(package)}#dependencyGroup"
+        package
+          .dependency_links
+          .preload_dependency
+          .preload_nuget_metadatum
+          .group_by { |e| e.nuget_metadatum&.target_framework }.map do |target_framework, dependency_links|
+            id = id_for_target_framework(base_id, target_framework)
+            {
+              id: id,
+              type: PACKAGE_DEPENDENCY_GROUP,
+              target_framework: target_framework,
+              dependencies: dependencies_for(id, dependency_links)
+            }.compact
+          end
+      end
+
+      def dependencies_for(id, dependency_links)
+        dependency_links.map do |dependency_link|
+          dependency = dependency_link.dependency
+          {
+            id: "#{id}/#{dependency.name.downcase}",
+            type: PACKAGE_DEPENDENCY,
+            range: dependency.version_pattern
+          }
+        end
+      end
+
+      def id_for_target_framework(base_id, target_framework)
+        target_framework.blank? ? base_id : "#{base_id}/#{target_framework.downcase}"
       end
 
       def metadatum_for(package)
