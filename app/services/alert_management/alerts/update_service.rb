@@ -18,9 +18,11 @@ module AlertManagement
 
         filter_assignees
 
-        return success if alert.update(params)
-
-        error(alert.errors.full_messages.to_sentence)
+        if alert.update(params)
+          success
+        else
+          error(alert.errors.full_messages.to_sentence)
+        end
       end
 
       private
