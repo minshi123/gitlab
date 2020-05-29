@@ -183,12 +183,16 @@ export default {
       if (this.shouldHideEditor && (this.file.content || this.file.raw)) {
         return;
       }
-
+      const initFile = this.file;
       this.editor.clearEditor();
 
       this.fetchFileData()
         .then(() => {
-          this.createEditorInstance();
+          // the file could have changed and then we don't want to
+          // create editor instance for the old file
+          if (this.file === initFile) {
+            this.createEditorInstance();
+          }
         })
         .catch(err => {
           flash(
