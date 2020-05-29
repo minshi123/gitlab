@@ -28,9 +28,20 @@ module Mutations
         def set_assignees(alert, assignee_usernames, operation_mode)
           operation_mode ||= Types::MutationOperationModeEnum.enum[:replace]
 
-          ::AlertManagement::SetAlertAssigneesService
-            .new(alert, current_user, assignee_usernames: assignee_usernames, operation_mode: operation_mode)
-            .execute
+          original_assignees = alert.assignees
+          target_users = find_target_users(assignee_usernames)
+
+          assignees = case Types::MutationOperationModeEnum.enum.key(operation_mode).to_sym
+                      when :replace then target_users.uniq
+                      when :append then (original_assignees + target_users).uniq
+                      when :remove then (original_assignees - target_users)
+                      end
+
+          ::AlertManagement::Alerts::UpdateService.new(alert, current_user, assignees: assignees).execute
+        end
+
+        def find_target_users(assignee_usernames)
+          UsersFinder.new(current_user, username: assignee_usernames).execute
         end
 
         def prepare_response(result)
