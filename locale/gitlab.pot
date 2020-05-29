@@ -15001,9 +15001,6 @@ msgstr ""
 msgid "Only mirror protected branches"
 msgstr ""
 
-msgid "Only one assignee is currently supported"
-msgstr ""
-
 msgid "Only policy:"
 msgstr ""
 
@@ -15992,6 +15989,9 @@ msgid "Please provide a name"
 msgstr ""
 
 msgid "Please provide a valid email address."
+msgstr ""
+
+msgid "Please provide attributes to update"
 msgstr ""
 
 msgid "Please refer to <a href=\"%{docs_url}\">%{docs_url}</a>"
@@ -23545,9 +23545,6 @@ msgid "Unsubscribed from this %{quick_action_target}."
 msgstr ""
 
 msgid "Unsubscribes from this %{quick_action_target}."
-msgstr ""
-
-msgid "Unsupported operation mode"
 msgstr ""
 
 msgid "Until"
