@@ -440,17 +440,6 @@ For example:
 }
 ```
 
-To test if a remote requires authentication, you can test it with the following command:
-
-```shell
-$ curl -s -i https://gitlab.com/api/v4/packages/conan/v1/ping
-HTTP/2 401
-content-type: application/json
-content-length: 30
-
-{"message":"401 Unauthorized"}
-```
-
 If credentials are required to authenticate then you can configure a [protected variable](../../../ci/variables/README.md#protect-a-custom-variable) following
 the naming convention described in the [`CONAN_LOGIN_USERNAME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name) documentation.
 
