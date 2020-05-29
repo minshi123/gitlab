@@ -385,6 +385,84 @@ You can supply a custom root certificate to complete TLS verification by using t
 specifying a `ca` setting in a [`.bowerrc`](https://bower.io/docs/config/#bowerrc-specification)
 file.
 
+### Configuring Conan projects
+
+You can configure Conan projects by adding a `.conan` directory to your project root.
+The project root is used as the [`CONAN_USER_HOME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-user-home).
+
+Consult the [`Conan`](https://docs.conan.io/en/latest/reference/config_files/conan.conf.html#conan-conf) documentation for a list
+of settings that can be applied.
+
+The `license_scanning` job runs in a [Debian 10](https://www.debian.org/releases/buster/) Docker image. The supplied image ships with
+some build tools such as [CMake](https://cmake.org/) and [GCC](https://gcc.gnu.org/).
+However, not all project types will be supported out of the box. To install additional tools needed to
+compile dependencies, please use a `before_script` to install the necessary build tools using the [`apt`](https://wiki.debian.org/PackageManagementTools) package manager.
+
+The default `Conan` configuration will set the [`CONAN_LOGIN_USERNAME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name)
+to `ci_user` and [`CONAN_PASSWORD`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-password-conan-password-remote-name) bound to the [CI_JOB_TOKEN](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference) for the running job.
+This allows Conan projects to fetch packages from a [GitLab Conan Repository](https://docs.gitlab.com/ee/user/packages/conan_repository/#fetching-conan-package-information-from-the-gitlab-package-registry)
+if a GitLab remote is specified in the `.conan/remotes.json` file.
+
+To override the default credentials specify a [`CONAN_LOGIN_USERNAME_{REMOTE_NAME}`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name)
+matching the name of the remote specified in the `.conan/remotes.json` file.
+
+#### Using private Conan registries
+
+The default remote that `Conan` will use if a `.conan/remotes.json` file is not specified is the `conan-center` remote.
+
+For example:
+
+```json
+{
+ "remotes": [
+  {
+   "name": "conan-center",
+   "url": "https://conan.bintray.com",
+   "verify_ssl": true
+  }
+ ]
+}
+```
+
+To fetch dependencies from an alternate remote specify the remote in a `.conan/remotes.json`.
+
+For example:
+
+```json
+{
+ "remotes": [
+  {
+   "name": "gitlab",
+   "url": "https://gitlab.com/api/v4/packages/conan",
+   "verify_ssl": true
+  }
+ ]
+}
+```
+
+To test if a remote requires authentication, you can test it with the following command:
+
+```shell
+$ curl -s -i https://gitlab.com/api/v4/packages/conan/v1/ping
+HTTP/2 401
+content-type: application/json
+content-length: 30
+
+{"message":"401 Unauthorized"}
+```
+
+If credentials are required to authenticate then you can configure a protected variable following
+the naming convention described in the [`CONAN_LOGIN_USERNAME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name) documentation.
+
+#### Custom root certificates for Conan
+
+Custom certificates can be provided by adding a `.conan/cacert.pem` file to the project root and specifying the
+[`CA_CERT_PATH`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-cacert-path) to `.conan/cacert.pem`.
+
+If the `ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variables) is specified, the X.509 certificates
+contained in this variable will be installed in the default trust store in the Docker image and `Conan` will be configured
+to use this as the default `CA_CERT_PATH`.
+
 ### Migration from `license_management` to `license_scanning`
 
 In GitLab 12.8 a new name for `license_management` job was introduced. This change was made to improve clarity around the purpose of the scan, which is to scan and collect the types of licenses present in a projects dependencies.
