@@ -12,9 +12,9 @@ import knativeLogo from 'images/cluster_app_logos/knative.png';
 import prometheusLogo from 'images/cluster_app_logos/prometheus.png';
 import elasticStackLogo from 'images/cluster_app_logos/elastic_stack.png';
 import fluentdLogo from 'images/cluster_app_logos/fluentd.png';
-import { s__, sprintf } from '../../locale';
+import { s__, sprintf } from '~/locale';
 import applicationRow from './application_row.vue';
-import clipboardButton from '../../vue_shared/components/clipboard_button.vue';
+import clipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import KnativeDomainEditor from './knative_domain_editor.vue';
 import { CLUSTER_TYPE, PROVIDER_TYPE, APPLICATION_STATUS, INGRESS } from '../constants';
 import eventHub from '~/clusters/event_hub';
@@ -372,13 +372,39 @@ export default {
                 s__(`ClusterIntegration|Issuers represent a certificate authority.
                               You must provide an email address for your Issuer. `)
               }}
-              <gl-link
+              <a
                 href="http://docs.cert-manager.io/en/latest/reference/issuers.html?highlight=email"
                 target="_blank"
-                >{{ __('More information') }}</gl-link
+                rel="noopener noreferrer"
+                >{{ __('More information') }}</a
               >
             </p>
           </div>
+        </template>
+      </application-row>
+      <application-row
+        id="cilium"
+        :title="cilium.title || 'GitLab Container Network Policies'"
+        :logo-url="gitlab.png"
+      >
+        <template #description>
+          <p>
+            <gl-sprintf
+              :message="
+                s__(
+                  'ClusterIntegration|Protect your clusters with GitLab Container Network Policies by enforcing how groups of pods are allowed to communicate with each other and other network endpoints. %{linkStart}Learn more about configuring Network Policies here.%{linkEnd}',
+                )
+              "
+            >
+              <template #link="{ content }">
+                <gl-link
+                  href="https://docs.gitlab.com/ee/user/clusters/applications.html#install-cilium-using-gitlab-cicd"
+                  target="_blank"
+                  >{{ content }}</gl-link
+                >
+              </template>
+            </gl-sprintf>
+          </p>
         </template>
       </application-row>
       <application-row
