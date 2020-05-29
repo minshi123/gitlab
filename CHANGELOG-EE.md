@@ -1,5 +1,9 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+## 13.0.3 (2020-05-29)
+
+- No changes.
+
 ## 13.0.1 (2020-05-27)
 
 ### Security (3 changes)
@@ -333,6 +337,13 @@ Please view this file on the master branch, on stable branches it's out of date.
 - Replace undefined confidence with unknown severity for occurrences. !31200
 - Replace undefined confidence with unknown severity for vulnerabilities. !31593
 - Translate unauthenticated user string for Audit Event. !31856 (Sashi Kumar)
+
+
+## 12.10.8 (2020-05-28)
+
+### Fixed (1 change)
+
+- Geo: Fix empty synchronisation status when nothing is synchronised. !30710
 
 
 ## 12.10.7 (2020-05-27)

@@ -31,6 +31,10 @@ gitlab.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAA
 GitLab.com sends emails from the `mg.gitlab.com` domain via [Mailgun](https://www.mailgun.com/) and has
 its own dedicated IP address (`198.61.254.240`).
 
+## Backups
+
+[See our backup strategy](https://about.gitlab.com/handbook/engineering/infrastructure/production/#backups).
+
 ## Alternative SSH port
 
 GitLab.com can be reached via a [different SSH port](https://about.gitlab.com/blog/2016/02/18/gitlab-dot-com-now-supports-an-alternate-git-plus-ssh-port/) for `git+ssh`.
@@ -367,7 +371,7 @@ test:
   release we will update the autoscaler to enable
   the pre-provisioning of virtual machines. This will significantly reduce
   the time it takes to provision a VM on the Windows fleet. You can
-  follow along in the [related issue](https://gitlab.com/gitlab-org/ci-cd/custom-executor-drivers/autoscaler/issues/32).
+  follow along in the [related issue](https://gitlab.com/gitlab-org/ci-cd/custom-executor-drivers/autoscaler/-/issues/32).
 - The Windows Shared Runner fleet may be unavailable occasionally
   for maintenance or updates.
 - The Windows Shared Runner virtual machine instances do not use the

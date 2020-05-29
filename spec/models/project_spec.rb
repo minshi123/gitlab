@@ -79,6 +79,7 @@ describe Project do
     it { is_expected.to have_many(:ci_refs) }
     it { is_expected.to have_many(:builds) }
     it { is_expected.to have_many(:build_trace_section_names)}
+    it { is_expected.to have_many(:build_report_results) }
     it { is_expected.to have_many(:runner_projects) }
     it { is_expected.to have_many(:runners) }
     it { is_expected.to have_many(:variables) }
@@ -4261,7 +4262,6 @@ describe Project do
 
   describe '#auto_devops_enabled?' do
     before do
-      allow(Feature).to receive(:enabled?).and_call_original
       Feature.get(:force_autodevops_on_by_default).enable_percentage_of_actors(0)
     end
 
@@ -4464,7 +4464,6 @@ describe Project do
     let_it_be(:project, reload: true) { create(:project) }
 
     before do
-      allow(Feature).to receive(:enabled?).and_call_original
       Feature.get(:force_autodevops_on_by_default).enable_percentage_of_actors(0)
     end
 

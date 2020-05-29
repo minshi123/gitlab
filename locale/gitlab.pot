@@ -867,6 +867,9 @@ msgstr ""
 msgid "A .NET Core console application template, customizable for any .NET Core project"
 msgstr ""
 
+msgid "A DAG must have two dependent jobs to be visualized on this tab."
+msgstr ""
+
 msgid "A GitBook site that uses Netlify for CI/CD instead of GitLab, but still with all the other great GitLab features."
 msgstr ""
 
@@ -2431,6 +2434,9 @@ msgstr ""
 msgid "An unexpected error occurred while stopping the Web Terminal."
 msgstr ""
 
+msgid "An unknown error occurred while loading this graph."
+msgstr ""
+
 msgid "Analytics"
 msgstr ""
 
@@ -2543,6 +2549,9 @@ msgid "Apply a label"
 msgstr ""
 
 msgid "Apply a template"
+msgstr ""
+
+msgid "Apply changes"
 msgstr ""
 
 msgid "Apply suggestion"
@@ -5736,6 +5745,9 @@ msgstr ""
 msgid "ComplianceFramework|This project is regulated by %{framework}."
 msgstr ""
 
+msgid "Confidence"
+msgstr ""
+
 msgid "Confidence: %{confidence}"
 msgstr ""
 
@@ -6511,6 +6523,9 @@ msgid "Create your first page"
 msgstr ""
 
 msgid "Create your group"
+msgstr ""
+
+msgid "Create/import your first project"
 msgstr ""
 
 msgid "CreateGroup|You don’t have permission to create a subgroup in this group."
@@ -10820,6 +10835,9 @@ msgstr ""
 msgid "Group avatar"
 msgstr ""
 
+msgid "Group by:"
+msgstr ""
+
 msgid "Group could not be imported: %{errors}"
 msgstr ""
 
@@ -11638,6 +11656,9 @@ msgid "Import all repositories"
 msgstr ""
 
 msgid "Import an exported GitLab project"
+msgstr ""
+
+msgid "Import failed due to a GitHub error: %{original}"
 msgstr ""
 
 msgid "Import from"
@@ -13643,7 +13664,7 @@ msgstr ""
 msgid "MergeRequests|started a thread on commit %{linkStart}%{commitDisplay}%{linkEnd}"
 msgstr ""
 
-msgid "MergeRequest|Compare %{source} and %{target}"
+msgid "MergeRequest|Compare %{target} and %{source}"
 msgstr ""
 
 msgid "MergeRequest|Error dismissing suggestion popover. Please try again."
@@ -13737,6 +13758,9 @@ msgid "Metrics::Dashboard::Annotation|You are not authorized to create annotatio
 msgstr ""
 
 msgid "Metrics::Dashboard::Annotation|You are not authorized to delete this annotation"
+msgstr ""
+
+msgid "Metrics::Dashboard::Annotation|can't be before starting_at time"
 msgstr ""
 
 msgid "Metrics::UsersStarredDashboards|Dashboard with requested path can not be found"
@@ -14241,6 +14265,9 @@ msgstr ""
 msgid "Network"
 msgstr ""
 
+msgid "NetworkPolicies|Define this policy's location, conditions and actions."
+msgstr ""
+
 msgid "NetworkPolicies|Enabled"
 msgstr ""
 
@@ -14266,6 +14293,9 @@ msgid "NetworkPolicies|Policies are a specification of how groups of pods are al
 msgstr ""
 
 msgid "NetworkPolicies|Policy %{policyName} was successfully changed"
+msgstr ""
+
+msgid "NetworkPolicies|Policy definition"
 msgstr ""
 
 msgid "NetworkPolicies|Something went wrong, failed to update policy"
@@ -14547,6 +14577,9 @@ msgid "No files found."
 msgstr ""
 
 msgid "No forks are available to you."
+msgstr ""
+
+msgid "No grouping"
 msgstr ""
 
 msgid "No job log"
@@ -15512,6 +15545,9 @@ msgid "Paste issue link"
 msgstr ""
 
 msgid "Paste your public SSH key, which is usually contained in the file '~/.ssh/id_ed25519.pub' or '~/.ssh/id_rsa.pub' and begins with 'ssh-ed25519' or 'ssh-rsa'. Don't use your private SSH key."
+msgstr ""
+
+msgid "Patch to apply"
 msgstr ""
 
 msgid "Path"
@@ -17215,6 +17251,9 @@ msgstr ""
 msgid "ProjectsNew|Contact an administrator to enable options for importing your project."
 msgstr ""
 
+msgid "ProjectsNew|Create"
+msgstr ""
+
 msgid "ProjectsNew|Create from template"
 msgstr ""
 
@@ -17961,6 +18000,9 @@ msgid "Release|Something went wrong while saving the release details"
 msgstr ""
 
 msgid "Remediated: needs review"
+msgstr ""
+
+msgid "Remediations"
 msgstr ""
 
 msgid "Remember me"
@@ -19872,6 +19914,9 @@ msgstr ""
 msgid "Settings to prevent self-approval across all projects in the instance. Only an administrator can modify these settings."
 msgstr ""
 
+msgid "Severity"
+msgstr ""
+
 msgid "Severity: %{severity}"
 msgstr ""
 
@@ -20202,6 +20247,9 @@ msgid "Snippets|Optionally add a description about what your snippet does or how
 msgstr ""
 
 msgid "Snowplow"
+msgstr ""
+
+msgid "Solution"
 msgstr ""
 
 msgid "Some child epics may be hidden due to applied filters"
@@ -22058,6 +22106,9 @@ msgstr ""
 msgid "There was an error loading users activity calendar."
 msgstr ""
 
+msgid "There was an error parsing the data for this graph."
+msgstr ""
+
 msgid "There was an error removing the e-mail."
 msgstr ""
 
@@ -22497,6 +22548,9 @@ msgid "This project will be removed on %{date}"
 msgstr ""
 
 msgid "This project will be removed on %{date} since its parent group '%{parent_group_name}' has been scheduled for removal."
+msgstr ""
+
+msgid "This project will live in your group <strong>%{namespace}</strong>. A project is where you house your files (repository), plan your work (issues), publish your documentation (wiki), and so much more."
 msgstr ""
 
 msgid "This repository"
@@ -25585,6 +25639,9 @@ msgid "Your deployment services will be broken, you will need to manually fix th
 msgstr ""
 
 msgid "Your device was successfully set up! Give it a name and register it with the GitLab server."
+msgstr ""
+
+msgid "Your first project"
 msgstr ""
 
 msgid "Your groups"
