@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { createStore } from '~/ide/stores';
-import router from '~/ide/ide_router';
+import { createRouter } from '~/ide/ide_router';
 import {
   stageAllChanges,
   unstageAllChanges,
@@ -30,9 +30,11 @@ jest.mock('~/lib/utils/url_utility', () => ({
 
 describe('Multi-file store actions', () => {
   let store;
+  let router;
 
   beforeEach(() => {
     store = createStore();
+    router = createRouter(store);
 
     jest.spyOn(store, 'commit');
     jest.spyOn(store, 'dispatch');

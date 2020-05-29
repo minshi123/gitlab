@@ -1,17 +1,17 @@
-import router from '~/ide/ide_router';
-import store from '~/ide/stores';
+import { createRouter } from '~/ide/ide_router';
+import { createStore } from '~/ide/stores';
 
 describe('IDE router', () => {
   const PROJECT_NAMESPACE = 'my-group/sub-group';
   const PROJECT_NAME = 'my-project';
 
-  afterEach(() => {
-    router.push('/');
-  });
+  let store;
+  let router;
 
-  afterAll(() => {
-    // VueRouter leaves this window.history at the "base" url. We need to clean this up.
+  beforeEach(() => {
     window.history.replaceState({}, '', '/');
+    store = createStore();
+    router = createRouter(store);
   });
 
   [
