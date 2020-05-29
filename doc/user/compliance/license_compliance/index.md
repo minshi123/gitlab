@@ -396,11 +396,11 @@ of settings that can be applied.
 The `license_scanning` job runs in a [Debian 10](https://www.debian.org/releases/buster/) Docker image.
 The supplied image ships with some build tools such as [CMake](https://cmake.org/) and [GCC](https://gcc.gnu.org/).
 However, not all project types will be supported out of the box. To install additional tools needed to
-compile dependencies, please use a `before_script` to install the necessary build tools using the [`apt`](https://wiki.debian.org/PackageManagementTools) package manager.
+compile dependencies, please use a [`before_script`](../../../ci/yaml/README.md#before_script-and-after_script) to install the necessary build tools using the [`apt`](https://wiki.debian.org/PackageManagementTools) package manager.
 
 The default [`Conan`](https://conan.io/) configuration will set the [`CONAN_LOGIN_USERNAME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name)
 to `ci_user` and [`CONAN_PASSWORD`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-password-conan-password-remote-name) bound to the [`CI_JOB_TOKEN`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference) for the running job.
-This allows [`Conan`](https://conan.io/) projects to fetch packages from a [GitLab Conan Repository](https://docs.gitlab.com/ee/user/packages/conan_repository/#fetching-conan-package-information-from-the-gitlab-package-registry)
+This allows [`Conan`](https://conan.io/) projects to fetch packages from a [GitLab Conan Repository](../../packages/conan_repository/#fetching-conan-package-information-from-the-gitlab-package-registry)
 if a GitLab remote is specified in the `.conan/remotes.json` file.
 
 To override the default credentials specify a [`CONAN_LOGIN_USERNAME_{REMOTE_NAME}`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name)
@@ -408,7 +408,7 @@ matching the name of the remote specified in the `.conan/remotes.json` file.
 
 #### Using private Conan registries
 
-The default remote that [`Conan`](https://conan.io/) will use if a `.conan/remotes.json` file is not specified is the `conan-center` remote.
+The default remote that [`Conan`](https://conan.io/) will use is the `conan-center` remote.
 
 For example:
 
@@ -451,7 +451,7 @@ content-length: 30
 {"message":"401 Unauthorized"}
 ```
 
-If credentials are required to authenticate then you can configure a protected variable following
+If credentials are required to authenticate then you can configure a [protected variable](../../../ci/variables/README.html#protect-a-custom-variable) following
 the naming convention described in the [`CONAN_LOGIN_USERNAME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name) documentation.
 
 #### Custom root certificates for Conan
