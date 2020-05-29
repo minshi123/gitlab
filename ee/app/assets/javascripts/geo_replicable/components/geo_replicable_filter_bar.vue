@@ -24,8 +24,13 @@ export default {
         this.fetchReplicableItems();
       }, DEFAULT_SEARCH_DELAY),
     },
+    replicableTypeName() {
+      return this.replicableType.split('_').join(' ');
+    },
     resyncText() {
-      return sprintf(__('Resync all %{replicableType}'), { replicableType: this.replicableType });
+      return sprintf(__('Resync all %{replicableType}'), {
+        replicableType: this.replicableTypeName,
+      });
     },
   },
   methods: {
@@ -51,10 +56,8 @@ export default {
               :class="{ 'bg-secondary-100': index === currentFilterIndex }"
               @click="filterChange(index)"
             >
-              <span
-                >{{ filter.label }}
-                <span v-if="filter.label === 'All'">{{ replicableType }}</span></span
-              >
+              <span v-if="filter.label === 'All'">{{ filter.label }} {{ replicableTypeName }}</span>
+              <span v-else>{{ filter.label }}</span>
             </gl-dropdown-item>
           </gl-dropdown>
           <gl-search-box-by-type
