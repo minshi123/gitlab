@@ -217,14 +217,14 @@ export default {
         class="rounded-top"
         title-link="https://docs.helm.sh/"
       >
-        <div slot="description">
+        <template #description>
           {{
             s__(`ClusterIntegration|Helm streamlines installing
                     and managing Kubernetes applications.
                     Tiller runs inside of your Kubernetes Cluster,
                     and manages releases of your charts.`)
           }}
-        </div>
+        </template>
       </application-row>
       <div v-show="!helmInstalled" class="cluster-application-warning">
         <div class="svg-container" v-html="$options.helmInstallIllustration"></div>
@@ -254,7 +254,7 @@ export default {
         :updateable="false"
         title-link="https://kubernetes.io/docs/concepts/services-networking/ingress/"
       >
-        <div slot="description">
+        <template #description>
           <p>
             {{
               s__(`ClusterIntegration|Ingress gives you a way to route
@@ -337,7 +337,7 @@ export default {
               </strong>
             </div>
           </template>
-        </div>
+        </template>
       </application-row>
       <application-row
         id="cert_manager"
@@ -356,49 +356,47 @@ export default {
         :disabled="!helmInstalled"
         title-link="https://cert-manager.readthedocs.io/en/latest/#"
       >
-        <template>
-          <div slot="description">
-            <p>
-              <gl-sprintf
-                :message="
-                  s__(`ClusterIntegration|Cert-Manager is a native Kubernetes certificate management controller that helps with issuing certificates.
-              Installing Cert-Manager on your cluster will issue a certificate by %{letsEncrypt} and ensure that certificates
-              are valid and up-to-date.`)
-                "
-              >
-                <template #letsEncrypt>
-                  <gl-link href="https://letsencrypt.org/" target="_blank">{{
-                    s__(`ClusterIntegration|Let's Encrypt`)
-                  }}</gl-link>
-                </template>
-              </gl-sprintf>
-            </p>
-            <div class="form-group">
-              <label for="cert-manager-issuer-email">
-                {{ s__('ClusterIntegration|Issuer Email') }}
-              </label>
-              <div class="input-group">
-                <input
-                  id="cert-manager-issuer-email"
-                  v-model="applications.cert_manager.email"
-                  :readonly="certManagerInstalled"
-                  type="text"
-                  class="form-control js-email"
-                />
-              </div>
-              <p class="form-text text-muted">
-                {{
-                  s__(`ClusterIntegration|Issuers represent a certificate authority.
-                                You must provide an email address for your Issuer. `)
-                }}
-                <a
-                  href="http://docs.cert-manager.io/en/latest/reference/issuers.html?highlight=email"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >{{ __('More information') }}</a
-                >
-              </p>
+        <template #description>
+          <p>
+            <gl-sprintf
+              :message="
+                s__(`ClusterIntegration|Cert-Manager is a native Kubernetes certificate management controller that helps with issuing certificates.
+            Installing Cert-Manager on your cluster will issue a certificate by %{letsEncrypt} and ensure that certificates
+            are valid and up-to-date.`)
+              "
+            >
+              <template #letsEncrypt>
+                <gl-link href="https://letsencrypt.org/" target="_blank">{{
+                  s__(`ClusterIntegration|Let's Encrypt`)
+                }}</gl-link>
+              </template>
+            </gl-sprintf>
+          </p>
+          <div class="form-group">
+            <label for="cert-manager-issuer-email">
+              {{ s__('ClusterIntegration|Issuer Email') }}
+            </label>
+            <div class="input-group">
+              <input
+                id="cert-manager-issuer-email"
+                v-model="applications.cert_manager.email"
+                :readonly="certManagerInstalled"
+                type="text"
+                class="form-control js-email"
+              />
             </div>
+            <p class="form-text text-muted">
+              {{
+                s__(`ClusterIntegration|Issuers represent a certificate authority.
+                              You must provide an email address for your Issuer. `)
+              }}
+              <a
+                href="http://docs.cert-manager.io/en/latest/reference/issuers.html?highlight=email"
+                target="_blank"
+                rel="noopener noreferrer"
+                >{{ __('More information') }}</a
+              >
+            </p>
           </div>
         </template>
       </application-row>
@@ -483,32 +481,30 @@ export default {
         :disabled="!helmInstalled"
         title-link="https://crossplane.io"
       >
-        <template>
-          <div slot="description">
-            <p>
-              <gl-sprintf
-                :message="
-                  s__(
-                    `ClusterIntegration|Crossplane enables declarative provisioning of managed services from your cloud of choice using %{codeStart}kubectl%{codeEnd} or %{gitlabIntegrationLink}.
-              Crossplane runs inside your Kubernetes cluster and supports secure connectivity and secrets management between app containers and the cloud services they depend on.`,
-                  )
-                "
-              >
-                <template #code="{content}">
-                  <code>{{ content }}</code>
-                </template>
-                <template #gitlabIntegrationLink>
-                  <gl-link
-                    href="https://docs.gitlab.com/ee/user/clusters/applications.html#crossplane"
-                    target="_blank"
-                    >{{ s__('ClusterIntegration|Gitlab Integration') }}</gl-link
-                  >
-                </template>
-              </gl-sprintf>
-            </p>
-            <div class="form-group">
-              <CrossplaneProviderStack :crossplane="crossplane" @set="setCrossplaneProviderStack" />
-            </div>
+        <template #description>
+          <p>
+            <gl-sprintf
+              :message="
+                s__(
+                  `ClusterIntegration|Crossplane enables declarative provisioning of managed services from your cloud of choice using %{codeStart}kubectl%{codeEnd} or %{gitlabIntegrationLink}.
+            Crossplane runs inside your Kubernetes cluster and supports secure connectivity and secrets management between app containers and the cloud services they depend on.`,
+                )
+              "
+            >
+              <template #code="{content}">
+                <code>{{ content }}</code>
+              </template>
+              <template #gitlabIntegrationLink>
+                <gl-link
+                  href="https://docs.gitlab.com/ee/user/clusters/applications.html#crossplane"
+                  target="_blank"
+                  >{{ s__('ClusterIntegration|Gitlab Integration') }}</gl-link
+                >
+              </template>
+            </gl-sprintf>
+          </p>
+          <div class="form-group">
+            <CrossplaneProviderStack :crossplane="crossplane" @set="setCrossplaneProviderStack" />
           </div>
         </template>
       </application-row>
@@ -530,7 +526,7 @@ export default {
         :disabled="!helmInstalled"
         title-link="https://jupyterhub.readthedocs.io/en/stable/"
       >
-        <div slot="description">
+        <template #description>
           <p>
             {{
               s__(`ClusterIntegration|JupyterHub, a multi-user Hub, spawns,
@@ -573,7 +569,7 @@ export default {
               </p>
             </div>
           </template>
-        </div>
+        </template>
       </application-row>
       <application-row
         id="knative"
@@ -598,7 +594,7 @@ export default {
         v-bind="applications.knative"
         title-link="https://github.com/knative/docs"
       >
-        <div slot="description">
+        <template #description>
           <p v-if="!rbac" class="rbac-notice bs-callout bs-callout-info">
             {{
               s__(`ClusterIntegration|You must have an RBAC-enabled cluster
@@ -624,7 +620,7 @@ export default {
             @save="saveKnativeDomain"
             @set="setKnativeDomain"
           />
-        </div>
+        </template>
       </application-row>
       <application-row
         id="elastic_stack"
@@ -647,7 +643,7 @@ export default {
         :disabled="!helmInstalled"
         title-link="https://gitlab.com/gitlab-org/charts/elastic-stack"
       >
-        <div slot="description">
+        <template #description>
           <p>
             {{
               s__(
@@ -655,7 +651,7 @@ export default {
               )
             }}
           </p>
-        </div>
+        </template>
       </application-row>
 
       <application-row
@@ -682,7 +678,7 @@ export default {
         :updateable="false"
         title-link="https://github.com/helm/charts/tree/master/stable/fluentd"
       >
-        <div slot="description">
+        <template #description>
           <p>
             {{
               s__(
@@ -700,7 +696,7 @@ export default {
             :status="applications.fluentd.status"
             :update-failed="applications.fluentd.updateFailed"
           />
-        </div>
+        </template>
       </application-row>
     </div>
   </section>
