@@ -43,4 +43,26 @@ describe 'admin Geo Replication Nav', :js, :geo do
       let(:path) { admin_geo_designs_path }
     end
   end
+
+  describe 'visit admin/geo/replication/package_files' do
+    context 'when geo_self_service_framework feature is enabled' do
+      before do
+        stub_feature_flags(geo_self_service_framework: true)
+      end
+
+      it_behaves_like 'active sidebar link', 'Package Files' do
+      end
+    end
+
+    context 'when geo_self_service_framework feature is disabled' do
+      before do
+        stub_feature_flags(geo_self_service_framework: false)
+      end
+
+      it 'does not render navigational element' do
+        navigation_link = page.find("a[title=\"Package Files\"]")
+        expect(navigation_link).not_to be_present
+      end
+    end
+  end
 end

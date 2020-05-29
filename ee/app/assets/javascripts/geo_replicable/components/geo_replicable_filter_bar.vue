@@ -24,8 +24,13 @@ export default {
         this.fetchReplicableItems();
       }, DEFAULT_SEARCH_DELAY),
     },
+    replicableTypeName() {
+      return this.replicableType.split('_').join(' ');
+    },
     resyncText() {
-      return sprintf(__('Resync all %{replicableType}'), { replicableType: this.replicableType });
+      return sprintf(__('Resync all %{replicableType}'), {
+        replicableType: this.replicableTypeName,
+      });
     },
   },
   methods: {
@@ -53,7 +58,7 @@ export default {
             >
               <span
                 >{{ filter.label }}
-                <span v-if="filter.label === 'All'">{{ replicableType }}</span></span
+                <span v-if="filter.label === 'All'">{{ replicableTypeName }}</span></span
               >
             </gl-dropdown-item>
           </gl-dropdown>

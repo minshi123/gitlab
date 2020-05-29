@@ -20,6 +20,9 @@ export default {
   },
   computed: {
     ...mapState(['replicableType']),
+    replicableTypeName() {
+      return this.replicableType.split('_').join(' ');
+    },
     linkText() {
       return sprintf(
         s__(
@@ -38,7 +41,7 @@ export default {
 
 <template>
   <gl-empty-state
-    :title="sprintf(__('There are no %{replicableType} to show'), { replicableType })"
+    :title="sprintf(__('There are no %{replicableTypeName} to show'), { replicableTypeName })"
     :svg-path="geoReplicableEmptySvgPath"
   >
     <template #description>
