@@ -6520,7 +6520,8 @@ CREATE TABLE public.todos (
     updated_at timestamp without time zone,
     note_id integer,
     commit_id character varying,
-    group_id integer
+    group_id integer,
+    resolved_by_action smallint
 );
 
 CREATE SEQUENCE public.todos_id_seq
@@ -6710,7 +6711,8 @@ CREATE TABLE public.user_preferences (
     setup_for_company boolean,
     render_whitespace_in_code boolean,
     tab_width smallint,
-    feature_filter_type bigint
+    feature_filter_type bigint,
+    experience_level smallint
 );
 
 CREATE SEQUENCE public.user_preferences_id_seq
@@ -9640,6 +9642,8 @@ CREATE INDEX index_epics_on_group_id_and_iid_varchar_pattern ON public.epics USI
 
 CREATE INDEX index_epics_on_iid ON public.epics USING btree (iid);
 
+CREATE INDEX index_epics_on_last_edited_by_id ON public.epics USING btree (last_edited_by_id);
+
 CREATE INDEX index_epics_on_lock_version ON public.epics USING btree (lock_version) WHERE (lock_version IS NULL);
 
 CREATE INDEX index_epics_on_parent_id ON public.epics USING btree (parent_id);
@@ -9874,6 +9878,8 @@ CREATE INDEX index_issues_on_description_trigram ON public.issues USING gin (des
 
 CREATE INDEX index_issues_on_duplicated_to_id ON public.issues USING btree (duplicated_to_id) WHERE (duplicated_to_id IS NOT NULL);
 
+CREATE INDEX index_issues_on_last_edited_by_id ON public.issues USING btree (last_edited_by_id);
+
 CREATE INDEX index_issues_on_lock_version ON public.issues USING btree (lock_version) WHERE (lock_version IS NULL);
 
 CREATE INDEX index_issues_on_milestone_id ON public.issues USING btree (milestone_id);
@@ -10079,6 +10085,8 @@ CREATE INDEX index_merge_trains_on_user_id ON public.merge_trains USING btree (u
 CREATE INDEX index_metrics_dashboard_annotations_on_cluster_id_and_3_columns ON public.metrics_dashboard_annotations USING btree (cluster_id, dashboard_path, starting_at, ending_at) WHERE (cluster_id IS NOT NULL);
 
 CREATE INDEX index_metrics_dashboard_annotations_on_environment_id_and_3_col ON public.metrics_dashboard_annotations USING btree (environment_id, dashboard_path, starting_at, ending_at) WHERE (environment_id IS NOT NULL);
+
+CREATE INDEX index_metrics_dashboard_annotations_on_timespan_end ON public.metrics_dashboard_annotations USING btree (COALESCE(ending_at, starting_at));
 
 CREATE INDEX index_metrics_users_starred_dashboards_on_project_id ON public.metrics_users_starred_dashboards USING btree (project_id);
 
@@ -10932,8 +10940,6 @@ CREATE UNIQUE INDEX index_vulnerability_occurrence_identifiers_on_unique_keys ON
 
 CREATE INDEX index_vulnerability_occurrence_pipelines_on_pipeline_id ON public.vulnerability_occurrence_pipelines USING btree (pipeline_id);
 
-CREATE INDEX index_vulnerability_occurrences_on_id_and_confidence_eq_zero ON public.vulnerability_occurrences USING btree (id) WHERE (confidence = 0);
-
 CREATE INDEX index_vulnerability_occurrences_on_primary_identifier_id ON public.vulnerability_occurrences USING btree (primary_identifier_id);
 
 CREATE INDEX index_vulnerability_occurrences_on_scanner_id ON public.vulnerability_occurrences USING btree (scanner_id);
@@ -10943,8 +10949,6 @@ CREATE UNIQUE INDEX index_vulnerability_occurrences_on_unique_keys ON public.vul
 CREATE UNIQUE INDEX index_vulnerability_occurrences_on_uuid ON public.vulnerability_occurrences USING btree (uuid);
 
 CREATE INDEX index_vulnerability_occurrences_on_vulnerability_id ON public.vulnerability_occurrences USING btree (vulnerability_id);
-
-CREATE INDEX index_vulnerability_on_id_and_confidence_eq_zero ON public.vulnerabilities USING btree (id) WHERE (confidence = 0);
 
 CREATE UNIQUE INDEX index_vulnerability_scanners_on_project_id_and_external_id ON public.vulnerability_scanners USING btree (project_id, external_id);
 
@@ -13950,13 +13954,19 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200514000340
 20200515155620
 20200518091745
+20200518133123
 20200519115908
 20200519171058
 20200519194042
+20200520103514
+20200521022725
 20200525114553
 20200525121014
 20200526120714
+20200526153844
 20200526164946
 20200526164947
+20200527094322
+20200527095401
 \.
 

@@ -7,13 +7,18 @@ type: howto
 
 # Cloud deployment
 
-Interacting with a major cloud provider such as Amazon AWS may have become a much needed task that's
+Interacting with a major cloud provider may have become a much needed task that's
 part of your delivery process. GitLab is making this process less painful by providing Docker images
 that come with the needed libraries and tools pre-installed.
 By referencing them in your CI/CD pipeline, you'll be able to interact with your chosen
 cloud provider more easily.
 
-## Run AWS commands from GitLab CI/CD
+## AWS
+
+GitLab provides Docker images to simplify working with AWS, and a template to make
+it easier to [deploy to AWS](#deploy-your-application-to-the-aws-elastic-container-service-ecs).
+
+### Run AWS commands from GitLab CI/CD
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/31167) in GitLab 12.6.
 
@@ -30,12 +35,21 @@ Some credentials are required to be able to run `aws` commands:
    NOTE: **Note:**
    A new **Access key ID** and **Secret access key** pair will be generated. Please take a note of them right away.
 
-1. In your GitLab project, go to **Settings > CI / CD**. Set the Access key ID and Secret access key as [environment variables](../variables/README.md#gitlab-cicd-environment-variables), using the following variable names:
+1. In your GitLab project, go to **Settings > CI / CD**. Set the following as
+   [environment variables](../variables/README.md#gitlab-cicd-environment-variables)
+   (see table below):
 
-   | Env. variable name      | Value                    |
-   |:------------------------|:-------------------------|
-   | `AWS_ACCESS_KEY_ID`     | Your "Access key ID"     |
-   | `AWS_SECRET_ACCESS_KEY` | Your "Secret access key" |
+   - Access key ID.
+   - Secret access key.
+   - Region code. You can check the [list of AWS regional endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints).
+     You might want to check if the AWS service you intend to use is
+     [available in the chosen region](https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/).
+
+   | Env. variable name      | Value                  |
+   |:------------------------|:-----------------------|
+   | `AWS_ACCESS_KEY_ID`     | Your Access key ID     |
+   | `AWS_SECRET_ACCESS_KEY` | Your Secret access key |
+   | `AWS_DEFAULT_REGION`    | Your region code       |
 
 1. You can now use `aws` commands in the `.gitlab-ci.yml` file of this project:
 
@@ -54,7 +68,7 @@ Some credentials are required to be able to run `aws` commands:
    Container Registry](../../user/packages/container_registry/index.md) and is
    ready to use. Alternatively, replace the image with one hosted on AWS ECR.
 
-## Use an AWS Elastic Container Registry (ECR) image in your CI/CD
+### Use an AWS Elastic Container Registry (ECR) image in your CI/CD
 
 Instead of referencing an image hosted on the GitLab Registry, you can
 reference an image hosted on any third-party registry, such as the
@@ -65,7 +79,7 @@ repository](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-e
 Then reference it in your `.gitlab-ci.yml` file and replace the `image`
 path to point to your ECR image.
 
-## Deploy your application to the AWS Elastic Container Service (ECS)
+### Deploy your application to the AWS Elastic Container Service (ECS)
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/207962) in GitLab 12.9.
 

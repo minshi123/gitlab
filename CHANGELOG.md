@@ -2,6 +2,20 @@
 documentation](doc/development/changelog.md) for instructions on adding your own
 entry.
 
+## 13.0.3 (2020-05-29)
+
+### Fixed (8 changes, 1 of them is from the community)
+
+- Fixed redirection to project snippets. !32530
+- Fix Geo replication for design thumbnails. !32703
+- Fix 404s downloading build artifacts. !32741
+- Fix Auto DevOps manual rollout jobs not being allowed to fail. !32865
+- Update deprecated routes in irker integration. !32923 (Marc Jeanmougin)
+- Change format of variables parameter in Prometheus proxy API for metrics dashboard. !33062
+- Fix issue and MR API performance regression when Markdown cache is stale. !33235
+- Fix close issue when user created the issue. !33294
+
+
 ## 13.0.1 (2020-05-27)
 
 ### Security (12 changes)
@@ -587,6 +601,14 @@ entry.
 - Update GitLab Elasticsearch Indexer to v2.3.0. !32199
 - Update asciidoctor-plantuml gem to v0.0.12. !32376
 - Use visitUrl in Alert management. !32414
+
+
+## 12.10.8 (2020-05-28)
+
+### Fixed (2 changes)
+
+- Fix Geo replication for design thumbnails. !32703
+- Fix 404s downloading build artifacts. !32741
 
 
 ## 12.10.7 (2020-05-27)

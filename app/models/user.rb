@@ -718,7 +718,7 @@ class User < ApplicationRecord
         otp_grace_period_started_at: nil,
         otp_backup_codes:            nil
       )
-      self.u2f_registrations.destroy_all # rubocop: disable DestroyAll
+      self.u2f_registrations.destroy_all # rubocop: disable Cop/DestroyAll
     end
   end
 
@@ -1634,10 +1634,6 @@ class User < ApplicationRecord
 
   def user_detail
     super.presence || build_user_detail
-  end
-
-  def todos_limited_to(ids)
-    todos.where(id: ids)
   end
 
   def pending_todo_for(target)
