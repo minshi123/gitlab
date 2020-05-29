@@ -12,6 +12,9 @@ module Types
           description: 'Name of the link'
     field :url, GraphQL::STRING_TYPE, null: true,
           description: 'URL of the link'
+    field :link_type, GraphQL::STRING_TYPE, null: true,
+          description: 'The type of the link: `other`, `runbook`, `image`, `package`. Defaults to `other`.
+'
 
     field :external, GraphQL::BOOLEAN_TYPE, null: true, method: :external?,
           description: 'Indicates the link points to an external resource'

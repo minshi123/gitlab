@@ -9574,6 +9574,11 @@ type ReleaseLink {
   id: ID!
 
   """
+  The type of the link: `other`, `runbook`, `image`, `package`. Defaults to `other`.
+  """
+  linkType: String
+
+  """
   Name of the link
   """
   name: String

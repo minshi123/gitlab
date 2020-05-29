@@ -27940,6 +27940,20 @@
               "deprecationReason": null
             },
             {
+              "name": "linkType",
+              "description": "The type of the link: `other`, `runbook`, `image`, `package`. Defaults to `other`.\n",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "name",
               "description": "Name of the link",
               "args": [
