@@ -109,9 +109,5 @@ module Geo
     def all_lfs_objects
       current_node(fdw: false).lfs_objects
     end
-
-    def registries_for_lfs_objects
-      current_node.lfs_object_registries
-    end
   end
 end
