@@ -32,7 +32,7 @@ module Elastic
       end
 
       def maintain_elasticsearch_destroy
-        ElasticIndexerWorker.perform_async(:delete, self.class.to_s, self.id, self.es_id, es_parent: self.es_parent)
+        ElasticDeleteProjectWorker.perform_async(self.id, self.es_id)
       end
 
       def each_indexed_association
