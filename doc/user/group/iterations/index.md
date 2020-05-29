@@ -19,4 +19,8 @@ Navigate to **Issues > Iterations** in a group to view the iterations list. From
 
 ## Creating iterations
 
+>**Note:** A permission level of `Developer` or higher is required to create iterations.
+
 To create an **iteration**, navigate to **Issues > Iterations** in the group and click **New iteration**.
+
+Enter the title, a description (optional), a start date, and a due date. Click **Create iteration** to create the iteration, which will open the iteration details page.
