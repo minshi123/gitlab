@@ -30,6 +30,11 @@ describe Gitlab::Elastic::Client do
       .to_return(status: 200, body: creds_response, headers: {})
   end
 
+  def stub_ecs_credentials(creds_response)
+    stub_env("AWS_CONTAINER_CREDENTIALS_RELATIVE_URI", "/v2/credentials/0")
+    stub_request(:get, "http://169.254.170.2/v2/credentials/0")
+      .to_return(status: 200, body: creds_response, headers: {})
+
   describe '.build' do
     let(:client) { described_class.build(params) }
 
@@ -107,6 +112,23 @@ describe Gitlab::Elastic::Client do
 
         it 'returns credentials from ec2 instance profile' do
           stub_instance_credentials(creds_valid_response)
+
+          expect(creds.credentials.access_key_id).to eq '0'
+          expect(creds.credentials.secret_access_key).to eq '0'
+        end
+      end
+
+      context 'Inside of an ECS container with the container instance profile' do
+        let(:params) do
+          {
+            url: 'http://elastic.example.com:9200',
+            aws: true,
+            aws_region: 'us-east-1'
+          }
+        end
+
+        it 'returns credentials from the ECS instance profile service' do
+          stub_ecs_credentials(creds_valid_response)
 
           expect(creds.credentials.access_key_id).to eq '0'
           expect(creds.credentials.secret_access_key).to eq '0'

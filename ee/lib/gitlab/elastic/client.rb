@@ -33,9 +33,14 @@ module Gitlab
         return static_credentials if static_credentials&.set?
 
         # Instantiating this will perform an API call, so only do so if the
-        # static credentials did not work
-        instance_credentials = Aws::InstanceProfileCredentials.new
-
+        # static credentials did not work, This has a couple parts for it.
+        # The first part sees if we are in an ECS container, if so we ask the
+        # container metadata service, otherwise we ask the EC2 metadata service
+        instance_credentials = if ENV["AWS_CONTAINER_CREDENTIALS_RELATIVE_URI"]
+                                 Aws::ECSCredentials.new
+                               else
+                                 Aws::InstanceProfileCredentials.new
+                               end
         instance_credentials if instance_credentials&.set?
       end
     end
