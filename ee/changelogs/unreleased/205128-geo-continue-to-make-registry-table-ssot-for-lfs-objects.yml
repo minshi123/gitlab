@@ -1,0 +1,5 @@
+---
+title: Geo - Remove FDW queries to replicate LFS objects
+merge_request: 33432
+author:
+type: performance
