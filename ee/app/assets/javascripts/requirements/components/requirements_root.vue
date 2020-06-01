@@ -2,9 +2,14 @@
 import * as Sentry from '@sentry/browser';
 import { GlPagination } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
+import Api from '~/api';
 import createFlash from '~/flash';
 import { urlParamsToObject } from '~/lib/utils/common_utils';
 import { updateHistory, setUrlParams } from '~/lib/utils/url_utility';
+
+import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import { ANY_AUTHOR } from '~/vue_shared/components/filtered_search_bar/constants';
 
 import RequirementsTabs from './requirements_tabs.vue';
 import RequirementsLoading from './requirements_loading.vue';
@@ -17,13 +22,14 @@ import projectRequirementsCount from '../queries/projectRequirementsCount.query.
 import createRequirement from '../queries/createRequirement.mutation.graphql';
 import updateRequirement from '../queries/updateRequirement.mutation.graphql';
 
-import { FilterState, DEFAULT_PAGE_SIZE } from '../constants';
+import { FilterState, SortOptions, DEFAULT_PAGE_SIZE } from '../constants';
 
 export default {
   DEFAULT_PAGE_SIZE,
   components: {
-    RequirementsTabs,
     GlPagination,
+    FilteredSearchBar,
+    RequirementsTabs,
     RequirementsLoading,
     RequirementsEmptyState,
     RequirementItem,
@@ -34,9 +40,28 @@ export default {
       type: String,
       required: true,
     },
+    namespace: {
+      type: String,
+      required: true,
+    },
     initialFilterBy: {
       type: String,
       required: true,
+    },
+    initialTextSearch: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    initialSortBy: {
+      type: String,
+      required: false,
+      default: SortOptions.CreatedDescending,
+    },
+    initialAuthorUsernames: {
+      type: Array,
+      required: false,
+      default: () => [],
     },
     initialRequirementsCount: {
       type: Object,
@@ -96,6 +121,18 @@ export default {
           queryVariables.state = this.filterBy;
         }
 
+        if (this.textSearch) {
+          queryVariables.search = this.textSearch;
+        }
+
+        if (this.authorUsernames.length) {
+          queryVariables.authorUsernames = this.authorUsernames;
+        }
+
+        if (this.sortBy) {
+          queryVariables.sortBy = this.sortBy;
+        }
+
         return queryVariables;
       },
       update(data) {
@@ -136,6 +173,9 @@ export default {
   data() {
     return {
       filterBy: this.initialFilterBy,
+      textSearch: this.initialTextSearch,
+      authorUsernames: this.initialAuthorUsernames,
+      sortBy: this.initialSortBy,
       showCreateForm: false,
       showUpdateFormForRequirement: 0,
       createRequirementRequestActive: false,
@@ -155,6 +195,9 @@ export default {
     };
   },
   computed: {
+    hasFiltersApplied() {
+      return Boolean(this.textSearch || this.authorUsernames.length);
+    },
     requirementsList() {
       return this.filterBy !== FilterState.all
         ? this.requirements.list.filter(({ state }) => state === this.filterBy)
@@ -177,6 +220,13 @@ export default {
       return this.requirementsListEmpty && !this.showCreateForm;
     },
     showPaginationControls() {
+      const { hasPreviousPage, hasNextPage } = this.requirements.pageInfo;
+
+      // This explicit check is necessary as both the variables
+      // can also be `false` and we just want to ensure that they're present.
+      if (hasPreviousPage !== undefined || hasNextPage !== undefined) {
+        return hasPreviousPage || hasNextPage;
+      }
       return this.totalRequirementsForCurrentTab > DEFAULT_PAGE_SIZE && !this.requirementsListEmpty;
     },
     prevPage() {
@@ -190,25 +240,105 @@ export default {
     },
   },
   methods: {
+    getFilteredSearchTokens() {
+      return [
+        {
+          type: 'author_username',
+          icon: 'user',
+          title: __('Author'),
+          unique: false,
+          symbol: '@',
+          token: AuthorToken,
+          operators: [{ value: '=', description: __('is'), default: 'true' }],
+          fetchPath: this.projectPath,
+          fetchAuthors: Api.projectUsers.bind(Api),
+        },
+      ];
+    },
+    getFilteredSearchSortOptions() {
+      return [
+        {
+          id: 1,
+          title: __('Created date'),
+          sortDirection: {
+            descending: 'created_desc',
+            ascending: 'created_asc',
+          },
+        },
+        {
+          id: 2,
+          title: __('Last updated'),
+          sortDirection: {
+            descending: 'updated_desc',
+            ascending: 'updated_asc',
+          },
+        },
+      ];
+    },
+    getFilteredSearchValue() {
+      const value = this.authorUsernames.map(author => ({
+        type: 'author_username',
+        value: { data: author },
+      }));
+
+      if (this.textSearch) {
+        value.push(this.textSearch);
+      }
+
+      return value;
+    },
     /**
      * Update browser URL with updated query-param values
      * based on current page details.
      */
-    updateUrl({ page, prev, next }) {
+    updateUrl() {
       const { href, search } = window.location;
       const queryParams = urlParamsToObject(search);
+      const {
+        filterBy,
+        currentPage,
+        prevPageCursor,
+        nextPageCursor,
+        textSearch,
+        authorUsernames,
+        sortBy,
+      } = this;
 
-      queryParams.page = page || 1;
+      queryParams.page = currentPage || 1;
       // Only keep params that have any values.
-      if (prev) {
-        queryParams.prev = prev;
+      if (prevPageCursor) {
+        queryParams.prev = prevPageCursor;
       } else {
         delete queryParams.prev;
       }
-      if (next) {
-        queryParams.next = next;
+
+      if (nextPageCursor) {
+        queryParams.next = nextPageCursor;
       } else {
         delete queryParams.next;
+      }
+
+      if (filterBy) {
+        queryParams.state = filterBy.toLowerCase();
+      } else {
+        delete queryParams.state;
+      }
+
+      if (textSearch) {
+        queryParams.search = textSearch;
+      } else {
+        delete queryParams.search;
+      }
+
+      if (sortBy) {
+        queryParams.sort = sortBy;
+      } else {
+        delete queryParams.sort;
+      }
+
+      delete queryParams.author_username;
+      if (authorUsernames.length) {
+        queryParams['author_username[]'] = authorUsernames;
       }
 
       // We want to replace the history state so that back button
@@ -356,6 +486,36 @@ export default {
     handleUpdateRequirementCancel() {
       this.showUpdateFormForRequirement = 0;
     },
+    handleFilterRequirements(filters) {
+      let textSearch = '';
+      const authors = [];
+
+      if (filters.length) {
+        filters.forEach(filter => {
+          if (typeof filter === 'string') {
+            textSearch = filter;
+          } else if (filter.value.data !== ANY_AUTHOR) {
+            authors.push(filter.value.data);
+          }
+        });
+      }
+
+      this.authorUsernames = [...authors];
+      this.textSearch = textSearch;
+      this.currentPage = 1;
+      this.prevPageCursor = '';
+      this.nextPageCursor = '';
+
+      this.updateUrl();
+    },
+    handleSortRequirements(sortBy) {
+      this.sortBy = sortBy;
+
+      this.currentPage = 1;
+      this.prevPageCursor = '';
+      this.nextPageCursor = '';
+      this.updateUrl();
+    },
     handlePageChange(page) {
       const { startCursor, endCursor } = this.requirements.pageInfo;
 
@@ -369,11 +529,7 @@ export default {
 
       this.currentPage = page;
 
-      this.updateUrl({
-        page,
-        prev: this.prevPageCursor,
-        next: this.nextPageCursor,
-      });
+      this.updateUrl();
     },
   },
 };
@@ -388,6 +544,17 @@ export default {
       :can-create-requirement="canCreateRequirement"
       @clickTab="handleTabClick"
       @clickNewRequirement="handleNewRequirementClick"
+    />
+    <filtered-search-bar
+      :namespace="namespace"
+      :search-input-placeholder="__('Filter requirements')"
+      :tokens="getFilteredSearchTokens()"
+      :sort-options="getFilteredSearchSortOptions()"
+      :initial-filter-value="getFilteredSearchValue()"
+      :initial-sort-by="sortBy"
+      class="row-content-block"
+      @onFilter="handleFilterRequirements"
+      @onSort="handleSortRequirements"
     />
     <requirement-form
       v-if="showCreateForm"

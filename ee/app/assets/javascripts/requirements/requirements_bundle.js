@@ -44,11 +44,15 @@ export default () => {
         page,
         next,
         prev,
+        textSearch,
+        authorUsernames,
+        sortBy,
         projectPath,
         emptyStatePath,
         opened,
         archived,
         all,
+        namespace,
         canCreateRequirement,
         requirementsWebUrl,
       } = el.dataset;
@@ -60,6 +64,9 @@ export default () => {
 
       return {
         initialFilterBy: stateFilterBy,
+        initialTextSearch: textSearch,
+        initialAuthorUsernames: authorUsernames ? JSON.parse(authorUsernames) : [],
+        initialSortBy: sortBy,
         initialRequirementsCount: {
           OPENED,
           ARCHIVED,
@@ -70,6 +77,7 @@ export default () => {
         next,
         emptyStatePath,
         projectPath,
+        namespace,
         canCreateRequirement,
         requirementsWebUrl,
       };
@@ -78,7 +86,11 @@ export default () => {
       return createElement('requirements-root', {
         props: {
           projectPath: this.projectPath,
+          namespace: this.namespace,
           initialFilterBy: this.initialFilterBy,
+          initialTextSearch: this.initialTextSearch,
+          initialAuthorUsernames: this.initialAuthorUsernames,
+          initialSortBy: this.initialSortBy,
           initialRequirementsCount: this.initialRequirementsCount,
           page: parseInt(this.page, 10) || 1,
           prev: this.prev,
