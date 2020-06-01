@@ -209,6 +209,15 @@ GitLab supports a limited set of [CI variables](../../../ci/variables/README.md)
 - `ci_project_namespace`
 - `ci_project_path`
 - `ci_environment_name`
+- `__range`
+
+###### __range
+
+This variable is useful in Prometheus
+[range vector selectors](https://prometheus.io/docs/prometheus/latest/querying/basics/#range-vector-selectors).
+The value of this variable will be the number of seconds in the time range of the
+dashboard. For example, if the dashboard time range is set to 8 hours, the value
+of `__range` will be `28800s`.
 
 NOTE: **Note:**
 Variables for Prometheus queries must be lowercase.
