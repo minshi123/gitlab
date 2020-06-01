@@ -9,13 +9,18 @@ module Gitlab
         InvalidPeriodLimitError = Class.new(BaseReducerError)
 
         VALID_PERIOD = %w[day week month].freeze
-        VALID_PERIOD_FIELD = %i[created_at].freeze
+        VALID_PERIOD_FIELD = %i[created_at closed_at].freeze
+        VALID_PERIOD_FIELDS = {
+          issue: %i[created_at closed_at],
+          merge_request: %i[created_at]
+        }.with_indifferent_access.freeze
 
         def initialize(issuables, period:, period_limit:, period_field: :created_at)
           super(issuables)
           @period = period.to_s.singularize
           @period_limit = period_limit.to_i
           @period_field = period_field
+          @issuable_type = issuables.class.to_s.underscore.split('/').first.to_sym
 
           validate!
         end
@@ -35,15 +40,15 @@ module Gitlab
 
         private
 
-        attr_reader :period, :period_limit, :period_field
+        attr_reader :period, :period_limit, :period_field, :issuable_type
 
         def validate!
           unless VALID_PERIOD.include?(period)
             raise InvalidPeriodError, "Invalid value for `period`: `#{period}`. Allowed values are #{VALID_PERIOD}!"
           end
 
-          unless VALID_PERIOD_FIELD.include?(period_field)
-            raise InvalidPeriodFieldError, "Invalid value for `period_field`: `#{period_field}`. Allowed values are #{VALID_PERIOD_FIELD}!"
+          unless VALID_PERIOD_FIELDS[issuable_type].include?(period_field)
+            raise InvalidPeriodFieldError, "Invalid value for `period_field`: `#{period_field}`. Allowed values are #{VALID_PERIOD_FIELDS[issuable_type]}!"
           end
 
           unless period_limit > 0

@@ -31,6 +31,43 @@ RSpec.describe Gitlab::Insights::Finders::IssuableFinder do
     end
   end
 
+  describe '#issuable_state' do
+    subject { described_class.new(build(:project), nil, query: { issuable_state: issuable_state_in_query }).issuable_state }
+
+    where(:issuable_state_in_query, :expected_issuable_state) do
+      nil | :opened
+      'opened' | :opened
+      'closed' | :closed
+      'merged' | :merged
+      'locked' | :locked
+    end
+
+    with_them do
+      it { is_expected.to eq(expected_issuable_state) }
+    end
+  end
+
+  describe '#period_field' do
+    subject { described_class.new(build(:project), nil, query: { issuable_type: issuable_type_in_query, issuable_state: issuable_state_in_query }).period_field }
+
+    where(:issuable_type_in_query, :issuable_state_in_query, :expected_period_field) do
+      'issue' | nil | :created_at
+      'merge_request' | nil | :created_at
+      'issue' | 'opened' | :created_at
+      'merge_request' | 'opened' | :created_at
+      'issue' | 'closed' | :closed_at
+      'merge_request' | 'closed' | :created_at
+      'issue' | 'merged' | :created_at
+      'merge_request' | 'merged' | :created_at
+      'issue' | 'locked' | :created_at
+      'merge_request' | 'locked' | :created_at
+    end
+
+    with_them do
+      it { is_expected.to eq(expected_period_field) }
+    end
+  end
+
   describe '#find' do
     def find(entity, query:, projects: {})
       described_class.new(entity, nil, query: query, projects: projects).find

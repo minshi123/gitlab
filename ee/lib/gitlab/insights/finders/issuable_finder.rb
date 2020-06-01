@@ -16,6 +16,10 @@ module Gitlab
           issue: ::IssuesFinder,
           merge_request: ::MergeRequestsFinder
         }.with_indifferent_access.freeze
+        PERIOD_FIELDS = {
+          issue: { opened: :created_at, closed: :closed_at },
+          merge_request: { opened: :created_at }
+        }.with_indifferent_access.freeze
         PERIODS = {
           days: { default: 30 },
           weeks: { default: 12 },
@@ -31,6 +35,14 @@ module Gitlab
 
         def issuable_type
           @issuable_type ||= query[:issuable_type]&.to_s&.singularize&.to_sym
+        end
+
+        def issuable_state
+          @issuable_state ||= query[:issuable_state]&.to_s&.to_sym || :opened
+        end
+
+        def period_field
+          @period_field ||= PERIOD_FIELDS.dig(issuable_type, issuable_state) || :created_at
         end
 
         # Returns an Active Record relation of issuables.
@@ -70,7 +82,7 @@ module Gitlab
         def finder_args
           {
             include_subgroups: true,
-            state: query[:issuable_state] || 'opened',
+            state: issuable_state,
             label_name: query[:filter_labels],
             sort: 'created_asc',
             created_after: created_after_argument

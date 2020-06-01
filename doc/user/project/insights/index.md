@@ -271,6 +271,18 @@ you defined.
 | `week`           | 4             |
 | `month`          | 12            |
 
+#### `query.period_field`
+
+Define the timestamp field used to group "issuables".
+
+The `period_field` is automatically set to `closed_at` if
+`query.issuable_state` is `closed`, and `created_at` otherwise.
+
+Supported values are:
+
+- `created_at` (default): Group data using the `created_at` field.
+- `closed_at`: Group data using the `closed_at` field.
+
 ### `projects`
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/10904) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.4.
