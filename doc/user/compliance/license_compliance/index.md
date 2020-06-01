@@ -397,6 +397,7 @@ The `license_scanning` job runs in a [Debian 10](https://www.debian.org/releases
 The supplied image ships with some build tools such as [CMake](https://cmake.org/) and [GCC](https://gcc.gnu.org/).
 However, not all project types will be supported out of the box. To install additional tools needed to
 compile dependencies, please use a [`before_script`](../../../ci/yaml/README.md#before_script-and-after_script) to install the necessary build tools using the [`apt`](https://wiki.debian.org/PackageManagementTools) package manager.
+For a comprehensive list consult [this page](https://docs.conan.io/en/latest/introduction.html#all-platforms-all-build-systems-and-compilers).
 
 The default [`Conan`](https://conan.io/) configuration will set the [`CONAN_LOGIN_USERNAME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name)
 to `ci_user` and [`CONAN_PASSWORD`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-password-conan-password-remote-name) bound to the [`CI_JOB_TOKEN`](../../../ci/variables/predefined_variables.md#variables-reference) for the running job.
@@ -405,6 +406,11 @@ if a GitLab remote is specified in the `.conan/remotes.json` file.
 
 To override the default credentials specify a [`CONAN_LOGIN_USERNAME_{REMOTE_NAME}`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name)
 matching the name of the remote specified in the `.conan/remotes.json` file.
+
+NOTE: **Note:**
+[MSBuild](https://github.com/mono/msbuild#microsoftbuild-msbuild) projects are not supported at this time.
+The `license_scanning` image ships with [Mono](https://www.mono-project.com/) and [MSBuild](https://github.com/mono/msbuild#microsoftbuild-msbuild).
+Additional setup may be required in order to build packages for this project configuration.
 
 #### Using private Conan registries
 
