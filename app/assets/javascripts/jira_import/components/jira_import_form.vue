@@ -42,6 +42,10 @@ export default {
           label: __('Jira users'),
         },
         {
+          key: 'arrow',
+          label: '',
+        },
+        {
           key: 'gitlabUser',
           label: __('GitLab users'),
         },
@@ -49,19 +53,19 @@ export default {
       items: [
         {
           jiraUser: '@alincoln',
-          gitlabUser: '@alincoln',
+          gitlabUser: `@${gon.current_username}`,
         },
         {
           jiraUser: '@jryan',
-          gitlabUser: '@jryan',
+          gitlabUser: `@${gon.current_username}`,
         },
         {
           jiraUser: '@adavies',
-          gitlabUser: '@adavies',
+          gitlabUser: `@${gon.current_username}`,
         },
         {
           jiraUser: '@kbennet',
-          gitlabUser: '@kbennet',
+          gitlabUser: `@${gon.current_username}`,
         },
       ],
     };
@@ -126,11 +130,8 @@ export default {
       <h4 class="mb-4">{{ __('Jira-GitLab user mapping template') }}</h4>
 
       <gl-table :fields="fields" :items="items" fixed variant="secondary" small>
-        <template #cell(jiraUser)="data">
-          <p class="gl-display-flex gl-justify-content-space-between gl-align-items-center m-0">
-            <span>{{ data.value }}</span>
-            <gl-icon name="arrow-right" />
-          </p>
+        <template #cell(arrow)>
+          <gl-icon name="arrow-right" />
         </template>
       </gl-table>
 
