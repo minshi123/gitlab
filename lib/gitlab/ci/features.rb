@@ -25,6 +25,10 @@ module Gitlab
       def self.pipeline_fixed_notifications?
         ::Feature.enabled?(:ci_pipeline_fixed_notifications)
       end
+
+      def self.dependency_tree_for_dag?
+        ::Feature.enabled?(:ci_dependency_tree_for_dag)
+      end
     end
   end
 end
