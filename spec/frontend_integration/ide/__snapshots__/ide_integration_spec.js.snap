@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`WebIDE runs 1`] = `
+exports[`WebIDE loads 1`] = `
 <div>
   <article
     class="ide position-relative d-flex flex-column align-items-stretch"
@@ -133,4 +133,1861 @@ exports[`WebIDE runs 1`] = `
     </footer>
   </article>
 </div>
+`;
+
+exports[`WebIDE loads 2`] = `
+Snapshot Diff:
+- First value
++ Second value
+
+@@ -17,61 +17,1693 @@
+        <div
+          class="gl-relative multi-file-commit-panel flex-column"
+          style="width: 340px;"
+        >
+          <div
++           class="context-header ide-context-header"
++         >
++           <a
++             title="Go to project"
++           >
++             <span
++               class="avatar-container rect-avatar project-avatar s48"
++             >
++               <div
++                 class="avatar identicon rect-avatar s48 bg2"
++               >
++                 
++   T
++
++               </div>
++             </span>
++              
++             <span
++               class="ide-sidebar-project-title"
++             >
++               <span
++                 class="sidebar-context-title"
++               >
++                  Test Project 
++               </span>
++                
++               <span
++                 class="sidebar-context-title text-secondary"
++               >
++                 
++         gitlab-test/test
++       
++               </span>
++             </span>
++           </a>
++         </div>
++          
++         <div
++           class="ide-context-body d-flex flex-fill"
++         >
++           <nav
++             class="ide-activity-bar"
++           >
++             <ul
++               class="list-unstyled"
++             >
++               <li>
++                 <button
++                   aria-label="Edit"
++                   class="ide-sidebar-link js-ide-edit-mode active"
++                   data-container="body"
++                   data-original-title="Edit"
++                   data-placement="right"
++                   title=""
++                   type="button"
++                 >
++                   <svg
++                     aria-hidden="true"
++                     class="s16 ic-code"
++                   >
++                     <use
++                       xlink:href="#code"
++                     />
++                   </svg>
++                 </button>
++               </li>
++                
++               <li>
++                 <button
++                   aria-label="Review"
++                   class="ide-sidebar-link js-ide-review-mode"
++                   data-container="body"
++                   data-original-title="Review"
++                   data-placement="right"
++                   title=""
++                   type="button"
++                 >
++                   <svg
++                     aria-hidden="true"
++                     class="s16 ic-file-modified"
++                   >
++                     <use
++                       xlink:href="#file-modified"
++                     />
++                   </svg>
++                 </button>
++               </li>
++                
++               <li
++                 style="display: none;"
++               >
++                 <button
++                   aria-label="Commit"
++                   class="ide-sidebar-link js-ide-commit-mode qa-commit-mode-tab"
++                   data-container="body"
++                   data-original-title="Commit"
++                   data-placement="right"
++                   title=""
++                   type="button"
++                 >
++                   <svg
++                     aria-hidden="true"
++                     class="s16 ic-commit"
++                   >
++                     <use
++                       xlink:href="#commit"
++                     />
++                   </svg>
++                 </button>
++               </li>
++             </ul>
++           </nav>
++            
++           <div
+              class="multi-file-commit-panel-inner"
++           >
++             <div
++               class="multi-file-commit-panel-inner-content"
++             >
++               <div
++                 class="ide-file-list qa-file-list"
++               >
++                 <header
++                   class="ide-tree-header"
++                 >
++                   <div
++                     class="btn-group ide-nav-dropdown dropdown"
++                   >
++                     <button
++                       aria-expanded="false"
++                       class="dropdown-menu-toggle dropdown-menu-full-width"
++                       data-toggle="dropdown"
++                       type="button"
++                     >
++                       <span
++                         class="gl-spinner-container"
++                         style="display: none;"
++                       >
++                         <span
++                           aria-hidden="true"
++                           aria-label="Loading"
++                           class="align-text-bottom gl-spinner gl-spinner-orange gl-spinner-sm"
++                         />
++                       </span>
++                        
++                       <span
++                         class="row flex-nowrap"
++                       >
++                         <span
++                           class="col-auto flex-fill text-truncate"
++                         >
++                           <svg
++                             aria-hidden="true"
++                             aria-label="Current Branch"
++                             class="s16 ic-branch"
++                           >
++                             <use
++                               xlink:href="#branch"
++                             />
++                           </svg>
++                            master
++     
++                         </span>
++                          
++                         <span
++                           class="col-5 pl-0 text-truncate"
++                         >
++                           <svg
++                             aria-hidden="true"
++                             aria-label="Merge Request"
++                             class="s16 ic-merge-request"
++                           >
++                             <use
++                               xlink:href="#merge-request"
++                             />
++                           </svg>
++                           
++       -
++     
++                         </span>
++                       </span>
++                        
++                       <span
++                         class="dropdown-toggle-icon"
++                       >
++                         <i
++                           aria-hidden="true"
++                           class="fa fa-chevron-down"
++                           data-hidden="true"
++                         />
++                       </span>
++                     </button>
++                      
++                     <div
++                       class="dropdown-menu dropdown-menu-left p-0"
++                     >
++                       <!---->
++                     </div>
++                   </div>
++                    
++     Edit
++     
++                   <div
++                     class="ide-tree-actions ml-auto d-flex"
++                   >
++                     <button
++                       aria-label="New file"
++                       class="btn-blank d-flex border-0 p-0 mr-3 qa-new-file"
++                       data-original-title="New file"
++                       title=""
++                       type="button"
++                     >
++                       <svg
++                         aria-hidden="true"
++                         class="s16 ic-doc-new"
++                       >
++                         <use
++                           xlink:href="#doc-new"
++                         />
++                       </svg>
++                        
++                       <!---->
++                     </button>
++                      
++                     <div
++                       class="d-flex mr-3"
++                     >
++                       <button
++                         aria-label="Upload file"
++                         class="btn-blank d-flex border-0 p-0"
++                         data-original-title="Upload file"
++                         title=""
++                         type="button"
++                       >
++                         <svg
++                           aria-hidden="true"
++                           class="s16 ic-upload"
++                         >
++                           <use
++                             xlink:href="#upload"
++                           />
++                         </svg>
++                          
++                         <!---->
++                       </button>
++                        
++                       <input
++                         class="hidden"
++                         id="file-upload"
++                         multiple="multiple"
++                         type="file"
++                       />
++                     </div>
++                      
++                     <button
++                       aria-label="New directory"
++                       class="btn-blank d-flex border-0 p-0"
++                       data-original-title="New directory"
++                       title=""
++                       type="button"
++                     >
++                       <svg
++                         aria-hidden="true"
++                         class="s16 ic-folder-new"
++                       >
++                         <use
++                           xlink:href="#folder-new"
++                         />
++                       </svg>
++                        
++                       <!---->
++                     </button>
++                   </div>
++                    
++                   <!---->
++                 </header>
++                  
++                 <div
++                   class="ide-tree-body h-100"
++                 >
++                   <div>
++                     <div
++                       class="file-row folder"
++                       data-level="0"
++                       level="0"
++                       role="button"
++                       title="config"
++                     >
++                       <div
++                         class="file-row-name-container"
++                       >
++                         <span
++                           class="file-row-name str-truncated"
++                         >
++                           <span
++                             class="file-row-icon text-secondary"
++                           >
++                             <!---->
++                             <svg
++                               class="folder-icon gl-icon s16"
++                             >
++                               <use
++                                 href="#folder"
++                               />
++                             </svg>
++                             <!---->
++                           </span>
++                           
++       config
++     
++                         </span>
++                          
++                         <div
++                           class="float-right ide-file-icon-holder"
++                         >
++                           <!---->
++                            
++                           <!---->
++                            
++                           <div
++                             class="ide-new-btn gl-ml-3"
+                            >
+                              <div
+-             class="multi-file-loading-container"
++                               class="dropdown d-flex"
++                             >
++                               <button
++                                 aria-label="Create new file or directory"
++                                 class="rounded border-0 d-flex ide-entry-dropdown-toggle"
++                                 type="button"
++                               >
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-ellipsis_v"
++                                 >
++                                   <use
++                                     xlink:href="#ellipsis_v"
++                                   />
++                                 </svg>
++                                  
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-chevron-down"
++                                 >
++                                   <use
++                                     xlink:href="#chevron-down"
++                                   />
++                                 </svg>
++                               </button>
++                                
++                               <ul
++                                 class="dropdown-menu dropdown-menu-right"
++                               >
++                                 <li>
++                                   <button
++                                     aria-label="New file"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-doc-new mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#doc-new"
++                                       />
++                                     </svg>
++                                      
++     New file
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <div>
++                                     <button
++                                       aria-label="Upload file"
++                                       class="btn-blank d-flex"
++                                       data-original-title=""
++                                       title=""
++                                       type="button"
++                                     >
++                                       <svg
++                                         aria-hidden="true"
++                                         class="s16 ic-upload mr-2"
++                                       >
++                                         <use
++                                           xlink:href="#upload"
++                                         />
++                                       </svg>
++                                        
++     Upload file
++   
++                                     </button>
++                                      
++                                     <input
++                                       class="hidden"
++                                       id="file-upload"
++                                       multiple="multiple"
++                                       type="file"
++                                     />
++                                   </div>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="New directory"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-folder-new mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#folder-new"
++                                       />
++                                     </svg>
++                                      
++     New directory
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li
++                                   class="divider"
++                                 />
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Rename/Move"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-pencil mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#pencil"
++                                       />
++                                     </svg>
++                                      
++     Rename/Move
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Delete"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-remove mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#remove"
++                                       />
++                                     </svg>
++                                      
++     Delete
++   
++                                   </button>
++                                 </li>
++                               </ul>
++                             </div>
++                              
++                             <!---->
++                           </div>
++                         </div>
++                       </div>
++                     </div>
++                      
++                     <!---->
++                   </div>
++                   <div>
++                     <div
++                       class="file-row folder"
++                       data-level="0"
++                       level="0"
++                       role="button"
++                       title="lorem"
++                     >
++                       <div
++                         class="file-row-name-container"
++                       >
++                         <span
++                           class="file-row-name str-truncated"
++                         >
++                           <span
++                             class="file-row-icon text-secondary"
++                           >
++                             <!---->
++                             <svg
++                               class="folder-icon gl-icon s16"
++                             >
++                               <use
++                                 href="#folder"
++                               />
++                             </svg>
++                             <!---->
++                           </span>
++                           
++       lorem
++     
++                         </span>
++                          
++                         <div
++                           class="float-right ide-file-icon-holder"
++                         >
++                           <!---->
++                            
++                           <!---->
++                            
++                           <div
++                             class="ide-new-btn gl-ml-3"
++                           >
++                             <div
++                               class="dropdown d-flex"
++                             >
++                               <button
++                                 aria-label="Create new file or directory"
++                                 class="rounded border-0 d-flex ide-entry-dropdown-toggle"
++                                 type="button"
++                               >
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-ellipsis_v"
++                                 >
++                                   <use
++                                     xlink:href="#ellipsis_v"
++                                   />
++                                 </svg>
++                                  
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-chevron-down"
++                                 >
++                                   <use
++                                     xlink:href="#chevron-down"
++                                   />
++                                 </svg>
++                               </button>
++                                
++                               <ul
++                                 class="dropdown-menu dropdown-menu-right"
++                               >
++                                 <li>
++                                   <button
++                                     aria-label="New file"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-doc-new mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#doc-new"
++                                       />
++                                     </svg>
++                                      
++     New file
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <div>
++                                     <button
++                                       aria-label="Upload file"
++                                       class="btn-blank d-flex"
++                                       data-original-title=""
++                                       title=""
++                                       type="button"
++                                     >
++                                       <svg
++                                         aria-hidden="true"
++                                         class="s16 ic-upload mr-2"
++                                       >
++                                         <use
++                                           xlink:href="#upload"
++                                         />
++                                       </svg>
++                                        
++     Upload file
++   
++                                     </button>
++                                      
++                                     <input
++                                       class="hidden"
++                                       id="file-upload"
++                                       multiple="multiple"
++                                       type="file"
++                                     />
++                                   </div>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="New directory"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-folder-new mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#folder-new"
++                                       />
++                                     </svg>
++                                      
++     New directory
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li
++                                   class="divider"
++                                 />
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Rename/Move"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-pencil mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#pencil"
++                                       />
++                                     </svg>
++                                      
++     Rename/Move
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Delete"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-remove mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#remove"
++                                       />
++                                     </svg>
++                                      
++     Delete
++   
++                                   </button>
++                                 </li>
++                               </ul>
++                             </div>
++                              
++                             <!---->
++                           </div>
++                         </div>
++                       </div>
++                     </div>
++                      
++                     <!---->
++                   </div>
++                   <div>
++                     <div
++                       class="file-row folder"
++                       data-level="0"
++                       level="0"
++                       role="button"
++                       title="src"
++                     >
++                       <div
++                         class="file-row-name-container"
++                       >
++                         <span
++                           class="file-row-name str-truncated"
++                         >
++                           <span
++                             class="file-row-icon text-secondary"
++                           >
++                             <!---->
++                             <svg
++                               class="folder-icon gl-icon s16"
++                             >
++                               <use
++                                 href="#folder"
++                               />
++                             </svg>
++                             <!---->
++                           </span>
++                           
++       src
++     
++                         </span>
++                          
++                         <div
++                           class="float-right ide-file-icon-holder"
++                         >
++                           <!---->
++                            
++                           <!---->
++                            
++                           <div
++                             class="ide-new-btn gl-ml-3"
++                           >
++                             <div
++                               class="dropdown d-flex"
++                             >
++                               <button
++                                 aria-label="Create new file or directory"
++                                 class="rounded border-0 d-flex ide-entry-dropdown-toggle"
++                                 type="button"
++                               >
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-ellipsis_v"
++                                 >
++                                   <use
++                                     xlink:href="#ellipsis_v"
++                                   />
++                                 </svg>
++                                  
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-chevron-down"
++                                 >
++                                   <use
++                                     xlink:href="#chevron-down"
++                                   />
++                                 </svg>
++                               </button>
++                                
++                               <ul
++                                 class="dropdown-menu dropdown-menu-right"
++                               >
++                                 <li>
++                                   <button
++                                     aria-label="New file"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-doc-new mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#doc-new"
++                                       />
++                                     </svg>
++                                      
++     New file
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <div>
++                                     <button
++                                       aria-label="Upload file"
++                                       class="btn-blank d-flex"
++                                       data-original-title=""
++                                       title=""
++                                       type="button"
++                                     >
++                                       <svg
++                                         aria-hidden="true"
++                                         class="s16 ic-upload mr-2"
++                                       >
++                                         <use
++                                           xlink:href="#upload"
++                                         />
++                                       </svg>
++                                        
++     Upload file
++   
++                                     </button>
++                                      
++                                     <input
++                                       class="hidden"
++                                       id="file-upload"
++                                       multiple="multiple"
++                                       type="file"
++                                     />
++                                   </div>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="New directory"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-folder-new mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#folder-new"
++                                       />
++                                     </svg>
++                                      
++     New directory
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li
++                                   class="divider"
++                                 />
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Rename/Move"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-pencil mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#pencil"
++                                       />
++                                     </svg>
++                                      
++     Rename/Move
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Delete"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-remove mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#remove"
++                                       />
++                                     </svg>
++                                      
++     Delete
++   
++                                   </button>
++                                 </li>
++                               </ul>
++                             </div>
++                              
++                             <!---->
++                           </div>
++                         </div>
++                       </div>
++                     </div>
++                      
++                     <!---->
++                   </div>
++                   <div>
++                     <div
++                       class="file-row"
++                       data-level="0"
++                       level="0"
++                       role="button"
++                     >
++                       <div
++                         class="file-row-name-container"
++                       >
++                         <span
++                           class="file-row-name str-truncated"
++                         >
++                           <span
++                             class="file-row-icon"
++                           >
++                             <svg
++                               class="s16"
++                             >
++                               <use
++                                 xlink:href="undefined#document"
++                               />
++                             </svg>
++                             <!---->
++                             <!---->
++                           </span>
++                           
++       123.txt
++     
++                         </span>
++                          
++                         <div
++                           class="float-right ide-file-icon-holder"
+                          >
++                           <!---->
++                            
++                           <!---->
++                            
+                            <div
+-               class="animation-container"
++                             class="ide-new-btn gl-ml-3"
+                            >
+                              <div
+-                 class="skeleton-line-1"
++                               class="dropdown d-flex"
++                             >
++                               <button
++                                 aria-label="Create new file or directory"
++                                 class="rounded border-0 d-flex ide-entry-dropdown-toggle"
++                                 type="button"
++                               >
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-ellipsis_v"
++                                 >
++                                   <use
++                                     xlink:href="#ellipsis_v"
++                                   />
++                                 </svg>
++                                  
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-chevron-down"
++                                 >
++                                   <use
++                                     xlink:href="#chevron-down"
++                                   />
++                                 </svg>
++                               </button>
++                                
++                               <ul
++                                 class="dropdown-menu dropdown-menu-right"
++                               >
++                                 <!---->
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Rename/Move"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-pencil mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#pencil"
++                                       />
++                                     </svg>
++                                      
++     Rename/Move
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Delete"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-remove mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#remove"
+                                        />
++                                     </svg>
++                                      
++     Delete
++   
++                                   </button>
++                                 </li>
++                               </ul>
++                             </div>
++                              
++                             <!---->
++                           </div>
++                         </div>
++                       </div>
++                     </div>
++                      
++                     <!---->
++                   </div>
++                   <div>
+                      <div
+-                 class="skeleton-line-2"
++                       class="file-row"
++                       data-level="0"
++                       level="0"
++                       role="button"
++                     >
++                       <div
++                         class="file-row-name-container"
++                       >
++                         <span
++                           class="file-row-name str-truncated"
++                         >
++                           <span
++                             class="file-row-icon"
++                           >
++                             <svg
++                               class="s16"
++                             >
++                               <use
++                                 xlink:href="undefined#file"
+                                />
++                             </svg>
++                             <!---->
++                             <!---->
++                           </span>
++                           
++       LICENSE
++     
++                         </span>
++                          
+                          <div
+-                 class="skeleton-line-3"
++                           class="float-right ide-file-icon-holder"
++                         >
++                           <!---->
++                            
++                           <!---->
++                            
++                           <div
++                             class="ide-new-btn gl-ml-3"
++                           >
++                             <div
++                               class="dropdown d-flex"
++                             >
++                               <button
++                                 aria-label="Create new file or directory"
++                                 class="rounded border-0 d-flex ide-entry-dropdown-toggle"
++                                 type="button"
++                               >
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-ellipsis_v"
++                                 >
++                                   <use
++                                     xlink:href="#ellipsis_v"
++                                   />
++                                 </svg>
++                                  
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-chevron-down"
++                                 >
++                                   <use
++                                     xlink:href="#chevron-down"
++                                   />
++                                 </svg>
++                               </button>
++                                
++                               <ul
++                                 class="dropdown-menu dropdown-menu-right"
++                               >
++                                 <!---->
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Rename/Move"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-pencil mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#pencil"
++                                       />
++                                     </svg>
++                                      
++     Rename/Move
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Delete"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-remove mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#remove"
+                                        />
++                                     </svg>
++                                      
++     Delete
++   
++                                   </button>
++                                 </li>
++                               </ul>
+                              </div>
++                              
++                             <!---->
++                           </div>
++                         </div>
++                       </div>
++                     </div>
++                      
++                     <!---->
+                    </div>
++                   <div>
+                      <div
+-             class="multi-file-loading-container"
++                       class="file-row"
++                       data-level="0"
++                       level="0"
++                       role="button"
+                      >
+                        <div
+-               class="animation-container"
++                         class="file-row-name-container"
++                       >
++                         <span
++                           class="file-row-name str-truncated"
++                         >
++                           <span
++                             class="file-row-icon"
++                           >
++                             <svg
++                               class="s16"
++                             >
++                               <use
++                                 xlink:href="undefined#file"
++                               />
++                             </svg>
++                             <!---->
++                             <!---->
++                           </span>
++                           
++       NEW_FILE
++     
++                         </span>
++                          
++                         <div
++                           class="float-right ide-file-icon-holder"
+                          >
++                           <!---->
++                            
++                           <!---->
++                            
+                            <div
+-                 class="skeleton-line-1"
++                             class="ide-new-btn gl-ml-3"
++                           >
++                             <div
++                               class="dropdown d-flex"
++                             >
++                               <button
++                                 aria-label="Create new file or directory"
++                                 class="rounded border-0 d-flex ide-entry-dropdown-toggle"
++                                 type="button"
++                               >
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-ellipsis_v"
++                                 >
++                                   <use
++                                     xlink:href="#ellipsis_v"
++                                   />
++                                 </svg>
++                                  
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-chevron-down"
++                                 >
++                                   <use
++                                     xlink:href="#chevron-down"
++                                   />
++                                 </svg>
++                               </button>
++                                
++                               <ul
++                                 class="dropdown-menu dropdown-menu-right"
++                               >
++                                 <!---->
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Rename/Move"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-pencil mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#pencil"
++                                       />
++                                     </svg>
++                                      
++     Rename/Move
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Delete"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-remove mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#remove"
+                                        />
++                                     </svg>
++                                      
++     Delete
++   
++                                   </button>
++                                 </li>
++                               </ul>
++                             </div>
++                              
++                             <!---->
++                           </div>
++                         </div>
++                       </div>
++                     </div>
++                      
++                     <!---->
++                   </div>
++                   <div>
+                      <div
+-                 class="skeleton-line-2"
++                       class="file-row"
++                       data-level="0"
++                       level="0"
++                       role="button"
++                     >
++                       <div
++                         class="file-row-name-container"
++                       >
++                         <span
++                           class="file-row-name str-truncated"
++                         >
++                           <span
++                             class="file-row-icon"
++                           >
++                             <svg
++                               class="s16"
++                             >
++                               <use
++                                 xlink:href="undefined#file"
+                                />
++                             </svg>
++                             <!---->
++                             <!---->
++                           </span>
++                           
++       NEW_FILE2
++     
++                         </span>
++                          
+                          <div
+-                 class="skeleton-line-3"
++                           class="float-right ide-file-icon-holder"
++                         >
++                           <!---->
++                            
++                           <!---->
++                            
++                           <div
++                             class="ide-new-btn gl-ml-3"
++                           >
++                             <div
++                               class="dropdown d-flex"
++                             >
++                               <button
++                                 aria-label="Create new file or directory"
++                                 class="rounded border-0 d-flex ide-entry-dropdown-toggle"
++                                 type="button"
++                               >
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-ellipsis_v"
++                                 >
++                                   <use
++                                     xlink:href="#ellipsis_v"
++                                   />
++                                 </svg>
++                                  
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-chevron-down"
++                                 >
++                                   <use
++                                     xlink:href="#chevron-down"
++                                   />
++                                 </svg>
++                               </button>
++                                
++                               <ul
++                                 class="dropdown-menu dropdown-menu-right"
++                               >
++                                 <!---->
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Rename/Move"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-pencil mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#pencil"
++                                       />
++                                     </svg>
++                                      
++     Rename/Move
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Delete"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-remove mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#remove"
+                                        />
++                                     </svg>
++                                      
++     Delete
++   
++                                   </button>
++                                 </li>
++                               </ul>
++                             </div>
++                              
++                             <!---->
++                           </div>
+                          </div>
+                        </div>
++                     </div>
++                      
++                     <!---->
++                   </div>
++                   <div>
+                      <div
+-             class="multi-file-loading-container"
++                       class="file-row"
++                       data-level="0"
++                       level="0"
++                       role="button"
++                     >
++                       <div
++                         class="file-row-name-container"
++                       >
++                         <span
++                           class="file-row-name str-truncated"
++                         >
++                           <span
++                             class="file-row-icon"
++                           >
++                             <svg
++                               class="s16"
++                             >
++                               <use
++                                 xlink:href="undefined#markdown"
++                               />
++                             </svg>
++                             <!---->
++                             <!---->
++                           </span>
++                           
++       README.md
++     
++                         </span>
++                          
++                         <div
++                           class="float-right ide-file-icon-holder"
+                          >
++                           <!---->
++                            
++                           <!---->
++                            
+                            <div
+-               class="animation-container"
++                             class="ide-new-btn gl-ml-3"
+                            >
+                              <div
+-                 class="skeleton-line-1"
++                               class="dropdown d-flex"
++                             >
++                               <button
++                                 aria-label="Create new file or directory"
++                                 class="rounded border-0 d-flex ide-entry-dropdown-toggle"
++                                 type="button"
++                               >
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-ellipsis_v"
++                                 >
++                                   <use
++                                     xlink:href="#ellipsis_v"
++                                   />
++                                 </svg>
++                                  
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-chevron-down"
++                                 >
++                                   <use
++                                     xlink:href="#chevron-down"
+                                    />
++                                 </svg>
++                               </button>
++                                
++                               <ul
++                                 class="dropdown-menu dropdown-menu-right"
++                               >
++                                 <!---->
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Rename/Move"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-pencil mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#pencil"
++                                       />
++                                     </svg>
++                                      
++     Rename/Move
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Delete"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-remove mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#remove"
++                                       />
++                                     </svg>
++                                      
++     Delete
++   
++                                   </button>
++                                 </li>
++                               </ul>
++                             </div>
++                              
++                             <!---->
++                           </div>
++                         </div>
++                       </div>
++                     </div>
++                      
++                     <!---->
++                   </div>
++                   <div>
+                      <div
+-                 class="skeleton-line-2"
++                       class="file-row"
++                       data-level="0"
++                       level="0"
++                       role="button"
++                     >
++                       <div
++                         class="file-row-name-container"
++                       >
++                         <span
++                           class="file-row-name str-truncated"
++                         >
++                           <span
++                             class="file-row-icon"
++                           >
++                             <svg
++                               class="s16"
++                             >
++                               <use
++                                 xlink:href="undefined#file"
+                                />
++                             </svg>
++                             <!---->
++                             <!---->
++                           </span>
++                           
++       test
++     
++                         </span>
++                          
+                          <div
+-                 class="skeleton-line-3"
++                           class="float-right ide-file-icon-holder"
++                         >
++                           <!---->
++                            
++                           <!---->
++                            
++                           <div
++                             class="ide-new-btn gl-ml-3"
++                           >
++                             <div
++                               class="dropdown d-flex"
++                             >
++                               <button
++                                 aria-label="Create new file or directory"
++                                 class="rounded border-0 d-flex ide-entry-dropdown-toggle"
++                                 type="button"
++                               >
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-ellipsis_v"
++                                 >
++                                   <use
++                                     xlink:href="#ellipsis_v"
++                                   />
++                                 </svg>
++                                  
++                                 <svg
++                                   aria-hidden="true"
++                                   class="s16 ic-chevron-down"
++                                 >
++                                   <use
++                                     xlink:href="#chevron-down"
++                                   />
++                                 </svg>
++                               </button>
++                                
++                               <ul
++                                 class="dropdown-menu dropdown-menu-right"
++                               >
++                                 <!---->
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Rename/Move"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-pencil mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#pencil"
++                                       />
++                                     </svg>
++                                      
++     Rename/Move
++   
++                                   </button>
++                                 </li>
++                                  
++                                 <li>
++                                   <button
++                                     aria-label="Delete"
++                                     class="btn-blank d-flex"
++                                     data-original-title=""
++                                     title=""
++                                     type="button"
++                                   >
++                                     <svg
++                                       aria-hidden="true"
++                                       class="s16 ic-remove mr-2"
++                                     >
++                                       <use
++                                         xlink:href="#remove"
+                                        />
++                                     </svg>
++                                      
++     Delete
++   
++                                   </button>
++                                 </li>
++                               </ul>
++                             </div>
++                              
++                             <!---->
++                           </div>
++                         </div>
++                       </div>
++                     </div>
++                      
++                     <!---->
++                   </div>
++                 </div>
++               </div>
++             </div>
++              
++             <div
++               class="multi-file-commit-form is-compact"
++             >
++               <div
++                 class="commit-form-compact"
++               >
++                 <button
++                   class="btn btn-primary btn-sm btn-block qa-begin-commit-button"
++                   disabled="disabled"
++                   type="button"
++                 >
++                   
++         Commit…
++       
++                 </button>
++                  
++                 <p
++                   class="text-center bold"
++                 >
++                   0 changed files
++                 </p>
++               </div>
+              </div>
+            </div>
+          </div>
+           
+          <div
+@@ -112,32 +1744,131 @@
+                    
+                    Make and review changes in the browser with the Web IDE
+                  
+                  </h4>
+                   
+-                 <div
+-                   class="gl-spinner-container"
+-                 >
+-                   <span
+-                     aria-hidden="true"
+-                     aria-label="Loading"
+-                     class="align-text-bottom gl-spinner gl-spinner-orange gl-spinner-md"
+-                   />
++                 <p>
++                   
++                   Select a file from the left sidebar to begin editing. Afterwards, you'll be able to commit your changes.
++                 
++                 </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
++        
++       <div
++         class="gl-relative gl-display-flex gl-overflow-hidden"
++       >
++         <div
++           class="multi-file-commit-panel ide-sidebar gl-w-full ide-right-sidebar"
++           data-qa-selector="ide_right_sidebar"
++         >
++           <div
++             class="multi-file-commit-panel-inner ide-right-sidebar-null"
++             style="display: none;"
++           />
++            
++           <nav
++             class="ide-activity-bar"
++           >
++             <ul
++               class="list-unstyled"
++             >
++               <li>
++                 <button
++                   aria-label="Pipelines"
++                   class="ide-sidebar-link is-right"
++                   data-qa-selector="pipelines_tab_button"
++                   title="Pipelines"
++                   type="button"
++                 >
++                   <svg
++                     class="gl-icon s16"
++                   >
++                     <use
++                       href="#rocket"
++                     />
++                   </svg>
++                 </button>
++               </li>
++             </ul>
++           </nav>
+          </div>
+           
+-       <!---->
++         <div
++           class="position-absolute position-top-0 position-bottom-0 drag-handle position-left-0"
++           size="400"
++           style="cursor: ew-resize; display: none;"
++         />
+        </div>
++     </div>
+       
+      <footer
+        class="ide-status-bar"
++     >
++       <div
++         class="ide-status-branch"
+        >
+          <!---->
++          
++         <svg
++           aria-hidden="true"
++           class="s16 ic-commit"
++         >
++           <use
++             xlink:href="#commit"
++           />
++         </svg>
++          
++         <a
++           class="commit-sha"
++           data-original-title="Update test
++ Deleted test/123.txt"
++           href="undefined/commit/e330608d"
++           title=""
++         >
++           e330608d
++         </a>
++         
++     by
++     
++         <span>
++           <img
++             alt="Administrator"
++             class="avatar s18 ide-status-avatar"
++             data-src="?width=18"
++             height="18"
++             src="?width=18"
++             width="18"
++           />
++            
++           <div
++             boundary="window"
++             class="js-user-avatar-image-toolip"
++             placement="top"
++             target="function() {
++                   return _vm.$refs.userAvatarImage
++                 }"
++           >
++              Administrator 
++           </div>
++         </span>
++         
++     Administrator
++     
++         <time
++           data-container="body"
++           data-original-title="May 14, 2020 5:37pm GMT+0000"
++           data-placement="top"
++           datetime="2020-05-14T12:37:51.000-05:00"
++           title=""
++         >
++           2 weeks ago
++         </time>
++       </div>
+         
+        <!---->
+         
+        <div
+          class="ide-status-list d-flex ml-auto"
 `;
