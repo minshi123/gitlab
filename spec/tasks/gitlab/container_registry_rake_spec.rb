@@ -18,8 +18,9 @@ describe 'gitlab:container_registry namespace rake tasks' do
 
     shared_examples 'invalid config' do
       it 'does not update the application settings' do
-        expect { run_rake_task('gitlab:container_registry:configure') }
-          .to raise_error(/Registry is not enabled or registry api url is not present./)
+        expect(application_settings).not_to receive(:update!)
+
+        run_rake_task('gitlab:container_registry:configure')
       end
     end
 
