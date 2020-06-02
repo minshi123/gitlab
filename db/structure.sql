@@ -2222,7 +2222,8 @@ CREATE TABLE public.design_management_designs (
     id bigint NOT NULL,
     project_id integer NOT NULL,
     issue_id integer,
-    filename character varying NOT NULL
+    filename character varying NOT NULL,
+    CONSTRAINT check_07155e2715 CHECK ((char_length((filename)::text) <= 255))
 );
 
 CREATE SEQUENCE public.design_management_designs_id_seq
