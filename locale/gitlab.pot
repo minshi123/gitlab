@@ -124,6 +124,11 @@ msgid_plural "%d contributions"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d error"
 msgid_plural "%d errors"
 msgstr[0] ""
@@ -351,6 +356,9 @@ msgid "%{group_docs_link_start}Groups%{group_docs_link_end} allow you to manage 
 msgstr ""
 
 msgid "%{group_name} uses group managed accounts. You need to create a new GitLab account which will be managed by %{group_name}."
+msgstr ""
+
+msgid "%{host} sign-in from new location"
 msgstr ""
 
 msgid "%{icon}You are about to add %{usersTag} people to the discussion. Proceed with caution."
@@ -825,6 +833,9 @@ msgstr ""
 msgid "8 hours"
 msgstr ""
 
+msgid ":%{startLine} to %{endLine}"
+msgstr ""
+
 msgid "< 1 hour"
 msgstr ""
 
@@ -963,9 +974,6 @@ msgstr ""
 msgid "A sign-in to your account has been made from the following IP address: %{ip}"
 msgstr ""
 
-msgid "A sign-in to your account has been made from the following IP address: %{ip}."
-msgstr ""
-
 msgid "A subscription will trigger a new pipeline on the default branch of this project when a pipeline successfully completes for a new tag on the %{default_branch_docs} of the subscribed project."
 msgstr ""
 
@@ -976,9 +984,6 @@ msgid "A user with write access to the source branch selected this option"
 msgstr ""
 
 msgid "ACTION REQUIRED: Something went wrong while obtaining the Let's Encrypt certificate for GitLab Pages domain '%{domain}'"
-msgstr ""
-
-msgid "API Help"
 msgstr ""
 
 msgid "API Token"
@@ -1434,9 +1439,6 @@ msgid "Admin Note"
 msgstr ""
 
 msgid "Admin Overview"
-msgstr ""
-
-msgid "Admin Section"
 msgstr ""
 
 msgid "Admin mode already enabled"
@@ -2444,6 +2446,9 @@ msgid "Analyze a review version of your web application."
 msgstr ""
 
 msgid "Analyze your dependencies for known vulnerabilities."
+msgstr ""
+
+msgid "Analyze your source code and git history for secrets"
 msgstr ""
 
 msgid "Analyze your source code for known vulnerabilities."
@@ -3661,6 +3666,9 @@ msgstr ""
 msgid "CI Lint"
 msgstr ""
 
+msgid "CI settings"
+msgstr ""
+
 msgid "CI variables"
 msgstr ""
 
@@ -3737,6 +3745,9 @@ msgid "Can be manually deployed to"
 msgstr ""
 
 msgid "Can override approvers and approvals required per merge request"
+msgstr ""
+
+msgid "Can't create snippet: %{err}"
 msgstr ""
 
 msgid "Can't edit as source branch was deleted"
@@ -5581,6 +5592,9 @@ msgstr ""
 msgid "Comment is being updated"
 msgstr ""
 
+msgid "Comment on lines %{startLine} to %{endLine}"
+msgstr ""
+
 msgid "Comment/Reply (quoting selected text)"
 msgstr ""
 
@@ -5803,9 +5817,6 @@ msgid "Configure storage path settings."
 msgstr ""
 
 msgid "Configure the %{link} integration."
-msgstr ""
-
-msgid "Configure the Jira integration first on your project's %{strong_start} Settings > Integrations > Jira%{strong_end} page."
 msgstr ""
 
 msgid "Configure the way a user creates a new account."
@@ -7004,6 +7015,9 @@ msgstr ""
 msgid "Default classification label"
 msgstr ""
 
+msgid "Default dashboard"
+msgstr ""
+
 msgid "Default deletion adjourned period"
 msgstr ""
 
@@ -7497,9 +7511,6 @@ msgstr ""
 msgid "DesignManagement|%{filename} did not change."
 msgstr ""
 
-msgid "DesignManagement|Add designs"
-msgstr ""
-
 msgid "DesignManagement|Adding a design with the same filename replaces the file in a new version."
 msgstr ""
 
@@ -7582,6 +7593,9 @@ msgid "DesignManagement|The maximum number of designs allowed to be uploaded is 
 msgstr ""
 
 msgid "DesignManagement|To enable design management, you'll need to  %{requirements_link_start}meet the requirements%{requirements_link_end}. If you need help, reach out to our %{support_link_start}support team%{support_link_end} for assistance."
+msgstr ""
+
+msgid "DesignManagement|Upload designs"
 msgstr ""
 
 msgid "DesignManagement|Upload skipped."
@@ -9941,9 +9955,6 @@ msgstr ""
 msgid "From merge request merge until deploy to production"
 msgstr ""
 
-msgid "From project"
-msgstr ""
-
 msgid "From the Kubernetes cluster details view, install Runner from the applications list"
 msgstr ""
 
@@ -10620,9 +10631,6 @@ msgid "Go back to %{startTag}Open issues%{endTag} and select some issues to add 
 msgstr ""
 
 msgid "Go full screen"
-msgstr ""
-
-msgid "Go to"
 msgstr ""
 
 msgid "Go to %{link_to_google_takeout}."
@@ -11418,6 +11426,9 @@ msgstr ""
 msgid "Hook was successfully updated."
 msgstr ""
 
+msgid "Hostname"
+msgstr ""
+
 msgid "Hour (UTC)"
 msgstr ""
 
@@ -11610,6 +11621,12 @@ msgstr ""
 msgid "Ignored"
 msgstr ""
 
+msgid "Image Details"
+msgstr ""
+
+msgid "Image URL"
+msgstr ""
+
 msgid "Image: %{image}"
 msgstr ""
 
@@ -11635,9 +11652,6 @@ msgid "Impersonation has been disabled"
 msgstr ""
 
 msgid "Import"
-msgstr ""
-
-msgid "Import %{status}"
 msgstr ""
 
 msgid "Import CSV"
@@ -11674,9 +11688,6 @@ msgid "Import in progress. Refresh page to see newly added issues."
 msgstr ""
 
 msgid "Import issues"
-msgstr ""
-
-msgid "Import issues from Jira"
 msgstr ""
 
 msgid "Import members"
@@ -11868,10 +11879,16 @@ msgstr ""
 msgid "Input your repository URL"
 msgstr ""
 
+msgid "Insert"
+msgstr ""
+
 msgid "Insert a code block"
 msgstr ""
 
 msgid "Insert a quote"
+msgstr ""
+
+msgid "Insert an image"
 msgstr ""
 
 msgid "Insert code"
@@ -12158,6 +12175,33 @@ msgstr ""
 msgid "Issue weight"
 msgstr ""
 
+msgid "IssueAnalytics|Age"
+msgstr ""
+
+msgid "IssueAnalytics|Assignees"
+msgstr ""
+
+msgid "IssueAnalytics|Due date"
+msgstr ""
+
+msgid "IssueAnalytics|Failed to load issues. Please try again."
+msgstr ""
+
+msgid "IssueAnalytics|Issue"
+msgstr ""
+
+msgid "IssueAnalytics|Milestone"
+msgstr ""
+
+msgid "IssueAnalytics|Opened by"
+msgstr ""
+
+msgid "IssueAnalytics|Status"
+msgstr ""
+
+msgid "IssueAnalytics|Weight"
+msgstr ""
+
 msgid "IssueBoards|Board"
 msgstr ""
 
@@ -12299,9 +12343,6 @@ msgstr ""
 msgid "January"
 msgstr ""
 
-msgid "Jira Issue Import"
-msgstr ""
-
 msgid "Jira import is already running."
 msgstr ""
 
@@ -12309,6 +12350,9 @@ msgid "Jira integration not configured."
 msgstr ""
 
 msgid "Jira project: %{importProject}"
+msgstr ""
+
+msgid "Jira service not configured."
 msgstr ""
 
 msgid "JiraService| on branch %{branch_link}"
@@ -13295,9 +13339,6 @@ msgstr ""
 msgid "Mark as resolved"
 msgstr ""
 
-msgid "Mark comment as resolved"
-msgstr ""
-
 msgid "Mark this issue as a duplicate of another issue"
 msgstr ""
 
@@ -13305,9 +13346,6 @@ msgid "Mark this issue as related to another issue"
 msgstr ""
 
 msgid "Markdown"
-msgstr ""
-
-msgid "Markdown Help"
 msgstr ""
 
 msgid "Markdown enabled"
@@ -13598,6 +13636,12 @@ msgstr ""
 msgid "MergeConflict|origin//their changes"
 msgstr ""
 
+msgid "MergeRequestDiffs|Commenting on lines %{selectStart}start%{selectEnd} to %{end}"
+msgstr ""
+
+msgid "MergeRequestDiffs|Select comment starting line"
+msgstr ""
+
 msgid "MergeRequests|Add a reply"
 msgstr ""
 
@@ -13734,9 +13778,6 @@ msgid "Metrics Dashboard"
 msgstr ""
 
 msgid "Metrics and profiling"
-msgstr ""
-
-msgid "Metrics for environment"
 msgstr ""
 
 msgid "Metrics::Dashboard::Annotation|Annotation can't belong to both a cluster and an environment at the same time"
@@ -14274,6 +14315,9 @@ msgstr ""
 msgid "NetworkPolicies|Environment does not have deployment platform"
 msgstr ""
 
+msgid "NetworkPolicies|If you are using Auto DevOps, your %{monospacedStart}auto-deploy-values.yaml%{monospacedEnd} file will not be updated if you change a policy in this section. Auto DevOps users should make changes by following the %{linkStart}Container Network Policy documentation%{linkEnd}."
+msgstr ""
+
 msgid "NetworkPolicies|Invalid or empty policy"
 msgstr ""
 
@@ -14289,7 +14333,7 @@ msgstr ""
 msgid "NetworkPolicies|No policies detected"
 msgstr ""
 
-msgid "NetworkPolicies|Policies are a specification of how groups of pods are allowed to communicate with each other network endpoints."
+msgid "NetworkPolicies|Policies are a specification of how groups of pods are allowed to communicate with each other's network endpoints."
 msgstr ""
 
 msgid "NetworkPolicies|Policy %{policyName} was successfully changed"
@@ -15388,6 +15432,9 @@ msgstr ""
 msgid "PackageRegistry|There was a problem fetching the details for this package."
 msgstr ""
 
+msgid "PackageRegistry|This NuGet package has no dependencies."
+msgstr ""
+
 msgid "PackageRegistry|To widen your search, change or remove the filters above."
 msgstr ""
 
@@ -15620,9 +15667,6 @@ msgid "PerformanceBar|trace"
 msgstr ""
 
 msgid "Permissions"
-msgstr ""
-
-msgid "Permissions Help"
 msgstr ""
 
 msgid "Permissions, LFS, 2FA"
@@ -16022,6 +16066,9 @@ msgid "Please note that this application is not provided by GitLab and you shoul
 msgstr ""
 
 msgid "Please provide a name"
+msgstr ""
+
+msgid "Please provide a valid URL"
 msgstr ""
 
 msgid "Please provide a valid email address."
@@ -17653,9 +17700,6 @@ msgstr ""
 msgid "Public - The project can be accessed without any authentication."
 msgstr ""
 
-msgid "Public Access Help"
-msgstr ""
-
 msgid "Public deploy keys (%{deploy_keys_count})"
 msgstr ""
 
@@ -17783,9 +17827,6 @@ msgid "Quick range"
 msgstr ""
 
 msgid "README"
-msgstr ""
-
-msgid "Rake Tasks Help"
 msgstr ""
 
 msgid "Raw blob request rate limit per minute"
@@ -17979,6 +18020,18 @@ msgid "Release notes:"
 msgstr ""
 
 msgid "Release title"
+msgstr ""
+
+msgid "ReleaseAssetLinkType|Image"
+msgstr ""
+
+msgid "ReleaseAssetLinkType|Other"
+msgstr ""
+
+msgid "ReleaseAssetLinkType|Package"
+msgstr ""
+
+msgid "ReleaseAssetLinkType|Runbook"
 msgstr ""
 
 msgid "Releases"
@@ -18341,9 +18394,6 @@ msgid "Reports|Metrics reports did not change"
 msgstr ""
 
 msgid "Reports|Metrics reports failed loading results"
-msgstr ""
-
-msgid "Reports|Scanner"
 msgstr ""
 
 msgid "Reports|Severity"
@@ -18781,9 +18831,6 @@ msgstr ""
 msgid "Runners currently online: %{active_runners_count}"
 msgstr ""
 
-msgid "Runners page"
-msgstr ""
-
 msgid "Runners page."
 msgstr ""
 
@@ -18818,9 +18865,6 @@ msgid "SSH Key"
 msgstr ""
 
 msgid "SSH Keys"
-msgstr ""
-
-msgid "SSH Keys Help"
 msgstr ""
 
 msgid "SSH host key fingerprints"
@@ -19048,10 +19092,10 @@ msgstr ""
 msgid "SearchAutocomplete|in all GitLab"
 msgstr ""
 
-msgid "SearchAutocomplete|in this group"
+msgid "SearchAutocomplete|in group %{groupName}"
 msgstr ""
 
-msgid "SearchAutocomplete|in this project"
+msgid "SearchAutocomplete|in project %{projectName}"
 msgstr ""
 
 msgid "SearchCodeResults|in"
@@ -19144,6 +19188,9 @@ msgid "Secondary"
 msgstr ""
 
 msgid "Secret"
+msgstr ""
+
+msgid "Secret Detection"
 msgstr ""
 
 msgid "Security"
@@ -19296,10 +19343,10 @@ msgstr ""
 msgid "SecurityReports|Remove project from dashboard"
 msgstr ""
 
-msgid "SecurityReports|Return to dashboard"
+msgid "SecurityReports|Report type"
 msgstr ""
 
-msgid "SecurityReports|Scanner type"
+msgid "SecurityReports|Return to dashboard"
 msgstr ""
 
 msgid "SecurityReports|Security Dashboard"
@@ -20444,6 +20491,12 @@ msgstr ""
 msgid "Sort direction"
 msgstr ""
 
+msgid "Sort direction: Ascending"
+msgstr ""
+
+msgid "Sort direction: Descending"
+msgstr ""
+
 msgid "SortOptions|Access level, ascending"
 msgstr ""
 
@@ -21299,9 +21352,6 @@ msgstr ""
 msgid "System Hooks"
 msgstr ""
 
-msgid "System Hooks Help"
-msgstr ""
-
 msgid "System Info"
 msgstr ""
 
@@ -22034,6 +22084,9 @@ msgstr ""
 msgid "There was a problem fetching project users."
 msgstr ""
 
+msgid "There was a problem fetching users."
+msgstr ""
+
 msgid "There was a problem refreshing the data, please try again"
 msgstr ""
 
@@ -22460,7 +22513,7 @@ msgstr ""
 msgid "This job is preparing to start"
 msgstr ""
 
-msgid "This job is stuck because you don't have any active runners online with any of these tags assigned to them:"
+msgid "This job is stuck because you don't have any active runners online or available with any of these tags assigned to them:"
 msgstr ""
 
 msgid "This job is stuck because you don't have any active runners that can run this job."
@@ -23508,9 +23561,6 @@ msgstr ""
 msgid "Unknown response text"
 msgstr ""
 
-msgid "Unknown sign-in from new location"
-msgstr ""
-
 msgid "Unlimited"
 msgstr ""
 
@@ -23932,9 +23982,6 @@ msgid "User pipeline minutes were successfully reset."
 msgstr ""
 
 msgid "User restrictions"
-msgstr ""
-
-msgid "User settings"
 msgstr ""
 
 msgid "User was successfully created."
@@ -24439,6 +24486,9 @@ msgstr ""
 msgid "View the performance dashboard at"
 msgstr ""
 
+msgid "View users statistics"
+msgstr ""
+
 msgid "Viewing commit"
 msgstr ""
 
@@ -24745,9 +24795,6 @@ msgstr ""
 msgid "Webhooks"
 msgstr ""
 
-msgid "Webhooks Help"
-msgstr ""
-
 msgid "Webhooks allow you to trigger a URL if, for example, new code is pushed or a new issue is created. You can configure webhooks to listen for specific events like pushes, issues or merge requests. Group webhooks will apply to all projects in a group, allowing you to standardize webhook functionality across your entire group."
 msgstr ""
 
@@ -25012,9 +25059,6 @@ msgid "Work in progress (open and unassigned)"
 msgstr ""
 
 msgid "Work in progress Limit"
-msgstr ""
-
-msgid "Workflow Help"
 msgstr ""
 
 msgid "Write"
@@ -25512,6 +25556,9 @@ msgstr ""
 msgid "YouTube"
 msgstr ""
 
+msgid "Your %{host} account was signed in to from a new location"
+msgstr ""
+
 msgid "Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}."
 msgstr ""
 
@@ -25645,6 +25692,12 @@ msgid "Your first project"
 msgstr ""
 
 msgid "Your groups"
+msgstr ""
+
+msgid "Your instance has %{remaining_user_count} users remaining of the %{total_user_count} included in your subscription. You can add more users than the number included in your license, and we will include the overage in your next bill."
+msgstr ""
+
+msgid "Your instance is approaching its licensed user count"
 msgstr ""
 
 msgid "Your issues are being imported. Once finished, you'll get a confirmation email."
@@ -25790,6 +25843,9 @@ msgstr ""
 msgid "branch name"
 msgstr ""
 
+msgid "build pipeline reference mismatch"
+msgstr ""
+
 msgid "by"
 msgstr ""
 
@@ -25905,7 +25961,7 @@ msgstr ""
 msgid "ciReport|All projects"
 msgstr ""
 
-msgid "ciReport|All scanner types"
+msgid "ciReport|All report types"
 msgstr ""
 
 msgid "ciReport|All severities"
@@ -26232,6 +26288,9 @@ msgid "here"
 msgstr ""
 
 msgid "https://your-bitbucket-server"
+msgstr ""
+
+msgid "image"
 msgstr ""
 
 msgid "image diff"
@@ -26878,6 +26937,9 @@ msgstr ""
 msgid "resolved the corresponding error and closed the issue."
 msgstr ""
 
+msgid "revised"
+msgstr ""
+
 msgid "score"
 msgstr ""
 
@@ -27008,6 +27070,9 @@ msgid "updated %{timeAgo}"
 msgstr ""
 
 msgid "updated %{time_ago}"
+msgstr ""
+
+msgid "uploaded"
 msgstr ""
 
 msgid "uploads"

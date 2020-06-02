@@ -133,6 +133,8 @@ module Gitlab
             releases: count(Release),
             remote_mirrors: count(RemoteMirror),
             snippets: count(Snippet),
+            personal_snippets: count(PersonalSnippet),
+            project_snippets: count(ProjectSnippet),
             suggestions: count(Suggestion),
             terraform_reports: count(::Ci::JobArtifact.terraform_reports),
             terraform_states: count(::Terraform::State),
@@ -217,6 +219,7 @@ module Gitlab
           gitaly: {
             version: alt_usage_data { Gitaly::Server.all.first.server_version },
             servers: alt_usage_data { Gitaly::Server.count },
+            clusters: alt_usage_data { Gitaly::Server.gitaly_clusters },
             filesystems: alt_usage_data(fallback: ["-1"]) { Gitaly::Server.filesystems }
           },
           gitlab_pages: {

@@ -5730,7 +5730,8 @@ CREATE TABLE public.release_links (
     name character varying NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    filepath character varying(128)
+    filepath character varying(128),
+    link_type smallint DEFAULT 0
 );
 
 CREATE SEQUENCE public.release_links_id_seq
@@ -5830,7 +5831,8 @@ CREATE TABLE public.requirements_management_test_reports (
     requirement_id bigint NOT NULL,
     pipeline_id bigint,
     author_id bigint,
-    state smallint NOT NULL
+    state smallint NOT NULL,
+    build_id bigint
 );
 
 CREATE SEQUENCE public.requirements_management_test_reports_id_seq
@@ -10610,6 +10612,8 @@ CREATE UNIQUE INDEX index_repository_languages_on_project_and_languages_id ON pu
 
 CREATE INDEX index_requirements_management_test_reports_on_author_id ON public.requirements_management_test_reports USING btree (author_id);
 
+CREATE INDEX index_requirements_management_test_reports_on_build_id ON public.requirements_management_test_reports USING btree (build_id);
+
 CREATE INDEX index_requirements_management_test_reports_on_pipeline_id ON public.requirements_management_test_reports USING btree (pipeline_id);
 
 CREATE INDEX index_requirements_management_test_reports_on_requirement_id ON public.requirements_management_test_reports USING btree (requirement_id);
@@ -10743,6 +10747,8 @@ CREATE INDEX index_snippets_on_created_at ON public.snippets USING btree (create
 CREATE INDEX index_snippets_on_description_trigram ON public.snippets USING gin (description public.gin_trgm_ops);
 
 CREATE INDEX index_snippets_on_file_name_trigram ON public.snippets USING gin (file_name public.gin_trgm_ops);
+
+CREATE INDEX index_snippets_on_id_and_type ON public.snippets USING btree (id, type);
 
 CREATE INDEX index_snippets_on_project_id_and_visibility_level ON public.snippets USING btree (project_id, visibility_level);
 
@@ -12657,6 +12663,9 @@ ALTER TABLE ONLY public.approval_merge_request_rule_sources
 ALTER TABLE ONLY public.prometheus_alerts
     ADD CONSTRAINT fk_rails_e6351447ec FOREIGN KEY (prometheus_metric_id) REFERENCES public.prometheus_metrics(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.requirements_management_test_reports
+    ADD CONSTRAINT fk_rails_e67d085910 FOREIGN KEY (build_id) REFERENCES public.ci_builds(id) ON DELETE SET NULL;
+
 ALTER TABLE ONLY public.merge_request_metrics
     ADD CONSTRAINT fk_rails_e6d7c24d1b FOREIGN KEY (merge_request_id) REFERENCES public.merge_requests(id) ON DELETE CASCADE;
 
@@ -14024,6 +14033,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200521225327
 20200521225337
 20200521225346
+20200522235146
 20200525114553
 20200525121014
 20200526000407
@@ -14031,8 +14041,10 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200526153844
 20200526164946
 20200526164947
+20200527092027
 20200527094322
 20200527095401
+20200527135313
 20200527151413
 20200527152116
 20200527152657

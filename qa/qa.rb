@@ -43,6 +43,7 @@ module QA
 
     module API
       autoload :Client, 'qa/runtime/api/client'
+      autoload :RepositoryStorageMoves, 'qa/runtime/api/repository_storage_moves'
       autoload :Request, 'qa/runtime/api/request'
     end
 
@@ -440,6 +441,10 @@ module QA
 
       module WebIDE
         autoload :Alert, 'qa/page/component/web_ide/alert'
+
+        module Modal
+          autoload :CreateNewFile, 'qa/page/component/web_ide/modal/create_new_file'
+        end
       end
 
       module Project
