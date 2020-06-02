@@ -3,15 +3,9 @@
 exports[`Dashboard template matches the default snapshot 1`] = `
 <div
   class="prometheus-graphs"
-  currentenvironmentname="environment1"
-  dashboardendpoint="/namespace1/project1/-/environments/1/metrics_dashboard.json"
-  dashboardsendpoint="/namespace1/project1/-/performance_monitoring/dashboards.json"
   data-qa-selector="prometheus_graphs"
-  deploymentsendpoint="/namespace1/project1/-/environments/1/deployments.json"
   environmentstate="available"
-  logspath="/namespace1/project1/-/logs?environment_name=environment1"
   metricsendpoint="/namespace1/project1/-/environments/1/additional_metrics.json"
-  projectpath="/namespace1/project1"
   prometheusstatus=""
 >
   <div

@@ -1,6 +1,7 @@
+import { stateAndPropsFromDataset } from '~/monitoring/utils';
 import { mapToDashboardViewModel } from '~/monitoring/stores/utils';
 import { metricStates } from '~/monitoring/constants';
-import { parseBoolean, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 
 import { metricsResult } from './mock_data';
 
@@ -10,14 +11,10 @@ export const metricsDashboardResponse = getJSONFixture(
 );
 export const metricsDashboardPayload = metricsDashboardResponse.dashboard;
 
-const metricsData = convertObjectPropsToCamelCase(metricsDashboardResponse.metrics_data);
-
-export const dashboardProps = {
-  ...metricsData,
-  hasMetrics: parseBoolean(metricsData.hasMetrics),
-  customMetricsAvailable: parseBoolean(metricsData.customMetricsAvailable),
-  prometheusAlertsAvailable: parseBoolean(metricsData.prometheusAlertsAvailable),
-};
+export const datasetState = stateAndPropsFromDataset(
+  convertObjectPropsToCamelCase(metricsDashboardResponse.metrics_data),
+);
+export const dashboardProps = datasetState.dataProps;
 
 export const metricsDashboardViewModel = mapToDashboardViewModel(metricsDashboardPayload);
 
