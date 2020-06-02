@@ -5442,7 +5442,8 @@ CREATE TABLE public.projects (
     marked_for_deletion_at date,
     marked_for_deletion_by_user_id integer,
     autoclose_referenced_issues boolean,
-    suggestion_commit_message character varying(255)
+    suggestion_commit_message character varying(255),
+    squash_option smallint DEFAULT 0
 );
 
 CREATE SEQUENCE public.projects_id_seq
@@ -14041,6 +14042,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200526153844
 20200526164946
 20200526164947
+20200526193555
 20200527092027
 20200527094322
 20200527095401
