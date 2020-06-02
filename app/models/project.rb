@@ -517,6 +517,13 @@ class Project < ApplicationRecord
 
   enum auto_cancel_pending_pipelines: { disabled: 0, enabled: 1 }
 
+  enum squash_option: {
+    squash_enabled: 0,
+    squash_disabled: 1,
+    never_squash: 2,
+    always_squash: 3
+  }
+
   chronic_duration_attr :build_timeout_human_readable, :build_timeout,
     default: 3600, error_message: _('Maximum job timeout has a value which could not be accepted')
 
@@ -2163,6 +2170,14 @@ class Project < ApplicationRecord
 
   def renamed?
     persisted? && path_changed?
+  end
+
+  def squash_value_default
+    squash_option == :always || squash_option == :enabled
+  end
+
+  def squash_value_readonly
+    squash_option == :always || squash_option == :never
   end
 
   def human_merge_method

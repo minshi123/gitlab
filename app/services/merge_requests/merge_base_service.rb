@@ -23,7 +23,11 @@ module MergeRequests
         if merge_request.squash
           squash_sha!
         else
-          merge_request.diff_head_sha
+          if target_project.squash_option == "always_squash"
+            raise_error("This repository enforces squashing for merge requests.")
+          else
+            merge_request.diff_head_sha
+          end
         end
       end
     end
