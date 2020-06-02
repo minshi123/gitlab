@@ -1,7 +1,7 @@
 <script>
 import { GlAlert, GlLabel } from '@gitlab/ui';
 import getIssuesListDetailsQuery from '../queries/get_issues_list_details.query.graphql';
-import { calculateJiraImportLabel, isFinished, isInProgress } from '~/jira_import/utils';
+import { calculateJiraImportLabel, isFinished, isInProgress } from '~/jira_import/utils/utils';
 
 export default {
   name: 'IssuableListRoot',

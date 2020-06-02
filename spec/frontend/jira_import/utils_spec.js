@@ -4,7 +4,7 @@ import {
   IMPORT_STATE,
   isFinished,
   isInProgress,
-} from '~/jira_import/utils';
+} from '~/jira_import/utils/utils';
 
 describe('isInProgress', () => {
   it.each`

@@ -6,7 +6,7 @@ import JiraImportForm from '~/jira_import/components/jira_import_form.vue';
 import JiraImportProgress from '~/jira_import/components/jira_import_progress.vue';
 import JiraImportSetup from '~/jira_import/components/jira_import_setup.vue';
 import initiateJiraImportMutation from '~/jira_import/queries/initiate_jira_import.mutation.graphql';
-import { IMPORT_STATE } from '~/jira_import/utils';
+import { IMPORT_STATE } from '~/jira_import/utils/utils';
 
 const mountComponent = ({
   isJiraConfigured = true,
