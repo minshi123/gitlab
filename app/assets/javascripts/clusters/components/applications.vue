@@ -114,6 +114,72 @@ export default {
     certManagerInstalled() {
       return this.applications.cert_manager.status === APPLICATION_STATUS.INSTALLED;
     },
+    ingressDescription() {
+      return sprintf(
+        escape(
+          s__(
+            `ClusterIntegration|Installing Ingress may incur additional costs. Learn more about %{pricingLink}.`,
+          ),
+        ),
+        {
+          pricingLink: `<a href="https://cloud.google.com/compute/pricing#lb"
+              target="_blank" rel="noopener noreferrer">
+              ${escape(s__('ClusterIntegration|pricing'))}</a>`,
+        },
+        false,
+      );
+    },
+    certManagerDescription() {
+      return sprintf(
+        escape(
+          s__(
+            `ClusterIntegration|Cert-Manager is a native Kubernetes certificate management controller that helps with issuing certificates.
+            Installing Cert-Manager on your cluster will issue a certificate by %{letsEncrypt} and ensure that certificates
+            are valid and up-to-date.`,
+          ),
+        ),
+        {
+          letsEncrypt: `<a href="https://letsencrypt.org/"
+              target="_blank" rel="noopener noreferrer">
+              ${escape(s__("ClusterIntegration|Let's Encrypt"))}</a>`,
+        },
+        false,
+      );
+    },
+    crossplaneDescription() {
+      return sprintf(
+        escape(
+          s__(
+            `ClusterIntegration|Crossplane enables declarative provisioning of managed services from your cloud of choice using %{kubectl} or %{gitlabIntegrationLink}.
+Crossplane runs inside your Kubernetes cluster and supports secure connectivity and secrets management between app containers and the cloud services they depend on.`,
+          ),
+        ),
+        {
+          gitlabIntegrationLink: `<a href="https://docs.gitlab.com/ee/user/clusters/applications.html#crossplane"
+          target="_blank" rel="noopener noreferrer">
+          ${escape(s__('ClusterIntegration|Gitlab Integration'))}</a>`,
+          kubectl: `<code>kubectl</code>`,
+        },
+        false,
+      );
+    },
+
+    prometheusDescription() {
+      return sprintf(
+        escape(
+          s__(
+            `ClusterIntegration|Prometheus is an open-source monitoring system
+            with %{gitlabIntegrationLink} to monitor deployed applications.`,
+          ),
+        ),
+        {
+          gitlabIntegrationLink: `<a href="https://docs.gitlab.com/ce/user/project/integrations/prometheus.html"
+              target="_blank" rel="noopener noreferrer">
+              ${escape(s__('ClusterIntegration|GitLab Integration'))}</a>`,
+        },
+        false,
+      );
+    },
     jupyterInstalled() {
       return this.applications.jupyter.status === APPLICATION_STATUS.INSTALLED;
     },
@@ -196,7 +262,7 @@ export default {
         s__(`ClusterIntegration|Choose which applications to install on your Kubernetes cluster.
             Helm Tiller is required to install any of the following applications.`)
       }}
-      <a :href="helpPath">{{ __('More information') }}</a>
+      <gl-link :href="helpPath">{{ __('More information') }}</gl-link>
     </p>
 
     <div class="cluster-application-list prepend-top-10">
@@ -301,9 +367,9 @@ export default {
                                 generated endpoint in order to access
                                 your application after it has been deployed.`)
                 }}
-                <a :href="ingressDnsHelpPath" target="_blank" rel="noopener noreferrer">
+                <gl-link :href="ingressDnsHelpPath" target="_blank">
                   {{ __('More information') }}
-                </a>
+                </gl-link>
               </p>
             </div>
 
@@ -313,9 +379,9 @@ export default {
                             the process of being assigned. Please check your Kubernetes
                             cluster or Quotas on Google Kubernetes Engine if it takes a long time.`)
               }}
-              <a :href="ingressDnsHelpPath" target="_blank" rel="noopener noreferrer">
+              <gl-link :href="ingressDnsHelpPath" target="_blank">
                 {{ __('More information') }}
-              </a>
+              </gl-link>
             </p>
           </template>
           <template v-else>
@@ -390,11 +456,10 @@ export default {
                 s__(`ClusterIntegration|Issuers represent a certificate authority.
                               You must provide an email address for your Issuer. `)
               }}
-              <a
+              <gl-link
                 href="http://docs.cert-manager.io/en/latest/reference/issuers.html?highlight=email"
                 target="_blank"
-                rel="noopener noreferrer"
-                >{{ __('More information') }}</a
+              >{{ __('More information') }}</gl-link
               >
             </p>
           </div>
@@ -563,9 +628,9 @@ export default {
                   s__(`ClusterIntegration|Replace this with your own hostname if you want.
                                 If you do so, point hostname to Ingress IP Address from above.`)
                 }}
-                <a :href="ingressDnsHelpPath" target="_blank" rel="noopener noreferrer">
+                <gl-link :href="ingressDnsHelpPath" target="_blank">
                   {{ __('More information') }}
-                </a>
+                </gl-link>
               </p>
             </div>
           </template>
@@ -600,9 +665,7 @@ export default {
               s__(`ClusterIntegration|You must have an RBAC-enabled cluster
             to install Knative.`)
             }}
-            <a :href="helpPath" target="_blank" rel="noopener noreferrer">
-              {{ __('More information') }}
-            </a>
+            <gl-link :href="helpPath">{{ __('More information') }}</gl-link>
           </p>
           <p>
             {{
