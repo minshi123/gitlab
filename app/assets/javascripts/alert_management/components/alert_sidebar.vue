@@ -1,4 +1,5 @@
 <script>
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SidebarHeader from './sidebar/sidebar_header.vue';
 import SidebarTodo from './sidebar/sidebar_todo.vue';
 import SidebarStatus from './sidebar/sidebar_status.vue';
@@ -11,6 +12,7 @@ export default {
     SidebarTodo,
     SidebarStatus,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     sidebarCollapsed: {
       type: Boolean,
@@ -48,6 +50,7 @@ export default {
         @alert-sidebar-error="$emit('alert-sidebar-error', $event)"
       />
       <sidebar-assignees
+        v-if="glFeatures.alertAssignee"
         :project-path="projectPath"
         :alert="alert"
         @toggle-sidebar="$emit('toggle-sidebar')"
