@@ -1,4 +1,4 @@
-import { n__, s__, sprintf } from '~/locale';
+import { __, n__, s__, sprintf } from '~/locale';
 
 /**
  * Returns the index of an issue in given list
@@ -42,103 +42,89 @@ export const enrichVulnerabilityWithFeedback = (vulnerability, feedback = []) =>
       return vuln;
     }, vulnerability);
 
-export const groupedTextBuilder = ({
-  reportType = '',
-  paths = {},
-  added = 0,
-  fixed = 0,
-  existing = 0,
-  dismissed = 0,
-  status = '',
-}) => {
-  let baseString = '';
-
-  if (!paths.base && !paths.diffEndpoint) {
-    if (added && !dismissed) {
-      // added
-      baseString = n__(
-        'ciReport|%{reportType} %{status} detected %{newCount} vulnerability for the source branch only',
-        'ciReport|%{reportType} %{status} detected %{newCount} vulnerabilities for the source branch only',
-        added,
-      );
-    } else if (!added && dismissed) {
-      // dismissed
-      baseString = n__(
-        'ciReport|%{reportType} %{status} detected %{dismissedCount} dismissed vulnerability for the source branch only',
-        'ciReport|%{reportType} %{status} detected %{dismissedCount} dismissed vulnerabilities for the source branch only',
-        dismissed,
-      );
-    } else if (added && dismissed) {
-      // added & dismissed
-      baseString = s__(
-        'ciReport|%{reportType} %{status} detected %{newCount} new, and %{dismissedCount} dismissed vulnerabilities for the source branch only',
-      );
-    } else {
-      // no vulnerabilities
-      baseString = s__(
-        'ciReport|%{reportType} %{status} detected no vulnerabilities for the source branch only',
-      );
-    }
-  } else if (paths.head || paths.diffEndpoint) {
-    if (added && !fixed && !dismissed) {
-      // added
-      baseString = n__(
-        'ciReport|%{reportType} %{status} detected %{newCount} new vulnerability',
-        'ciReport|%{reportType} %{status} detected %{newCount} new vulnerabilities',
-        added,
-      );
-    } else if (!added && fixed && !dismissed) {
-      // fixed
-      baseString = n__(
-        'ciReport|%{reportType} %{status} detected %{fixedCount} fixed vulnerability',
-        'ciReport|%{reportType} %{status} detected %{fixedCount} fixed vulnerabilities',
-        fixed,
-      );
-    } else if (!added && !fixed && dismissed) {
-      // dismissed
-      baseString = n__(
-        'ciReport|%{reportType} %{status} detected %{dismissedCount} dismissed vulnerability',
-        'ciReport|%{reportType} %{status} detected %{dismissedCount} dismissed vulnerabilities',
-        dismissed,
-      );
-    } else if (added && fixed && !dismissed) {
-      // added & fixed
-      baseString = s__(
-        'ciReport|%{reportType} %{status} detected %{newCount} new, and %{fixedCount} fixed vulnerabilities',
-      );
-    } else if (added && !fixed && dismissed) {
-      // added & dismissed
-      baseString = s__(
-        'ciReport|%{reportType} %{status} detected %{newCount} new, and %{dismissedCount} dismissed vulnerabilities',
-      );
-    } else if (!added && fixed && dismissed) {
-      // fixed & dismissed
-      baseString = s__(
-        'ciReport|%{reportType} %{status} detected %{fixedCount} fixed, and %{dismissedCount} dismissed vulnerabilities',
-      );
-    } else if (added && fixed && dismissed) {
-      // added & fixed & dismissed
-      baseString = s__(
-        'ciReport|%{reportType} %{status} detected %{newCount} new, %{fixedCount} fixed, and %{dismissedCount} dismissed vulnerabilities',
-      );
-    } else if (existing) {
-      baseString = s__('ciReport|%{reportType} %{status} detected no new vulnerabilities');
-    } else {
-      baseString = s__('ciReport|%{reportType} %{status} detected no vulnerabilities');
-    }
-  }
-
-  if (!status) {
-    baseString = baseString.replace('%{status}', '').replace('  ', ' ');
-  }
-
-  return sprintf(baseString, {
-    status,
+export const groupedTextBuilder = ({ reportType = '', critical = 0, high = 0, other = 0 }) => {
+  let options = 0;
+  const CRITICAL = 100;
+  const HIGH = 10;
+  const OTHER = 1;
+  // TODO: Can we leverage args here?
+  const sprintfVars = {
     reportType,
-    newCount: added,
-    fixedCount: fixed,
-    dismissedCount: dismissed,
-  });
+    critical,
+    high,
+    other,
+  };
+
+  if (critical) {
+    options += 100;
+  }
+  if (high) {
+    options += 10;
+  }
+  if (other) {
+    options += 1;
+  }
+
+  switch (options) {
+    case CRITICAL:
+      return sprintf(
+        n__(
+          '%{reportType} detected %{critical} new critical vulnerability.',
+          '%{reportType} detected %{critical} new critical vulnerabilities.',
+          critical,
+        ),
+        sprintfVars,
+      );
+
+    case HIGH:
+      return sprintf(
+        n__(
+          '%{reportType} detected %{high} new high vulnerability.',
+          '%{reportType} detected %{high} new high vulnerabilities.',
+          high,
+        ),
+        sprintfVars,
+      );
+
+    case OTHER:
+      return sprintf(
+        n__(
+          '%{reportType} detected %{other} new vulnerability.',
+          '%{reportType} detected %{other} new vulnerabilities.',
+          other,
+        ),
+        sprintfVars,
+      );
+
+    case CRITICAL + HIGH:
+      return sprintf(
+        __('%{reportType} detected %{critical} new critical and %{high} new high vulnerabilities.'),
+        sprintfVars,
+      );
+
+    case CRITICAL + OTHER:
+      return sprintf(
+        __('%{reportType} detected %{critical} critical and %{other} other new vulnerabilities.'),
+        sprintfVars,
+      );
+
+    case HIGH + OTHER:
+      return sprintf(
+        __('%{reportType} detected %{high} high and %{other} other new vulnerabilities.'),
+        sprintfVars,
+      );
+
+    case CRITICAL + HIGH + OTHER:
+      return sprintf(
+        __(
+          '%{reportType} detected %{critical} critical, %{high} high, and %{other} other new vulnerabilities.',
+        ),
+        sprintfVars,
+      );
+
+    default:
+      return sprintf(__('%{reportType} detected no new vulnerabilities.'), sprintfVars);
+  }
 };
 
 export const statusIcon = (loading = false, failed = false, newIssues = 0, neutralIssues = 0) => {
@@ -194,6 +180,7 @@ export const groupedReportText = (report, reportType, errorMessage, loadingMessa
   }
 
   return groupedTextBuilder({
+    // TODO: Update the issue counting to pass the severities
     ...countIssues(report),
     reportType,
     paths,
