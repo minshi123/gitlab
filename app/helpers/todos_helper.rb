@@ -54,9 +54,13 @@ module TodosHelper
   end
 
   def todo_target_type_name(todo)
-    return _('design') if todo.for_design?
-
-    todo.target_type.titleize.downcase
+    if todo.for_design?
+      _('design')
+    elsif todo.for_alert?
+      _('alert')
+    else
+      todo.target_type.titleize.downcase
+    end
   end
 
   def todo_target_path(todo)
@@ -68,9 +72,8 @@ module TodosHelper
       project_commit_path(todo.project, todo.target, path_options)
     elsif todo.for_design?
       todos_design_path(todo, path_options)
-    elsif todo.target_type == 'AlertManagement::Alert'
+    elsif todo.for_alert?
       details_project_alert_management_path(todo.project, todo.target)
-      # details_namespace_project_alert_management_path(todo.project, todo.target.id)
     else
       path = [todo.resource_parent, todo.target]
 
@@ -160,7 +163,7 @@ module TodosHelper
       { id: '', text: 'Any Type' },
       { id: 'Issue', text: 'Issue' },
       { id: 'MergeRequest', text: 'Merge Request' },
-      { id: 'DesignManagement::Design', text: 'Design' }
+      { id: 'DesignManagement::Design', text: 'Design' },
     ]
   end
 
