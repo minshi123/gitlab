@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 import { uniqueId } from 'lodash';
 import { PARSE_FAILURE } from './constants';
-import { highlightLinks, restoreLinks } from './interactions';
+import { highlightLinks, restoreLinks, togglePathHighlights} from './interactions';
 import { getMaxNodes, removeOrphanNodes } from './parsing_utils';
 import { calculateClip, createLinkPath, createSankey, labelPosition } from './drawing_utils';
 
@@ -90,6 +90,11 @@ export default {
         .on('mouseout', restoreLinks.bind(null, this.$options.viewOptions.baseOpacity));
     },
 
+    appendNodeInteractions(node) {
+      return node
+        .on('click', togglePathHighlights.bind(null, this.$options.viewOptions.baseOpacity));
+    },
+
     appendLabelAsForeignObject(d, i, n) {
       const currentNode = n[i];
       const { height, wrapperWidth, width, x, y, textAlign } = labelPosition(d, {
@@ -173,8 +178,9 @@ export default {
     },
 
     createNodes(svg, nodeData) {
-      this.generateNodes(svg, nodeData);
+      const node = this.generateNodes(svg, nodeData);
       this.labelNodes(svg, nodeData);
+      this.appendNodeInteractions(node);
     },
 
     drawGraph({ maxNodesPerLayer, linksAndNodes }) {
