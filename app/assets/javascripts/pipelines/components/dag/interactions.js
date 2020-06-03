@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
-import { lightenDarkenColor } from './drawing_utils';
+import { LINK_SELECTOR, NODE_SELECTOR } from './constants';
 
 const highlightIn = 1;
 const highlightOut = 0.2;
 
-const getOtherLinks = () => d3.selectAll('.dag-link:not(.live)');
-const getNodesNotLive = () => d3.selectAll('.dag-node:not(.live)');
+const getOtherLinks = () => d3.selectAll(`.${LINK_SELECTOR}:not(.live)`);
+const getNodesNotLive = () => d3.selectAll(`.${NODE_SELECTOR}:not(.live)`);
 
 const backgroundLinks = (selection) => {
   return selection.style('stroke-opacity', highlightOut);
@@ -114,8 +114,8 @@ export const restoreLinks = (baseOpacity) => {
   */
 
   if (d3.selectAll('.live').empty()) {
-    renewLinks(d3.selectAll('.dag-link'), baseOpacity);
-    renewNodes(d3.selectAll('.dag-node'));
+    renewLinks(d3.selectAll(`.${LINK_SELECTOR}`), baseOpacity);
+    renewNodes(d3.selectAll(`.${NODE_SELECTOR}`));
     return;
   }
 

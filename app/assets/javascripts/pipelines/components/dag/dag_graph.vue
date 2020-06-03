@@ -1,7 +1,7 @@
 <script>
 import * as d3 from 'd3';
 import { uniqueId } from 'lodash';
-import { PARSE_FAILURE } from './constants';
+import { LINK_SELECTOR, NODE_SELECTOR, PARSE_FAILURE } from './constants';
 import { highlightLinks, restoreLinks, togglePathHighlights} from './interactions';
 import { getMaxNodes, removeOrphanNodes } from './parsing_utils';
 import { calculateClip, createLinkPath, createSankey, labelPosition } from './drawing_utils';
@@ -217,29 +217,28 @@ export default {
         .append('g')
         .attr('fill', 'none')
         .attr('stroke-opacity', this.$options.viewOptions.baseOpacity)
-        .selectAll(`.${linkContainerName}`)
+        .selectAll(`.${LINK_SELECTOR}`)
         .data(linksData)
         .enter()
         .append('g')
         .attr('id', d => {
-          return this.createAndAssignId(d, 'uid', linkContainerName);
+          return this.createAndAssignId(d, 'uid', LINK_SELECTOR);
         })
-        .classed(`${linkContainerName} gl-cursor-pointer`, true);
+        .classed(`${LINK_SELECTOR} gl-cursor-pointer`, true);
     },
 
     generateNodes(svg, nodeData) {
-      const nodeContainerName = 'dag-node';
       const { nodeWidth } = this.$options.viewOptions;
 
       return svg
         .append('g')
-        .selectAll(`.${nodeContainerName}`)
+        .selectAll(`.${NODE_SELECTOR}`)
         .data(nodeData)
         .enter()
         .append('line')
-        .classed(`${nodeContainerName} gl-cursor-pointer`, true)
+        .classed(`${NODE_SELECTOR} gl-cursor-pointer`, true)
         .attr('id', d => {
-          return this.createAndAssignId(d, 'uid', nodeContainerName);
+          return this.createAndAssignId(d, 'uid', NODE_SELECTOR);
         })
         .attr('stroke', d => {
           const color = this.color(d);
