@@ -4,24 +4,46 @@ import { lightenDarkenColor } from './drawing_utils';
 const highlightIn = 1;
 const highlightOut = 0.2;
 
+const getOtherLinks = () => d3.selectAll('.dag-link:not(.live)');
+const getNodesNotLive = () => d3.selectAll('.dag-node:not(.live)');
+
+const backgroundLinks = (selection) => {
+  return selection.style('stroke-opacity', highlightOut);
+}
+
+const backgroundNodes = (selection) => {
+  return selection.attr('stroke', '#f2f2f2')
+}
+
+const foregroundLinks = (selection) => {
+  return selection.style('stroke-opacity', highlightIn);
+}
+
+const foregroundNodes = (selection) => {
+  return selection.attr('stroke', d => d.color)
+}
+
+const renewLinks = (selection, baseOpacity) => {
+  return selection.style('stroke-opacity', baseOpacity);
+}
+
+const renewNodes = (selection) => {
+  return selection.attr('stroke', d => d.color)
+}
+
 export const highlightLinks = (d, i, n) => {
   const currentLink = d3.select(n[i]);
+  const currentSourceNode = d3.select(`#${d.source.uid}`);
+  const currentTargetNode = d3.select(`#${d.target.uid}`);
 
   /* Higlight selected link, de-emphasize others */
-  d3.selectAll('.dag-link:not(.live)').style('stroke-opacity', highlightOut);
-  currentLink.style('stroke-opacity', highlightIn);
+  backgroundLinks(getOtherLinks());
+  foregroundLinks(currentLink);
 
   /* Do the same to related nodes */
-  d3.selectAll('.dag-node:not(.live)')
-    .attr('stroke', '#f2f2f2')
-
-  d3.select(`#${d.source.uid}`)
-    // .classed('live', true)
-    .attr('stroke', d.source.color)
-
-  d3.select(`#${d.target.uid}`)
-    // .classed('live', true)
-    .attr('stroke', d.target.color)
+  backgroundNodes(getNodesNotLive());
+  foregroundNodes(currentSourceNode);
+  foregroundNodes(currentTargetNode);
 
 }
 
@@ -50,32 +72,28 @@ const getAllNodeAncestors = (node) => {
 };
 
 const highlightPath = (parentLinks, parentNodes) => {
+
+  /* de-emphasize everything else */
+  backgroundLinks(getOtherLinks());
+  backgroundNodes(getNodesNotLive());
+
   /* highlight correct links */
   parentLinks.forEach((id) => {
-    d3.select(`#${id}`)
-      .classed('live', true)
-      .style('stroke-opacity', highlightIn);
+    foregroundLinks(d3.select(`#${id}`))
+      .classed('live', true);
   })
 
   /* highlight correct nodes */
   parentNodes.forEach((id) => {
-    d3.select(`#${id}`)
-      .classed('live', true)
-      .attr('stroke', d => d.color)
+    foregroundNodes(d3.select(`#${id}`))
+      .classed('live', true);
   });
-
-  /* de-emphasize everything else */
-  d3.selectAll('.dag-link:not(.live)').style('stroke-opacity', highlightOut);
-
-  d3.selectAll('.dag-node:not(.live)')
-      .attr('stroke', '#f2f2f2')
 }
 
 const restorePath = (parentLinks, parentNodes, baseOpacity) => {
 
   parentLinks.forEach((id) => {
-    d3.select(`#${id}`)
-      .style('stroke-opacity', baseOpacity)
+    renewLinks(d3.select(`#${id}`), baseOpacity)
       .classed('live', false);
   });
 
@@ -84,38 +102,25 @@ const restorePath = (parentLinks, parentNodes, baseOpacity) => {
       .classed('live', false)
   });
 
-  d3.selectAll('.dag-link:not(.live)')
-    .style('stroke-opacity', baseOpacity);
-
-  d3.selectAll('.dag-node:not(.live)')
-    .attr('stroke', d => d.color)
+  renewLinks(getOtherLinks(), baseOpacity);
+  renewNodes(getNodesNotLive());
 }
 
-export const restoreLinks = (baseOpacity, d, i, n) => {
-  const currentLink = d3.select(n[i]);
+export const restoreLinks = (baseOpacity) => {
 
-
-  // if there exist live links, reset to highlight out / pale
-  // otherwise, reset to base
-
-  console.log(d3.selectAll('.live').empty());
+  /*
+    if there exist live links, reset to highlight out / pale
+    otherwise, reset to base
+  */
 
   if (d3.selectAll('.live').empty()) {
-    d3.selectAll('.dag-link')
-      .style('stroke-opacity', baseOpacity);
-
-    d3.selectAll('.dag-node')
-      .attr('stroke', d => d.color)
-
+    renewLinks(d3.selectAll('.dag-link'), baseOpacity);
+    renewNodes(d3.selectAll('.dag-node'));
     return;
   }
 
-
-  d3.selectAll('.dag-link:not(.live)').style('stroke-opacity', highlightOut);
-
-  d3.selectAll('.dag-node:not(.live)')
-    .attr('stroke', '#f2f2f2');
-
+  backgroundLinks(getOtherLinks());
+  backgroundNodes(getNodesNotLive());
 }
 
 export const togglePathHighlights = (baseOpacity, d, i, n) => {
@@ -132,5 +137,4 @@ export const togglePathHighlights = (baseOpacity, d, i, n) => {
   }
 
   highlightPath(parentLinks, parentNodes);
-
 }
