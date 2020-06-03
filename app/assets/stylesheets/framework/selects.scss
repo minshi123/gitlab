@@ -71,10 +71,8 @@
       outline: 0;
     }
 
-    // Apply the focus “glow” shadow to the .select2-container if it also has
-    // the .block-truncated class as that applies an overflow: hidden, thereby
-    // hiding the glow of the nested .select2-choice element.
-    &.block-truncated {
+    // Reusable focus “glow” box-shadow
+    @mixin form-control-focus-glow {
       @if $enable-shadows {
         box-shadow: $input-box-shadow, $input-focus-box-shadow;
       } @else {
@@ -82,14 +80,17 @@
       }
     }
 
+    // Apply the focus “glow” shadow to the .select2-container if it also has
+    // the .block-truncated class as that applies an overflow: hidden, thereby
+    // hiding the glow of the nested .select2-choice element.
+    &.block-truncated {
+      @include form-control-focus-glow;
+    }
+
     // Apply the glow directly to the .select2-choice link if we’re not
     // block-truncating the container.
     &:not(.block-truncated) .select2-choice {
-      @if $enable-shadows {
-        box-shadow: $input-box-shadow, $input-focus-box-shadow;
-      } @else {
-        box-shadow: $input-focus-box-shadow;
-      }
+      @include form-control-focus-glow;
     }
   }
 
