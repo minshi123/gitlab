@@ -143,6 +143,7 @@ module AlertManagement
       increment!(:events, 1)
     end
 
+    # required no-op for todos (typically contains an identifier like issue id)
     def to_reference(from = nil, full: false)
       ''
     end
