@@ -9,7 +9,7 @@ class Projects::AlertManagementController < Projects::ApplicationController
   def index
   end
 
-  def details
+  def detail
     @alert_id = params[:id]
   end
 end

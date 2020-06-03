@@ -68,6 +68,9 @@ module TodosHelper
       project_commit_path(todo.project, todo.target, path_options)
     elsif todo.for_design?
       todos_design_path(todo, path_options)
+    elsif todo.target_type == 'AlertManagement::Alert'
+      details_project_alert_management_path(todo.project, todo.target)
+      # details_namespace_project_alert_management_path(todo.project, todo.target.id)
     else
       path = [todo.resource_parent, todo.target]
 

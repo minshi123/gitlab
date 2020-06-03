@@ -143,6 +143,10 @@ module AlertManagement
       increment!(:events, 1)
     end
 
+    def to_reference(from = nil, full: false)
+      ''
+    end
+
     private
 
     def hosts_length
