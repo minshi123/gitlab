@@ -19,8 +19,9 @@ describe SearchService do
   let(:public_project) { create(:project, :public, name: 'public_project') }
 
   let(:per_page) { described_class::DEFAULT_PER_PAGE }
+  let(:page) { described_class::DEFAULT_PAGE }
 
-  subject(:search_service) { described_class.new(user, search: search, scope: scope, page: 1, per_page: per_page) }
+  subject(:search_service) { described_class.new(user, search: search, scope: scope, page: page, per_page: per_page) }
 
   before do
     accessible_project.add_maintainer(user)
@@ -306,6 +307,63 @@ describe SearchService do
             .to receive(:objects)
             .with(anything, hash_including(per_page: described_class::MAX_PER_PAGE))
             .and_call_original
+
+          subject.search_objects
+        end
+      end
+    end
+
+    context 'handling page param' do
+      let(:search) { '' }
+      let(:scope) { nil }
+
+      context 'when nil' do
+        let(:page) { nil }
+
+        it "defaults to #{described_class::DEFAULT_PAGE}" do
+          expect_any_instance_of(Gitlab::SearchResults)
+              .to receive(:objects)
+                      .with(anything, hash_including(page: described_class::DEFAULT_PAGE))
+                      .and_call_original
+
+          subject.search_objects
+        end
+      end
+
+      context 'when empty string' do
+        let(:page) { '' }
+
+        it "defaults to #{described_class::DEFAULT_PAGE}" do
+          expect_any_instance_of(Gitlab::SearchResults)
+              .to receive(:objects)
+                      .with(anything, hash_including(page: described_class::DEFAULT_PAGE))
+                      .and_call_original
+
+          subject.search_objects
+        end
+      end
+
+      context 'when negative' do
+        let(:page) { '-1' }
+
+        it "defaults to #{described_class::DEFAULT_PAGE}" do
+          expect_any_instance_of(Gitlab::SearchResults)
+              .to receive(:objects)
+                      .with(anything, hash_including(page: described_class::DEFAULT_PAGE))
+                      .and_call_original
+
+          subject.search_objects
+        end
+      end
+
+      context 'when present' do
+        let(:page) { '50' }
+
+        it "converts to integer and passes to search results" do
+          expect_any_instance_of(Gitlab::SearchResults)
+              .to receive(:objects)
+                      .with(anything, hash_including(page: 50))
+                      .and_call_original
 
           subject.search_objects
         end

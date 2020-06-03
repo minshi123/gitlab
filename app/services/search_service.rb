@@ -6,6 +6,7 @@ class SearchService
   SEARCH_TERM_LIMIT = 64
   SEARCH_CHAR_LIMIT = 4096
   DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
+  DEFAULT_PAGE = Gitlab::SearchResults::DEFAULT_PAGE
   MAX_PER_PAGE = 200
 
   def initialize(current_user, params = {})
@@ -62,7 +63,7 @@ class SearchService
   end
 
   def search_objects(preload_method = nil)
-    @search_objects ||= redact_unauthorized_results(search_results.objects(scope, page: params[:page], per_page: per_page, preload_method: preload_method))
+    @search_objects ||= redact_unauthorized_results(search_results.objects(scope, page: page, per_page: per_page, preload_method: preload_method))
   end
 
   private
@@ -73,6 +74,12 @@ class SearchService
     return DEFAULT_PER_PAGE unless per_page_param.positive?
 
     [MAX_PER_PAGE, per_page_param].min
+  end
+
+  def page
+    page_param = params[:page].to_i
+
+    page_param.positive? ? page_param : DEFAULT_PAGE
   end
 
   def visible_result?(object)
@@ -91,13 +98,15 @@ class SearchService
 
     log_redacted_search_results(redacted_results.values) if redacted_results.any?
 
-    return results_collection.id_not_in(redacted_results.keys) if results_collection.is_a?(ActiveRecord::Relation)
+    # return results_collection.id_not_in(redacted_results.keys) if results_collection.is_a?(ActiveRecord::Relation)
 
     Kaminari.paginate_array(
       permitted_results,
-      total_count: results_collection.total_count,
-      limit: results_collection.limit_value,
-      offset: results_collection.offset_value
+      total_count: results.size,
+      limit: per_page,
+      offset: per_page * (page - 1)
+      # limit: results_collection.limit_value,
+      # offset: results_collection.offset_value
     )
   end
 
