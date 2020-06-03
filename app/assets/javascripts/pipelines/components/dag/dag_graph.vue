@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 import { uniqueId } from 'lodash';
 import { PARSE_FAILURE } from './constants';
-
+import { highlightLinks, restoreLinks } from './interactions';
 import { getMaxNodes, removeOrphanNodes } from './parsing_utils';
 import { calculateClip, createLinkPath, createSankey, labelPosition } from './drawing_utils';
 
@@ -16,11 +16,7 @@ export default {
     paddingForLabels: 100,
     labelMargin: 8,
 
-    // can plausibly applied through CSS instead, TBD
     baseOpacity: 0.8,
-    highlightIn: 1,
-    highlightOut: 0.2,
-
     containerClasses: ['dag-graph-container', 'gl-display-flex', 'gl-flex-direction-column'].join(
       ' ',
     ),
@@ -86,6 +82,12 @@ export default {
           .attr('stroke-width', ({ width }) => Math.max(1, width - 2))
           .attr('clip-path', ({ clipId }) => `url(#${clipId})`)
       );
+    },
+
+    appendLinkInteractions(link) {
+      return link
+        .on('mouseover', highlightLinks)
+        .on('mouseout', restoreLinks.bind(null, this.$options.viewOptions.baseOpacity));
     },
 
     appendLabelAsForeignObject(d, i, n) {
@@ -167,6 +169,7 @@ export default {
       this.createGradient(link);
       this.createClip(link);
       this.appendLinks(link);
+      this.appendLinkInteractions(link);
     },
 
     createNodes(svg, nodeData) {
@@ -232,7 +235,11 @@ export default {
         .attr('id', d => {
           return this.createAndAssignId(d, 'uid', nodeContainerName);
         })
-        .attr('stroke', this.color)
+        .attr('stroke', d => {
+          const color = this.color(d);
+          d.color = color;
+          return color;
+        })
         .attr('stroke-width', nodeWidth)
         .attr('stroke-linecap', 'round')
         .attr('x1', d => Math.floor((d.x1 + d.x0) / 2))
