@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlLoadingIcon, GlTab, GlTabs } from '@gitlab/ui';
 import IterationsList from './iterations_list.vue';
-import GroupIterationQuery from '../queries/group_iteration.query.graphql';
+import GroupIterationQuery from '../queries/group_iterations.query.graphql';
 
 export default {
   components: {
