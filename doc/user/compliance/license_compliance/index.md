@@ -390,8 +390,8 @@ file.
 You can configure [Conan](https://conan.io/) projects by adding a `.conan` directory to your
 project root. The project root serves as the [`CONAN_USER_HOME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-user-home).
 
-Consult the [`Conan`](https://docs.conan.io/en/latest/reference/config_files/conan.conf.html#conan-conf) documentation for a list
-of settings that can be applied.
+Consult the [Conan](https://docs.conan.io/en/latest/reference/config_files/conan.conf.html#conan-conf)
+documentation for a list of settings that you can apply.
 
 The `license_scanning` job runs in a [Debian 10](https://www.debian.org/releases/buster/) Docker image.
 The supplied image ships with some build tools such as [CMake](https://cmake.org/) and [GCC](https://gcc.gnu.org/).
