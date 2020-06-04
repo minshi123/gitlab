@@ -410,9 +410,9 @@ To override the default credentials specify a [`CONAN_LOGIN_USERNAME_{REMOTE_NAM
 matching the name of the remote specified in the `.conan/remotes.json` file.
 
 NOTE: **Note:**
-[MSBuild](https://github.com/mono/msbuild#microsoftbuild-msbuild) projects are not supported at this time.
-The `license_scanning` image ships with [Mono](https://www.mono-project.com/) and [MSBuild](https://github.com/mono/msbuild#microsoftbuild-msbuild).
-Additional setup may be required in order to build packages for this project configuration.
+[MSBuild](https://github.com/mono/msbuild#microsoftbuild-msbuild) projects aren't supported. The
+`license_scanning` image ships with [Mono](https://www.mono-project.com/) and [MSBuild](https://github.com/mono/msbuild#microsoftbuild-msbuild).
+Additional setup may be required to build packages for this project configuration.
 
 #### Using private Conan registries
 
