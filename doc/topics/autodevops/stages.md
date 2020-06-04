@@ -147,10 +147,10 @@ see the documentation.
 <!-- TODO
 ## Auto Secret Dectection **(ULTIMATE)**
 
-> Introduced in [GitLab Ultimate](https://about.gitlab.com/pricing/) 13.0.
+> Introduced in [GitLab Ultimate](https://about.gitlab.com/pricing/) 13.1.
 
 Secret Detection uses the
-[Secret Detection Docker image](https://gitlab.com/gitlab-org/security-products/secrets-detection) to run Secret Detection on the current code, and checks for leaked secrets. The
+[Secret Detection Docker image](https://gitlab.com/gitlab-org/security-products/secrets_detection) to run Secret Detection on the current code, and checks for leaked secrets. The
 Auto Secret Detection stage runs only on the
 [Ultimate](https://about.gitlab.com/pricing/) tier, and requires
 [GitLab Runner](https://docs.gitlab.com/runner/) 11.5 or above.
@@ -159,7 +159,7 @@ After creating the report, it's uploaded as an artifact which you can later
 download and evaluate. The merge request widget also displays any security
 warnings.
 
-To learn more, see [Secret Detection](../../user/application_security/secret-detection/index.md).
+To learn more, see [Secret Detection](../../user/application_security/secret_detection/index.md).
 
 ## Auto Dependency Scanning **(ULTIMATE)**
 

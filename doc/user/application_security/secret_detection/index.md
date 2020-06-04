@@ -136,9 +136,9 @@ Secret Detection can be customized by defining available variables:
 
 | Environment variable    | Default value | Description |
 |-------------------------|---------------|-------------|
-| `SAST_GITLEAKS_COMMIT_FROM` | -     | The commit a Gitleaks scan starts at. |
-| `SAST_GITLEAKS_COMMIT_TO` | -       | The commit a Gitleaks scan ends at. |
-| `SAST_GITLEAKS_HISTORIC_SCAN` | false | Flag to enable a historic Gitleaks scan. |
+| `SD_COMMIT_FROM` | -     | The commit a Gitleaks scan starts at. |
+| `SD_COMMIT_TO` | -       | The commit a Gitleaks scan ends at. |
+| `SD_HISTORIC_SCAN` | false | Flag to enable a historic Gitleaks scan. |
 
 ## Full History Secret Scan
 
@@ -148,7 +148,7 @@ want to perform a full secret scan. Running a secret scan on the full history ca
 especially for larger repositories with lengthy Git histories. We recommend not setting this variable
 as part of your normal job definition.
 
-A new configuration variable ([`SAST_GITLEAKS_HISTORIC_SCAN`](../sast/#vulnerability-filters))
+A new configuration variable ([`SD_HISTORIC_SCAN`](../sast/#vulnerability-filters))
 can be set to change the behavior of the GitLab Secret Detection scan to run on the entire Git history of a repository.
 
 We have created a [short video walkthrough](https://youtu.be/wDtc_K00Y0A) showcasing how you can perform a full history secret scan.
