@@ -212,8 +212,6 @@ export default {
     },
 
     generateLinks(svg, linksData) {
-      const linkContainerName = 'dag-link';
-
       return svg
         .append('g')
         .attr('fill', 'none')
@@ -243,6 +241,7 @@ export default {
         })
         .attr('stroke', d => {
           const color = this.color(d);
+          /* eslint-disable-next-line no-param-reassign */
           d.color = color;
           return color;
         })
