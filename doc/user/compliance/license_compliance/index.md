@@ -430,9 +430,8 @@ By default, [Conan](https://conan.io/) uses the `conan-center` remote. For examp
 }
 ```
 
-To fetch dependencies from an alternate remote specify the remote in a `.conan/remotes.json`.
-
-For example:
+To fetch dependencies from an alternate remote, specify that remote in a `.conan/remotes.json`. For
+example:
 
 ```json
 {
