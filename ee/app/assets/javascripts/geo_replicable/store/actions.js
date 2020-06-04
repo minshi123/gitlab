@@ -7,25 +7,28 @@ import {
   normalizeHeaders,
   convertObjectPropsToCamelCase,
 } from '~/lib/utils/common_utils';
+import packageFilesQuery from '../graphql/package_files.query.graphql';
+import { gqClient } from '../utils';
 import * as types from './mutation_types';
 import { FILTER_STATES } from './constants';
 
-// Fetch Replicable Items
-export const requestReplicableItems = ({ commit }) => commit(types.REQUEST_REPLICABLE_ITEMS);
-export const receiveReplicableItemsSuccess = ({ commit }, data) =>
-  commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, data);
-export const receiveReplicableItemsError = ({ state, commit }) => {
-  createFlash(
-    sprintf(__('There was an error fetching the %{replicableType}'), {
-      replicableType: state.replicableType,
-    }),
-  );
-  commit(types.RECEIVE_REPLICABLE_ITEMS_ERROR);
+export const fetchReplicableItemsGraphQl = ({ dispatch }) => {
+  gqClient
+    .query({
+      query: packageFilesQuery,
+    })
+    .then(res => {
+      const registries = res?.data?.geoNode?.packageFileRegistries;
+      const data = registries.edges.map(e => e.node);
+
+      dispatch('receiveReplicableItemsSuccess', { data });
+    })
+    .catch(() => {
+      dispatch('receiveReplicableItemsError');
+    });
 };
 
-export const fetchReplicableItems = ({ state, dispatch }) => {
-  dispatch('requestReplicableItems');
-
+export const fetchReplicableItemsRestful = ({ state, dispatch }) => {
   const { filterOptions, currentFilterIndex, currentPage, searchFilter } = state;
 
   const statusFilter = currentFilterIndex ? filterOptions[currentFilterIndex] : filterOptions[0];
@@ -51,6 +54,29 @@ export const fetchReplicableItems = ({ state, dispatch }) => {
     .catch(() => {
       dispatch('receiveReplicableItemsError');
     });
+};
+
+// Fetch Replicable Items
+export const requestReplicableItems = ({ commit }) => commit(types.REQUEST_REPLICABLE_ITEMS);
+export const receiveReplicableItemsSuccess = ({ commit }, data) =>
+  commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, data);
+export const receiveReplicableItemsError = ({ state, commit }) => {
+  createFlash(
+    sprintf(__('There was an error fetching the %{replicableType}'), {
+      replicableType: state.replicableType,
+    }),
+  );
+  commit(types.RECEIVE_REPLICABLE_ITEMS_ERROR);
+};
+
+export const fetchReplicableItems = ({ state, dispatch }) => {
+  dispatch('requestReplicableItems');
+
+  if (state.useGraphQl) {
+    dispatch('fetchReplicableItemsGraphQl');
+  } else if (!state.useGraphQl) {
+    dispatch('fetchReplicableItemsRestful');
+  }
 };
 
 // Initiate All Replicable Syncs
