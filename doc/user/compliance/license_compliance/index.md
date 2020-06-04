@@ -450,8 +450,9 @@ following the naming convention described in the [`CONAN_LOGIN_USERNAME` documen
 
 #### Custom root certificates for Conan
 
-Custom certificates can be provided by adding a `.conan/cacert.pem` file to the project root and specifying the
-[`CA_CERT_PATH`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-cacert-path) to `.conan/cacert.pem`.
+You can provide custom certificates by adding a `.conan/cacert.pem` file to the project root and
+setting [`CA_CERT_PATH`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-cacert-path)
+to `.conan/cacert.pem`.
 
 If the `ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available-variables) is specified, the X.509 certificates
 contained in this variable will be installed in the default trust store in the Docker image and [`Conan`](https://conan.io/) will be configured
