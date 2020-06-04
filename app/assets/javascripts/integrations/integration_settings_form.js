@@ -18,7 +18,6 @@ export default class IntegrationSettingsForm {
     // Form Child Elements
     this.$submitBtn = this.$form.find('button[type="submit"]');
     this.$submitBtnLoader = this.$submitBtn.find('.js-btn-spinner');
-    this.$submitBtnLabel = this.$submitBtn.find('.js-btn-label');
   }
 
   init() {
@@ -83,6 +82,7 @@ export default class IntegrationSettingsForm {
     if (saveTestActive) {
       this.$submitBtn.disable();
       this.$submitBtnLoader.removeClass('hidden');
+      eventHub.$emit('testComplete');
     } else {
       this.$submitBtn.enable();
       this.$submitBtnLoader.addClass('hidden');

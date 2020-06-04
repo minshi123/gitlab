@@ -74,10 +74,19 @@ export default {
       return this.type === 'jira';
     },
   },
+  created() {
+    eventHub.$on('testComplete', this.testComplete);
+  },
+  beforeDestroy() {
+    eventHub.$off('testComplete', this.testComplete);
+  },
   methods: {
     onTestClick() {
       this.isTesting = true;
       eventHub.$emit('test');
+    },
+    testComplete() {
+      this.isTesting = false;
     },
   },
 };

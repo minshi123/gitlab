@@ -116,7 +116,10 @@ export default {
 </script>
 
 <template>
-  <gl-form-group :label="label" :label-for="fieldId" :description="help">
+  <gl-form-group :label="label" :label-for="fieldId">
+    <template #description>
+      <span v-html="help"></span>
+    </template>
     <template v-if="isCheckbox">
       <input :name="fieldName" type="hidden" value="false" />
       <gl-form-checkbox v-model="model" v-bind="sharedProps">

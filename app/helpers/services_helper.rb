@@ -44,13 +44,6 @@ module ServicesHelper
     end
   end
 
-  def event_action_description(action)
-    case action
-    when "comment"
-      s_("ProjectService|Comment will be posted on each event")
-    end
-  end
-
   def scoped_integrations_path
     if @project.present?
       project_settings_integrations_path(@project)
