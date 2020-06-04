@@ -24,7 +24,7 @@ shared_context 'project service activation' do
   end
 
   def click_test_integration
-    click_button('Test settings and save changes')
+    click_button('Test settings')
   end
 
   def click_test_then_save_integration

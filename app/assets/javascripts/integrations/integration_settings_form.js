@@ -65,25 +65,11 @@ export default class IntegrationSettingsForm {
    * Change Form's validation enforcement based on service status (active/inactive)
    */
   toggleServiceState() {
-    this.toggleSubmitBtnLabel();
     if (this.formActive) {
       this.$form.removeAttr('novalidate');
     } else if (!this.$form.attr('novalidate')) {
       this.$form.attr('novalidate', 'novalidate');
     }
-  }
-
-  /**
-   * Toggle Submit button label based on Integration status and ability to test service
-   */
-  toggleSubmitBtnLabel() {
-    let btnLabel = __('Save changes');
-
-    if (this.formActive && this.canTestService) {
-      btnLabel = __('Test settings and save changes');
-    }
-
-    this.$submitBtnLabel.text(btnLabel);
   }
 
   /**

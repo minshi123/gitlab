@@ -95,9 +95,14 @@ export default {
         <trigger-fields v-else-if="triggerEvents.length" :events="triggerEvents" :type="type" />
         <dynamic-field v-for="field in fields" :key="field.name" v-bind="field" />
         <div class="footer-block row-content-block">
-          <button type="submit" class="btn btn-success" :disabled="isSaving || isTesting">
+          <button
+            type="submit"
+            class="btn btn-success"
+            :disabled="isSaving || isTesting"
+            data-qa-selector="save_changes_button"
+          >
             <gl-loading-icon v-show="isSaving" inline color="dark" />
-            {{ __('Save') }}
+            {{ __('Save changes') }}
           </button>
           <a
             v-if="canTest"
