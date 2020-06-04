@@ -11,6 +11,10 @@ export const FilterStateEmptyMessage = {
   ARCHIVED: __('There are no archived requirements'),
 };
 
+export const TestReportStatus = {
+  Passed: 'PASSED',
+};
+
 export const DEFAULT_PAGE_SIZE = 20;
 
 export const MAX_TITLE_LENGTH = 255;

@@ -6,7 +6,9 @@ import {
   GlAvatar,
   GlDeprecatedButton,
   GlIcon,
+  GlBadge,
   GlLoadingIcon,
+  GlTooltip,
   GlTooltipDirective,
 } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
@@ -15,7 +17,7 @@ import timeagoMixin from '~/vue_shared/mixins/timeago';
 
 import RequirementForm from './requirement_form.vue';
 
-import { FilterState } from '../constants';
+import { FilterState, TestReportStatus } from '../constants';
 
 export default {
   components: {
@@ -24,7 +26,9 @@ export default {
     GlAvatar,
     GlDeprecatedButton,
     GlIcon,
+    GlBadge,
     GlLoadingIcon,
+    GlTooltip,
     RequirementForm,
   },
   directives: {
@@ -36,9 +40,16 @@ export default {
       type: Object,
       required: true,
       validator: value =>
-        ['iid', 'state', 'userPermissions', 'title', 'createdAt', 'updatedAt', 'author'].every(
-          prop => value[prop],
-        ),
+        [
+          'iid',
+          'state',
+          'userPermissions',
+          'title',
+          'createdAt',
+          'updatedAt',
+          'author',
+          'testReports',
+        ].every(prop => value[prop]),
     },
     showUpdateForm: {
       type: Boolean,
@@ -82,6 +93,20 @@ export default {
     author() {
       return this.requirement.author;
     },
+    testReport() {
+      const { edges } = this.requirement.testReports;
+
+      return edges.length ? edges[0].node : null;
+    },
+    testReportBadgeVariant() {
+      return this.testReport.state === TestReportStatus.Passed ? 'success' : '';
+    },
+    testReportBadgeIcon() {
+      return this.testReport.state === TestReportStatus.Passed ? 'check-circle' : '';
+    },
+    testReportBadgeText() {
+      return this.testReport.state === TestReportStatus.Passed ? __('satisfied') : '';
+    },
   },
   methods: {
     /**
@@ -92,6 +117,12 @@ export default {
     getAuthorPopoverTarget() {
       if (this.$refs.authorLink) {
         return this.$refs.authorLink.$el;
+      }
+      return '';
+    },
+    getTestReportBadgeTarget() {
+      if (this.$refs.testReportBadge) {
+        return this.$refs.testReportBadge.$el;
       }
       return '';
     },
@@ -142,11 +173,26 @@ export default {
               <gl-link ref="authorLink" class="author-link js-user-link" :href="author.webUrl">
                 <span class="author">{{ author.name }}</span>
               </gl-link>
+              <span
+                v-gl-tooltip:tooltipcontainer.bottom
+                :title="tooltipTitle(requirement.updatedAt)"
+                >&middot; {{ updatedAt }}</span
+              >
             </span>
           </div>
         </div>
         <div class="issuable-meta">
-          <ul v-if="canUpdate || canArchive" class="controls flex-column flex-sm-row">
+          <ul v-if="canUpdate || canArchive || testReport" class="controls flex-column flex-sm-row">
+            <li v-if="testReport" class="requirement-report-status">
+              <gl-badge ref="testReportBadge" :variant="testReportBadgeVariant">
+                <gl-icon :name="testReportBadgeIcon" class="mr-1" />
+                {{ testReportBadgeText }}
+              </gl-badge>
+              <gl-tooltip :target="getTestReportBadgeTarget()">
+                <b>{{ __('Passed on') }}</b>
+                <div>{{ tooltipTitle(testReport.createdAt) }}</div>
+              </gl-tooltip>
+            </li>
             <li v-if="canUpdate && !isArchived" class="requirement-edit d-sm-block">
               <gl-deprecated-button
                 v-gl-tooltip
@@ -180,13 +226,6 @@ export default {
               >
             </li>
           </ul>
-          <div class="float-right issuable-updated-at d-none d-sm-inline-block">
-            <span
-              v-gl-tooltip:tooltipcontainer.bottom
-              :title="tooltipTitle(requirement.updatedAt)"
-              >{{ updatedAt }}</span
-            >
-          </div>
         </div>
       </div>
     </div>

@@ -21,6 +21,15 @@ query projectRequirements(
         createdAt
         updatedAt
         state
+        testReports(last: 1) {
+          edges {
+            node {
+              id
+              state
+              createdAt
+            }
+          }
+        }
         userPermissions {
           updateRequirement
           adminRequirement
