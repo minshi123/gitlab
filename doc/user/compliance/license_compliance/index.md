@@ -460,11 +460,10 @@ configured to use this as the default `CA_CERT_PATH`.
 
 ### Configuring Go projects
 
-You can configure [`Go Modules`](https://github.com/golang/go/wiki/Modules) based projects by specifying [environment variables](https://golang.org/pkg/cmd/go/#hdr-Environment_variables)
+You can configure [`Go modules`](https://github.com/golang/go/wiki/Modules) based projects by specifying [environment variables](https://golang.org/pkg/cmd/go/#hdr-Environment_variables)
 in the [variables](#available-variables) section of the `license_scanning` job in the `.gitlab-ci.yml` file.
 
-If a project has [`vendored`](https://golang.org/pkg/cmd/go/#hdr-Vendor_Directories) it's modules, then the combination of the `vendor` directory
-and the `mod.sum` file will be used to detect the software licenses associated with the go module dependencies.
+If a project has [`vendored`](https://golang.org/pkg/cmd/go/#hdr-Vendor_Directories) its modules, then the combination of the `vendor` directory and the `mod.sum` file will be used to detect the software licenses associated with the Go module dependencies.
 
 #### Using private Go registries
 
