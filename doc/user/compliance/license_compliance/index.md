@@ -393,11 +393,12 @@ project root. The project root serves as the [`CONAN_USER_HOME`](https://docs.co
 Consult the [Conan](https://docs.conan.io/en/latest/reference/config_files/conan.conf.html#conan-conf)
 documentation for a list of settings that you can apply.
 
-The `license_scanning` job runs in a [Debian 10](https://www.debian.org/releases/buster/) Docker image.
-The supplied image ships with some build tools such as [CMake](https://cmake.org/) and [GCC](https://gcc.gnu.org/).
-However, not all project types will be supported out of the box. To install additional tools needed to
-compile dependencies, please use a [`before_script`](../../../ci/yaml/README.md#before_script-and-after_script) to install the necessary build tools using the [`apt`](https://wiki.debian.org/PackageManagementTools) package manager.
-For a comprehensive list consult [this page](https://docs.conan.io/en/latest/introduction.html#all-platforms-all-build-systems-and-compilers).
+The `license_scanning` job runs in a [Debian 10](https://www.debian.org/releases/buster/) Docker
+image. The supplied image ships with some build tools such as [CMake](https://cmake.org/) and [GCC](https://gcc.gnu.org/).
+However, not all project types are supported by default. To install additional tools needed to
+compile dependencies, use a [`before_script`](../../../ci/yaml/README.md#before_script-and-after_script)
+to install the necessary build tools using the [`apt`](https://wiki.debian.org/PackageManagementTools)
+package manager. For a comprehensive list, consult [the Conan documentation](https://docs.conan.io/en/latest/introduction.html#all-platforms-all-build-systems-and-compilers).
 
 The default [`Conan`](https://conan.io/) configuration will set the [`CONAN_LOGIN_USERNAME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-login-username-conan-login-username-remote-name)
 to `ci_user` and [`CONAN_PASSWORD`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-password-conan-password-remote-name) bound to the [`CI_JOB_TOKEN`](../../../ci/variables/predefined_variables.md#variables-reference) for the running job.
