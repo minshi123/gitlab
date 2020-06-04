@@ -458,6 +458,35 @@ If you specify the `ADDITIONAL_CA_CERT_BUNDLE` [environment variable](#available
 variable's X.509 certificates are installed in the Docker image's default trust store and Conan is
 configured to use this as the default `CA_CERT_PATH`.
 
+### Configuring Go projects
+
+You can configure [`Go Modules`](https://github.com/golang/go/wiki/Modules) based projects by specifying [environment variables](https://golang.org/pkg/cmd/go/#hdr-Environment_variables)
+in the [variables](#available-variables) section of the `license_scanning` job in the `.gitlab-ci.yml` file.
+
+If a project has [`vendored`](https://golang.org/pkg/cmd/go/#hdr-Vendor_Directories) it's modules, then the combination of the `vendor` directory
+and the `mod.sum` file will be used to detect the software licenses associated with the go module dependencies.
+
+#### Using private Go registries
+
+The [`GOPRIVATE`](https://golang.org/pkg/cmd/go/#hdr-Environment_variables) and [`GOPROXY`](https://golang.org/pkg/cmd/go/#hdr-Environment_variables)
+environment variables can be used to control where modules are sourced from. Alternatively, [`go mod vendor`](https://golang.org/ref/mod#tmp_28) can be
+used to vendor a projects modules.
+
+#### Custom root certificates for Go
+
+The [`-insecure`](https://golang.org/pkg/cmd/go/internal/get/) flag can be specified by exporting the [`GOFLAGS`](https://golang.org/cmd/go/#hdr-Environment_variables).
+
+For example:
+
+```yaml
+include:
+  - template: License-Scanning.gitlab-ci.yml
+
+license_scanning:
+  variables:
+    GOFLAGS: '-insecure'
+```
+
 ### Migration from `license_management` to `license_scanning`
 
 In GitLab 12.8 a new name for `license_management` job was introduced. This change was made to improve clarity around the purpose of the scan, which is to scan and collect the types of licenses present in a projects dependencies.
