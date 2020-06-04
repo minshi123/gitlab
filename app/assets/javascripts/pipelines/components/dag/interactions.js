@@ -1,13 +1,13 @@
 import * as d3 from 'd3';
-import { LINK_SELECTOR, NODE_SELECTOR } from './constants';
+import { LINK_SELECTOR, NODE_SELECTOR, IS_HIGHLIGHTED } from './constants';
 
 const highlightIn = 1;
 const highlightOut = 0.2;
 
 const getCurrent = (i, n) => d3.select(n[i]);
-const currentIsLive = (i, n) => getCurrent(i, n).classed('.live');
-const getOtherLinks = () => d3.selectAll(`.${LINK_SELECTOR}:not(.live)`);
-const getNodesNotLive = () => d3.selectAll(`.${NODE_SELECTOR}:not(.live)`);
+const currentIsLive = (i, n) => getCurrent(i, n).classed(IS_HIGHLIGHTED);
+const getOtherLinks = () => d3.selectAll(`.${LINK_SELECTOR}:not(.${IS_HIGHLIGHTED})`);
+const getNodesNotLive = () => d3.selectAll(`.${NODE_SELECTOR}:not(.${IS_HIGHLIGHTED})`);
 
 const backgroundLinks = (selection) => {
   return selection.style('stroke-opacity', highlightOut);
@@ -34,7 +34,7 @@ const renewNodes = (selection) => {
 }
 
 export const highlightLinks = (d, i, n) => {
-  const currentLink = d3.select(n[i]);
+  const currentLink = getCurrent(i, n);
   const currentSourceNode = d3.select(`#${d.source.uid}`);
   const currentTargetNode = d3.select(`#${d.target.uid}`);
 
@@ -82,13 +82,13 @@ const highlightPath = (parentLinks, parentNodes) => {
   /* highlight correct links */
   parentLinks.forEach((id) => {
     foregroundLinks(d3.select(`#${id}`))
-      .classed('live', true);
+      .classed(IS_HIGHLIGHTED, true);
   })
 
   /* highlight correct nodes */
   parentNodes.forEach((id) => {
     foregroundNodes(d3.select(`#${id}`))
-      .classed('live', true);
+      .classed(IS_HIGHLIGHTED, true);
   });
 }
 
@@ -96,15 +96,15 @@ const restorePath = (parentLinks, parentNodes, baseOpacity) => {
 
   parentLinks.forEach((id) => {
     renewLinks(d3.select(`#${id}`), baseOpacity)
-      .classed('live', false);
+      .classed(IS_HIGHLIGHTED, false);
   });
 
   parentNodes.forEach((id) => {
     d3.select(`#${id}`)
-      .classed('live', false)
+      .classed(IS_HIGHLIGHTED, false)
   });
 
-  if (d3.selectAll('.live').empty()) {
+  if (d3.selectAll(`.${IS_HIGHLIGHTED}`).empty()) {
     renewLinks(getOtherLinks(), baseOpacity);
     renewNodes(getNodesNotLive());
     return;
@@ -116,10 +116,9 @@ const restorePath = (parentLinks, parentNodes, baseOpacity) => {
 }
 
 export const restoreLinks = (baseOpacity, d, i, n) => {
-  const currentLink = getCurrent(i, n);
 
   /* in this case, it has just been clicked */
-  if (currentLink.classed('.live')) {
+  if (currentIsLive(i, n)) {
     return;
   }
 
@@ -128,7 +127,7 @@ export const restoreLinks = (baseOpacity, d, i, n) => {
     otherwise, reset to base
   */
 
-  if (d3.selectAll('.live').empty()) {
+  if (d3.selectAll(`.${IS_HIGHLIGHTED}`).empty()) {
     renewLinks(d3.selectAll(`.${LINK_SELECTOR}`), baseOpacity);
     renewNodes(d3.selectAll(`.${NODE_SELECTOR}`));
     return;
@@ -139,9 +138,8 @@ export const restoreLinks = (baseOpacity, d, i, n) => {
 }
 
 export const toggleLinkHighlight = (baseOpacity, d, i, n) => {
-  const currentLink = d3.select(n[i]);
 
-  if (currentLink.classed('live')) {
+  if (currentIsLive(i, n)) {
     restorePath([d.uid], [d.source.uid, d.target.uid], baseOpacity)
     return;
   }
@@ -154,11 +152,11 @@ export const togglePathHighlights = (baseOpacity, d, i, n) => {
 
   const parentLinks = getAllLinkAncestors(d);
   const parentNodes = getAllNodeAncestors(d);
-  const currentNode = d3.select(n[i]);
+  const currentNode = getCurrent(i, n);
 
   /* if this node is already live, make it unlive and reset its path */
-  if (currentNode.classed('live')) {
-    currentNode.classed('live', false);
+  if (currentIsLive(i, n)) {
+    currentNode.classed(IS_HIGHLIGHTED, false);
     restorePath(parentLinks, parentNodes, baseOpacity);
     return;
   }
