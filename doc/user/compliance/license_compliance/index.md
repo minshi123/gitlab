@@ -387,8 +387,8 @@ file.
 
 ### Configuring Conan projects
 
-You can configure [`Conan`](https://conan.io/) projects by adding a `.conan` directory to your project root.
-The project root is used as the [`CONAN_USER_HOME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-user-home).
+You can configure [Conan](https://conan.io/) projects by adding a `.conan` directory to your
+project root. The project root serves as the [`CONAN_USER_HOME`](https://docs.conan.io/en/latest/reference/env_vars.html#conan-user-home).
 
 Consult the [`Conan`](https://docs.conan.io/en/latest/reference/config_files/conan.conf.html#conan-conf) documentation for a list
 of settings that can be applied.
