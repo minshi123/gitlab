@@ -1,0 +1,40 @@
+- form = local_assigns.fetch(:form)
+
+.form-group.border.border-danger
+  %b= s_('ProjectSettings|Squash commits when merging')
+  %p.text-secondary
+    = s_('ProjectSettings|Set the default behavior and availability of this option in merge requests. Changes made are also applied existing merge requests.')
+    = link_to icon('question-circle'),
+      help_page_path('user/project/merge_requests/squash_and_merge.md',
+      anchor: 'configure-the-commit-message-for-applied-suggestions'),
+      target: '_blank'
+
+  .form-check.mb-2
+    = form.radio_button :squash_option, :never, class: "js-squash-option-radio form-check-input"
+    = label_tag :project_squash_option_never, class: 'form-check-label' do
+      = s_('ProjectSettings|Never')
+      .text-secondary
+        = s_('ProjectSettings|Do not allow squashing ever')
+
+  .form-check.mb-2
+    = form.radio_button :squash_option, :allow, class: "js-squash-option-radio form-check-input"
+    = label_tag :project_squash_option_allow, class: 'form-check-label' do
+      = s_('ProjectSettings|Allow')
+      .text-secondary
+        = s_('ProjectSettings|Option is visible but unselected by default.')
+
+  .form-check.mb-2
+    = form.radio_button :squash_option, :enabled, class: "js-squash-option-radio qa-radio-button-merge-ff form-check-input"
+    = label_tag :project_squash_option_enabled, class: 'form-check-label' do
+      = s_('ProjectSettings|Enabled')
+      .text-secondary
+        = s_('ProjectSettings|Squash is allowed')
+        %br
+        = s_('ProjectSettings|Squash is enabled by default')
+
+  .form-check.mb-2
+    = form.radio_button :squash_option, :always, class: "js-squash-option-radio form-check-input"
+    = label_tag :project_squash_option_always, class: 'form-check-label' do
+      = s_('ProjectSettings|Always')
+      .text-secondary
+        = s_('ProjectSettings|Enforce squashing for all')
