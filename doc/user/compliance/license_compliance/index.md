@@ -416,9 +416,7 @@ Additional setup may be required to build packages for this project configuratio
 
 #### Using private Conan registries
 
-The default remote that [`Conan`](https://conan.io/) will use is the `conan-center` remote.
-
-For example:
+By default, [Conan](https://conan.io/) uses the `conan-center` remote. For example:
 
 ```json
 {
