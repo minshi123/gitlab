@@ -90,7 +90,7 @@ module ServicesHelper
 
   def scoped_test_integration_path(integration)
     if @project.present?
-      test_project_settings_integration_path(@project, integration)
+      test_project_service_path(@project, integration)
     elsif @group.present?
       test_group_settings_integration_path(@group, integration)
     else
