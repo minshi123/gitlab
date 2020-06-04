@@ -26,7 +26,9 @@ RSpec.describe 'User edits a merge request', :js do
     end
 
     with_them do
-      let(:project) { create(:project, :repository, squash_option: squash_option) }
+      before do
+        project.project_setting.update!(squash_option: squash_option)
+      end
 
       it 'the checkbox reflects the correct option' do
         visit(edit_project_merge_request_path(project, merge_request))
