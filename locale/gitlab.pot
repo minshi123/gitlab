@@ -17575,6 +17575,9 @@ msgstr ""
 msgid "ProjectSettings|All discussions must be resolved"
 msgstr ""
 
+msgid "ProjectSettings|Allow"
+msgstr ""
+
 msgid "ProjectSettings|Allow users to make copies of your repository to a new project"
 msgstr ""
 
@@ -17608,10 +17611,16 @@ msgstr ""
 msgid "ProjectSettings|Disable email notifications"
 msgstr ""
 
+msgid "ProjectSettings|Do not allow"
+msgstr ""
+
 msgid "ProjectSettings|Enable 'Delete source branch' option by default"
 msgstr ""
 
 msgid "ProjectSettings|Enable merge trains and pipelines for merged results"
+msgstr ""
+
+msgid "ProjectSettings|Encourage"
 msgstr ""
 
 msgid "ProjectSettings|Every merge creates a merge commit"
@@ -17695,6 +17704,12 @@ msgstr ""
 msgid "ProjectSettings|Only signed commits can be pushed to this repository."
 msgstr ""
 
+msgid "ProjectSettings|Option is visible and enabled by default."
+msgstr ""
+
+msgid "ProjectSettings|Option is visible but disabled by default."
+msgstr ""
+
 msgid "ProjectSettings|Packages"
 msgstr ""
 
@@ -17722,10 +17737,16 @@ msgstr ""
 msgid "ProjectSettings|Project visibility"
 msgstr ""
 
+msgid "ProjectSettings|ProjectSettings|Set the default behavior and availability of this option in merge requests. Changes made are also applied to existing merge requests."
+msgstr ""
+
 msgid "ProjectSettings|Public"
 msgstr ""
 
 msgid "ProjectSettings|Repository"
+msgstr ""
+
+msgid "ProjectSettings|Require"
 msgstr ""
 
 msgid "ProjectSettings|Share code pastes with others out of Git repository"
@@ -17741,6 +17762,15 @@ msgid "ProjectSettings|Skipped pipelines are considered successful"
 msgstr ""
 
 msgid "ProjectSettings|Snippets"
+msgstr ""
+
+msgid "ProjectSettings|Squash commits when merging"
+msgstr ""
+
+msgid "ProjectSettings|Squashing is always performed. Option is visible and enabled, but cannot be changed."
+msgstr ""
+
+msgid "ProjectSettings|Squashing is never performed and option is hidden."
 msgstr ""
 
 msgid "ProjectSettings|Submit changes to be merged upstream"
