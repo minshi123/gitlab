@@ -48,6 +48,10 @@ describe 'Invites' do
       expect(page).to have_content('To accept this invitation, sign in')
     end
 
+    it 'prefils the email field with the invite_email from the invite' do
+      expect(page).to have_content(group_invite.invite_email)
+    end
+
     it 'sign in and redirects to invitation page' do
       fill_in_sign_in_form(user)
 
@@ -60,7 +64,7 @@ describe 'Invites' do
     end
   end
 
-  context 'when signed in as an exists member' do
+  context 'when signed in as an existing member' do
     before do
       sign_in(owner)
     end
