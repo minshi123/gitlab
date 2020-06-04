@@ -395,21 +395,21 @@ module Gitlab
 
       private
 
-      def user_minimum
-        strong_memoize(:user_minimum) do
+      def user_minimum_id
+        strong_memoize(:user_minimum_id) do
           ::User.minimum(:id)
         end
       end
 
-      def user_maximum
-        strong_memoize(:user_maximum) do
+      def user_maximum_id
+        strong_memoize(:user_maximum_id) do
           ::User.maximum(:id)
         end
       end
 
       def clear_memoized_limits
-        clear_memoization(:user_minimum)
-        clear_memoization(:user_maximum)
+        clear_memoization(:user_minimum_id)
+        clear_memoization(:user_maximum_id)
       end
     end
   end
