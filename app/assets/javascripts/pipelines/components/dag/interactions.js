@@ -4,6 +4,8 @@ import { LINK_SELECTOR, NODE_SELECTOR } from './constants';
 const highlightIn = 1;
 const highlightOut = 0.2;
 
+const getCurrent = (i, n) => d3.select(n[i]);
+const currentIsLive = (i, n) => getCurrent(i, n).classed('.live');
 const getOtherLinks = () => d3.selectAll(`.${LINK_SELECTOR}:not(.live)`);
 const getNodesNotLive = () => d3.selectAll(`.${NODE_SELECTOR}:not(.live)`);
 
@@ -113,7 +115,13 @@ const restorePath = (parentLinks, parentNodes, baseOpacity) => {
 
 }
 
-export const restoreLinks = (baseOpacity) => {
+export const restoreLinks = (baseOpacity, d, i, n) => {
+  const currentLink = getCurrent(i, n);
+
+  /* in this case, it has just been clicked */
+  if (currentLink.classed('.live')) {
+    return;
+  }
 
   /*
     if there exist live links, reset to highlight out / pale
@@ -130,13 +138,25 @@ export const restoreLinks = (baseOpacity) => {
   backgroundNodes(getNodesNotLive());
 }
 
+export const toggleLinkHighlight = (baseOpacity, d, i, n) => {
+  const currentLink = d3.select(n[i]);
+
+  if (currentLink.classed('live')) {
+    restorePath([d.uid], [d.source.uid, d.target.uid], baseOpacity)
+    return;
+  }
+
+  highlightPath([d.uid], [d.source.uid, d.target.uid])
+
+}
+
 export const togglePathHighlights = (baseOpacity, d, i, n) => {
 
   const parentLinks = getAllLinkAncestors(d);
   const parentNodes = getAllNodeAncestors(d);
   const currentNode = d3.select(n[i]);
 
-  // if this node is already live, make it unlive / highlight off
+  /* if this node is already live, make it unlive and reset its path */
   if (currentNode.classed('live')) {
     currentNode.classed('live', false);
     restorePath(parentLinks, parentNodes, baseOpacity);

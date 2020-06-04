@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 import { uniqueId } from 'lodash';
 import { LINK_SELECTOR, NODE_SELECTOR, PARSE_FAILURE } from './constants';
-import { highlightLinks, restoreLinks, togglePathHighlights} from './interactions';
+import { highlightLinks, restoreLinks, toggleLinkHighlight, togglePathHighlights } from './interactions';
 import { getMaxNodes, removeOrphanNodes } from './parsing_utils';
 import { calculateClip, createLinkPath, createSankey, labelPosition } from './drawing_utils';
 
@@ -87,7 +87,8 @@ export default {
     appendLinkInteractions(link) {
       return link
         .on('mouseover', highlightLinks)
-        .on('mouseout', restoreLinks.bind(null, this.$options.viewOptions.baseOpacity));
+        .on('mouseout', restoreLinks.bind(null, this.$options.viewOptions.baseOpacity))
+        .on('click', toggleLinkHighlight.bind(null, this.$options.viewOptions.baseOpacity));
     },
 
     appendNodeInteractions(node) {
