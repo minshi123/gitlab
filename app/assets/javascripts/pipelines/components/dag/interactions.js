@@ -102,8 +102,15 @@ const restorePath = (parentLinks, parentNodes, baseOpacity) => {
       .classed('live', false)
   });
 
-  renewLinks(getOtherLinks(), baseOpacity);
-  renewNodes(getNodesNotLive());
+  if (d3.selectAll('.live').empty()) {
+    renewLinks(getOtherLinks(), baseOpacity);
+    renewNodes(getNodesNotLive());
+    return;
+  }
+
+  backgroundLinks(getOtherLinks());
+  backgroundNodes(getNodesNotLive());
+
 }
 
 export const restoreLinks = (baseOpacity) => {
