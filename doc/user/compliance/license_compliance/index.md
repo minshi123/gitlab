@@ -592,6 +592,7 @@ your code and generate security reports, without requiring internet access.
 Additional configuration may be needed for connecting to
 [private Bower registries](#using-private-bower-registries),
 [private Conan registries](#using-private-bower-registries),
+[private Go registries](#using-private-go-registries),
 [private Maven repositories](#using-private-maven-repos),
 [private NPM registries](#using-private-npm-registries),
 [private Python repositories](#using-private-python-repos),
