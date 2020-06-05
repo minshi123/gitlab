@@ -7,18 +7,19 @@ import {
   GlIcon,
   GlTooltipDirective,
   GlPagination,
-  GlModal,
-  GlSprintf,
   GlEmptyState,
   GlResizeObserverDirective,
   GlSkeletonLoader,
 } from '@gitlab/ui';
 import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
-import { n__, s__ } from '~/locale';
+import { n__ } from '~/locale';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 import Tracking from '~/tracking';
+import DeleteAlert from '../components/details_page/delete_alert.vue';
+import DeleteModal from '../components/details_page/delete_modal.vue';
+import DetailsHeader from '../components/details_page/details_header.vue';
 import { decodeAndParse } from '../utils';
 import {
   LIST_KEY_TAG,
@@ -31,23 +32,28 @@ import {
   LIST_LABEL_IMAGE_ID,
   LIST_LABEL_SIZE,
   LIST_LABEL_LAST_UPDATED,
-  DELETE_TAG_SUCCESS_MESSAGE,
-  DELETE_TAG_ERROR_MESSAGE,
-  DELETE_TAGS_SUCCESS_MESSAGE,
-  DELETE_TAGS_ERROR_MESSAGE,
-} from '../constants';
+  REMOVE_TAGS_BUTTON_TITLE,
+  REMOVE_TAG_BUTTON_TITLE,
+  EMPTY_IMAGE_REPOSITORY_TITLE,
+  EMPTY_IMAGE_REPOSITORY_MESSAGE,
+  ALERT_SUCCESS_TAG,
+  ALERT_DANGER_TAG,
+  ALERT_SUCCESS_TAGS,
+  ALERT_DANGER_TAGS,
+} from '../constants/index';
 
 export default {
   components: {
+    DeleteAlert,
+    DetailsHeader,
     GlTable,
     GlFormCheckbox,
     GlDeprecatedButton,
     GlIcon,
     ClipboardButton,
     GlPagination,
-    GlModal,
+    DeleteModal,
     GlSkeletonLoader,
-    GlSprintf,
     GlEmptyState,
   },
   directives: {
@@ -60,6 +66,12 @@ export default {
     width: 1000,
     height: 40,
   },
+  i18n: {
+    REMOVE_TAGS_BUTTON_TITLE,
+    REMOVE_TAG_BUTTON_TITLE,
+    EMPTY_IMAGE_REPOSITORY_TITLE,
+    EMPTY_IMAGE_REPOSITORY_MESSAGE,
+  },
   data() {
     return {
       selectedItems: [],
@@ -67,6 +79,7 @@ export default {
       selectAllChecked: false,
       modalDescription: null,
       isDesktop: true,
+      deleteAlertType: null,
     };
   },
   computed: {
@@ -78,29 +91,26 @@ export default {
     },
     fields() {
       const tagClass = this.isDesktop ? 'w-25' : '';
+      const tagInnerClass = this.isDesktop ? 'mw-m' : 'gl-justify-content-end';
       return [
         { key: LIST_KEY_CHECKBOX, label: '', class: 'gl-w-16' },
-        { key: LIST_KEY_TAG, label: LIST_LABEL_TAG, class: `${tagClass} js-tag-column` },
+        {
+          key: LIST_KEY_TAG,
+          label: LIST_LABEL_TAG,
+          class: `${tagClass} js-tag-column`,
+          innerClass: tagInnerClass,
+        },
         { key: LIST_KEY_IMAGE_ID, label: LIST_LABEL_IMAGE_ID },
         { key: LIST_KEY_SIZE, label: LIST_LABEL_SIZE },
         { key: LIST_KEY_LAST_UPDATED, label: LIST_LABEL_LAST_UPDATED },
         { key: LIST_KEY_ACTIONS, label: '' },
       ].filter(f => f.key !== LIST_KEY_CHECKBOX || this.isDesktop);
     },
-    isMultiDelete() {
-      return this.itemsToBeDeleted.length > 1;
-    },
     tracking() {
       return {
-        label: this.isMultiDelete ? 'bulk_registry_tag_delete' : 'registry_tag_delete',
+        label:
+          this.itemsToBeDeleted?.length > 1 ? 'bulk_registry_tag_delete' : 'registry_tag_delete',
       };
-    },
-    modalAction() {
-      return n__(
-        'ContainerRegistry|Remove tag',
-        'ContainerRegistry|Remove tags',
-        this.isMultiDelete ? this.itemsToBeDeleted.length : 1,
-      );
     },
     currentPage: {
       get() {
@@ -111,23 +121,11 @@ export default {
       },
     },
   },
+  mounted() {
+    this.requestTagsList({ params: this.$route.params.id });
+  },
   methods: {
     ...mapActions(['requestTagsList', 'requestDeleteTag', 'requestDeleteTags']),
-    setModalDescription(itemIndex = -1) {
-      if (itemIndex === -1) {
-        this.modalDescription = {
-          message: s__(`ContainerRegistry|You are about to remove %{item} tags. Are you sure?`),
-          item: this.itemsToBeDeleted.length,
-        };
-      } else {
-        const { path } = this.tags[itemIndex];
-
-        this.modalDescription = {
-          message: s__(`ContainerRegistry|You are about to remove %{item}. Are you sure?`),
-          item: path,
-        };
-      }
-    },
     formatSize(size) {
       return numberToHumanSize(size);
     },
@@ -142,56 +140,50 @@ export default {
       }
     },
     selectAll() {
-      this.selectedItems = this.tags.map((x, index) => index);
+      this.selectedItems = this.tags.map(x => x.name);
       this.selectAllChecked = true;
     },
     deselectAll() {
       this.selectedItems = [];
       this.selectAllChecked = false;
     },
-    updateSelectedItems(index) {
-      const delIndex = this.selectedItems.findIndex(x => x === index);
+    updateSelectedItems(name) {
+      const delIndex = this.selectedItems.findIndex(x => x === name);
 
       if (delIndex > -1) {
         this.selectedItems.splice(delIndex, 1);
         this.selectAllChecked = false;
       } else {
-        this.selectedItems.push(index);
+        this.selectedItems.push(name);
 
         if (this.selectedItems.length === this.tags.length) {
           this.selectAllChecked = true;
         }
       }
     },
-    deleteSingleItem(index) {
-      this.setModalDescription(index);
-      this.itemsToBeDeleted = [index];
+    deleteSingleItem(name) {
+      this.itemsToBeDeleted = [{ ...this.tags.find(t => t.name === name) }];
       this.track('click_button');
       this.$refs.deleteModal.show();
     },
     deleteMultipleItems() {
-      this.itemsToBeDeleted = [...this.selectedItems];
-      if (this.selectedItems.length === 1) {
-        this.setModalDescription(this.itemsToBeDeleted[0]);
-      } else if (this.selectedItems.length > 1) {
-        this.setModalDescription();
-      }
+      this.itemsToBeDeleted = this.selectedItems.map(name => ({
+        ...this.tags.find(t => t.name === name),
+      }));
       this.track('click_button');
       this.$refs.deleteModal.show();
     },
-    handleSingleDelete(itemToDelete) {
+    handleSingleDelete() {
+      const [itemToDelete] = this.itemsToBeDeleted;
       this.itemsToBeDeleted = [];
+      this.selectedItems = this.selectedItems.filter(name => name !== itemToDelete.name);
       return this.requestDeleteTag({ tag: itemToDelete, params: this.$route.params.id })
-        .then(() =>
-          this.$toast.show(DELETE_TAG_SUCCESS_MESSAGE, {
-            type: 'success',
-          }),
-        )
-        .catch(() =>
-          this.$toast.show(DELETE_TAG_ERROR_MESSAGE, {
-            type: 'error',
-          }),
-        );
+        .then(() => {
+          this.deleteAlertType = ALERT_SUCCESS_TAG;
+        })
+        .catch(() => {
+          this.deleteAlertType = ALERT_DANGER_TAG;
+        });
     },
     handleMultipleDelete() {
       const { itemsToBeDeleted } = this;
@@ -199,27 +191,22 @@ export default {
       this.selectedItems = [];
 
       return this.requestDeleteTags({
-        ids: itemsToBeDeleted.map(x => this.tags[x].name),
+        ids: itemsToBeDeleted.map(x => x.name),
         params: this.$route.params.id,
       })
-        .then(() =>
-          this.$toast.show(DELETE_TAGS_SUCCESS_MESSAGE, {
-            type: 'success',
-          }),
-        )
-        .catch(() =>
-          this.$toast.show(DELETE_TAGS_ERROR_MESSAGE, {
-            type: 'error',
-          }),
-        );
+        .then(() => {
+          this.deleteAlertType = ALERT_SUCCESS_TAGS;
+        })
+        .catch(() => {
+          this.deleteAlertType = ALERT_DANGER_TAGS;
+        });
     },
     onDeletionConfirmed() {
       this.track('confirm_delete');
-      if (this.isMultiDelete) {
+      if (this.itemsToBeDeleted.length > 1) {
         this.handleMultipleDelete();
       } else {
-        const index = this.itemsToBeDeleted[0];
-        this.handleSingleDelete(this.tags[index]);
+        this.handleSingleDelete();
       }
     },
     handleResize() {
@@ -231,15 +218,14 @@ export default {
 
 <template>
   <div v-gl-resize-observer="handleResize" class="my-3 w-100 slide-enter-to-element">
-    <div class="d-flex my-3 align-items-center">
-      <h4>
-        <gl-sprintf :message="s__('ContainerRegistry|%{imageName} tags')">
-          <template #imageName>
-            {{ imageName }}
-          </template>
-        </gl-sprintf>
-      </h4>
-    </div>
+    <delete-alert
+      v-model="deleteAlertType"
+      :garbage-collection-help-page-path="config.garbageCollectionHelpPagePath"
+      :is-admin="config.isAdmin"
+      class="my-2"
+    />
+
+    <details-header :image-name="imageName" />
 
     <gl-table :items="tags" :fields="fields" :stacked="!isDesktop" show-empty>
       <template v-if="isDesktop" #head(checkbox)>
@@ -256,33 +242,40 @@ export default {
           :disabled="!selectedItems || selectedItems.length === 0"
           class="float-right"
           variant="danger"
-          :title="s__('ContainerRegistry|Remove selected tags')"
-          :aria-label="s__('ContainerRegistry|Remove selected tags')"
+          :title="$options.i18n.REMOVE_TAGS_BUTTON_TITLE"
+          :aria-label="$options.i18n.REMOVE_TAGS_BUTTON_TITLE"
           @click="deleteMultipleItems()"
         >
           <gl-icon name="remove" />
         </gl-deprecated-button>
       </template>
 
-      <template #cell(checkbox)="{index}">
+      <template #cell(checkbox)="{item}">
         <gl-form-checkbox
           ref="rowCheckbox"
           class="js-row-checkbox"
-          :checked="selectedItems.includes(index)"
-          @change="updateSelectedItems(index)"
+          :checked="selectedItems.includes(item.name)"
+          @change="updateSelectedItems(item.name)"
         />
       </template>
-      <template #cell(name)="{item}">
-        <span ref="rowName">
-          {{ item.name }}
-        </span>
-        <clipboard-button
-          v-if="item.location"
-          ref="rowClipboardButton"
-          :title="item.location"
-          :text="item.location"
-          css-class="btn-default btn-transparent btn-clipboard"
-        />
+      <template #cell(name)="{item, field}">
+        <div ref="rowName" :class="[field.innerClass, 'gl-display-flex']">
+          <span
+            v-gl-tooltip
+            data-testid="rowNameText"
+            :title="item.name"
+            class="gl-text-overflow-ellipsis gl-overflow-hidden gl-white-space-nowrap"
+          >
+            {{ item.name }}
+          </span>
+          <clipboard-button
+            v-if="item.location"
+            ref="rowClipboardButton"
+            :title="item.location"
+            :text="item.location"
+            css-class="btn-default btn-transparent btn-clipboard"
+          />
+        </div>
       </template>
       <template #cell(short_revision)="{value}">
         <span ref="rowShortRevision">
@@ -299,19 +292,19 @@ export default {
         </span>
       </template>
       <template #cell(created_at)="{value}">
-        <span ref="rowTime">
+        <span ref="rowTime" v-gl-tooltip :title="tooltipTitle(value)">
           {{ timeFormatted(value) }}
         </span>
       </template>
-      <template #cell(actions)="{index, item}">
+      <template #cell(actions)="{item}">
         <gl-deprecated-button
           ref="singleDeleteButton"
-          :title="s__('ContainerRegistry|Remove tag')"
-          :aria-label="s__('ContainerRegistry|Remove tag')"
+          :title="$options.i18n.REMOVE_TAG_BUTTON_TITLE"
+          :aria-label="$options.i18n.REMOVE_TAG_BUTTON_TITLE"
           :disabled="!item.destroy_path"
           variant="danger"
           class="js-delete-registry float-right btn-inverted btn-border-color btn-icon"
-          @click="deleteSingleItem(index)"
+          @click="deleteSingleItem(item.name)"
         >
           <gl-icon name="remove" />
         </gl-deprecated-button>
@@ -337,15 +330,9 @@ export default {
         </template>
         <gl-empty-state
           v-else
-          :title="s__('ContainerRegistry|This image has no active tags')"
+          :title="$options.i18n.EMPTY_IMAGE_REPOSITORY_TITLE"
           :svg-path="config.noContainersImage"
-          :description="
-            s__(
-              `ContainerRegistry|The last tag related to this image was recently removed.
-            This empty image and any associated data will be automatically removed as part of the regular Garbage Collection process.
-            If you have any questions, contact your administrator.`,
-            )
-          "
+          :description="$options.i18n.EMPTY_IMAGE_REPOSITORY_MESSAGE"
           class="mx-auto my-0"
         />
       </template>
@@ -361,22 +348,11 @@ export default {
       class="w-100"
     />
 
-    <gl-modal
+    <delete-modal
       ref="deleteModal"
-      modal-id="delete-tag-modal"
-      ok-variant="danger"
-      @ok="onDeletionConfirmed"
+      :items-to-be-deleted="itemsToBeDeleted"
+      @confirmDelete="onDeletionConfirmed"
       @cancel="track('cancel_delete')"
-    >
-      <template #modal-title>{{ modalAction }}</template>
-      <template #modal-ok>{{ modalAction }}</template>
-      <p v-if="modalDescription">
-        <gl-sprintf :message="modalDescription.message">
-          <template #item>
-            <b>{{ modalDescription.item }}</b>
-          </template>
-        </gl-sprintf>
-      </p>
-    </gl-modal>
+    />
   </div>
 </template>

@@ -9,6 +9,7 @@ module Gitlab
 
       delegate :old_path,
                :new_path,
+               :file_identifier_hash,
                :base_sha,
                :start_sha,
                :head_sha,
@@ -68,7 +69,7 @@ module Gitlab
       end
 
       def to_json(opts = nil)
-        JSON.generate(formatter.to_h, opts)
+        Gitlab::Json.generate(formatter.to_h, opts)
       end
 
       def as_json(opts = nil)

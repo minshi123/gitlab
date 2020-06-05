@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
-import { GlDeprecatedButton, GlModal, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlButton, GlEmptyState, GlModal, GlSprintf, GlLink } from '@gitlab/ui';
 import createStore from 'ee/vue_shared/dashboards/store/index';
 import state from 'ee/vue_shared/dashboards/store/state';
 import component from 'ee/environments_dashboard/components/dashboard/dashboard.vue';
@@ -63,6 +63,10 @@ describe('dashboard', () => {
     expect(wrapper.find('.js-dashboard-title').text()).toBe('Environments Dashboard');
   });
 
+  it('should render the empty state component', () => {
+    expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+  });
+
   describe('page limits information message', () => {
     let message;
 
@@ -89,7 +93,7 @@ describe('dashboard', () => {
     let button;
 
     beforeEach(() => {
-      button = wrapper.find(GlDeprecatedButton);
+      button = wrapper.find(GlButton);
     });
 
     it('is labelled correctly', () => {
@@ -113,7 +117,7 @@ describe('dashboard', () => {
     describe('project header', () => {
       it('should have one project header per project', () => {
         const headers = wrapper.findAll(ProjectHeader);
-        expect(headers.length).toBe(2);
+        expect(headers).toHaveLength(2);
       });
 
       it('should remove a project if it emits `remove`', () => {
@@ -126,13 +130,13 @@ describe('dashboard', () => {
     describe('environment component', () => {
       it('should have one environment component per environment', () => {
         const environments = wrapper.findAll(Environment);
-        expect(environments.length).toBe(3);
+        expect(environments).toHaveLength(3);
       });
     });
 
     describe('project selector modal', () => {
       beforeEach(() => {
-        wrapper.find(GlDeprecatedButton).trigger('click');
+        wrapper.find(GlButton).trigger('click');
         return wrapper.vm.$nextTick();
       });
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe 'User activates GitHub Service' do
+RSpec.describe 'User activates GitHub Service' do
   include_context 'project service activation'
 
   context 'without a license' do
@@ -37,6 +37,10 @@ describe 'User activates GitHub Service' do
       click_button('Save')
 
       expect(page).to have_content('GitHub activated.')
+    end
+
+    it 'renders a token field of type `password` for masking input' do
+      expect(find('#service_token')['type']).to eq('password')
     end
 
     context 'with pipelines', :js do

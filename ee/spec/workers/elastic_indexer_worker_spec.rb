@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe ElasticIndexerWorker, :elastic do
+RSpec.describe ElasticIndexerWorker, :elastic do
   subject { described_class.new }
 
   # Create admin user and search globally to avoid dealing with permissions in
@@ -121,7 +121,7 @@ describe ElasticIndexerWorker, :elastic do
 
     expect do
       subject.perform("index", 'Project', object.id, object.es_id)
-    end.to raise_error
+    end.to raise_error(Elastic::IndexRecordService::ImportError)
   end
 
   it 'ignores Elasticsearch::Transport::Transport::Errors::NotFound error' do

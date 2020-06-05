@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe RegistrationsController do
+RSpec.describe RegistrationsController do
   describe '#create' do
     context 'when the user opted-in' do
       let(:user_params) { { user: attributes_for(:user, email_opted_in: '1') } }
@@ -30,7 +30,7 @@ describe RegistrationsController do
       end
     end
 
-    context 'when recaptcha experiment enabled' do
+    context 'when reCAPTCHA experiment enabled' do
       it "logs a 'User Created' message including the experiment state" do
         user_params = { user: attributes_for(:user) }
         allow_any_instance_of(EE::RecaptchaExperimentHelper).to receive(:show_recaptcha_sign_up?).and_return(true)
@@ -38,35 +38,6 @@ describe RegistrationsController do
         expect(Gitlab::AppLogger).to receive(:info).with(/\AUser Created: .+experiment_growth_recaptcha\?true\z/).and_call_original
 
         post :create, params: user_params
-      end
-    end
-  end
-
-  describe '#new' do
-    before do
-      stub_experiment(signup_flow: true, paid_signup_flow: true)
-      stub_experiment_for_user(signup_flow: true, paid_signup_flow: true)
-    end
-
-    context 'when not redirected from checkout page' do
-      it 'does not push tracking data to gon' do
-        get :new
-
-        expect(Gon.tracking_data).to eq(nil)
-      end
-    end
-
-    context 'when redirect from checkout page' do
-      it 'pushes tracking data to gon' do
-        get :new, params: { redirect_from: 'checkout' }
-
-        expect(Gon.tracking_data).to include(
-          {
-            category: 'Growth::Acquisition::Experiment::PaidSignUpFlow',
-            action: 'sign_up_page_view',
-            property: 'experimental_group'
-          }
-        )
       end
     end
   end
@@ -80,6 +51,40 @@ describe RegistrationsController do
 
     it 'renders the checkout layout' do
       expect(subject).to render_template(:checkout)
+    end
+  end
+
+  describe '#update_registration' do
+    before do
+      sign_in(create(:user))
+    end
+
+    subject { patch :update_registration, params: { user: { role: 'software_developer', setup_for_company: false } } }
+
+    it { is_expected.to redirect_to dashboard_projects_path }
+
+    context 'when part of the onboarding issues experiment' do
+      before do
+        stub_experiment_for_user(onboarding_issues: true)
+      end
+
+      it { is_expected.to redirect_to new_users_sign_up_group_path }
+
+      context 'when in subscription flow' do
+        before do
+          allow(controller.helpers).to receive(:in_subscription_flow?).and_return(true)
+        end
+
+        it { is_expected.not_to redirect_to new_users_sign_up_group_path }
+      end
+
+      context 'when in invitation flow' do
+        before do
+          allow(controller.helpers).to receive(:in_invitation_flow?).and_return(true)
+        end
+
+        it { is_expected.not_to redirect_to new_users_sign_up_group_path }
+      end
     end
   end
 end

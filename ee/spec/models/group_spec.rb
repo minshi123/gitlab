@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Group do
+RSpec.describe Group do
   let(:group) { create(:group) }
 
   it { is_expected.to include_module(EE::Group) }
@@ -18,7 +18,13 @@ describe Group do
     it { is_expected.to have_many(:ip_restrictions) }
     it { is_expected.to have_one(:dependency_proxy_setting) }
     it { is_expected.to have_one(:deletion_schedule) }
+    it { is_expected.to have_one(:group_wiki_repository) }
     it { is_expected.to belong_to(:push_rule) }
+
+    it_behaves_like 'model with wiki' do
+      let(:container) { create(:group, :nested, :wiki_repo) }
+      let(:container_without_wiki) { create(:group, :nested) }
+    end
   end
 
   describe 'scopes' do
@@ -424,7 +430,7 @@ describe Group do
 
     context 'group with associated push_rules record' do
       context 'with its own push rule' do
-        let(:push_rule) { create(:push_rule )}
+        let(:push_rule) { create(:push_rule) }
 
         it 'returns its own push rule' do
           group.update(push_rule: push_rule)
@@ -548,22 +554,11 @@ describe Group do
           is_expected.to be true
         end
 
-        it 'returns true for groups with group template already set within grace period' do
+        it 'returns false for groups with group template already set but not in proper plan' do
           group.update!(custom_project_templates_group_id: create(:group, parent: group).id)
           group.reload
 
-          Timecop.freeze(GroupsWithTemplatesFinder::CUT_OFF_DATE - 1.day) do
-            is_expected.to be true
-          end
-        end
-
-        it 'returns false for groups with group template already set after grace period' do
-          group.update!(custom_project_templates_group_id: create(:group, parent: group).id)
-          group.reload
-
-          Timecop.freeze(GroupsWithTemplatesFinder::CUT_OFF_DATE + 1.day) do
-            is_expected.to be false
-          end
+          is_expected.to be false
         end
       end
 
@@ -945,5 +940,17 @@ describe Group do
         expect(subject).to be_nil
       end
     end
+  end
+
+  describe '#owners_emails' do
+    let(:user) { create(:user, email: 'bob@example.com') }
+
+    before do
+      group.add_owner(user)
+    end
+
+    subject { group.owners_emails }
+
+    it { is_expected.to match([user.email]) }
   end
 end

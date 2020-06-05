@@ -1,4 +1,5 @@
 import { commitActionTypes, FILE_VIEW_MODE_EDITOR } from '../constants';
+import { relativePathToAbsolute, isAbsolute, isRootRelative } from '~/lib/utils/url_utility';
 
 export const dataStructure = () => ({
   id: '',
@@ -18,8 +19,6 @@ export const dataStructure = () => ({
   active: false,
   changed: false,
   staged: false,
-  replaces: false,
-  lastCommitPath: '',
   lastCommitSha: '',
   lastCommit: {
     id: '',
@@ -28,16 +27,10 @@ export const dataStructure = () => ({
     updatedAt: '',
     author: '',
   },
-  blamePath: '',
-  commitsPath: '',
-  permalink: '',
   rawPath: '',
   binary: false,
-  html: '',
   raw: '',
   content: '',
-  parentTreeUrl: '',
-  renderError: false,
   base64: false,
   editorRow: 1,
   editorColumn: 1,
@@ -62,19 +55,16 @@ export const decorateData = entity => {
     url,
     name,
     path,
-    renderError,
     content = '',
     tempFile = false,
     active = false,
     opened = false,
     changed = false,
-    parentTreeUrl = '',
     base64 = false,
     binary = false,
     rawPath = '',
     previewMode,
     file_lock,
-    html,
     parentPath = '',
   } = entity;
 
@@ -90,24 +80,16 @@ export const decorateData = entity => {
     tempFile,
     opened,
     active,
-    parentTreeUrl,
     changed,
-    renderError,
     content,
     base64,
     binary,
     rawPath,
     previewMode,
     file_lock,
-    html,
     parentPath,
   });
 };
-
-export const findEntry = (tree, type, name, prop = 'name') =>
-  tree.find(f => f.type === type && f[prop] === name);
-
-export const findIndexOfFile = (state, file) => state.findIndex(f => f.path === file.path);
 
 export const setPageTitle = title => {
   document.title = title;
@@ -123,7 +105,7 @@ export const commitActionForFile = file => {
     return commitActionTypes.move;
   } else if (file.deleted) {
     return commitActionTypes.delete;
-  } else if (file.tempFile && !file.replaces) {
+  } else if (file.tempFile) {
     return commitActionTypes.create;
   }
 
@@ -155,8 +137,7 @@ export const createCommitPayload = ({
     previous_path: f.prevPath || undefined,
     content: f.prevPath && !f.changed ? null : f.content || undefined,
     encoding: f.base64 ? 'base64' : 'text',
-    last_commit_id:
-      newBranch || f.deleted || f.prevPath || f.replaces ? undefined : f.lastCommitSha,
+    last_commit_id: newBranch || f.deleted || f.prevPath ? undefined : f.lastCommitSha,
   })),
   start_sha: newBranch ? rootGetters.lastCommit.id : undefined,
 });
@@ -271,6 +252,44 @@ export const pathsAreEqual = (a, b) => {
   return cleanA === cleanB;
 };
 
-// if the contents of a file dont end with a newline, this function adds a newline
-export const addFinalNewlineIfNeeded = content =>
-  content.charAt(content.length - 1) !== '\n' ? `${content}\n` : content;
+export function extractMarkdownImagesFromEntries(mdFile, entries) {
+  /**
+   * Regex to identify an image tag in markdown, like:
+   *
+   * ![img alt goes here](/img.png)
+   * ![img alt](../img 1/img.png "my image title")
+   * ![img alt](https://gitlab.com/assets/logo.svg "title here")
+   *
+   */
+  const reMdImage = /!\[([^\]]*)\]\((.*?)(?:(?="|\))"([^"]*)")?\)/gi;
+  const prefix = 'gl_md_img_';
+  const images = {};
+
+  let content = mdFile.content || mdFile.raw;
+  let i = 0;
+
+  content = content.replace(reMdImage, (_, alt, path, title) => {
+    const imagePath = (isRootRelative(path) ? path : relativePathToAbsolute(path, mdFile.path))
+      .substr(1)
+      .trim();
+
+    const imageContent = entries[imagePath]?.content || entries[imagePath]?.raw;
+
+    if (!isAbsolute(path) && imageContent) {
+      const ext = path.includes('.')
+        ? path
+            .split('.')
+            .pop()
+            .trim()
+        : 'jpeg';
+      const src = `data:image/${ext};base64,${imageContent}`;
+      i += 1;
+      const key = `{{${prefix}${i}}}`;
+      images[key] = { alt, src, title };
+      return key;
+    }
+    return title ? `![${alt}](${path}"${title}")` : `![${alt}](${path})`;
+  });
+
+  return { content, images };
+}

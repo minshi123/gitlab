@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Ci::Build do
+RSpec.describe Ci::Build do
   let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
   let(:project) { create(:project, :repository, group: group) }
 
@@ -80,14 +80,6 @@ describe Ci::Build do
     end
 
     it_behaves_like 'depends on runner presence and type'
-
-    context 'and :ci_minutes_enforce_quota_for_public_projects FF is disabled' do
-      before do
-        stub_feature_flags(ci_minutes_enforce_quota_for_public_projects: false)
-      end
-
-      it_behaves_like 'depends on runner presence and type'
-    end
   end
 
   context 'updates pipeline minutes' do
@@ -313,6 +305,28 @@ describe Ci::Build do
         expect(dependency_list_report.dependencies.count).to eq(21)
         expect(mini_portile2[:name]).to eq('mini_portile2')
         expect(yarn[:location][:blob_path]).to eq(blob_path)
+      end
+    end
+
+    context 'with different report format' do
+      let!(:dl_artifact) { create(:ee_ci_job_artifact, :dependency_scanning, job: job, project: job.project) }
+      let(:dependency_list_report) { Gitlab::Ci::Reports::DependencyList::Report.new }
+
+      before do
+        stub_licensed_features(dependency_scanning: true)
+      end
+
+      subject { job.collect_dependency_list_reports!(dependency_list_report) }
+
+      it 'parses blobs and add the results to the report' do
+        subject
+        blob_path = "/#{project.full_path}/-/blob/#{job.sha}/sast-sample-rails/Gemfile.lock"
+        netty = dependency_list_report.dependencies.first
+        ffi = dependency_list_report.dependencies.last
+
+        expect(dependency_list_report.dependencies.count).to eq(4)
+        expect(netty[:name]).to eq('io.netty/netty')
+        expect(ffi[:location][:blob_path]).to eq(blob_path)
       end
     end
 

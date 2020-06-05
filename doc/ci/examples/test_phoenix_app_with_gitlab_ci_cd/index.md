@@ -1,4 +1,7 @@
 ---
+stage: Verify
+group: Continuous Integration
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 author: Alexandre S Hostert
 author_gitlab: Hostert
 level: beginner
@@ -45,7 +48,7 @@ Phoenix can run in any OS where Erlang is supported:
 - Fedora
 - Raspbian
 
-Check the [Phoenix learning guide](https://hexdocs.pm/phoenix/learning.html) for more information.
+Check the [Phoenix learning guide](https://hexdocs.pm/phoenix/overview.html) for more information.
 
 ### What is Elixir?
 
@@ -262,7 +265,7 @@ project.
   our application? This virtual machine must have all dependencies to run our application. This is
   where a Docker image is needed. The correct image will provide the entire system for us.
 
-  As we are focusing on testing (not deploying), you can use the [elixir:latest](https://hub.docker.com/_/elixir) docker image, which already has the
+  As we are focusing on testing (not deploying), you can use the [elixir:latest](https://hub.docker.com/_/elixir) Docker image, which already has the
   dependencies for running Phoenix tests installed, such as Elixir and Erlang:
 
   ```yaml
@@ -375,7 +378,7 @@ see if our latest code is running without errors.
 When we finish this edition, GitLab will start another build and show a **build running** badge. It
 is expected, after all we just configured GitLab CI/CD to do this for every push! But you may think
 "Why run build and tests for simple things like editing README.md?" and it is a good question.
-For changes that don't affect your application, you can add the keyword [`[ci skip]`](../../yaml/README.md#skipping-jobs)
+For changes that don't affect your application, you can add the keyword [`[ci skip]`](../../yaml/README.md#skip-pipeline)
 to commit message and the build related to that commit will be skipped.
 
 In the end, we finally got our pretty green build succeeded badge! By outputting the result on the

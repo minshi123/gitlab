@@ -36,10 +36,6 @@ class ProjectsController < Projects::ApplicationController
 
   layout :determine_layout
 
-  before_action do
-    push_frontend_feature_flag(:metrics_dashboard_visibility_switching_available)
-  end
-
   def index
     redirect_to(current_user ? root_path : explore_root_path)
   end
@@ -62,7 +58,7 @@ class ProjectsController < Projects::ApplicationController
     @project = ::Projects::CreateService.new(current_user, project_params(attributes: project_params_create_attributes)).execute
 
     if @project.saved?
-      cookies[:issue_board_welcome_hidden] = { path: project_path(@project), value: nil, expires: Time.at(0) }
+      cookies[:issue_board_welcome_hidden] = { path: project_path(@project), value: nil, expires: Time.zone.at(0) }
 
       redirect_to(
         project_path(@project, custom_import_params),
@@ -205,7 +201,7 @@ class ProjectsController < Projects::ApplicationController
 
     redirect_to(
       edit_project_path(@project, anchor: 'js-export-project'),
-      notice: _("Project export started. A download link will be sent by email.")
+      notice: _("Project export started. A download link will be sent by email and made available on this page.")
     )
   end
 
@@ -314,12 +310,11 @@ class ProjectsController < Projects::ApplicationController
       render 'projects/empty' if @project.empty_repo?
     else
       if can?(current_user, :read_wiki, @project)
-        @project_wiki = @project.wiki
-        @wiki_home = @project_wiki.find_page('home', params[:version_id])
+        @wiki = @project.wiki
+        @wiki_home = @wiki.find_page('home', params[:version_id])
       elsif @project.feature_available?(:issues, current_user)
         @issues = issuables_collection.page(params[:page])
-        @collection_type = 'Issue'
-        @issuable_meta_data = issuable_meta_data(@issues, @collection_type, current_user)
+        @issuable_meta_data = Gitlab::IssuableMetadata.new(current_user, @issues).data
       end
 
       render :show
@@ -403,6 +398,10 @@ class ProjectsController < Projects::ApplicationController
         snippets_access_level
         wiki_access_level
         pages_access_level
+        metrics_dashboard_access_level
+      ],
+      project_setting_attributes: %i[
+        show_default_award_emojis
       ]
     ]
   end
@@ -483,11 +482,12 @@ class ProjectsController < Projects::ApplicationController
   def export_rate_limit
     prefixed_action = "project_#{params[:action]}".to_sym
 
-    if rate_limiter.throttled?(prefixed_action, scope: [current_user, prefixed_action, @project])
+    project_scope = params[:action] == :download_export ? @project : nil
+
+    if rate_limiter.throttled?(prefixed_action, scope: [current_user, project_scope].compact)
       rate_limiter.log_request(request, "#{prefixed_action}_request_limit".to_sym, current_user)
 
-      flash[:alert] = _('This endpoint has been requested too many times. Try again later.')
-      redirect_to edit_project_path(@project)
+      render plain: _('This endpoint has been requested too many times. Try again later.'), status: :too_many_requests
     end
   end
 

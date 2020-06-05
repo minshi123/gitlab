@@ -1,6 +1,5 @@
 import { createLocalVue, shallowMount, mount } from '@vue/test-utils';
 import Vuex from 'vuex';
-import Vue from 'vue';
 import store from 'ee/analytics/cycle_analytics/store';
 import Component from 'ee/analytics/cycle_analytics/components/base.vue';
 import { GlEmptyState } from '@gitlab/ui';
@@ -9,6 +8,8 @@ import MockAdapter from 'axios-mock-adapter';
 import GroupsDropdownFilter from 'ee/analytics/shared/components/groups_dropdown_filter.vue';
 import ProjectsDropdownFilter from 'ee/analytics/shared/components/projects_dropdown_filter.vue';
 import RecentActivityCard from 'ee/analytics/cycle_analytics/components/recent_activity_card.vue';
+import TimeMetricsCard from 'ee/analytics/cycle_analytics/components/time_metrics_card.vue';
+import PathNavigation from 'ee/analytics/cycle_analytics/components/path_navigation.vue';
 import StageTable from 'ee/analytics/cycle_analytics/components/stage_table.vue';
 import 'bootstrap';
 import '~/gl_dropdown';
@@ -49,8 +50,7 @@ function createComponent({
   shallow = true,
   withStageSelected = false,
   scatterplotEnabled = true,
-  tasksByTypeChartEnabled = true,
-  customizableCycleAnalyticsEnabled = false,
+  pathNavigationEnabled = false,
   props = {},
 } = {}) {
   const func = shallow ? shallowMount : mount;
@@ -69,8 +69,7 @@ function createComponent({
     provide: {
       glFeatures: {
         cycleAnalyticsScatterplotEnabled: scatterplotEnabled,
-        tasksByTypeChart: tasksByTypeChartEnabled,
-        customizableCycleAnalytics: customizableCycleAnalyticsEnabled,
+        valueStreamAnalyticsPathNavigation: pathNavigationEnabled,
       },
     },
     ...opts,
@@ -86,9 +85,10 @@ function createComponent({
       ...selectedGroup,
     });
 
-    comp.vm.$store.dispatch('receiveGroupStagesAndEventsSuccess', {
-      ...mockData.customizableStagesAndEvents,
-    });
+    comp.vm.$store.dispatch(
+      'receiveGroupStagesSuccess',
+      mockData.customizableStagesAndEvents.stages,
+    );
 
     comp.vm.$store.dispatch('receiveStageDataSuccess', mockData.issueEvents);
   }
@@ -124,6 +124,10 @@ describe('Cycle Analytics component', () => {
     expect(wrapper.find(RecentActivityCard).exists()).toBe(flag);
   };
 
+  const displaysTimeMetricsCard = flag => {
+    expect(wrapper.find(TimeMetricsCard).exists()).toBe(flag);
+  };
+
   const displaysStageTable = flag => {
     expect(wrapper.find(StageTable).exists()).toBe(flag);
   };
@@ -134,6 +138,10 @@ describe('Cycle Analytics component', () => {
 
   const displaysTypeOfWork = flag => {
     expect(wrapper.find(TypeOfWorkCharts).exists()).toBe(flag);
+  };
+
+  const displaysPathNavigation = flag => {
+    expect(wrapper.find(PathNavigation).exists()).toBe(flag);
   };
 
   beforeEach(() => {
@@ -176,8 +184,12 @@ describe('Cycle Analytics component', () => {
         displaysDateRangePicker(false);
       });
 
-      it('does not display the recent activity table', () => {
+      it('does not display the recent activity card', () => {
         displaysRecentActivityCard(false);
+      });
+
+      it('does not display the time metrics card', () => {
+        displaysTimeMetricsCard(false);
       });
 
       it('does not display the stage table', () => {
@@ -186,6 +198,14 @@ describe('Cycle Analytics component', () => {
 
       it('does not display the duration chart', () => {
         displaysDurationChart(false);
+      });
+
+      it('does not display the add stage button', () => {
+        expect(wrapper.find('.js-add-stage-button').exists()).toBe(false);
+      });
+
+      it('does not display the path navigation', () => {
+        displaysPathNavigation(false);
       });
 
       describe('hideGroupDropDown = true', () => {
@@ -209,7 +229,6 @@ describe('Cycle Analytics component', () => {
         beforeEach(() => {
           wrapper = createComponent({
             withStageSelected: true,
-            tasksByTypeChartEnabled: false,
           });
         });
 
@@ -233,37 +252,55 @@ describe('Cycle Analytics component', () => {
           displaysDateRangePicker(true);
         });
 
-        it('displays the recent activity table', () => {
+        it('displays the recent activity card', () => {
           displaysRecentActivityCard(true);
+        });
+
+        it('displays the time metrics card', () => {
+          displaysTimeMetricsCard(true);
         });
 
         it('displays the stage table', () => {
           displaysStageTable(true);
         });
 
-        it('does not display the add stage button', () => {
-          expect(wrapper.find('.js-add-stage-button').exists()).toBe(false);
-        });
-
-        describe('with no durationData', () => {
-          it('displays the duration chart', () => {
-            displaysDurationChart(true);
+        it('displays the add stage button', () => {
+          wrapper = createComponent({ shallow: false, withStageSelected: true });
+          return wrapper.vm.$nextTick().then(() => {
+            expect(wrapper.find('.js-add-stage-button').exists()).toBe(true);
           });
         });
 
-        describe('with durationData', () => {
-          beforeEach(() => {
-            mock = new MockAdapter(axios);
-            wrapper.vm.$store.dispatch('setDateRange', {
-              skipFetch: true,
-              startDate: mockData.startDate,
-              endDate: mockData.endDate,
+        it('displays the tasks by type chart', () => {
+          wrapper = createComponent({ shallow: false, withStageSelected: true });
+          return wrapper.vm.$nextTick().then(() => {
+            expect(wrapper.find('.js-tasks-by-type-chart').exists()).toBe(true);
+          });
+        });
+
+        describe('path navigation', () => {
+          describe('disabled', () => {
+            it('does not display the path navigation', () => {
+              displaysPathNavigation(false);
             });
           });
 
-          it('displays the duration chart', () => {
-            expect(wrapper.find(DurationChart).exists()).toBe(true);
+          describe('enabled', () => {
+            beforeEach(() => {
+              wrapper = createComponent({
+                withStageSelected: true,
+                pathNavigationEnabled: true,
+              });
+            });
+
+            it('displays the path navigation', () => {
+              displaysPathNavigation(true);
+            });
           });
+        });
+
+        it('displays the duration chart', () => {
+          displaysDurationChart(true);
         });
 
         describe('StageTable', () => {
@@ -279,7 +316,6 @@ describe('Cycle Analytics component', () => {
               },
               shallow: false,
               withStageSelected: true,
-              tasksByTypeChartEnabled: false,
             });
           });
 
@@ -291,16 +327,15 @@ describe('Cycle Analytics component', () => {
             expect(second.classes('active')).toBe(false);
           });
 
-          it('can navigate to different stages', done => {
+          it('can navigate to different stages', () => {
             selectStageNavItem(2).trigger('click');
 
-            Vue.nextTick(() => {
+            return wrapper.vm.$nextTick().then(() => {
               const first = selectStageNavItem(0);
               const third = selectStageNavItem(2);
 
               expect(third.classes('active')).toBe(true);
               expect(first.classes('active')).toBe(false);
-              done();
             });
           });
         });
@@ -309,7 +344,7 @@ describe('Cycle Analytics component', () => {
       describe('the user does not have access to the group', () => {
         beforeEach(() => {
           mock = new MockAdapter(axios);
-          mock.onAny().reply(403);
+          mock.onAny().reply(httpStatusCodes.FORBIDDEN);
 
           wrapper.vm.onGroupSelect(mockData.group);
           return waitForPromises();
@@ -330,8 +365,12 @@ describe('Cycle Analytics component', () => {
           displaysDateRangePicker(false);
         });
 
-        it('does not display the recent activity table', () => {
+        it('does not display the recent activity card', () => {
           displaysRecentActivityCard(false);
+        });
+
+        it('does not display the time metrics card', () => {
+          displaysTimeMetricsCard(false);
         });
 
         it('does not display the stage table', () => {
@@ -349,66 +388,32 @@ describe('Cycle Analytics component', () => {
         it('does not display the duration chart', () => {
           displaysDurationChart(false);
         });
-      });
 
-      describe('with customizableCycleAnalytics=true', () => {
-        beforeEach(() => {
-          mock = new MockAdapter(axios);
-          wrapper = createComponent({
-            shallow: false,
-            withStageSelected: true,
-            customizableCycleAnalyticsEnabled: true,
-            tasksByTypeChartEnabled: false,
+        describe('path navigation', () => {
+          describe('disabled', () => {
+            it('does not display the path navigation', () => {
+              displaysPathNavigation(false);
+            });
           });
-        });
 
-        afterEach(() => {
-          wrapper.destroy();
-          mock.restore();
-        });
+          describe('enabled', () => {
+            beforeEach(() => {
+              wrapper = createComponent({
+                withStageSelected: true,
+                pathNavigationEnabled: true,
+              });
 
-        it('will display the add stage button', () => {
-          expect(wrapper.find('.js-add-stage-button').exists()).toBe(true);
-        });
-      });
+              mock = new MockAdapter(axios);
+              mock.onAny().reply(httpStatusCodes.FORBIDDEN);
 
-      describe('with tasksByTypeChart=true', () => {
-        beforeEach(() => {
-          wrapper = createComponent({
-            shallow: false,
-            withStageSelected: true,
-            customizableCycleAnalyticsEnabled: false,
-            tasksByTypeChartEnabled: true,
+              wrapper.vm.onGroupSelect(mockData.group);
+              return waitForPromises();
+            });
+
+            it('displays the path navigation', () => {
+              displaysPathNavigation(false);
+            });
           });
-        });
-
-        afterEach(() => {
-          wrapper.destroy();
-        });
-
-        it('displays the tasks by type chart', () => {
-          expect(wrapper.find('.js-tasks-by-type-chart').exists()).toBe(true);
-        });
-      });
-
-      describe('with tasksByTypeChart=false', () => {
-        beforeEach(() => {
-          mock = new MockAdapter(axios);
-          wrapper = createComponent({
-            shallow: false,
-            withStageSelected: true,
-            customizableCycleAnalyticsEnabled: false,
-            tasksByTypeChartEnabled: false,
-          });
-        });
-
-        afterEach(() => {
-          wrapper.destroy();
-          mock.restore();
-        });
-
-        it('does not render the tasks by type chart', () => {
-          expect(wrapper.find('.js-tasks-by-type-chart').exists()).toBe(false);
         });
       });
     });
@@ -558,7 +563,6 @@ describe('Cycle Analytics component', () => {
       wrapper = createComponent({
         shallow: false,
         scatterplotEnabled: false,
-        tasksByTypeChartEnabled: false,
         stubs: {
           ...defaultStubs,
         },
@@ -586,7 +590,6 @@ describe('Cycle Analytics component', () => {
         wrapper = createComponent({
           shallow: false,
           scatterplotEnabled: false,
-          tasksByTypeChartEnabled: false,
           stubs: {
             ...defaultStubs,
           },

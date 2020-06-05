@@ -11,6 +11,8 @@ module EE
       validate :sso_enforcement, if: :group
       validate :group_domain_limitations, if: :group_has_domain_limitations?
 
+      scope :by_group_ids, ->(group_ids) { where(source_id: group_ids) }
+
       scope :with_ldap_dn, -> { joins(user: :identities).where("identities.provider LIKE ?", 'ldap%') }
       scope :with_identity_provider, ->(provider) do
         joins(user: :identities).where(identities: { provider: provider })
@@ -20,6 +22,7 @@ module EE
       end
 
       scope :non_owners, -> { where("members.access_level < ?", ::Gitlab::Access::OWNER) }
+      scope :by_user_id, ->(user_id) { where(user_id: user_id) }
     end
 
     class_methods do
@@ -33,7 +36,23 @@ module EE
     end
 
     def group_domain_limitations
-      user ? validate_users_email : validate_invitation_email
+      if user
+        validate_users_email
+        validate_email_verified
+      else
+        validate_invitation_email
+      end
+    end
+
+    def validate_email_verified
+      return if user.primary_email_verified?
+
+      # Do not validate if emails are verified
+      # for users created via SAML/SCIM.
+      return if group_saml_identity.present?
+      return if source.scim_identities.for_user(user).exists?
+
+      errors.add(:user, email_not_verified)
     end
 
     def validate_users_email
@@ -62,6 +81,10 @@ module EE
 
     def email_no_match_email_domain(email)
       _("email '%{email}' does not match the allowed domain of '%{email_domain}'" % { email: email, email_domain: group_allowed_email_domain.domain })
+    end
+
+    def email_not_verified
+      _("email '%{email}' is not a verified email." % { email: user.email })
     end
 
     def group_allowed_email_domain

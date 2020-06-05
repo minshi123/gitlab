@@ -13,6 +13,8 @@ import {
 import Editor from '../lib/editor';
 import FileTemplatesBar from './file_templates/bar.vue';
 import { __ } from '~/locale';
+import { extractMarkdownImagesFromEntries } from '../stores/utils';
+import { getPathParent, readFileAsDataURL } from '../utils';
 
 export default {
   components: {
@@ -26,17 +28,23 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      content: '',
+      images: {},
+    };
+  },
   computed: {
     ...mapState('rightPane', {
       rightPaneIsOpen: 'isOpen',
     }),
     ...mapState([
-      'rightPanelCollapsed',
       'viewer',
       'panelResizing',
       'currentActivityView',
       'renderWhitespaceInCode',
       'editorTheme',
+      'entries',
     ]),
     ...mapGetters([
       'currentMergeRequest',
@@ -44,6 +52,7 @@ export default {
       'isEditModeActive',
       'isCommitModeActive',
       'isReviewModeActive',
+      'currentBranch',
     ]),
     ...mapGetters('fileTemplates', ['showFileTemplatesBar']),
     shouldHideEditor() {
@@ -87,6 +96,9 @@ export default {
         theme: this.editorTheme,
       };
     },
+    currentBranchCommit() {
+      return this.currentBranch?.commit.id;
+    },
   },
   watch: {
     file(newVal, oldVal) {
@@ -114,9 +126,6 @@ export default {
         });
       }
     },
-    rightPanelCollapsed() {
-      this.refreshEditorDimensions();
-    },
     viewer() {
       if (!this.file.pending) {
         this.createEditorInstance();
@@ -136,6 +145,18 @@ export default {
         this.$nextTick(() => this.refreshEditorDimensions());
       }
     },
+    showContentViewer(val) {
+      if (!val) return;
+
+      if (this.fileType === 'markdown') {
+        const { content, images } = extractMarkdownImagesFromEntries(this.file, this.entries);
+        this.content = content;
+        this.images = images;
+      } else {
+        this.content = this.file.content || this.file.raw;
+        this.images = {};
+      }
+    },
   },
   beforeDestroy() {
     this.editor.dispose();
@@ -145,6 +166,12 @@ export default {
       this.editor = Editor.create(this.editorOptions);
     }
     this.initEditor();
+
+    // listen in capture phase to be able to override Monaco's behaviour.
+    window.addEventListener('paste', this.onPaste, true);
+  },
+  destroyed() {
+    window.removeEventListener('paste', this.onPaste, true);
   },
   methods: {
     ...mapActions([
@@ -158,6 +185,7 @@ export default {
       'updateViewer',
       'removePendingTab',
       'triggerFilesChange',
+      'addTempImage',
     ]),
     initEditor() {
       if (this.shouldHideEditor && (this.file.content || this.file.raw)) {
@@ -227,13 +255,12 @@ export default {
 
       this.model.onChange(model => {
         const { file } = model;
+        if (!file.active) return;
 
-        if (file.active) {
-          this.changeFileContent({
-            path: file.path,
-            content: model.getModel().getValue(),
-          });
-        }
+        const monacoModel = model.getModel();
+        const content = monacoModel.getValue();
+        this.changeFileContent({ path: file.path, content });
+        this.setFileEOL({ eol: this.model.eol });
       });
 
       // Handle Cursor Position
@@ -263,6 +290,29 @@ export default {
       if (this.showEditor) {
         this.editor.updateDimensions();
       }
+    },
+    onPaste(event) {
+      const editor = this.editor.instance;
+      const reImage = /^image\/(png|jpg|jpeg|gif)$/;
+      const file = event.clipboardData.files[0];
+
+      if (editor.hasTextFocus() && this.fileType === 'markdown' && reImage.test(file?.type)) {
+        // don't let the event be passed on to Monaco.
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        return readFileAsDataURL(file).then(content => {
+          const parentPath = getPathParent(this.file.path);
+          const path = `${parentPath ? `${parentPath}/` : ''}${file.name}`;
+
+          return this.addTempImage({ name: path, rawPath: content }).then(({ name: fileName }) => {
+            this.editor.replaceSelectedText(`![${fileName}](./${fileName})`);
+          });
+        });
+      }
+
+      // do nothing if no image is found in the clipboard
+      return Promise.resolve();
     },
   },
   viewerTypes,
@@ -310,11 +360,13 @@ export default {
     ></div>
     <content-viewer
       v-if="showContentViewer"
-      :content="file.content || file.raw"
+      :content="content"
+      :images="images"
       :path="file.rawPath || file.path"
       :file-path="file.path"
       :file-size="file.size"
       :project-path="file.projectId"
+      :commit-sha="currentBranchCommit"
       :type="fileType"
     />
     <diff-viewer

@@ -21,6 +21,10 @@ module Issues
       spam_check(issue, current_user) unless skip_spam_check
     end
 
+    def after_update(issue)
+      IssuesChannel.broadcast_to(issue, event: 'updated') if Feature.enabled?(:broadcast_issue_updates, issue.project)
+    end
+
     def handle_changes(issue, options)
       old_associations = options.fetch(:old_associations, {})
       old_labels = old_associations.fetch(:labels, [])
@@ -28,7 +32,7 @@ module Issues
       old_assignees = old_associations.fetch(:assignees, [])
 
       if has_changes?(issue, old_labels: old_labels, old_assignees: old_assignees)
-        todo_service.mark_pending_todos_as_done(issue, current_user)
+        todo_service.resolve_todos_for_target(issue, current_user)
       end
 
       if issue.previous_changes.include?('title') ||
@@ -64,7 +68,7 @@ module Issues
     end
 
     def handle_task_changes(issuable)
-      todo_service.mark_pending_todos_as_done(issuable, current_user)
+      todo_service.resolve_todos_for_target(issuable, current_user)
       todo_service.update_issue(issuable, current_user)
     end
 

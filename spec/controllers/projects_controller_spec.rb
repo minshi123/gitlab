@@ -2,7 +2,7 @@
 
 require('spec_helper')
 
-describe ProjectsController do
+RSpec.describe ProjectsController do
   include ExternalAuthorizationServiceHelpers
   include ProjectForksHelper
 
@@ -1020,6 +1020,32 @@ describe ProjectsController do
         expect(json_response['body']).to include(expanded_path)
       end
     end
+
+    context 'when path and ref parameters are provided' do
+      let(:project_with_repo) { create(:project, :repository) }
+      let(:preview_markdown_params) do
+        {
+          namespace_id: project_with_repo.namespace,
+          id: project_with_repo,
+          text: "![](./logo-white.png)\n",
+          ref: 'other_branch',
+          path: 'files/images/README.md'
+        }
+      end
+
+      before do
+        project_with_repo.add_maintainer(user)
+        project_with_repo.repository.create_branch('other_branch')
+      end
+
+      it 'renders JSON body with image links expanded' do
+        expanded_path = "/#{project_with_repo.full_path}/-/raw/other_branch/files/images/logo-white.png"
+
+        post :preview_markdown, params: preview_markdown_params
+
+        expect(json_response['body']).to include(expanded_path)
+      end
+    end
   end
 
   describe '#ensure_canonical_path' do
@@ -1134,16 +1160,16 @@ describe ProjectsController do
 
     shared_examples 'rate limits project export endpoint' do
       before do
-        allow(::Gitlab::ApplicationRateLimiter)
-          .to receive(:throttled?)
-          .and_return(true)
+        allow(Gitlab::ApplicationRateLimiter)
+          .to receive(:increment)
+          .and_return(Gitlab::ApplicationRateLimiter.rate_limits["project_#{action}".to_sym][:threshold] + 1)
       end
 
       it 'prevents requesting project export' do
         post action, params: { namespace_id: project.namespace, id: project }
 
-        expect(flash[:alert]).to eq('This endpoint has been requested too many times. Try again later.')
-        expect(response).to have_gitlab_http_status(:found)
+        expect(response.body).to eq('This endpoint has been requested too many times. Try again later.')
+        expect(response).to have_gitlab_http_status(:too_many_requests)
       end
     end
 
@@ -1200,7 +1226,18 @@ describe ProjectsController do
         end
 
         context 'when the endpoint receives requests above the limit', :clean_gitlab_redis_cache do
-          include_examples 'rate limits project export endpoint'
+          before do
+            allow(Gitlab::ApplicationRateLimiter)
+              .to receive(:increment)
+              .and_return(Gitlab::ApplicationRateLimiter.rate_limits[:project_download_export][:threshold] + 1)
+          end
+
+          it 'prevents requesting project export' do
+            post action, params: { namespace_id: project.namespace, id: project }
+
+            expect(response.body).to eq('This endpoint has been requested too many times. Try again later.')
+            expect(response).to have_gitlab_http_status(:too_many_requests)
+          end
         end
       end
     end

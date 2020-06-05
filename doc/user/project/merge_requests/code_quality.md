@@ -27,7 +27,19 @@ in the merge request widget area:
 
 ![Code Quality Widget](img/code_quality.png)
 
-For more information, see the Code Climate list of [Supported Languages for Maintainability](https://docs.codeclimate.com/docs/supported-languages-for-maintainability).
+Watch a quick walkthrough of Code Quality in action:
+
+<div class="video-fallback">
+  See the video: <a href="https://www.youtube.com/watch?v=B32LxtJKo9M">Code Quality: Speed Run</a>.
+</div>
+<figure class="video-container">
+  <iframe src="https://www.youtube.com/embed/B32LxtJKo9M" frameborder="0" allowfullscreen="true"> </iframe>
+</figure>
+
+NOTE: **Note:**
+For one customer, the auditor found that having Code Quality, SAST, and Container Scanning all automated in GitLab CI/CD was almost better than a manual review! [Read more](https://about.gitlab.com/customers/bi_worldwide/).
+
+See also the Code Climate list of [Supported Languages for Maintainability](https://docs.codeclimate.com/docs/supported-languages-for-maintainability).
 
 ## Use cases
 
@@ -37,7 +49,7 @@ For instance, consider the following workflow:
    feature in your app faster.
 1. With Code Quality reports, they analyze how their implementation is impacting
    the code quality.
-1. The metrics show that their code degrade the quality in 10 points.
+1. The metrics show that their code degrades the quality by 10 points.
 1. You ask a co-worker to help them with this modification.
 1. They both work on the changes until Code Quality report displays no
    degradations, only improvements.
@@ -53,10 +65,10 @@ also requires the GitLab Runner 11.5 or later. For earlier versions, use the
 
 This example shows how to run Code Quality on your code by using GitLab CI/CD and Docker.
 
-First, you need GitLab Runner with:
+First, you need GitLab Runner configured:
 
-- The [docker-in-docker executor](../../../ci/docker/using_docker_build.md#use-docker-in-docker-workflow-with-docker-executor).
-- Enough disk space to handle generated Code Quality files. For example on the [GitLab project](https://gitlab.com/gitlab-org/gitlab) the files are approximately 7 GB.
+- For the [Docker-in-Docker workflow](../../../ci/docker/using_docker_build.md#use-docker-in-docker-workflow-with-docker-executor).
+- With enough disk space to handle generated Code Quality files. For example on the [GitLab project](https://gitlab.com/gitlab-org/gitlab) the files are approximately 7 GB.
 
 Once you set up the Runner, include the CodeQuality template in your CI config:
 
@@ -67,7 +79,7 @@ include:
 
 The above example will create a `code_quality` job in your CI/CD pipeline which
 will scan your source code for code quality issues. The report will be saved as a
-[Code Quality report artifact](../../../ci/yaml/README.md#artifactsreportscodequality-starter)
+[Code Quality report artifact](../../../ci/pipelines/job_artifacts.md#artifactsreportscodequality-starter)
 that you can later download and analyze. Due to implementation limitations we always
 take the latest Code Quality artifact available.
 
@@ -108,7 +120,7 @@ This information will be automatically extracted and shown right in the merge re
 
 CAUTION: **Caution:**
 On self-managed instances, if a malicious actor compromises the Code Quality job
-definition they will be able to execute privileged docker commands on the Runner
+definition they will be able to execute privileged Docker commands on the Runner
 host. Having proper access control policies mitigates this attack vector by
 allowing access only to trusted actors.
 
@@ -117,9 +129,8 @@ allowing access only to trusted actors.
 CAUTION: **Caution:**
 Before GitLab 11.5, Code Quality job and artifact had to be named specifically to
 automatically extract report data and show it in the merge request widget. While these
-old job definitions are still maintained they have been deprecated and may be removed
-in the next major release, GitLab 12.0. You are advised to update your current `.gitlab-ci.yml`
-configuration to reflect that change.
+old job definitions are still maintained they have been deprecated and are no longer supported on GitLab 12.0 or higher.
+You are advised to update your `.gitlab-ci.yml` configuration to reflect that change.
 
 For GitLab 11.5 and later, the job should look like:
 
@@ -227,7 +238,7 @@ do this:
 
 1. Define a job in your `.gitlab-ci.yml` file that generates the
    [Code Quality report
-   artifact](../../../ci/yaml/README.md#artifactsreportscodequality-starter).
+   artifact](../../../ci/pipelines/job_artifacts.md#artifactsreportscodequality-starter).
 1. Configure your tool to generate the Code Quality report artifact as a JSON
    file that implements subset of the [Code Climate
    spec](https://github.com/codeclimate/platform/blob/master/spec/analyzers/SPEC.md#data-types).
