@@ -477,9 +477,9 @@ environment variables to control where modules are sourced from. Alternatively, 
 
 #### Custom root certificates for Go
 
-The [`-insecure`](https://golang.org/pkg/cmd/go/internal/get/) flag can be specified by exporting the [`GOFLAGS`](https://golang.org/cmd/go/#hdr-Environment_variables).
-
-For example:
+You can specify the [`-insecure`](https://golang.org/pkg/cmd/go/internal/get/) flag by exporting the
+[`GOFLAGS`](https://golang.org/cmd/go/#hdr-Environment_variables)
+environment variable. For example:
 
 ```yaml
 include:
