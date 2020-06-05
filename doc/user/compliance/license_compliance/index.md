@@ -464,7 +464,9 @@ To configure [Go modules](https://github.com/golang/go/wiki/Modules)
 based projects, specify [environment variables](https://golang.org/pkg/cmd/go/#hdr-Environment_variables)
 in the `license_scanning` job's [variables](#available-variables) section in `.gitlab-ci.yml`.
 
-If a project has [`vendored`](https://golang.org/pkg/cmd/go/#hdr-Vendor_Directories) its modules, then the combination of the `vendor` directory and the `mod.sum` file will be used to detect the software licenses associated with the Go module dependencies.
+If a project has [vendored](https://golang.org/pkg/cmd/go/#hdr-Vendor_Directories) its modules,
+then the combination of the `vendor` directory and `mod.sum` file are used to detect the software
+licenses associated with the Go module dependencies.
 
 #### Using private Go registries
 
