@@ -1,5 +1,5 @@
 <script>
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlLink } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import DagGraph from './dag_graph.vue';
@@ -12,6 +12,7 @@ export default {
   components: {
     DagGraph,
     GlAlert,
+    GlLink,
   },
   props: {
     graphUrl: {
@@ -109,6 +110,10 @@ export default {
   <div>
     <gl-alert v-if="showFailureAlert" :variant="failure.variant" @dismiss="hideAlert">
       {{ failure.text }}
+    </gl-alert>
+    <gl-alert>
+      This graph is a beta feature. If you love it, hate it, or find it broken, please give feedback in
+      <gl-link href="https://gitlab.com/gitlab-org/gitlab/-/issues/220368" target="_blank">the feedback issue</gl-link>.
     </gl-alert>
     <dag-graph v-if="shouldDisplayGraph" :graph-data="graphData" @onFailure="reportFailure" />
   </div>
