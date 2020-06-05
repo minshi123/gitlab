@@ -78,3 +78,11 @@ are certain use cases that you may need to work around. For more information:
 
 - [`needs` requirements and limitations](../yaml/README.md#requirements-and-limitations).
 - Related epic [tracking planned improvements](https://gitlab.com/groups/gitlab-org/-/epics/1716).
+
+## DAG Visualization
+
+> - Beta introduced in GitLab 13.1.
+
+The DAG visualization makes it easier to visualize the relationships of dependencies in a DAG. This graph will display all the jobs in a pipeline that need or are needed by other jobs. Jobs with no relationships are not displayed in this view.
+
+Clicking a node will highlight all the jobs paths it depends on.
