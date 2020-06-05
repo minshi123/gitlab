@@ -85,9 +85,11 @@ module Gitlab
         main_thread = 1
 
         if action_cable?
-          Gitlab::Application.config.action_cable.worker_pool_size
+          Gitlab.config.action_cable.worker_pool_size
         elsif puma?
-          Puma.cli_config.options[:max_threads]
+          Puma.cli_config.options[:max_threads] + (
+            Gitlab.config.action_cable.in_app ? Gitlab.config.action_cable.worker_pool_size : 0
+          )
         elsif sidekiq?
           # An extra thread for the poller in Sidekiq Cron:
           # https://github.com/ondrejbartas/sidekiq-cron#under-the-hood

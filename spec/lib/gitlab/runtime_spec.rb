@@ -51,6 +51,14 @@ describe Gitlab::Runtime do
     end
 
     it_behaves_like "valid runtime", :puma, 3
+
+    context "when ActionCable in-app mode is enabled" do
+      before do
+        stub_config(action_cable: { in_app: true, worker_pool_size: 3 })
+      end
+
+      it_behaves_like "valid runtime", :puma, 6
+    end
   end
 
   context "unicorn" do
@@ -111,7 +119,7 @@ describe Gitlab::Runtime do
       stub_const('ACTION_CABLE_SERVER', true)
       stub_const('::Puma', Module.new)
 
-      allow(Gitlab::Application).to receive_message_chain(:config, :action_cable, :worker_pool_size).and_return(8)
+      stub_config(action_cable: { worker_pool_size: 8 })
     end
 
     it "reports its maximum concurrency based on ActionCable's worker pool size" do

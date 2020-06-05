@@ -20,7 +20,7 @@ module ApplicationCable
     end
 
     def session_id
-      Rack::Session::SessionId.new(cookies[Gitlab::Application.config.session_options[:key]])
+      Rack::Session::SessionId.new(cookies[Gitlab.config.session_options[:key]])
     end
 
     def notification_payload(_)
