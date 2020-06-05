@@ -358,7 +358,7 @@ as it attempts to fetch the image using `CI_REGISTRY_PASSWORD`.
 
 CAUTION: **Deprecation**
 The default value for the `deploymentApiVersion` setting was changed from
-`extensions/v1beta` to `apps/v1` in [GitLab 13.0](https://gitlab.com/gitlab-org/charts/auto-deploy-app/issues/47).
+`extensions/v1beta` to `apps/v1` in [GitLab 13.0](https://gitlab.com/gitlab-org/charts/auto-deploy-app/-/issues/47).
 
 In Kubernetes 1.16 and later, a number of
 [APIs were removed](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/),
@@ -497,7 +497,7 @@ traffic within a local namespace, and from the `gitlab-managed-apps`
 namespace. All other inbound connections are blocked. Outbound
 traffic (for example, to the Internet) is not affected by the default policy.
 
-You can also provide a custom [policy specification](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.16/#networkpolicyspec-v1-networking-k8s-io)
+You can also provide a custom [policy specification](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 in the `.gitlab/auto-deploy-values.yaml` file, for example:
 
 ```yaml

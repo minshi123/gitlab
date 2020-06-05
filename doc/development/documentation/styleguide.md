@@ -96,7 +96,7 @@ Having a knowledge base in any form that is separate from the documentation woul
 
 All GitLab documentation is written using [Markdown](https://en.wikipedia.org/wiki/Markdown).
 
-The [documentation website](https://docs.gitlab.com) uses GitLab Kramdown as its Markdown rendering engine. For a complete Kramdown reference, see the [GitLab Markdown Kramdown Guide](https://about.gitlab.com/handbook/engineering/ux/technical-writing/markdown-guide/).
+The [documentation website](https://docs.gitlab.com) uses GitLab Kramdown as its Markdown rendering engine. For a complete Kramdown reference, see the [GitLab Markdown Kramdown Guide](https://about.gitlab.com/handbook/markdown-guide/).
 
 The [`gitlab-kramdown`](https://gitlab.com/gitlab-org/gitlab_kramdown)
 Ruby gem will support all [GFM markup](../../user/markdown.md) in the future. That is,
@@ -325,6 +325,9 @@ tenses, words, and phrases:
 - Avoid using the word *currently* when talking about the product or its
   features. The documentation describes the product as it is, and not as it
   will be at some indeterminate point in the future.
+- Don't use profanity or obscenities. Doing so may negatively affect other
+  users and contributors, which is contrary to GitLab's value of
+  [diversity and inclusion](https://about.gitlab.com/handbook/values/#diversity-inclusion).
 
 ### Word usage clarifications
 
@@ -654,7 +657,7 @@ For other punctuation rules, please refer to the
   links shift too, which eventually leads to dead links. If you think it is
   compelling to add numbers in headings, make sure to at least discuss it with
   someone in the Merge Request.
-- [Avoid using symbols and special characters](https://gitlab.com/gitlab-org/gitlab-docs/issues/84)
+- [Avoid using symbols and special characters](https://gitlab.com/gitlab-org/gitlab-docs/-/issues/84)
   in headers. Whenever possible, they should be plain and short text.
 - Avoid adding things that show ephemeral statuses. For example, if a feature is
   considered beta or experimental, put this information in a note, not in the heading.
@@ -1046,11 +1049,11 @@ of language classes available.
 | `xml`                   |                                                                              |
 | `yaml`                  | Alias: `yml`.                                                                |
 
-For a complete reference on code blocks, check the [Kramdown guide](https://about.gitlab.com/handbook/engineering/ux/technical-writing/markdown-guide/#code-blocks).
+For a complete reference on code blocks, check the [Kramdown guide](https://about.gitlab.com/handbook/markdown-guide/#code-blocks).
 
 ## GitLab SVG icons
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-docs/issues/384) in GitLab 12.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-docs/-/issues/384) in GitLab 12.7.
 
 You can use icons from the [GitLab SVG library](https://gitlab-org.gitlab.io/gitlab-svgs/) directly
 in the documentation.
@@ -1365,7 +1368,35 @@ versions back, you can consider removing the text if it's irrelevant or confusin
 For example, if the current major version is 12.x, version text referencing versions of GitLab 8.x
 and older are candidates for removal if necessary for clearer or cleaner docs.
 
-## Product badges
+## Products and features
+
+Refer to the information in this section when describing products and features
+within the GitLab product documentation.
+
+### Avoid line breaks in names
+
+When entering a product or feature name that includes a space (such as
+GitLab Community Edition) or even other companies' products (such as
+Amazon Web Services), be sure to not split the product or feature name across
+lines with an inserted line break. Splitting product or feature names across
+lines makes searching for these items more difficult, and can cause problems if
+names change.
+
+For example, the followng Markdown content is *not* formatted correctly:
+
+```markdown
+When entering a product or feature name that includes a space (such as GitLab
+Community Edition), don't split the product or feature name across lines.
+```
+
+Instead, it should appear similar to the following:
+
+```markdown
+When entering a product or feature name that includes a space (such as
+GitLab Community Edition), don't split the product or feature name across lines.
+```
+
+### Product badges
 
 When a feature is available in EE-only tiers, add the corresponding tier according to the
 feature availability:
@@ -1405,7 +1436,7 @@ For example:
 The absence of tiers' mentions mean that the feature is available in GitLab Core,
 GitLab.com Free, and all higher tiers.
 
-### How it works
+#### How it works
 
 Introduced by [!244](https://gitlab.com/gitlab-org/gitlab-docs/-/merge_requests/244),
 the special markup `**(STARTER)**` will generate a `span` element to trigger the
@@ -1692,9 +1723,8 @@ Use `%2F` for slashes (`/`).
 #### Pass arrays to API calls
 
 The GitLab API sometimes accepts arrays of strings or integers. For example, to
-restrict the sign-up e-mail domains of a GitLab instance to `*.example.com` and
-`example.net`, you would do something like this:
+exclude specific users when requesting a list of users for a project, you would do something like this:
 
 ```shell
-curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" --data "domain_whitelist[]=*.example.com" --data "domain_whitelist[]=example.net" https://gitlab.example.com/api/v4/application/settings
+curl --request PUT --header "PRIVATE-TOKEN: <your_access_token>" --data "skip_users[]=<user_id>" --data "skip_users[]=<user_id>" https://gitlab.example.com/api/v4/projects/<project_id>/users
 ```

@@ -1,4 +1,7 @@
 ---
+stage: Verify
+group: Continuous Integration
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 type: concepts, howto
 ---
 
@@ -151,7 +154,7 @@ Requires GitLab Runner 11.11 or later, but is not supported if GitLab
 Runner is installed using the [Helm
 chart](https://docs.gitlab.com/runner/install/kubernetes.html). See the
 [related
-issue](https://gitlab.com/gitlab-org/charts/gitlab-runner/issues/83) for
+issue](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/issues/83) for
 details.
 
 The Docker daemon supports connection over TLS and it's done by default

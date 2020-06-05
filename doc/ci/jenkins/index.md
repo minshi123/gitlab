@@ -1,4 +1,7 @@
 ---
+stage: Verify
+group: Continuous Integration
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 comments: false
 type: index, howto
 ---
@@ -121,7 +124,7 @@ There are some important differences in the way Runners work in comparison to ag
   associate runners with specific jobs. For example, you can use a tag for jobs that
   require dedicated, more powerful, or specific hardware.
 - GitLab has [autoscaling for Runners](https://docs.gitlab.com/runner/configuration/autoscale.html)
-  which will let configure them to be provisioned as needed, and scaled down when not.
+  which will let you configure them to be provisioned as needed, and scaled down when not.
   This is similar to ephemeral agents in Jenkins.
 
 If you are using `gitlab.com`, you can take advantage of our [shared Runner fleet](../../user/gitlab_com/index.md#shared-runners)
@@ -207,7 +210,7 @@ which can be used by projects in that instance.
 Declarative Jenkinsfiles contain "Sections" and "Directives" which are used to control the behavior of your
 pipelines. There are equivalents for all of these in GitLab, which we've documented below.
 
-This section is based on the [Jenkinsfile syntax documentation](https://jenkins.io/doc/book/pipeline/syntax/)
+This section is based on the [Jenkinsfile syntax documentation](https://www.jenkins.io/doc/book/pipeline/syntax/)
 and is meant to be a mapping of concepts there to concepts in GitLab.
 
 ### Sections

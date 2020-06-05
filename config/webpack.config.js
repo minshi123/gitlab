@@ -244,6 +244,7 @@ module.exports = {
         loader: 'file-loader',
         options: {
           name: '[name].[contenthash:8].[ext]',
+          esModule: false,
         },
       },
     ],
@@ -254,7 +255,7 @@ module.exports = {
     moduleIds: 'hashed',
     runtimeChunk: 'single',
     splitChunks: {
-      maxInitialRequests: 4,
+      maxInitialRequests: 20,
       cacheGroups: {
         default: false,
         common: () => ({

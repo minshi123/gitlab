@@ -6,6 +6,7 @@ describe AlertManagement::Alert do
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:issue) }
+    it { is_expected.to have_many(:assignees).through(:alert_assignees) }
   end
 
   describe 'validations' do
@@ -324,7 +325,7 @@ describe AlertManagement::Alert do
     let(:alert) { create(:alert_management_alert) }
 
     it 'increments the events count by 1' do
-      expect { subject }.to change { alert.events}.by(1)
+      expect { subject }.to change { alert.events }.by(1)
     end
   end
 end

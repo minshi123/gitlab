@@ -1,7 +1,7 @@
 <script>
 import { escape } from 'lodash';
 import helmInstallIllustration from '@gitlab/svgs/dist/illustrations/kubernetes-installation.svg';
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
 import gitlabLogo from 'images/cluster_app_logos/gitlab.png';
 import helmLogo from 'images/cluster_app_logos/helm.png';
 import jupyterhubLogo from 'images/cluster_app_logos/jupyterhub.png';
@@ -27,6 +27,8 @@ export default {
     applicationRow,
     clipboardButton,
     GlLoadingIcon,
+    GlSprintf,
+    GlLink,
     KnativeDomainEditor,
     CrossplaneProviderStack,
     IngressModsecuritySettings,
@@ -112,72 +114,6 @@ export default {
     certManagerInstalled() {
       return this.applications.cert_manager.status === APPLICATION_STATUS.INSTALLED;
     },
-    ingressDescription() {
-      return sprintf(
-        escape(
-          s__(
-            `ClusterIntegration|Installing Ingress may incur additional costs. Learn more about %{pricingLink}.`,
-          ),
-        ),
-        {
-          pricingLink: `<a href="https://cloud.google.com/compute/pricing#lb"
-              target="_blank" rel="noopener noreferrer">
-              ${escape(s__('ClusterIntegration|pricing'))}</a>`,
-        },
-        false,
-      );
-    },
-    certManagerDescription() {
-      return sprintf(
-        escape(
-          s__(
-            `ClusterIntegration|Cert-Manager is a native Kubernetes certificate management controller that helps with issuing certificates.
-            Installing Cert-Manager on your cluster will issue a certificate by %{letsEncrypt} and ensure that certificates
-            are valid and up-to-date.`,
-          ),
-        ),
-        {
-          letsEncrypt: `<a href="https://letsencrypt.org/"
-              target="_blank" rel="noopener noreferrer">
-              ${escape(s__("ClusterIntegration|Let's Encrypt"))}</a>`,
-        },
-        false,
-      );
-    },
-    crossplaneDescription() {
-      return sprintf(
-        escape(
-          s__(
-            `ClusterIntegration|Crossplane enables declarative provisioning of managed services from your cloud of choice using %{kubectl} or %{gitlabIntegrationLink}.
-Crossplane runs inside your Kubernetes cluster and supports secure connectivity and secrets management between app containers and the cloud services they depend on.`,
-          ),
-        ),
-        {
-          gitlabIntegrationLink: `<a href="https://docs.gitlab.com/ee/user/clusters/applications.html#crossplane"
-          target="_blank" rel="noopener noreferrer">
-          ${escape(s__('ClusterIntegration|Gitlab Integration'))}</a>`,
-          kubectl: `<code>kubectl</code>`,
-        },
-        false,
-      );
-    },
-
-    prometheusDescription() {
-      return sprintf(
-        escape(
-          s__(
-            `ClusterIntegration|Prometheus is an open-source monitoring system
-            with %{gitlabIntegrationLink} to monitor deployed applications.`,
-          ),
-        ),
-        {
-          gitlabIntegrationLink: `<a href="https://docs.gitlab.com/ce/user/project/integrations/prometheus.html"
-              target="_blank" rel="noopener noreferrer">
-              ${escape(s__('ClusterIntegration|GitLab Integration'))}</a>`,
-        },
-        false,
-      );
-    },
     jupyterInstalled() {
       return this.applications.jupyter.status === APPLICATION_STATUS.INSTALLED;
     },
@@ -260,7 +196,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         s__(`ClusterIntegration|Choose which applications to install on your Kubernetes cluster.
             Helm Tiller is required to install any of the following applications.`)
       }}
-      <a :href="helpPath">{{ __('More information') }}</a>
+      <gl-link :href="helpPath">{{ __('More information') }}</gl-link>
     </p>
 
     <div class="cluster-application-list prepend-top-10">
@@ -281,14 +217,14 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         class="rounded-top"
         title-link="https://docs.helm.sh/"
       >
-        <div slot="description">
+        <template #description>
           {{
             s__(`ClusterIntegration|Helm streamlines installing
                     and managing Kubernetes applications.
                     Tiller runs inside of your Kubernetes Cluster,
                     and manages releases of your charts.`)
           }}
-        </div>
+        </template>
       </application-row>
       <div v-show="!helmInstalled" class="cluster-application-warning">
         <div class="svg-container" v-html="$options.helmInstallIllustration"></div>
@@ -318,7 +254,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         :updateable="false"
         title-link="https://kubernetes.io/docs/concepts/services-networking/ingress/"
       >
-        <div slot="description">
+        <template #description>
           <p>
             {{
               s__(`ClusterIntegration|Ingress gives you a way to route
@@ -365,9 +301,9 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
                                 generated endpoint in order to access
                                 your application after it has been deployed.`)
                 }}
-                <a :href="ingressDnsHelpPath" target="_blank" rel="noopener noreferrer">
+                <gl-link :href="ingressDnsHelpPath" target="_blank">
                   {{ __('More information') }}
-                </a>
+                </gl-link>
               </p>
             </div>
 
@@ -377,17 +313,31 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
                             the process of being assigned. Please check your Kubernetes
                             cluster or Quotas on Google Kubernetes Engine if it takes a long time.`)
               }}
-              <a :href="ingressDnsHelpPath" target="_blank" rel="noopener noreferrer">
+              <gl-link :href="ingressDnsHelpPath" target="_blank">
                 {{ __('More information') }}
-              </a>
+              </gl-link>
             </p>
           </template>
           <template v-else>
             <div class="bs-callout bs-callout-info">
-              <strong v-html="ingressDescription"></strong>
+              <strong>
+                <gl-sprintf
+                  :message="
+                    s__(
+                      'ClusterIntegration|Installing Ingress may incur additional costs. Learn more about %{pricingLink}.',
+                    )
+                  "
+                >
+                  <template #pricingLink>
+                    <gl-link href="https://cloud.google.com/compute/pricing#lb" target="_blank">{{
+                      s__('ClusterIntegration|pricing')
+                    }}</gl-link>
+                  </template>
+                </gl-sprintf>
+              </strong>
             </div>
           </template>
-        </div>
+        </template>
       </application-row>
       <application-row
         id="cert_manager"
@@ -406,35 +356,46 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         :disabled="!helmInstalled"
         title-link="https://cert-manager.readthedocs.io/en/latest/#"
       >
-        <template>
-          <div slot="description">
-            <p v-html="certManagerDescription"></p>
-            <div class="form-group">
-              <label for="cert-manager-issuer-email">
-                {{ s__('ClusterIntegration|Issuer Email') }}
-              </label>
-              <div class="input-group">
-                <input
-                  id="cert-manager-issuer-email"
-                  v-model="applications.cert_manager.email"
-                  :readonly="certManagerInstalled"
-                  type="text"
-                  class="form-control js-email"
-                />
-              </div>
-              <p class="form-text text-muted">
-                {{
-                  s__(`ClusterIntegration|Issuers represent a certificate authority.
-                                You must provide an email address for your Issuer. `)
-                }}
-                <a
-                  href="http://docs.cert-manager.io/en/latest/reference/issuers.html?highlight=email"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >{{ __('More information') }}</a
-                >
-              </p>
+        <template #description>
+          <p>
+            <gl-sprintf
+              :message="
+                s__(`ClusterIntegration|Cert-Manager is a native Kubernetes certificate management controller that helps with issuing certificates.
+            Installing Cert-Manager on your cluster will issue a certificate by %{letsEncrypt} and ensure that certificates
+            are valid and up-to-date.`)
+              "
+            >
+              <template #letsEncrypt>
+                <gl-link href="https://letsencrypt.org/" target="_blank">{{
+                  s__(`ClusterIntegration|Let's Encrypt`)
+                }}</gl-link>
+              </template>
+            </gl-sprintf>
+          </p>
+          <div class="form-group">
+            <label for="cert-manager-issuer-email">
+              {{ s__('ClusterIntegration|Issuer Email') }}
+            </label>
+            <div class="input-group">
+              <input
+                id="cert-manager-issuer-email"
+                v-model="applications.cert_manager.email"
+                :readonly="certManagerInstalled"
+                type="text"
+                class="form-control js-email"
+              />
             </div>
+            <p class="form-text text-muted">
+              {{
+                s__(`ClusterIntegration|Issuers represent a certificate authority.
+                              You must provide an email address for your Issuer. `)
+              }}
+              <gl-link
+                href="http://docs.cert-manager.io/en/latest/reference/issuers.html?highlight=email"
+                target="_blank"
+                >{{ __('More information') }}</gl-link
+              >
+            </p>
           </div>
         </template>
       </application-row>
@@ -455,7 +416,22 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         :disabled="!helmInstalled"
         title-link="https://prometheus.io/docs/introduction/overview/"
       >
-        <div slot="description" v-html="prometheusDescription"></div>
+        <template #description>
+          <gl-sprintf
+            :message="
+              s__(`ClusterIntegration|Prometheus is an open-source monitoring system
+                          with %{gitlabIntegrationLink} to monitor deployed applications.`)
+            "
+          >
+            <template #gitlabIntegrationLink>
+              <gl-link
+                href="https://docs.gitlab.com/ce/user/project/integrations/prometheus.html"
+                target="_blank"
+                >{{ s__('ClusterIntegration|Gitlab Integration') }}</gl-link
+              >
+            </template>
+          </gl-sprintf>
+        </template>
       </application-row>
       <application-row
         id="runner"
@@ -478,14 +454,14 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         :disabled="!helmInstalled"
         title-link="https://docs.gitlab.com/runner/"
       >
-        <div slot="description">
+        <template #description>
           {{
             s__(`ClusterIntegration|GitLab Runner connects to the
                     repository and executes CI/CD jobs,
                     pushing results back and deploying
                     applications to production.`)
           }}
-        </div>
+        </template>
       </application-row>
       <application-row
         id="crossplane"
@@ -504,12 +480,30 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         :disabled="!helmInstalled"
         title-link="https://crossplane.io"
       >
-        <template>
-          <div slot="description">
-            <p v-html="crossplaneDescription"></p>
-            <div class="form-group">
-              <CrossplaneProviderStack :crossplane="crossplane" @set="setCrossplaneProviderStack" />
-            </div>
+        <template #description>
+          <p>
+            <gl-sprintf
+              :message="
+                s__(
+                  `ClusterIntegration|Crossplane enables declarative provisioning of managed services from your cloud of choice using %{codeStart}kubectl%{codeEnd} or %{gitlabIntegrationLink}.
+              Crossplane runs inside your Kubernetes cluster and supports secure connectivity and secrets management between app containers and the cloud services they depend on.`,
+                )
+              "
+            >
+              <template #code="{content}">
+                <code>{{ content }}</code>
+              </template>
+              <template #gitlabIntegrationLink>
+                <gl-link
+                  href="https://docs.gitlab.com/ee/user/clusters/applications.html#crossplane"
+                  target="_blank"
+                  >{{ s__('ClusterIntegration|Gitlab Integration') }}</gl-link
+                >
+              </template>
+            </gl-sprintf>
+          </p>
+          <div class="form-group">
+            <CrossplaneProviderStack :crossplane="crossplane" @set="setCrossplaneProviderStack" />
           </div>
         </template>
       </application-row>
@@ -531,7 +525,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         :disabled="!helmInstalled"
         title-link="https://jupyterhub.readthedocs.io/en/stable/"
       >
-        <div slot="description">
+        <template #description>
           <p>
             {{
               s__(`ClusterIntegration|JupyterHub, a multi-user Hub, spawns,
@@ -568,13 +562,13 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
                   s__(`ClusterIntegration|Replace this with your own hostname if you want.
                                 If you do so, point hostname to Ingress IP Address from above.`)
                 }}
-                <a :href="ingressDnsHelpPath" target="_blank" rel="noopener noreferrer">
+                <gl-link :href="ingressDnsHelpPath" target="_blank">
                   {{ __('More information') }}
-                </a>
+                </gl-link>
               </p>
             </div>
           </template>
-        </div>
+        </template>
       </application-row>
       <application-row
         id="knative"
@@ -599,15 +593,13 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         v-bind="applications.knative"
         title-link="https://github.com/knative/docs"
       >
-        <div slot="description">
+        <template #description>
           <p v-if="!rbac" class="rbac-notice bs-callout bs-callout-info">
             {{
               s__(`ClusterIntegration|You must have an RBAC-enabled cluster
             to install Knative.`)
             }}
-            <a :href="helpPath" target="_blank" rel="noopener noreferrer">
-              {{ __('More information') }}
-            </a>
+            <gl-link :href="helpPath" target="_blank">{{ __('More information') }}</gl-link>
           </p>
           <p>
             {{
@@ -625,7 +617,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
             @save="saveKnativeDomain"
             @set="setKnativeDomain"
           />
-        </div>
+        </template>
       </application-row>
       <application-row
         id="elastic_stack"
@@ -648,7 +640,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         :disabled="!helmInstalled"
         title-link="https://gitlab.com/gitlab-org/charts/elastic-stack"
       >
-        <div slot="description">
+        <template #description>
           <p>
             {{
               s__(
@@ -656,7 +648,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
               )
             }}
           </p>
-        </div>
+        </template>
       </application-row>
 
       <application-row
@@ -683,7 +675,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
         :updateable="false"
         title-link="https://github.com/helm/charts/tree/master/stable/fluentd"
       >
-        <div slot="description">
+        <template #description>
           <p>
             {{
               s__(
@@ -701,7 +693,7 @@ Crossplane runs inside your Kubernetes cluster and supports secure connectivity 
             :status="applications.fluentd.status"
             :update-failed="applications.fluentd.updateFailed"
           />
-        </div>
+        </template>
       </application-row>
     </div>
   </section>

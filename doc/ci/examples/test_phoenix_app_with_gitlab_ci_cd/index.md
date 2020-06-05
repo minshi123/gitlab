@@ -1,4 +1,7 @@
 ---
+stage: Verify
+group: Continuous Integration
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 author: Alexandre S Hostert
 author_gitlab: Hostert
 level: beginner
@@ -45,7 +48,7 @@ Phoenix can run in any OS where Erlang is supported:
 - Fedora
 - Raspbian
 
-Check the [Phoenix learning guide](https://hexdocs.pm/phoenix/learning.html) for more information.
+Check the [Phoenix learning guide](https://hexdocs.pm/phoenix/overview.html) for more information.
 
 ### What is Elixir?
 

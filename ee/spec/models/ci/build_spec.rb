@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Ci::Build do
+RSpec.describe Ci::Build do
   let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
   let(:project) { create(:project, :repository, group: group) }
 
@@ -80,14 +80,6 @@ describe Ci::Build do
     end
 
     it_behaves_like 'depends on runner presence and type'
-
-    context 'and :ci_minutes_track_for_public_projects FF is disabled' do
-      before do
-        stub_feature_flags(ci_minutes_track_for_public_projects: false)
-      end
-
-      it_behaves_like 'depends on runner presence and type'
-    end
   end
 
   context 'updates pipeline minutes' do

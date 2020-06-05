@@ -313,7 +313,7 @@ export default {
     :data-qa-selector="id"
   >
     <div class="gl-responsive-table-row-layout" role="row">
-      <div class="table-section append-right-8 section-align-top" role="gridcell">
+      <div class="table-section gl-mr-3 section-align-top" role="gridcell">
         <img
           v-if="hasLogo"
           :src="logoUrl"
@@ -339,7 +339,9 @@ export default {
           class="js-cluster-application-installed-via"
           v-html="installedVia"
         ></span>
-        <slot name="description"></slot>
+        <div>
+          <slot name="description"></slot>
+        </div>
         <div v-if="hasError" class="cluster-application-error text-danger prepend-top-10">
           <p class="js-cluster-application-general-error-message gl-mb-0">
             {{ generalErrorDescription }}

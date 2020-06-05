@@ -112,14 +112,14 @@ gem 'fog-aws', '~> 3.5'
 # Locked until fog-google resolves https://github.com/fog/fog-google/issues/421.
 # Also see config/initializers/fog_core_patch.rb.
 gem 'fog-core', '= 2.1.0'
-gem 'fog-google', '~> 1.9'
+gem 'fog-google', '~> 1.10'
 gem 'fog-local', '~> 0.6'
 gem 'fog-openstack', '~> 1.0'
 gem 'fog-rackspace', '~> 0.1.1'
 gem 'fog-aliyun', '~> 0.3'
 
 # for Google storage
-gem 'google-api-client', '~> 0.23'
+gem 'google-api-client', '~> 0.33'
 
 # for aws storage
 gem 'unf', '~> 0.1.4'
@@ -402,7 +402,6 @@ group :test do
 
   gem 'shoulda-matchers', '~> 4.0.1', require: false
   gem 'email_spec', '~> 2.2.0'
-  gem 'json-schema', '~> 2.8.0'
   gem 'webmock', '~> 3.5.1'
   gem 'rails-controller-testing'
   gem 'concurrent-ruby', '~> 1.1'
@@ -497,3 +496,4 @@ gem 'valid_email', '~> 0.1'
 
 # JSON
 gem 'json', '~> 2.3.0'
+gem 'json-schema', '~> 2.8.0'

@@ -14,6 +14,7 @@ module Types
     mount_mutation Mutations::AwardEmojis::Toggle
     mount_mutation Mutations::Branches::Create, calls_gitaly: true
     mount_mutation Mutations::Commits::Create, calls_gitaly: true
+    mount_mutation Mutations::Discussions::ToggleResolve
     mount_mutation Mutations::Issues::SetConfidential
     mount_mutation Mutations::Issues::SetDueDate
     mount_mutation Mutations::Issues::Update
@@ -25,6 +26,7 @@ module Types
     mount_mutation Mutations::MergeRequests::SetWip, calls_gitaly: true
     mount_mutation Mutations::MergeRequests::SetAssignees
     mount_mutation Mutations::Metrics::Dashboard::Annotations::Create
+    mount_mutation Mutations::Metrics::Dashboard::Annotations::Delete
     mount_mutation Mutations::Notes::Create::Note, calls_gitaly: true
     mount_mutation Mutations::Notes::Create::DiffNote, calls_gitaly: true
     mount_mutation Mutations::Notes::Create::ImageDiffNote, calls_gitaly: true
@@ -48,6 +50,7 @@ module Types
     mount_mutation Mutations::JiraImport::Start
     mount_mutation Mutations::DesignManagement::Upload, calls_gitaly: true
     mount_mutation Mutations::DesignManagement::Delete, calls_gitaly: true
+    mount_mutation Mutations::ContainerExpirationPolicies::Update
   end
 end
 

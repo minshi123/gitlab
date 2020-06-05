@@ -39,8 +39,8 @@ module EE
 
         override :uncached_data
         def uncached_data
-          time_period = { created_at: 28.days.ago..Time.current }
-          usage_activity_by_stage_monthly = usage_activity_by_stage(:usage_activity_by_stage_monthly, time_period)
+          usage_activity_by_stage_monthly = usage_activity_by_stage(:usage_activity_by_stage_monthly, default_time_period)
+
           super
             .merge(usage_activity_by_stage)
             .merge(usage_activity_by_stage_monthly)
@@ -256,15 +256,15 @@ module EE
             projects_imported_from_github: distinct_count(::Project.github_imported.where(time_period), :creator_id),
             projects_with_repositories_enabled: distinct_count(::Project.with_repositories_enabled.where(time_period),
                                                                :creator_id,
-                                                               start: ::User.minimum(:id),
-                                                               finish: ::User.maximum(:id)),
-            protected_branches: distinct_count(::Project.with_protected_branches.where(time_period), :creator_id, start: ::User.minimum(:id), finish: ::User.maximum(:id)),
+                                                               start: user_minimum_id,
+                                                               finish: user_maximum_id),
+            protected_branches: distinct_count(::Project.with_protected_branches.where(time_period), :creator_id, start: user_minimum_id, finish: user_maximum_id),
             remote_mirrors: distinct_count(::Project.with_remote_mirrors.where(time_period), :creator_id),
             snippets: distinct_count(::Snippet.where(time_period), :author_id),
             suggestions: distinct_count(::Note.with_suggestions.where(time_period),
                                         :author_id,
-                                        start: ::User.minimum(:id),
-                                        finish: ::User.maximum(:id))
+                                        start: user_minimum_id,
+                                        finish: user_maximum_id)
           }
         end
 
@@ -277,7 +277,12 @@ module EE
             ldap_users: distinct_count(::GroupMember.of_ldap_type.where(time_period), :user_id),
             users_created: count(::User.where(time_period)),
             value_stream_management_customized_group_stages: count(::Analytics::CycleAnalytics::GroupStage.where(custom: true)),
-            projects_with_compliance_framework: count(::ComplianceManagement::ComplianceFramework::ProjectSettings)
+            projects_with_compliance_framework: count(::ComplianceManagement::ComplianceFramework::ProjectSettings),
+            ldap_servers: ldap_available_servers.size,
+            ldap_group_sync_enabled: ldap_config_present_for_any_provider?(:group_base),
+            ldap_admin_sync_enabled: ldap_config_present_for_any_provider?(:admin_group),
+            omniauth_providers: filtered_omniauth_provider_names.reject { |name| name == 'group_saml' },
+            group_saml_enabled: omniauth_provider_names.include?('group_saml')
           }
         end
 
@@ -372,8 +377,8 @@ module EE
         private
 
         def distinct_count_service_desk_enabled_projects(time_period)
-          project_creator_id_start = ::User.minimum(:id)
-          project_creator_id_finish = ::User.maximum(:id)
+          project_creator_id_start = user_minimum_id
+          project_creator_id_finish = user_maximum_id
 
           distinct_count(::Project.service_desk_enabled.where(time_period), :creator_id, start: project_creator_id_start, finish: project_creator_id_finish)
         end
@@ -386,6 +391,26 @@ module EE
           distinct_count(clusters.where(time_period), :user_id)
         end
         # rubocop:enable CodeReuse/ActiveRecord
+
+        def ldap_available_servers
+          ::Gitlab::Auth::Ldap::Config.available_servers
+        end
+
+        def ldap_config_present_for_any_provider?(configuration_item)
+          ldap_available_servers.any? { |server_config| server_config[configuration_item.to_s] }
+        end
+
+        def omniauth_provider_names
+          ::Gitlab.config.omniauth.providers.map(&:name)
+        end
+
+        # LDAP provider names are set by customers and could include
+        # sensitive info (server names, etc). LDAP providers normally
+        # don't appear in omniauth providers but filter to ensure
+        # no internal details leak via usage ping.
+        def filtered_omniauth_provider_names
+          omniauth_provider_names.reject { |name| name.starts_with?('ldap') }
+        end
       end
     end
   end
