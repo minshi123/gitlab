@@ -1,7 +1,5 @@
 <script>
-/* eslint-disable vue/require-default-prop */
-/* eslint-disable @gitlab/vue-require-i18n-strings */
-import { GlLink, GlModalDirective } from '@gitlab/ui';
+import { GlLink, GlModalDirective, GlSprintf } from '@gitlab/ui';
 import { s__, __, sprintf } from '~/locale';
 import eventHub from '../event_hub';
 import identicon from '../../vue_shared/components/identicon.vue';
@@ -17,6 +15,7 @@ export default {
     loadingButton,
     identicon,
     GlLink,
+    GlSprintf,
     UninstallApplicationButton,
     UninstallApplicationConfirmationModal,
     UpdateApplicationConfirmationModal,
@@ -36,10 +35,12 @@ export default {
     titleLink: {
       type: String,
       required: false,
+      default: null,
     },
     manageLink: {
       type: String,
       required: false,
+      default: null,
     },
     logoUrl: {
       type: String,
@@ -59,14 +60,17 @@ export default {
     status: {
       type: String,
       required: false,
+      default: null,
     },
     statusReason: {
       type: String,
       required: false,
+      default: null,
     },
     requestReason: {
       type: String,
       required: false,
+      default: null,
     },
     installed: {
       type: Boolean,
@@ -81,14 +85,17 @@ export default {
     installedVia: {
       type: String,
       required: false,
+      default: null,
     },
     version: {
       type: String,
       required: false,
+      default: null,
     },
     chartRepo: {
       type: String,
       required: false,
+      default: null,
     },
     updateAvailable: {
       type: Boolean,
@@ -205,15 +212,6 @@ export default {
       }
 
       return sprintf(errorDescription, { title: this.title });
-    },
-    versionLabel() {
-      if (this.updateFailed) {
-        return __('Update failed');
-      } else if (this.isUpdating) {
-        return __('Updating');
-      }
-
-      return this.updateSuccessful ? __('Updated to') : __('Updated');
     },
     updateFailureDescription() {
       return s__('ClusterIntegration|Update failed. Please check the logs and try again.');
@@ -363,14 +361,21 @@ export default {
             v-if="shouldShowUpdateDetails"
             class="form-text text-muted label p-0 js-cluster-application-update-details"
           >
-            {{ versionLabel }}
-            <gl-link
-              v-if="updateSuccessful"
-              :href="chartRepo"
-              target="_blank"
-              class="js-cluster-application-update-version"
-              >chart v{{ version }}</gl-link
-            >
+            <template v-if="updateFailed">{{ __('Update failed') }}</template>
+            <template v-else-if="isUpdating">{{ __('Updating') }}</template>
+            <template v-else-if="updateSuccessful">
+              <gl-sprintf :message="__('Updated to %{linkStart}chart v%{linkEnd}')">
+                <template #link="{ content }">
+                  <gl-link
+                    :href="chartRepo"
+                    target="_blank"
+                    class="js-cluster-application-update-version"
+                    >{{ content }}{{ version }}</gl-link
+                  >
+                </template>
+              </gl-sprintf>
+            </template>
+            <template v-else>{{ __('Updated') }}</template>
           </div>
 
           <div
