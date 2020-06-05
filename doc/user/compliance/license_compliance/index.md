@@ -470,9 +470,10 @@ licenses associated with the Go module dependencies.
 
 #### Using private Go registries
 
-The [`GOPRIVATE`](https://golang.org/pkg/cmd/go/#hdr-Environment_variables) and [`GOPROXY`](https://golang.org/pkg/cmd/go/#hdr-Environment_variables)
-environment variables can be used to control where modules are sourced from. Alternatively, [`go mod vendor`](https://golang.org/ref/mod#tmp_28) can be
-used to vendor a projects modules.
+You can use the [`GOPRIVATE`](https://golang.org/pkg/cmd/go/#hdr-Environment_variables)
+and [`GOPROXY`](https://golang.org/pkg/cmd/go/#hdr-Environment_variables)
+environment variables to control where modules are sourced from. Alternatively, you can use
+[`go mod vendor`](https://golang.org/ref/mod#tmp_28) to vendor a project's modules.
 
 #### Custom root certificates for Go
 
