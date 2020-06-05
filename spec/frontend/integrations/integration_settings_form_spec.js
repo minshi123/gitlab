@@ -28,7 +28,6 @@ describe('IntegrationSettingsForm', () => {
       // Form Child Elements
       expect(integrationSettingsForm.$submitBtn).toBeDefined();
       expect(integrationSettingsForm.$submitBtnLoader).toBeDefined();
-      expect(integrationSettingsForm.$submitBtnLabel).toBeDefined();
     });
 
     it('should initialize form metadata on class object', () => {
@@ -56,47 +55,6 @@ describe('IntegrationSettingsForm', () => {
       integrationSettingsForm.toggleServiceState();
 
       expect(integrationSettingsForm.$form.attr('novalidate')).toBeDefined();
-    });
-  });
-
-  describe('toggleSubmitBtnLabel', () => {
-    let integrationSettingsForm;
-
-    beforeEach(() => {
-      integrationSettingsForm = new IntegrationSettingsForm('.js-integration-settings-form');
-    });
-
-    it('should set Save button label to "Test settings and save changes" when serviceActive & canTestService are `true`', () => {
-      integrationSettingsForm.canTestService = true;
-      integrationSettingsForm.formActive = true;
-
-      integrationSettingsForm.toggleSubmitBtnLabel();
-
-      expect(integrationSettingsForm.$submitBtnLabel.text()).toEqual(
-        'Test settings and save changes',
-      );
-    });
-
-    it('should set Save button label to "Save changes" when either serviceActive or canTestService (or both) is `false`', () => {
-      integrationSettingsForm.canTestService = false;
-      integrationSettingsForm.formActive = false;
-
-      integrationSettingsForm.toggleSubmitBtnLabel();
-
-      expect(integrationSettingsForm.$submitBtnLabel.text()).toEqual('Save changes');
-
-      integrationSettingsForm.formActive = true;
-
-      integrationSettingsForm.toggleSubmitBtnLabel();
-
-      expect(integrationSettingsForm.$submitBtnLabel.text()).toEqual('Save changes');
-
-      integrationSettingsForm.canTestService = true;
-      integrationSettingsForm.formActive = false;
-
-      integrationSettingsForm.toggleSubmitBtnLabel();
-
-      expect(integrationSettingsForm.$submitBtnLabel.text()).toEqual('Save changes');
     });
   });
 
