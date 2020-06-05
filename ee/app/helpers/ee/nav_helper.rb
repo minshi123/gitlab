@@ -24,7 +24,7 @@ module EE
     def group_issues_sub_menu_items
       controllers = %w(issues_analytics#show)
 
-      if @group&.beta_feature_available?(:iterations)
+      if @group&.feature_available?(:iterations)
         controllers = %w(iterations#index)
       end
 
