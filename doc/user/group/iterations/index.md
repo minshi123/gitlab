@@ -9,11 +9,19 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/214713) in [GitLab Starter](https://about.gitlab.com/pricing/) 13.1.
 
-Iterations behave similarly to [milestones](../../project/milestones/index.md), with a few differences:
+Iterations are a way to track issues over a period of time. This allows teams
+to track velocity and volatility metrics. Iterations can be used with [milestones](../../project/milestones/index.md)
+for tracking over different time periods. For example:
+
+- Milestones for Program Increments, which span 8-12 weeks
+- Iterations for Sprints, which span 2 weeks
+
+Iterations are similar to milestones, with a few differences:
 
 - Iterations are only available to groups
-- Iterations must have both a start date and due date
-- Iteration date range can not overlap
+- A group can only have one active iteration at a time
+- Iterations require both a start and an end date
+- Iteration date ranges can not overlap
 
 ## View the iterations list
 
