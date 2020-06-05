@@ -1,153 +1,155 @@
 import $ from 'jquery';
 import '~/behaviors/quick_submit';
+import Vue from 'vue';
 
 describe('Quick Submit behavior', () => {
-  let testContext;
-
   const keydownEvent = (options = { keyCode: 13, metaKey: true }) => $.Event('keydown', options);
+  const obj = {};
 
   preloadFixtures('snippets/show.html');
 
   beforeEach(() => {
     loadFixtures('snippets/show.html');
-
-    testContext = {};
-
-    testContext.spies = {
-      submit: jest.fn(),
-    };
-
+    const submitSpy = jest.fn().mockName('submit');
     $('form').submit(e => {
       // Prevent a form submit from moving us off the testing page
       e.preventDefault();
-      // Explicitly call the spie to know this function get's not called
-      testContext.spies.submit();
+      submitSpy();
     });
-    testContext.textarea = $('.js-quick-submit textarea').first();
+    obj.spies = {
+      submit: submitSpy,
+    };
+
+    obj.textarea = $('.js-quick-submit textarea').first();
+  });
+
+  afterEach(() => {
+    // Undo what we did to the shared <body>
+    $('body').removeAttr('data-page');
   });
 
   it('does not respond to other keyCodes', () => {
-    testContext.textarea.trigger(
+    obj.textarea.trigger(
       keydownEvent({
         keyCode: 32,
       }),
     );
 
-    expect(testContext.spies.submit).not.toHaveBeenCalled();
+    expect(obj.spies.submit).not.toHaveBeenCalled();
   });
 
   it('does not respond to Enter alone', () => {
-    testContext.textarea.trigger(
+    obj.textarea.trigger(
       keydownEvent({
         ctrlKey: false,
         metaKey: false,
       }),
     );
 
-    expect(testContext.spies.submit).not.toHaveBeenCalled();
+    expect(obj.spies.submit).not.toHaveBeenCalled();
   });
 
   it('does not respond to repeated events', () => {
-    testContext.textarea.trigger(
+    obj.textarea.trigger(
       keydownEvent({
         repeat: true,
       }),
     );
 
-    expect(testContext.spies.submit).not.toHaveBeenCalled();
+    expect(obj.spies.submit).not.toHaveBeenCalled();
   });
 
   it('disables input of type submit', () => {
     const submitButton = $('.js-quick-submit input[type=submit]');
-    testContext.textarea.trigger(keydownEvent());
+    obj.textarea.trigger(keydownEvent());
 
     expect(submitButton).toBeDisabled();
   });
 
   it('disables button of type submit', () => {
     const submitButton = $('.js-quick-submit input[type=submit]');
-    testContext.textarea.trigger(keydownEvent());
+    obj.textarea.trigger(keydownEvent());
 
     expect(submitButton).toBeDisabled();
   });
 
-  it('only clicks one submit', () => {
+  it('only clicks one submit', done => {
     const existingSubmit = $('.js-quick-submit input[type=submit]');
     // Add an extra submit button
     const newSubmit = $('<button type="submit">Submit it</button>');
-    newSubmit.insertAfter(testContext.textarea);
+    newSubmit.insertAfter(obj.textarea);
 
-    const spies = {
-      oldClickSpy: jest.fn(),
-      newClickSpy: jest.fn(),
-    };
-    existingSubmit.on('click', () => {
-      spies.oldClickSpy();
-    });
-    newSubmit.on('click', () => {
-      spies.newClickSpy();
-    });
+    const oldClick = jest.fn().mockName('click');
+    const newClick = jest.fn().mockName('click');
 
-    testContext.textarea.trigger(keydownEvent());
+    existingSubmit.on('click', oldClick);
+    newSubmit.on('click', newClick);
 
-    expect(spies.oldClickSpy).not.toHaveBeenCalled();
-    expect(spies.newClickSpy).toHaveBeenCalled();
+    obj.textarea.trigger(keydownEvent());
+
+    Vue.nextTick()
+      .then(() => {
+        expect(oldClick).not.toHaveBeenCalled();
+        expect(newClick).toHaveBeenCalled();
+      })
+      .then(done)
+      .catch(done.fail);
   });
   // We cannot stub `navigator.userAgent` for CI's `rake karma` task, so we'll
   // only run the tests that apply to the current platform
   if (navigator.userAgent.match(/Macintosh/)) {
     describe('In Macintosh', () => {
       it('responds to Meta+Enter', () => {
-        testContext.textarea.trigger(keydownEvent());
+        obj.textarea.trigger(keydownEvent());
 
-        expect(testContext.spies.submit).toHaveBeenCalled();
+        expect(obj.spies.submit).toHaveBeenCalled();
       });
 
       it('excludes other modifier keys', () => {
-        testContext.textarea.trigger(
+        obj.textarea.trigger(
           keydownEvent({
             altKey: true,
           }),
         );
-        testContext.textarea.trigger(
+        obj.textarea.trigger(
           keydownEvent({
             ctrlKey: true,
           }),
         );
-        testContext.textarea.trigger(
+        obj.textarea.trigger(
           keydownEvent({
             shiftKey: true,
           }),
         );
 
-        expect(testContext.spies.submit).not.toHaveBeenCalled();
+        expect(obj.spies.submit).not.toHaveBeenCalled();
       });
     });
   } else {
     it('responds to Ctrl+Enter', () => {
-      testContext.textarea.trigger(keydownEvent());
+      obj.textarea.trigger(keydownEvent());
 
-      expect(testContext.spies.submit).toHaveBeenCalled();
+      expect(obj.spies.submit).toHaveBeenCalled();
     });
 
     it('excludes other modifier keys', () => {
-      testContext.textarea.trigger(
+      obj.textarea.trigger(
         keydownEvent({
           altKey: true,
         }),
       );
-      testContext.textarea.trigger(
+      obj.textarea.trigger(
         keydownEvent({
           metaKey: true,
         }),
       );
-      testContext.textarea.trigger(
+      obj.textarea.trigger(
         keydownEvent({
           shiftKey: true,
         }),
       );
 
-      expect(testContext.spies.submit).not.toHaveBeenCalled();
+      expect(obj.spies.submit).not.toHaveBeenCalled();
     });
   }
 });
