@@ -7,7 +7,12 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Iterations **(STARTER)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/214713) in [GitLab Starter](https://about.gitlab.com/pricing/) 13.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/214713) in [GitLab Starter](https://about.gitlab.com/pricing/) 13.1.
+> - It's deployed behind a feature flag, disabled by default.
+> - It's disabled on GitLab.com.
+> - It's able to be enabled or disabled per-group
+> - It's not recommended for production use.
+> - To use it in GitLab self-managed instances, ask a GitLab administrator to [enable it](#enable-iterations). **(CORE ONLY)**
 
 Iterations are a way to track issues over a period of time. This allows teams
 to track velocity and volatility metrics. Iterations can be used with [milestones](../../project/milestones/index.md)
@@ -39,6 +44,31 @@ To create an iteration:
 1. Click **New iteration**.
 1. Enter the title, a description (optional), a start date, and a due date.
 1. Click **Create iteration**. The iteration details page opens.
+
+### Enable Iterations **(CORE ONLY)**
+
+GitLab Iterations feature is under development and not ready for production use.
+It is deployed behind a feature flag that is **disabled by default**.
+[GitLab administrators with access to the GitLab Rails console](../path/to/administration/feature_flags.md)
+can enable it for your instance. `:iterations` can be enabled or disabled per-group.
+
+To enable it:
+
+```ruby
+# Instance-wide
+Feature.enable(:iterations)
+# or by group
+Feature.enable(:iterations, Group.find(<group id>))
+```
+
+To disable it:
+
+```ruby
+# Instance-wide
+Feature.disable(:iterations)
+# or by group
+Feature.disable(:iterations, Group.find(<group id>))
+```
 
 <!-- ## Troubleshooting
 
