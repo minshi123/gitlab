@@ -1,0 +1,14 @@
+---
+# Encourages consistent usage of words or phrases with multiple variants.
+# For substitutions flagged as errors, see Substitutions.yml
+# For substitutions flagged as warnings, see Substitutions.yml
+#
+# For a list of all options, see https://errata-ai.github.io/vale/styles/
+extends: substitution
+message: 'If possible, use "%s" instead of "%s".'
+level: suggestion
+ignorecase: true
+swap:
+  realtime: real time
+  real-time: real time
+  single sign on: single sign-on
