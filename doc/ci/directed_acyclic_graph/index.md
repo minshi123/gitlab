@@ -81,7 +81,7 @@ are certain use cases that you may need to work around. For more information:
 
 ## DAG Visualization
 
-> - Beta introduced in GitLab 13.1.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/215517) in GitLab 13.1 as a [Beta feature](https://about.gitlab.com/handbook/product/#beta).
 
 The DAG visualization makes it easier to visualize the relationships of dependencies in a DAG. This graph will display all the jobs in a pipeline that need or are needed by other jobs. Jobs with no relationships are not displayed in this view.
 
