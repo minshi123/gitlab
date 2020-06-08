@@ -90,11 +90,11 @@ are certain use cases that you may need to work around. For more information:
 
 The DAG visualization makes it easier to visualize the relationships between dependent jobs in a DAG. This graph will display all the jobs in a pipeline that need or are needed by other jobs. Jobs with no relationships are not displayed in this view.
 
-![DAG visualization example](img/dag_graph_example.png)
+![DAG visualization example](img/dag_graph_example_v13_1.png)
 
 Clicking a node will highlight all the jobs paths it depends on.
 
-![DAG visualization with path highlight](img/dag_graph_example_clicked.png)
+![DAG visualization with path highlight](img/dag_graph_example_clicked_v13_1.png)
 
 ### Enable or disable DAG Visualization **(CORE ONLY)**
 
