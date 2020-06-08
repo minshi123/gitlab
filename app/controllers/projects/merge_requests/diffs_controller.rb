@@ -22,7 +22,7 @@ class Projects::MergeRequests::DiffsController < Projects::MergeRequests::Applic
   def diffs_batch
     return render_404 unless Feature.enabled?(:diffs_batch_load, @merge_request.project, default_enabled: true)
 
-    diffs = @compare.diffs_in_batch(params[:page], params[:per_page], diff_options: diff_options.merge(include_stats: false))
+    diffs = @compare.diffs_in_batch(params[:page], params[:per_page], diff_options: diff_options)
     positions = @merge_request.note_positions_for_paths(diffs.diff_file_paths, current_user)
 
     diffs.unfold_diff_files(positions.unfoldable)
@@ -38,7 +38,7 @@ class Projects::MergeRequests::DiffsController < Projects::MergeRequests::Applic
   end
 
   def diffs_metadata
-    diffs = @compare.diffs(diff_options.merge(include_stats: false))
+    diffs = @compare.diffs(diff_options)
 
     render json: DiffsMetadataSerializer.new(project: @merge_request.project)
       .represent(diffs, additional_attributes)

@@ -812,6 +812,25 @@ describe MergeRequest do
     end
   end
 
+  describe '#diff_stats' do
+    context 'when there are no diff refs' do
+      let(:merge_request) { described_class.new(importing: true) }
+
+      it 'returns nil' do
+        expect(merge_request.diff_stats).to eq(nil)
+      end
+    end
+
+    context 'when there are diff refs' do
+      let(:merge_request) { subject }
+
+      it 'caches the repository diff_stats call and returns the same result' do
+        expect(merge_request).to receive(:project).once.and_call_original
+        expect(merge_request.diff_stats).to eq(merge_request.diff_stats)
+      end
+    end
+  end
+
   describe '#diff_size' do
     let(:merge_request) do
       build(:merge_request, source_branch: 'expand-collapse-files', target_branch: 'master')

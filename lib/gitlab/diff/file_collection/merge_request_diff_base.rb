@@ -49,6 +49,17 @@ module Gitlab
         def cache
           @cache ||= Gitlab::Diff::HighlightCache.new(self)
         end
+
+        def diff_stats_collection
+          strong_memoize(:diff_stats) do
+            # There are scenarios where we don't need to request Diff Stats,
+            # when caching for instance.
+            next unless @include_stats
+            next unless diff_refs
+
+            @merge_request_diff.merge_request.diff_stats
+          end
+        end
       end
     end
   end

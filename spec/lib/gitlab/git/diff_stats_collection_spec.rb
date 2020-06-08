@@ -4,11 +4,11 @@ require "spec_helper"
 
 describe Gitlab::Git::DiffStatsCollection do
   let(:stats_a) do
-    double(Gitaly::DiffStats, additions: 10, deletions: 15, path: 'foo')
+    Gitaly::DiffStats.new(additions: 10, deletions: 15, path: 'foo')
   end
 
   let(:stats_b) do
-    double(Gitaly::DiffStats, additions: 5, deletions: 1, path: 'bar')
+    Gitaly::DiffStats.new(additions: 5, deletions: 1, path: 'bar')
   end
 
   let(:diff_stats) { [stats_a, stats_b] }
@@ -39,6 +39,17 @@ describe Gitlab::Git::DiffStatsCollection do
       allow(::Commit).to receive(:max_diff_options).and_return(max_files: 1)
 
       expect(collection.real_size).to eq('1+')
+    end
+  end
+
+  describe '#marshalling data' do
+    it 'allows us to load the dumped data' do
+      dumped_data = collection.marshal_dump
+
+      loaded_collection = described_class.new([])
+      loaded_collection.marshal_load(dumped_data)
+
+      expect(loaded_collection.to_a).to eq(collection.to_a)
     end
   end
 end
