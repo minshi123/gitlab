@@ -1,6 +1,6 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { GlDeprecatedButton, GlLoadingIcon } from '@gitlab/ui';
+import { GlDeprecatedButton, GlLoadingIcon, GlIcon, GlPopover } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import AddLicenseForm from './components/add_license_form.vue';
 import AdminLicenseManagementRow from './components/admin_license_management_row.vue';
@@ -19,6 +19,8 @@ export default {
     LicenseManagementRow,
     GlDeprecatedButton,
     GlLoadingIcon,
+    GlIcon,
+    GlPopover,
     PaginatedList,
   },
   data() {
@@ -71,19 +73,19 @@ export default {
 <template>
   <gl-loading-icon v-if="showLoadingSpinner" />
   <div v-else class="license-management">
-    <delete-confirmation-modal v-if="isAdmin" />
+    <delete-confirmation-modal v-if="false && isAdmin" />
 
     <paginated-list
       :list="managedLicenses"
       :empty-search-message="$options.emptySearchMessage"
       :empty-message="$options.emptyMessage"
-      :filterable="isAdmin"
+      :filterable="false && isAdmin"
       filter="name"
       data-qa-selector="license_compliance_list"
     >
       <template #header>
         <gl-deprecated-button
-          v-if="isAdmin"
+          v-if="false && isAdmin"
           class="js-open-form order-1"
           :disabled="formIsOpen"
           variant="success"
@@ -95,18 +97,44 @@ export default {
 
         <template v-else>
           <div
-            v-for="header in tableHeaders"
-            :key="header.label"
             class="table-section"
-            :class="header.className"
+            :class="tableHeaders[0].className"
             role="rowheader"
           >
-            {{ header.label }}
+            {{ tableHeaders[0].label }}
+
+            <gl-icon
+              ref="reportInfo"
+              name="question"
+              class="text-info"
+              :aria-label="__('help')"
+              :size="14"
+            />
+            <gl-popover
+              :target="() => $refs.reportInfo.$el"
+              placement="bottom"
+              triggers="click blur"
+              :title="title"
+            >
+              <h5>Allowed</h5>
+              <span class="text-secondary"> {{s__('Licenses|Acceptable license to be used in the project')}}</span>
+              <h5>Denied</h5>
+              <span class="text-secondary"> {{s__('Licenses|Dissallow Merge request if detected and will instruct the developer to remove')}}</span>
+            </gl-popover>            
+          </div>     
+
+          <div
+            class="table-section"
+            :class="tableHeaders[1].className"
+            role="rowheader"
+          >
+             {{ tableHeaders[1].label }}
           </div>
+  
         </template>
       </template>
 
-      <template v-if="isAdmin" #subheader>
+      <template v-if="false && isAdmin" #subheader>
         <div v-if="formIsOpen" class="prepend-top-default append-bottom-default">
           <add-license-form
             :managed-licenses="managedLicenses"
@@ -119,7 +147,7 @@ export default {
 
       <template #default="{ listItem }">
         <admin-license-management-row
-          v-if="isAdmin"
+          v-if="false && isAdmin"
           :license="listItem"
           :loading="isLicenseBeingUpdated(listItem.id)"
         />
