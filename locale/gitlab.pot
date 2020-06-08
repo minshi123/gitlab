@@ -10043,6 +10043,9 @@ msgstr ""
 msgid "Geo Settings"
 msgstr ""
 
+msgid "Geo Settings Form"
+msgstr ""
+
 msgid "Geo allows you to replicate your GitLab instance to other geographical locations."
 msgstr ""
 
