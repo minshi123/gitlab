@@ -70,6 +70,25 @@ module Gitlab
           value
         end
 
+        # Sets a cache keys to the given values.
+        #
+        # data - Hash of key -> value pairs
+        # key_prefix - prefix inserted before each key
+        # timeout - The time after which the cache key should expire.
+        def self.bulk_write(data, key_prefix: nil, timeout: TIMEOUT)
+          Gitlab::Redis::Cache.with do |redis|
+            redis.pipelined do
+              data.each do |raw_key, value|
+                key = cache_key_for("#{key_prefix}#{raw_key}")
+
+                redis.set(key, value, ex: timeout)
+              end
+            end
+          end
+
+          data
+        end
+
         # Increment the integer value of a key by one.
         # Sets the value to zero if missing before incrementing
         #

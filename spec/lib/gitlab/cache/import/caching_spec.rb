@@ -58,6 +58,30 @@ describe Gitlab::Cache::Import::Caching, :clean_gitlab_redis_cache do
     end
   end
 
+  describe '.bulk_write' do
+    context 'without key_prefix' do
+      it 'writes values to the cache and returns the written values' do
+        data = { '123' => 'foo', 'keyA' => 'bar' }
+
+        expect(described_class.bulk_write(data)).to eq(data)
+
+        expect(described_class.read('123')).to eq('foo')
+        expect(described_class.read('keyA')).to eq('bar')
+      end
+    end
+
+    context 'with key_prefix' do
+      it 'writes values to the cache and returns the written values' do
+        data = { '123' => 'foo', 'keyA' => 'bar' }
+
+        expect(described_class.bulk_write(data, key_prefix: 'pref/')).to eq(data)
+
+        expect(described_class.read('pref/123')).to eq('foo')
+        expect(described_class.read('pref/keyA')).to eq('bar')
+      end
+    end
+  end
+
   describe '.set_add' do
     it 'adds a value to a set' do
       described_class.set_add('foo', 10)
