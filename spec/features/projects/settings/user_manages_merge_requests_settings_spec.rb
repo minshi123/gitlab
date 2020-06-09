@@ -28,6 +28,12 @@ RSpec.describe 'Projects > Settings > User manages merge request settings' do
     end
   end
 
+  it 'shows "Squash commits while merging" settings' do
+    page.within '#js-merge-request-settings' do
+      expect(page).to have_content 'Squashing is never performed and option is hidden.'
+    end
+  end
+
   context 'when Merge Request and Pipelines are initially enabled', :js do
     context 'when Pipelines are initially enabled' do
       it 'shows the Merge Requests settings' do
