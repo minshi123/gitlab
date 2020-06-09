@@ -16,6 +16,7 @@ module AlertManagement
         return error_no_permissions unless allowed?
         return error_no_updates if params.empty?
 
+        mark_as_todo
         filter_assignees
 
         if alert.update(params)
@@ -31,6 +32,15 @@ module AlertManagement
 
       def allowed?
         current_user.can?(:update_alert_management_alert, alert)
+      end
+
+      # Add a Todo::MARKED todo For use by sidebar add button
+      def mark_as_todo
+        case params.delete(:todo_event)
+        when 'add'
+          todo_service.mark_todo(alert, current_user)
+          success
+        end
       end
 
       def filter_assignees
@@ -54,6 +64,10 @@ module AlertManagement
 
       def error_no_updates
         error(_('Please provide attributes to update'))
+      end
+
+      def todo_service
+        TodoService.new
       end
     end
   end
