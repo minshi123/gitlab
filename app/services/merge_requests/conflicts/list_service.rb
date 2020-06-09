@@ -15,6 +15,7 @@ module MergeRequests
       def can_be_resolved_in_ui?
         return @conflicts_can_be_resolved_in_ui if defined?(@conflicts_can_be_resolved_in_ui)
 
+        merge_request.clear_memoized_shas
         return @conflicts_can_be_resolved_in_ui = false unless merge_request.cannot_be_merged?
         return @conflicts_can_be_resolved_in_ui = false unless merge_request.has_complete_diff_refs?
         return @conflicts_can_be_resolved_in_ui = false if merge_request.branch_missing?
