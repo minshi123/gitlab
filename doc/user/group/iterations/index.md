@@ -49,7 +49,7 @@ To create an iteration:
 
 GitLab Iterations feature is under development and not ready for production use.
 It is deployed behind a feature flag that is **disabled by default**.
-[GitLab administrators with access to the GitLab Rails console](../path/to/administration/feature_flags.md)
+[GitLab administrators with access to the GitLab Rails console](../../../administration/feature_flags.md)
 can enable it for your instance. `:group_iterations` can be enabled or disabled per-group.
 
 To enable it:
