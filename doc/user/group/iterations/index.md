@@ -16,10 +16,12 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 Iterations are a way to track issues over a period of time. This allows teams
 to track velocity and volatility metrics. Iterations can be used with [milestones](../../project/milestones/index.md)
-for tracking over different time periods. For example:
+for tracking over different time periods.
 
-- Milestones for Program Increments, which span 8-12 weeks
-- Iterations for Sprints, which span 2 weeks
+For example, you can use:
+
+- Milestones for Program Increments, which span 8-12 weeks.
+- Iterations for Sprints, which span 2 weeks.
 
 In GitLab, iterations are similar to milestones, with a few differences:
 
