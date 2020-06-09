@@ -21,12 +21,12 @@ for tracking over different time periods. For example:
 - Milestones for Program Increments, which span 8-12 weeks
 - Iterations for Sprints, which span 2 weeks
 
-Iterations are similar to milestones, with a few differences:
+In GitLab, iterations are similar to milestones, with a few differences:
 
-- Iterations are only available to groups
-- A group can only have one active iteration at a time
-- Iterations require both a start and an end date
-- Iteration date ranges can not overlap
+- Iterations are only available to groups.
+- A group can only have one active iteration at a time.
+- Iterations require both a start and an end date.
+- Iteration date ranges cannot overlap.
 
 ## View the iterations list
 
