@@ -10,7 +10,7 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
     assign(:repository, project.repository)
     allow(view).to receive(:current_ref).and_return('master')
 
-    stub_licensed_features(tracing: true, packages: true)
+    stub_licensed_features(tracing: true)
   end
 
   describe 'issue boards' do

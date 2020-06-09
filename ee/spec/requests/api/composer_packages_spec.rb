@@ -15,11 +15,7 @@ RSpec.describe API::ComposerPackages do
 
     subject { get api(url), headers: headers }
 
-    context 'with packages features enabled' do
-      before do
-        stub_licensed_features(packages: true)
-      end
-
+    context 'without the need for a license' do
       context 'with valid project' do
         using RSpec::Parameterized::TableSyntax
 
@@ -53,8 +49,6 @@ RSpec.describe API::ComposerPackages do
 
       it_behaves_like 'rejects Composer access with unknown group id'
     end
-
-    it_behaves_like 'rejects Composer packages access with packages features disabled'
   end
 
   describe 'GET /api/v4/group/:id/-/packages/composer/p/:sha.json' do
@@ -63,11 +57,7 @@ RSpec.describe API::ComposerPackages do
 
     subject { get api(url), headers: headers }
 
-    context 'with packages features enabled' do
-      before do
-        stub_licensed_features(packages: true)
-      end
-
+    context 'without the need for a license' do
       context 'with valid project' do
         using RSpec::Parameterized::TableSyntax
 
@@ -101,8 +91,6 @@ RSpec.describe API::ComposerPackages do
 
       it_behaves_like 'rejects Composer access with unknown group id'
     end
-
-    it_behaves_like 'rejects Composer packages access with packages features disabled'
   end
 
   describe 'GET /api/v4/group/:id/-/packages/composer/*package_name.json' do
@@ -111,11 +99,7 @@ RSpec.describe API::ComposerPackages do
 
     subject { get api(url), headers: headers }
 
-    context 'with packages features enabled' do
-      before do
-        stub_licensed_features(packages: true)
-      end
-
+    context 'without the need for a license' do
       context 'with valid project' do
         using RSpec::Parameterized::TableSyntax
 
@@ -149,8 +133,6 @@ RSpec.describe API::ComposerPackages do
 
       it_behaves_like 'rejects Composer access with unknown group id'
     end
-
-    it_behaves_like 'rejects Composer packages access with packages features disabled'
   end
 
   describe 'POST /api/v4/projects/:id/packages/composer' do
@@ -164,11 +146,7 @@ RSpec.describe API::ComposerPackages do
     subject { post api(url), headers: headers, params: params }
 
     shared_examples 'composer package publish' do
-      context 'with packages features enabled' do
-        before do
-          stub_licensed_features(packages: true)
-        end
-
+      context 'without the need for a license' do
         context 'with valid project' do
           using RSpec::Parameterized::TableSyntax
 
@@ -204,14 +182,8 @@ RSpec.describe API::ComposerPackages do
       end
     end
 
-    it_behaves_like 'rejects Composer packages access with packages features disabled'
-
     context 'with no tag or branch params' do
       let(:headers) { build_basic_auth_header(user.username, personal_access_token.token) }
-
-      before do
-        stub_licensed_features(packages: true)
-      end
 
       it_behaves_like 'process Composer api request', :developer, :bad_request
     end
@@ -227,10 +199,6 @@ RSpec.describe API::ComposerPackages do
         let(:params) { { tag: 'non-existing-tag' } }
         let(:headers) { build_basic_auth_header(user.username, personal_access_token.token) }
 
-        before do
-          stub_licensed_features(packages: true)
-        end
-
         it_behaves_like 'process Composer api request', :developer, :not_found
       end
     end
@@ -245,10 +213,6 @@ RSpec.describe API::ComposerPackages do
       context 'with a non existing branch' do
         let(:params) { { branch: 'non-existing-branch' } }
         let(:headers) { build_basic_auth_header(user.username, personal_access_token.token) }
-
-        before do
-          stub_licensed_features(packages: true)
-        end
 
         it_behaves_like 'process Composer api request', :developer, :not_found
       end
