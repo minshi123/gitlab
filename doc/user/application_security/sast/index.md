@@ -317,6 +317,7 @@ Some analyzers can be customized with environment variables.
 | Environment variable        | Analyzer | Description |
 |-----------------------------|----------|-------------|
 | `SCAN_KUBERNETES_MANIFESTS`           | Kubesec              | Set to `"true"` to scan Kubernetes manifests. |
+| `COMPILE`                             | SpotBugs             | Set to `"true"` to disable project compilation and dependency fetching |
 | `ANT_HOME`                            | SpotBugs             | The `ANT_HOME` environment variable. |
 | `ANT_PATH`                            | SpotBugs             | Path to the `ant` executable. |
 | `GRADLE_PATH`                         | SpotBugs             | Path to the `gradle` executable. |
