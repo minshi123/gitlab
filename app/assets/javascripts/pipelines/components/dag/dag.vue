@@ -1,15 +1,26 @@
 <script>
 import { GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
+import { isEmpty } from 'lodash';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import DagGraph from './dag_graph.vue';
-import { DEFAULT, PARSE_FAILURE, LOAD_FAILURE, UNSUPPORTED_DATA } from './constants';
+import DagAnnotations from './dag_annotations.vue';
+import {
+  DEFAULT,
+  PARSE_FAILURE,
+  LOAD_FAILURE,
+  UNSUPPORTED_DATA,
+  ADD_NOTE,
+  REMOVE_NOTE,
+  TOGGLE_NOTE
+} from './constants';
 import { parseData } from './parsing_utils';
 
 export default {
   // eslint-disable-next-line @gitlab/require-i18n-strings
   name: 'Dag',
   components: {
+    DagAnnotations,
     DagGraph,
     GlAlert,
     GlLink,
@@ -24,6 +35,7 @@ export default {
   },
   data() {
     return {
+      annotationsMap: {},
       showFailureAlert: false,
       showBetaInfo: true,
       failureType: null,
@@ -66,6 +78,9 @@ export default {
           };
       }
     },
+    shouldDisplayAnnotations() {
+      return !(isEmpty(this.annotationsMap));
+    },
     shouldDisplayGraph() {
       return Boolean(!this.showFailureAlert && this.graphData);
     },
@@ -86,6 +101,9 @@ export default {
       .catch(() => reportFailure(LOAD_FAILURE));
   },
   methods: {
+    addAnnotationToMap({ uid, source, target }) {
+      this.$set(this.annotationsMap, uid, { source,  target })
+    },
     processGraphData(data) {
       let parsed;
 
@@ -109,10 +127,25 @@ export default {
     hideBetaInfo() {
       this.showBetaInfo = false;
     },
+    removeAnnotationFromMap({ uid }) {
+      this.$delete(this.annotationsMap, uid);
+    },
     reportFailure(type) {
       this.showFailureAlert = true;
       this.failureType = type;
     },
+    updateAnnotation ({ type, d }) {
+      switch (type) {
+        case ADD_NOTE:
+          this.addAnnotationToMap(d);
+          break;
+        case REMOVE_NOTE:
+          this.removeAnnotationFromMap(d);
+          break;
+        default:
+          return;
+      }
+    }
   },
 };
 </script>
@@ -131,6 +164,15 @@ export default {
         </template>
       </gl-sprintf>
     </gl-alert>
-    <dag-graph v-if="shouldDisplayGraph" :graph-data="graphData" @onFailure="reportFailure" />
+    <dag-annotations
+      class='gl-h-5'
+      :annotations="annotationsMap"
+    />
+    <dag-graph
+      v-if="shouldDisplayGraph"
+      :graph-data="graphData"
+      @on-failure="reportFailure"
+      @update-annotation="updateAnnotation"
+    />
   </div>
 </template>
