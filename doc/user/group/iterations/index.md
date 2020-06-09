@@ -12,7 +12,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 > - It's disabled on GitLab.com.
 > - It's able to be enabled or disabled per-group
 > - It's not recommended for production use.
-> - To use it in GitLab self-managed instances, ask a GitLab administrator to [enable it](#enable-iterations). **(CORE ONLY)**
+> - To use it in GitLab self-managed instances, ask a GitLab administrator to [enable it](#enable-iterations-core-only). **(CORE ONLY)**
 
 Iterations are a way to track issues over a period of time. This allows teams
 to track velocity and volatility metrics. Iterations can be used with [milestones](../../project/milestones/index.md)
