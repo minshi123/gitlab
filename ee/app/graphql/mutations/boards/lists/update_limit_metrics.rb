@@ -7,7 +7,7 @@ module Mutations
         graphql_name 'BoardListUpdateLimitMetrics'
 
         argument :list_id,
-                 GraphQL::ID_TYPE,
+                 ::Types::IDWrapper,
                  required: true,
                  description: 'The global ID of the list.'
 
@@ -73,8 +73,7 @@ module Mutations
         end
 
         def find_list_by_global_id(gid)
-          parsed_gid = GlobalID.parse(gid)
-          id = parsed_gid.model_id.to_i if list_accessible?(parsed_gid)
+          id = gid.model_id.to_i if list_accessible?(gid)
           return unless id
 
           List.find_by_id(id)
