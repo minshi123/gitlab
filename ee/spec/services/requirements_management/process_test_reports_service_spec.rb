@@ -24,7 +24,8 @@ describe RequirementsManagement::ProcessTestReportsService do
       end
 
       it 'creates new test report for each open requirement' do
-        expect(RequirementsManagement::TestReport).to receive(:persist_all_requirement_reports_as_passed).with(build).and_call_original
+        expect(RequirementsManagement::TestReport).to receive(:persist_requirement_reports)
+          .with(build, an_instance_of(Gitlab::Ci::Reports::RequirementsManagement::Report)).and_call_original
 
         expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
       end

@@ -13,11 +13,10 @@ module RequirementsManagement
 
     def execute
       return if test_report_already_generated?
-      return unless report.all_passed?
 
       raise Gitlab::Access::AccessDeniedError unless can?(@build.user, :create_requirement_test_report, @build.project)
 
-      RequirementsManagement::TestReport.persist_all_requirement_reports_as_passed(@build)
+      RequirementsManagement::TestReport.persist_requirement_reports(@build, report)
     end
 
     private
