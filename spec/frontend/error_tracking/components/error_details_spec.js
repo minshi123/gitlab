@@ -51,7 +51,7 @@ describe('ErrorDetails', () => {
 
   function mountComponent() {
     wrapper = shallowMount(ErrorDetails, {
-      stubs: { GlDeprecatedButton, GlSprintf },
+      stubs: { GlDeprecatedButton, GlSprintf,},
       localVue,
       store,
       mocks,
@@ -192,6 +192,7 @@ describe('ErrorDetails', () => {
       expect(wrapper.find(Stacktrace).exists()).toBe(false);
       expect(wrapper.find(GlBadge).exists()).toBe(false);
       expect(wrapper.findAll(GlDeprecatedButton).length).toBe(3);
+      expect(wrapper.element).toMatchSnapshot();
     });
 
     describe('unsafe chars for culprit field', () => {
@@ -207,8 +208,8 @@ describe('ErrorDetails', () => {
       });
 
       it('should not convert interpolated text to html entities', () => {
-        expect(findReportedText().findAll('script').length).toEqual(0);
-        expect(findReportedText().findAll('strong').length).toEqual(1);
+          expect(findReportedText().findAll('script').length).toEqual(0);
+          expect(findReportedText().findAll('strong').length).toEqual(1);
       });
 
       it('should render text instead of converting to html entities', () => {

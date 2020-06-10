@@ -1,0 +1,461 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ErrorDetails Error details should show Sentry error details without stacktrace 1`] = `
+<div
+  listpath="/error_tracking"
+>
+  <div
+    class="error-details"
+  >
+    <!---->
+     
+    <div
+      class="error-details-header d-flex py-2 justify-content-between"
+    >
+      <!---->
+       
+      <div
+        class="error-details-actions"
+      >
+        <div
+          class="d-inline-flex bv-d-sm-down-none"
+        >
+          <b-button-stub
+            class="[object Object]"
+            data-testid="update-ignore-status-btn"
+            event="click"
+            routertag="a"
+            size="md"
+            tag="button"
+            type="button"
+            variant="secondary"
+          >
+            <!---->
+             
+            Ignore
+          
+          </b-button-stub>
+           
+          <b-button-stub
+            class="btn-outline-info ml-2"
+            data-testid="update-resolve-status-btn"
+            event="click"
+            routertag="a"
+            size="md"
+            tag="button"
+            type="button"
+            variant="secondary"
+          >
+            <!---->
+             
+            Resolve
+          
+          </b-button-stub>
+           
+          <!---->
+           
+          <form
+            action="/test-project/issues/"
+            class="d-inline-block ml-2"
+            method="POST"
+          >
+            <gl-form-input-stub
+              class="hidden"
+              name="issue[title]"
+              value="Issue title"
+            />
+             
+            <input
+              name="issue[description]"
+              type="hidden"
+              value="# Error Details:
+- Sentry event: http://sentry.gitlab.net/gitlab
+- First seen: 
+2017-05-26T13:32:48Z
+- Last seen: 2018-05-26T13:32:48Z
+ - Events: 12
+- Users: 2
+"
+            />
+             
+            <gl-form-input-stub
+              class="hidden"
+              name="issue[sentry_issue_attributes][sentry_issue_identifier]"
+              value="129381"
+            />
+             
+            <gl-form-input-stub
+              class="hidden"
+              name="authenticity_token"
+              value="fakeToken"
+            />
+             
+            <b-button-stub
+              class="btn-success"
+              data-qa-selector="create_issue_button"
+              event="click"
+              routertag="a"
+              size="md"
+              tag="button"
+              type="button"
+              variant="secondary"
+            >
+              <!---->
+               
+              Create issue
+            
+            </b-button-stub>
+          </form>
+        </div>
+         
+        <gl-dropdown-stub
+          class="error-details-options d-md-none"
+          right=""
+          text="Options"
+        >
+          <gl-dropdown-item-stub
+            data-qa-selector="update_ignore_status_button"
+          >
+            Ignore
+          </gl-dropdown-item-stub>
+           
+          <gl-dropdown-item-stub
+            data-qa-selector="update_resolve_status_button"
+          >
+            Resolve
+          </gl-dropdown-item-stub>
+           
+          <gl-dropdown-divider-stub />
+           
+          <!---->
+           
+          <gl-dropdown-item-stub
+            data-qa-selector="create_issue_button"
+          >
+            Create issue
+          </gl-dropdown-item-stub>
+        </gl-dropdown-stub>
+      </div>
+    </div>
+     
+    <div>
+      <tooltip-on-truncate-stub
+        placement="top"
+        title="Issue title"
+        truncatetarget="child"
+      >
+        <h2
+          class="text-truncate"
+        >
+          Issue title
+        </h2>
+      </tooltip-on-truncate-stub>
+       
+      <!---->
+       
+      <ul>
+        <!---->
+         
+        <!---->
+         
+        <li>
+          <strong
+            class="bold"
+          >
+            Sentry event:
+          </strong>
+           
+          <gl-link-stub
+            data-testid="external-url-link"
+            data-tracking-options="{\\"category\\":\\"Error Tracking\\",\\"action\\":\\"click_error_link_to_sentry\\",\\"label\\":\\"Error Link\\",\\"property\\":\\"http://sentry.gitlab.net/gitlab\\"}"
+            href="http://sentry.gitlab.net/gitlab"
+            target="_blank"
+          >
+            <span
+              class="text-truncate"
+            >
+              http://sentry.gitlab.net/gitlab
+            </span>
+             
+            <icon-stub
+              class="ml-1 flex-shrink-0"
+              name="external-link"
+              size="16"
+            />
+          </gl-link-stub>
+        </li>
+         
+        <!---->
+         
+        <!---->
+         
+        <li>
+          <strong
+            class="bold"
+          >
+            Events:
+          </strong>
+           
+          <span>
+            12
+          </span>
+        </li>
+         
+        <li>
+          <strong
+            class="bold"
+          >
+            Users:
+          </strong>
+           
+          <span>
+            2
+          </span>
+        </li>
+      </ul>
+       
+      <div
+        class="py-3"
+      >
+        <gl-loading-icon-stub
+          color="orange"
+          label="Loading"
+          size="lg"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ErrorDetails Error details unsafe chars for culprit field should not convert interpolated text to html entities 1`] = `
+<div
+  listpath="/error_tracking"
+>
+  <div
+    class="error-details"
+  >
+    <!---->
+     
+    <div
+      class="error-details-header d-flex py-2 justify-content-between"
+    >
+      <div
+        class="error-details-meta my-auto"
+        data-qa-selector="reported_text"
+      >
+        <gl-sprintf-stub
+          message="Reported %{timeAgo} by %{reportedBy}"
+        />
+      </div>
+       
+      <div
+        class="error-details-actions"
+      >
+        <div
+          class="d-inline-flex bv-d-sm-down-none"
+        >
+          <b-button-stub
+            class="[object Object]"
+            data-testid="update-ignore-status-btn"
+            event="click"
+            routertag="a"
+            size="md"
+            tag="button"
+            type="button"
+            variant="secondary"
+          >
+            <!---->
+             
+            Ignore
+          
+          </b-button-stub>
+           
+          <b-button-stub
+            class="btn-outline-info ml-2"
+            data-testid="update-resolve-status-btn"
+            event="click"
+            routertag="a"
+            size="md"
+            tag="button"
+            type="button"
+            variant="secondary"
+          >
+            <!---->
+             
+            Resolve
+          
+          </b-button-stub>
+           
+          <!---->
+           
+          <form
+            action="/test-project/issues/"
+            class="d-inline-block ml-2"
+            method="POST"
+          >
+            <gl-form-input-stub
+              class="hidden"
+              name="issue[title]"
+            />
+             
+            <input
+              name="issue[description]"
+              type="hidden"
+              value="# Error Details:
+- Sentry event: undefined
+- First seen: 
+undefined
+- Last seen: undefined
+ - Events: undefined
+- Users: undefined
+"
+            />
+             
+            <gl-form-input-stub
+              class="hidden"
+              name="issue[sentry_issue_attributes][sentry_issue_identifier]"
+            />
+             
+            <gl-form-input-stub
+              class="hidden"
+              name="authenticity_token"
+              value="fakeToken"
+            />
+             
+            <b-button-stub
+              class="btn-success"
+              data-qa-selector="create_issue_button"
+              event="click"
+              routertag="a"
+              size="md"
+              tag="button"
+              type="button"
+              variant="secondary"
+            >
+              <!---->
+               
+              Create issue
+            
+            </b-button-stub>
+          </form>
+        </div>
+         
+        <gl-dropdown-stub
+          class="error-details-options d-md-none"
+          right=""
+          text="Options"
+        >
+          <gl-dropdown-item-stub
+            data-qa-selector="update_ignore_status_button"
+          >
+            Ignore
+          </gl-dropdown-item-stub>
+           
+          <gl-dropdown-item-stub
+            data-qa-selector="update_resolve_status_button"
+          >
+            Resolve
+          </gl-dropdown-item-stub>
+           
+          <gl-dropdown-divider-stub />
+           
+          <!---->
+           
+          <gl-dropdown-item-stub
+            data-qa-selector="create_issue_button"
+          >
+            Create issue
+          </gl-dropdown-item-stub>
+        </gl-dropdown-stub>
+      </div>
+    </div>
+     
+    <div>
+      <tooltip-on-truncate-stub
+        placement="top"
+        title=""
+        truncatetarget="child"
+      >
+        <h2
+          class="text-truncate"
+        >
+          
+        </h2>
+      </tooltip-on-truncate-stub>
+       
+      <!---->
+       
+      <ul>
+        <!---->
+         
+        <!---->
+         
+        <li>
+          <strong
+            class="bold"
+          >
+            Sentry event:
+          </strong>
+           
+          <gl-link-stub
+            data-testid="external-url-link"
+            data-tracking-options="{\\"category\\":\\"Error Tracking\\",\\"action\\":\\"click_error_link_to_sentry\\",\\"label\\":\\"Error Link\\"}"
+            target="_blank"
+          >
+            <span
+              class="text-truncate"
+            >
+              
+            </span>
+             
+            <icon-stub
+              class="ml-1 flex-shrink-0"
+              name="external-link"
+              size="16"
+            />
+          </gl-link-stub>
+        </li>
+         
+        <!---->
+         
+        <!---->
+         
+        <li>
+          <strong
+            class="bold"
+          >
+            Events:
+          </strong>
+           
+          <span>
+            
+          </span>
+        </li>
+         
+        <li>
+          <strong
+            class="bold"
+          >
+            Users:
+          </strong>
+           
+          <span>
+            
+          </span>
+        </li>
+      </ul>
+       
+      <h3
+        class="my-4"
+      >
+        Stack trace
+      </h3>
+       
+      <stacktrace-stub
+        entries="[object Object]"
+      />
+    </div>
+  </div>
+</div>
+`;
