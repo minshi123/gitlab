@@ -262,7 +262,7 @@ once an hour for a given container repository.
 This action does not delete blobs. In order to delete them and recycle disk space,
 [run the garbage collection](https://docs.gitlab.com/omnibus/maintenance/README.html#removing-unused-layers-not-referenced-by-manifests).
 
-`name_regex`, `name_regex_delete` and `name_regex_keep` are validated. The API can return a [`400 Bad Request`](../README.md##data-validation-and-error-reporting) response if one of them is invalid.
+`name_regex`, `name_regex_delete` and `name_regex_keep` are validated. The API can return a [`400 Bad Request`](../README.md#data-validation-and-error-reporting) response if one of them is invalid.
 
 You can use [Rubular](https://rubular.com/) to check your regex.
 View some valid regex examples below.
