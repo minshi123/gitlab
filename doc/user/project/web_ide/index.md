@@ -38,7 +38,11 @@ The Web IDE currently provides:
 
 Because the Web IDE is based on the [Monaco Editor](https://microsoft.github.io/monaco-editor/),
 you can find a more complete list of supported languages in the
-[Monaco languages](https://github.com/Microsoft/monaco-languages) repository.
+[Monaco languages](https://github.com/Microsoft/monaco-languages) repository. Under the hood,
+Monaco uses [Monarch library](https://microsoft.github.io/monaco-editor/monarch.html) for syntax highlighting.
+
+You can [contribute to GitLab](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/assets/javascripts/ide/lib/languages/README.md)
+to add support for languages that aren't currently supported.
 
 NOTE: **Note:**
 Single file editing is based on the [Ace Editor](https://ace.c9.io).

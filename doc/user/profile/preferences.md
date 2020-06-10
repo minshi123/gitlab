@@ -40,7 +40,10 @@ The default theme is Indigo. You can choose between 10 themes:
 
 NOTE: **Note:**
 GitLab uses the [rouge Ruby library](http://rouge.jneen.net/ "Rouge website")
-for syntax highlighting. For a list of supported languages visit the rouge website.
+for syntax highlighting. The Web IDE and Snippets use the
+[Monarch](https://microsoft.github.io/monaco-editor/monarch.html) library for
+syntax highlighting. For a list of supported languages, visit the documentation of
+the respective libraries.
 
 Changing this setting allows you to customize the color theme when viewing any
 syntax highlighted code on GitLab.
