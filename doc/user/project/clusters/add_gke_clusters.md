@@ -38,7 +38,8 @@ Note the following:
 - GitLab requires basic authentication enabled and a client certificate issued for the cluster to
   set up an [initial service account](add_remove_clusters.md#access-controls). In [GitLab versions
   11.10 and later](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/58208), the cluster creation process
-  explicitly requires that basic authentication and client certificate are enabled.
+  explicitly requests GKE to create clusters with basic authentication enabled and a client
+  certificate.
 
 ### Creating the cluster on GKE
 
