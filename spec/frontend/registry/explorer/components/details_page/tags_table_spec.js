@@ -97,12 +97,17 @@ describe('tags_table', () => {
     });
 
     it('if deselect remove name from selectedItems', () => {
-      wrapper.setData({ selectedItems: [tags[0].name] });
       findFirstRowItem('rowCheckbox').vm.$emit('change');
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.vm.selectedItems.length).toBe(0);
-        expect(findFirstRowItem('rowCheckbox').attributes('checked')).toBe(undefined);
-      });
+      return wrapper.vm
+        .$nextTick()
+        .then(() => {
+          findFirstRowItem('rowCheckbox').vm.$emit('change');
+          return wrapper.vm.$nextTick();
+        })
+        .then(() => {
+          expect(wrapper.vm.selectedItems.length).toBe(0);
+          expect(findFirstRowItem('rowCheckbox').attributes('checked')).toBe(undefined);
+        });
     });
   });
 
