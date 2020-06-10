@@ -96,7 +96,7 @@ describe('tags_table', () => {
       });
     });
 
-    it('if deselect remove name from selectedItems', () => {
+    it('if deselected remove name from selectedItems', () => {
       findFirstRowItem('rowCheckbox').vm.$emit('change');
       return wrapper.vm
         .$nextTick()
