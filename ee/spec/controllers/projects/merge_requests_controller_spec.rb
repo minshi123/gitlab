@@ -836,6 +836,8 @@ RSpec.describe Projects::MergeRequestsController do
         expect(json_response).to eq({ 'status_reason' => 'Failed to parse license scanning reports' })
       end
     end
+
+    it_behaves_like 'authorize read pipeline'
   end
 
   describe 'GET #metrics_reports' do
