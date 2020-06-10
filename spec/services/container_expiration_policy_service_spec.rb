@@ -27,5 +27,13 @@ describe ContainerExpirationPolicyService do
 
       expect(container_expiration_policy.next_run_at).to be > Time.zone.now
     end
+
+    it 'disables invalid container expiration policies' do
+      expect(container_expiration_policy).to receive(:valid?).and_return(false)
+      expect(container_expiration_policy).not_to receive(:schedule_next_run!)
+      expect(CleanupContainerRepositoryWorker).not_to receive(:perform_async)
+
+      expect { subject }.to change { container_expiration_policy.reload.enabled }.from(true).to(false)
+    end
   end
 end
