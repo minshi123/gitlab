@@ -41,11 +41,7 @@ module Geo
     end
 
     def find_registry_differences(range)
-      finder.find_registry_differences(range)
-    end
-
-    def finder
-      @finder ||= registry_class.finder_class.new(current_node_id: Gitlab::Geo.current_node.id)
+      registry_class.find_registry_differences(range)
     end
 
     def handle_differences_in_range(range)

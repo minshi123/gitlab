@@ -38,8 +38,8 @@ RSpec.describe Geo::RegistryConsistencyService, :geo, :use_clean_rails_memory_st
         expect(registry_class).to respond_to(:delete_for_model_ids)
       end
 
-      it 'responds to .finder_class' do
-        expect(registry_class).to respond_to(:finder_class)
+      it 'responds to .find_registry_differences' do
+        expect(registry_class).to respond_to(:find_registry_differences)
       end
 
       it 'responds to .has_create_events?' do

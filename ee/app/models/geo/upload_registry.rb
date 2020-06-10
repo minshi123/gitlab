@@ -22,6 +22,10 @@ class Geo::UploadRegistry < Geo::BaseRegistry
     ::Geo::AttachmentRegistryFinder
   end
 
+  def self.find_registry_differences(range)
+    finder_class.new(current_node_id: Gitlab::Geo.current_node.id).find_registry_differences(range)
+  end
+
   def self.delete_worker_class
     ::Geo::FileRegistryRemovalWorker
   end
