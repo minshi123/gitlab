@@ -151,7 +151,6 @@ The following variables allow configuration of global dependency scanning settin
 | Environment variable                    | Description |
 | --------------------------------------- |------------ |
 | `SECURE_ANALYZERS_PREFIX`               | Override the name of the Docker registry providing the official default images (proxy). Read more about [customizing analyzers](analyzers.md). |
-| `DS_ANALYZER_IMAGE_PREFIX`              | **DEPRECATED:** Use `SECURE_ANALYZERS_PREFIX` instead. |
 | `DS_DEFAULT_ANALYZERS`                  | Override the names of the official default images. Read more about [customizing analyzers](analyzers.md). |
 | `DS_DISABLE_DIND`                       | Disable Docker-in-Docker and run analyzers [individually](#enabling-docker-in-docker). This variable is `true` by default. |
 | `ADDITIONAL_CA_CERT_BUNDLE`             | Bundle of CA certs to trust. |
