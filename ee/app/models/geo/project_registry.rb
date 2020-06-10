@@ -42,6 +42,14 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
     where(nil).pluck(:project_id)
   end
 
+  def self.registry_consistency_worker_enabled?
+    Feature.enabled?(:geo_project_registry_ssot_sync)
+  end
+
+  def self.has_create_events?
+    true
+  end
+
   def self.find_registry_differences(range)
     source_ids = Gitlab::Geo.current_node.projects.id_in(range).pluck_primary_key
     tracked_ids = self.pluck_model_ids_in_range(range)
@@ -50,6 +58,16 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
     unused_tracked_ids = tracked_ids - source_ids
 
     [untracked_ids, unused_tracked_ids]
+  end
+
+  def self.delete_worker_class
+    ::GeoRepositoryDestroyWorker
+  end
+
+  def self.delete_for_model_ids(project_ids)
+    project_ids.map do |project_id|
+      delete_worker_class.perform_async(project_id)
+    end
   end
 
   def self.failed

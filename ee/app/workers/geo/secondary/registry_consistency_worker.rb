@@ -18,6 +18,7 @@ module Geo
       REGISTRY_CLASSES = [
         Geo::JobArtifactRegistry,
         Geo::LfsObjectRegistry,
+        Geo::ProjectRegistry,
         Geo::UploadRegistry
       ].freeze
 

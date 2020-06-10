@@ -61,6 +61,8 @@ module Geo
     end
 
     def load_pending_resources
+      return [] unless valid_shard?
+
       resources = find_project_ids_not_synced(batch_size: db_retrieve_batch_size)
       remaining_capacity = db_retrieve_batch_size - resources.size
 
@@ -73,10 +75,25 @@ module Geo
 
     # rubocop: disable CodeReuse/ActiveRecord
     def find_project_ids_not_synced(batch_size:)
-      find_unsynced_projects(batch_size: batch_size)
-        .id_not_in(scheduled_project_ids)
-        .reorder(last_repository_updated_at: :desc)
-        .pluck_primary_key
+      if Geo::ProjectRegistry.registry_consistency_worker_enabled?
+        project_ids =
+          Geo::ProjectRegistry
+            .never_synced
+            .model_id_not_in(scheduled_project_ids)
+            .limit(batch_size)
+            .pluck_model_foreign_key
+
+        Project
+          .id_in(project_ids)
+          .within_shards(shard_name)
+          .reorder(last_repository_updated_at: :desc)
+          .pluck_primary_key
+      else
+        find_unsynced_projects(batch_size: batch_size)
+          .id_not_in(scheduled_project_ids)
+          .reorder(last_repository_updated_at: :desc)
+          .pluck_primary_key
+      end
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
@@ -88,10 +105,14 @@ module Geo
 
     # rubocop: disable CodeReuse/ActiveRecord
     def find_project_ids_updated_recently(batch_size:)
-      find_projects_updated_recently(batch_size: batch_size)
-        .id_not_in(scheduled_project_ids)
-        .order('project_registry.last_repository_synced_at ASC NULLS FIRST, projects.last_repository_updated_at ASC')
-        .pluck_primary_key
+      if Geo::ProjectRegistry.registry_consistency_worker_enabled?
+        []
+      else
+        find_projects_updated_recently(batch_size: batch_size)
+          .id_not_in(scheduled_project_ids)
+          .order('project_registry.last_repository_synced_at ASC NULLS FIRST, projects.last_repository_updated_at ASC')
+          .pluck_primary_key
+      end
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
@@ -99,6 +120,12 @@ module Geo
       Geo::ProjectUpdatedRecentlyFinder
         .new(current_node: current_node, shard_name: shard_name, batch_size: batch_size)
         .execute
+    end
+
+    def valid_shard?
+      return true unless current_node.selective_sync_by_shards?
+
+      current_node.selective_sync_shards.include?(shard_name)
     end
   end
 end
