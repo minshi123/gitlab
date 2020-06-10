@@ -770,6 +770,7 @@ RSpec.describe Projects::MergeRequestsController do
   end
 
   describe 'GET #license_scanning_reports' do
+    context "when the source and target project is the same" do
     let(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project, author: create(:user)) }
 
     let(:params) do
@@ -834,6 +835,33 @@ RSpec.describe Projects::MergeRequestsController do
 
         expect(response).to have_gitlab_http_status(:bad_request)
         expect(json_response).to eq({ 'status_reason' => 'Failed to parse license scanning reports' })
+      end
+    end
+    end
+
+    context 'when a maintainer views a merge request from a forked project' do
+      let(:project) { create(:project, :repository) }
+      let(:maintainer) { create(:user).tap { |user| project.add_maintainer(user) } }
+
+      let(:forked_project) { fork_project(project, nil, repository: true) }
+      let(:contributor) { create(:user).tap { |user| forked_project.add_developer(user) } }
+      let(:merge_request) { create(:merge_request, source_project: forked_project, target_project: project, author: contributor) }
+      let!(:pipeline) { create(:ci_pipeline, :success, merge_request: merge_request, builds: [create(:ee_ci_build, :license_scan_v2, :success)]) }
+
+      let(:comparison_status) { { status: :parsed, data: { new_licenses: [], existing_licenses: [], removed_licenses: [] } } }
+
+      it 'is able to view the license scan report' do
+        sign_out user
+        merge_request.update!(head_pipeline: pipeline)
+        sign_in maintainer
+
+        get :license_scanning_reports, params: {
+          namespace_id: project.namespace.to_param,
+          project_id: project.to_param,
+          id: merge_request.iid
+        }, format: :json
+
+        expect(response).to have_gitlab_http_status(:ok)
       end
     end
 

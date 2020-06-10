@@ -17,7 +17,7 @@ module EE
         before_action :whitelist_query_limiting_ee_merge, only: [:merge]
         before_action :whitelist_query_limiting_ee_show, only: [:show]
         before_action :authorize_read_pipeline!, only: [:container_scanning_reports, :dependency_scanning_reports,
-                                                        :license_scanning_reports,
+                                                        #:license_scanning_reports,
                                                         :sast_reports, :secret_detection_reports, :dast_reports, :metrics_reports]
       end
 
@@ -48,7 +48,10 @@ module EE
       end
 
       def license_scanning_reports
-        reports_response(merge_request.compare_license_scanning_reports(current_user))
+        puts "HELLO"
+        reports = merge_request.compare_license_scanning_reports(current_user)
+        puts reports.inspect
+        reports_response(reports)
       end
 
       def container_scanning_reports

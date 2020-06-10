@@ -209,6 +209,7 @@ module EE
     end
 
     def compare_license_scanning_reports(current_user)
+      puts has_license_scanning_reports?.inspect
       return missing_report_error("license scanning") unless has_license_scanning_reports?
 
       compare_reports(::Ci::CompareLicenseScanningReportsService, current_user)

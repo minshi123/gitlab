@@ -10,6 +10,7 @@ require 'spec_helper'
 RSpec.describe MergeRequest do
   using RSpec::Parameterized::TableSyntax
   include ReactiveCachingHelpers
+  include ProjectForksHelper
 
   let(:project) { create(:project, :repository) }
 
@@ -294,6 +295,35 @@ RSpec.describe MergeRequest do
         allow_any_instance_of(service_class_name.constantize).to receive(:execute).and_return(nil)
 
         expect { subject }.not_to raise_error
+      end
+    end
+
+    context "when comparing license scan reports from a forked project" do
+      subject do
+        merge_request.calculate_reactive_cache('Ci::CompareLicenseScanningReportsService', maintainer.id)
+      end
+
+      let(:project) { create(:project, :repository) }
+      let(:maintainer) { create(:user).tap { |user| project.add_maintainer(user) } }
+
+      let(:forked_project) { fork_project(project, nil, repository: true) }
+      let(:contributor) { create(:user).tap { |user| forked_project.add_developer(user) } }
+      let(:merge_request) { create(:merge_request, source_project: forked_project, target_project: project, author: contributor) }
+      let!(:pipeline) { create(:ci_pipeline, :success, merge_request: merge_request, builds: [create(:ee_ci_build, :license_scan_v2, :success)]) }
+
+      before do
+        merge_request.update!(head_pipeline: pipeline)
+      end
+
+      it 'produces a valid result to cache' do
+        expect(subject).to be_present
+        expect(subject[:status]).to eql(:parsed)
+        expect(subject[:key]).to be_present
+        expect(subject[:data]).to eql({
+          "new_licenses" => [],
+          "existing_licenses" => [],
+          "removed_licenses" => [],
+        })
       end
     end
   end

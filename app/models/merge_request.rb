@@ -1375,8 +1375,7 @@ class MergeRequest < ApplicationRecord
   # issue: https://gitlab.com/gitlab-org/gitlab/issues/34224
   def compare_reports(service_class, current_user = nil)
     with_reactive_cache(service_class.name, current_user&.id) do |data|
-      unless service_class.new(project, current_user, id: id)
-        .latest?(base_pipeline, actual_head_pipeline, data)
+      unless service_class.new(project, current_user, id: id).latest?(base_pipeline, actual_head_pipeline, data)
         raise InvalidateReactiveCache
       end
 
@@ -1392,6 +1391,7 @@ class MergeRequest < ApplicationRecord
     raise NameError, service_class unless service_class < Ci::CompareReportsBaseService
 
     current_user = User.find_by(id: current_user_id)
+    puts [base_pipeline, actual_head_pipeline].inspect
     service_class.new(project, current_user, id: id).execute(base_pipeline, actual_head_pipeline)
   end
 
