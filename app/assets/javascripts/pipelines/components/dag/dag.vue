@@ -134,13 +134,17 @@ export default {
       this.showFailureAlert = true;
       this.failureType = type;
     },
-    updateAnnotation ({ type, d }) {
+    updateAnnotation ({ type, data }) {
       switch (type) {
         case ADD_NOTE:
-          this.addAnnotationToMap(d);
+          data.forEach(item => {
+            this.addAnnotationToMap(item);
+          })
           break;
         case REMOVE_NOTE:
-          this.removeAnnotationFromMap(d);
+          data.forEach((item) => {
+            this.removeAnnotationFromMap(item);
+          });
           break;
         default:
           return;

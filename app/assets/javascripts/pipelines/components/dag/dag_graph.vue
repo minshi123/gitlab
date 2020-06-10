@@ -10,6 +10,7 @@ import {
   TOGGLE_NOTE
 } from './constants';
 import {
+  getAllLinkAncestors,
   highlightLinks,
   restoreLinks,
   toggleLinkHighlight,
@@ -99,14 +100,14 @@ export default {
     appendLinkInteractions(link) {
       return link
         .on('mouseover', (d, idx, collection) => {
-          this.$emit('update-annotation', { type: ADD_NOTE, d});
+          this.$emit('update-annotation', { type: ADD_NOTE, data: [d]});
           highlightLinks(d, idx, collection);
         })
         .on('mouseout', (d, idx, collection) => {
           if (d.hold) {
             return;
           }
-          this.$emit('update-annotation', { type: REMOVE_NOTE, d});
+          this.$emit('update-annotation', { type: REMOVE_NOTE, data: [d]});
           restoreLinks(this.$options.viewOptions.baseOpacity, d, idx, collection);
         })
         .on('click', (d, idx, collection) => {
@@ -121,7 +122,7 @@ export default {
             d.hold = true;
           }
 
-          this.$emit('update-annotation', { type, d });
+          this.$emit('update-annotation', { type, data: [d] });
           toggleLinkHighlight(this.$options.viewOptions.baseOpacity, d, idx, collection)
          });
     },
@@ -129,7 +130,20 @@ export default {
     appendNodeInteractions(node) {
       return node.on(
         'click',
-        togglePathHighlights.bind(null, this.$options.viewOptions.baseOpacity),
+        (d, idx, collection) => {
+          let type;
+
+          if (d.hold) {
+            type = REMOVE_NOTE;
+            d.hold = false;
+          } else {
+            type = ADD_NOTE;
+            d.hold = true;
+          }
+
+          this.$emit('update-annotation', { type, data: getAllLinkAncestors(d)});
+          togglePathHighlights(this.$options.viewOptions.baseOpacity, d, idx, collection);
+        },
       );
     },
 
