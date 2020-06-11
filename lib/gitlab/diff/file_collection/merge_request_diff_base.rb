@@ -20,7 +20,7 @@ module Gitlab
           strong_memoize(:diff_files) do
             diff_files = super
 
-            diff_files.each { |diff_file| cache.decorate(diff_file) }
+            diff_files.each { |diff_file| highlight_cache.decorate(diff_file) }
 
             diff_files
           end
@@ -28,16 +28,19 @@ module Gitlab
 
         override :write_cache
         def write_cache
-          cache.write_if_empty
+          highlight_cache.write_if_empty
+          diff_stats_cache.write(diff_stats_collection)
         end
 
         override :clear_cache
         def clear_cache
-          cache.clear
+          highlight_cache.clear
+          diff_stats_cache.clear
         end
 
+        # TODO Why do we need this exposed?
         def cache_key
-          cache.key
+          highlight_cache.key
         end
 
         def real_size
@@ -46,8 +49,12 @@ module Gitlab
 
         private
 
-        def cache
-          @cache ||= Gitlab::Diff::HighlightCache.new(self)
+        def highlight_cache
+          @highlight_cache ||= Gitlab::Diff::HighlightCache.new(self)
+        end
+
+        def diff_stats_cache
+          @diff_stats_cache ||= Gitlab::Diff::StatsCache.new(self)
         end
 
         def diff_stats_collection
@@ -57,7 +64,8 @@ module Gitlab
             next unless @include_stats
             next unless diff_refs
 
-            @merge_request_diff.merge_request.diff_stats
+            cached = diff_stats_cache.read
+            cached || @repository.diff_stats(diff_refs.base_sha, diff_refs.head_sha)
           end
         end
       end
