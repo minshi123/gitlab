@@ -35,10 +35,6 @@ module API
 
     resource :group, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       before do
-        unless ::Feature.enabled?(:composer_packages, user_group)
-          not_found!
-        end
-
         authorize_packages_feature!(user_group)
       end
 
@@ -74,10 +70,6 @@ module API
 
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       before do
-        unless ::Feature.enabled?(:composer_packages, unauthorized_user_project!)
-          not_found!
-        end
-
         authorize_packages_feature!(unauthorized_user_project!)
       end
 
