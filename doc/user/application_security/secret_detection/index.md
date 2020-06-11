@@ -48,7 +48,7 @@ is **not** `19.03.0`. See [troubleshooting information](#error-response-from-dae
 ## Configuration
 
 NOTE: **Note:**
-With GitLab 13.0 Secret Detection was split into its own CI/CD template.
+With GitLab 13.1 Secret Detection was split into its own CI/CD template.
 
 Secret Detection is performed by a [specific analyzer](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/Secret-Detection.gitlab-ci.yml)
 during the `secret-detection` job. It runs regardless of the programming
@@ -62,7 +62,7 @@ with a dollar sign (`$`) as this likely indicates the password being used is an 
 variable. For example, `https://username:$password@example.com/path/to/repo` won't be
 detected, whereas `https://username:password@example.com/path/to/repo` would be detected.
 
-To enable Secret Detection for GitLab 13.0 and later, you must include the `Secret-Scanning.gitlab-ci.yml` template that’s provided as a part of your GitLab installation. For GitLab versions earlier than 11.9, you can copy and use the job as defined in that template.
+To enable Secret Detection for GitLab 13.1 and later, you must include the `Secret-Scanning.gitlab-ci.yml` template that’s provided as a part of your GitLab installation. For GitLab versions earlier than 11.9, you can copy and use the job as defined in that template.
 
 <!-- NOTE: 
 TODO: Update how AutoDevops works with Secret Detection
@@ -78,7 +78,7 @@ include:
   - template: Secret-Detection.gitlab-ci.yml
 ```
 
-The included template creates Secret Detection jobs in your CI/CD pipeline and scan
+The included template creates Secret Detection jobs in your CI/CD pipeline and scans
 your project's source code for secrets.
 
 The results are saved as a
@@ -88,15 +88,15 @@ always take the latest Secret Detection artifact available.
 
 ### Using the SAST Template
 
-Prior to GitLab 13.0, Secret Detection was part of [SAST configuration](../sast#configuration).
-If you already have SAST enabled for your app configured before GitLab 13.0,
+Prior to GitLab 13.1, Secret Detection was part of [SAST configuration](../sast#configuration).
+If you already have SAST enabled for your app configured before GitLab 13.1,
 you don't need to manually configure it.
 
 CAUTION: **Planned Deprecation:**
 In a future GitLab release, configuring Secret Detection with the SAST template will be deprecated. Please begin using `Secret-Detection.gitlab-ci.yml`
 to prevent future issues.
 
-When using the SAST Template, Secret Detection is performed by a [specific analyzer](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml#L180)
+When using the SAST template, Secret Detection is performed by a [specific analyzer](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml#L180)
 during the `sast` job. It runs regardless of the programming
 language of your app, and you don't need to change your
 CI/CD configuration file to enable it. Results are available in the SAST report.
