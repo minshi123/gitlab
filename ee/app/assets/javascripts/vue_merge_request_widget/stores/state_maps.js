@@ -4,7 +4,7 @@ stateMaps.stateToComponentMap.geoSecondaryNode = 'mr-widget-geo-secondary-node';
 stateMaps.stateToComponentMap.policyViolation = 'mr-widget-policy-violation';
 
 export const stateKey = {
-  policyViolation: 'policyViolation'
+  policyViolation: 'policyViolation',
 };
 
 export default {

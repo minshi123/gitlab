@@ -356,6 +356,7 @@ export default {
       <mr-widget-licenses
         v-if="shouldRenderLicenseReport"
         :api-url="mr.licenseScanning.managed_licenses_path"
+        :approvals-api-path="mr.apiApprovalsPath"
         :licenses-api-path="licensesApiPath"
         :pipeline-path="mr.pipeline.path"
         :can-manage-licenses="mr.licenseScanning.can_manage_licenses"
