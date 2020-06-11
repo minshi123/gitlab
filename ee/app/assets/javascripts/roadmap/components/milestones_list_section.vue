@@ -1,12 +1,17 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import eventHub from '../event_hub';
+import { GlButton, GlIcon, GlLoadingIcon, GlTooltip } from '@gitlab/ui';
 import { EPIC_DETAILS_CELL_WIDTH, EPIC_ITEM_HEIGHT, TIMELINE_CELL_MIN_WIDTH } from '../constants';
 import MilestoneTimeline from './milestone_timeline.vue';
 
 export default {
   components: {
     MilestoneTimeline,
+    GlButton,
+    GlIcon,
+    GlLoadingIcon,
+    GlTooltip,
   },
   props: {
     presetType: {
@@ -83,8 +88,13 @@ export default {
 <template>
   <div :style="sectionContainerStyles" class="milestones-list-section d-table">
     <div
-      class="milestones-list-title d-table-cell bold border-bottom align-top position-sticky pt-2 pl-3"
+      class="milestones-list-title d-table-cell bold border-bottom align-top position-sticky pt-2 pl-2"
     >
+      <span ref="expandCollapseMilestoneInfo">
+        <gl-button :class="{ invisible: false }" variant="link">
+          <gl-icon name="chevron-down" class="text-secondary" aria-hidden="false" />
+        </gl-button>
+      </span>
       {{ __('Milestones') }}
     </div>
     <div class="milestones-list-items d-table-cell">
