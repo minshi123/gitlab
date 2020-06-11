@@ -169,7 +169,7 @@ export default {
       </gl-sprintf>
     </gl-alert>
     <dag-annotations
-      class='gl-h-5'
+      class='gl-min-h-7 gl-py-4'
       :annotations="annotationsMap"
     />
     <dag-graph

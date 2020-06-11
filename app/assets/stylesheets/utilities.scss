@@ -89,3 +89,21 @@
 
 .gl-text-purple { color: $purple; }
 .gl-bg-purple-light { background-color: $purple-light; }
+
+.gl-min-h-6 {
+  min-height: 24px;
+}
+
+.pointy-polygon {
+   shape-outside: polygon(0 0, 80px 0, 100px 20px, 80px 40px, 0 40px);
+   clip-path: polygon(0 0, 80px 0, 100px 20px, 80px 40px, 0 40px);
+   width: 100px;
+   height: 40px;
+}
+
+.indented-polygon {
+   shape-outside: polygon(0 0, 20px 20px, 0 40px, 100px 40px, 100px 0);
+   clip-path: polygon(0 0, 20px 20px, 0 40px, 100px 40px, 100px 0);
+   width: 100px;
+   height: 40px;
+}
