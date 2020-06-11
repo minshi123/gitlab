@@ -88,19 +88,13 @@ describe('tags_table', () => {
       mountComponent();
     });
 
-    it('if selected adds item to selectedItems', () => {
-      findFirstRowItem('rowCheckbox').vm.$emit('change');
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.vm.selectedItems).toEqual([tags[0].name]);
-        expect(findFirstRowItem('rowCheckbox').attributes('checked')).toBeTruthy();
-      });
-    });
-
-    it('if deselected remove name from selectedItems', () => {
+    it('selecting and deselecting the checkbox works as intended', () => {
       findFirstRowItem('rowCheckbox').vm.$emit('change');
       return wrapper.vm
         .$nextTick()
         .then(() => {
+          expect(wrapper.vm.selectedItems).toEqual([tags[0].name]);
+          expect(findFirstRowItem('rowCheckbox').attributes('checked')).toBeTruthy();
           findFirstRowItem('rowCheckbox').vm.$emit('change');
           return wrapper.vm.$nextTick();
         })
