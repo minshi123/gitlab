@@ -31,14 +31,6 @@ module Gitlab
         end
       end
 
-      def marshal_dump
-        @collection.map { |stat| stat.class.encode(stat) }
-      end
-
-      def marshal_load(encoded_data)
-        @collection = encoded_data.map { |stat| Gitaly::DiffStats.decode(stat) }
-      end
-
       private
 
       def indexed_by_path

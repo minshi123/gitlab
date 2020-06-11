@@ -6,6 +6,7 @@ module Gitlab
       include Gitlab::Utils::StrongMemoize
 
       attr_reader :diff, :repository, :diff_refs, :fallback_diff_refs, :unique_identifier
+      attr_writer :stats
 
       delegate :new_file?, :deleted_file?, :renamed_file?,
         :old_path, :new_path, :a_mode, :b_mode, :mode_changed?,
