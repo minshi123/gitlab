@@ -240,9 +240,9 @@ DELETE /projects/:id/registry/repositories/:repository_id/tags
 | --------- | ---- | -------- | ----------- |
 | `id`      | integer/string | yes | The ID or [URL-encoded path of the project](README.md#namespaced-path-encoding) owned by the authenticated user. |
 | `repository_id` | integer | yes | The ID of registry repository. |
-| `name_regex` | string | no | The [re2](https://github.com/google/re2/wiki/Syntax) regex of the name to delete. To delete all tags specify `.*`. **Note:** `name_regex` is deprecated in favor of `name_regex_delete`.|
-| `name_regex_delete` | string | yes | The [re2](https://github.com/google/re2/wiki/Syntax) regex of the name to delete. To delete all tags specify `.*`.|
-| `name_regex_keep` | string | no | The [re2](https://github.com/google/re2/wiki/Syntax) regex of the name to keep. This value will override any matches from `name_regex_delete`. Note: setting to `.*` will result in a no-op. |
+| `name_regex` | string | no | The [re2](https://github.com/google/re2/wiki/Syntax) regex of the name to delete. To delete all tags specify `.*`. **Note:** `name_regex` is deprecated in favor of `name_regex_delete`. This field is validated. The API can return a [`400 Bad Request`](README.md#data-validation-and-error-reporting) response if it is invalid. |
+| `name_regex_delete` | string | yes | The [re2](https://github.com/google/re2/wiki/Syntax) regex of the name to delete. To delete all tags specify `.*`. This field is validated. The API can return a [`400 Bad Request`](README.md#data-validation-and-error-reporting) response if it is invalid. |
+| `name_regex_keep` | string | no | The [re2](https://github.com/google/re2/wiki/Syntax) regex of the name to keep. This value will override any matches from `name_regex_delete`. This field is validated. The API can return a [`400 Bad Request`](README.md#data-validation-and-error-reporting) response if it is invalid. Note: setting to `.*` will result in a no-op. |
 | `keep_n` | integer | no | The amount of latest tags of given name to keep. |
 | `older_than` | string | no | Tags to delete that are older than the given time, written in human readable form `1h`, `1d`, `1month`. |
 
@@ -261,11 +261,6 @@ take time to get executed. You can run this at most
 once an hour for a given container repository.
 This action does not delete blobs. In order to delete them and recycle disk space,
 [run the garbage collection](https://docs.gitlab.com/omnibus/maintenance/README.html#removing-unused-layers-not-referenced-by-manifests).
-
-`name_regex`, `name_regex_delete` and `name_regex_keep` are validated. The API can return a [`400 Bad Request`](README.md#data-validation-and-error-reporting) response if one of them is invalid.
-
-You can use [Rubular](https://rubular.com/) to check your regex.
-View some valid regex examples below.
 
 NOTE: **Note:**
 Since GitLab 12.4, individual tags are deleted.
