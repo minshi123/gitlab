@@ -29,7 +29,7 @@ module Gitlab
         override :write_cache
         def write_cache
           highlight_cache.write_if_empty
-          diff_stats_cache.write(diff_stats_collection)
+          diff_stats_cache.write_if_empty(diff_stats_collection)
         end
 
         override :clear_cache
@@ -54,7 +54,7 @@ module Gitlab
         end
 
         def diff_stats_cache
-          @diff_stats_cache ||= Gitlab::Diff::StatsCache.new(self)
+          @diff_stats_cache ||= Gitlab::Diff::StatsCache.new(@merge_request_diff)
         end
 
         def diff_stats_collection

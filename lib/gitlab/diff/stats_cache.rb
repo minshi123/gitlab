@@ -9,10 +9,8 @@ module Gitlab
       EXPIRATION = 1.week
       VERSION = 1
 
-      delegate :diffable, to: :@diff_collection
-
-      def initialize(diff_collection)
-        @diff_collection = diff_collection
+      def initialize(diffable)
+        @diffable = diffable
       end
 
       def read
@@ -21,8 +19,8 @@ module Gitlab
         end
       end
 
-      def write(stats)
-        if !@cached_values && stats
+      def write_if_empty(stats)
+        if @cached_values.blank? && stats.present?
           Rails.cache.write(key, stats, expires_in: EXPIRATION)
         end
       end
@@ -32,6 +30,10 @@ module Gitlab
           redis.del(key)
         end
       end
+
+      private
+
+      attr_reader :diffable
 
       def key
         strong_memoize(:redis_key) do
