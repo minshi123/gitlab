@@ -1,10 +1,13 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
+import { shallowMount } from '@vue/test-utils';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import Approvals from 'ee/vue_merge_request_widget/components/approvals/approvals.vue';
 import ApprovalsSummary from 'ee/vue_merge_request_widget/components/approvals/approvals_summary.vue';
 import ApprovalsSummaryOptional from 'ee/vue_merge_request_widget/components/approvals/approvals_summary_optional.vue';
 import ApprovalsFooter from 'ee/vue_merge_request_widget/components/approvals/approvals_footer.vue';
 import ApprovalsAuth from 'ee/vue_merge_request_widget/components/approvals/approvals_auth.vue';
+import createFlash from '~/flash';
+import waitForPromises from 'helpers/wait_for_promises';
 
 import {
   FETCH_LOADING,
@@ -14,7 +17,8 @@ import {
 } from 'ee/vue_merge_request_widget/components/approvals/messages';
 import eventHub from '~/vue_merge_request_widget/event_hub';
 
-const localVue = createLocalVue();
+jest.mock('~/flash', () => jest.fn());
+
 const TEST_HELP_PATH = 'help/path';
 const TEST_PASSWORD = 'password';
 const testApprovedBy = () => [1, 7, 10].map(id => ({ id }));
@@ -30,9 +34,7 @@ const testApprovals = () => ({
 });
 const testApprovalRulesResponse = () => ({ rules: [{ id: 2 }] });
 
-// For some reason, the `localVue.nextTick` needs to be deferred
-// or the timing doesn't work.
-const tick = () => Promise.resolve().then(localVue.nextTick);
+const tick = () => Promise.resolve().then(Vue.nextTick);
 const waitForTick = done =>
   tick()
     .then(done)
@@ -42,16 +44,14 @@ describe('EE MRWidget approvals', () => {
   let wrapper;
   let service;
   let mr;
-  let createFlash;
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMount(localVue.extend(Approvals), {
+    wrapper = shallowMount(Approvals, {
       propsData: {
         mr,
         service,
         ...props,
       },
-      localVue,
     });
   };
 
@@ -72,24 +72,24 @@ describe('EE MRWidget approvals', () => {
   const findFooter = () => wrapper.find(ApprovalsFooter);
 
   beforeEach(() => {
-    service = jasmine.createSpyObj('MRWidgetService', {
-      fetchApprovals: Promise.resolve(testApprovals()),
-      fetchApprovalSettings: Promise.resolve(testApprovalRulesResponse()),
-      approveMergeRequest: Promise.resolve(testApprovals()),
-      unapproveMergeRequest: Promise.resolve(testApprovals()),
-      approveMergeRequestWithAuth: Promise.resolve(testApprovals()),
-    });
+    service = {
+      fetchApprovals: jest.fn().mockResolvedValue(testApprovals()),
+      fetchApprovalSettings: jest.fn().mockResolvedValue(testApprovalRulesResponse()),
+      approveMergeRequest: jest.fn().mockResolvedValue(testApprovals()),
+      unapproveMergeRequest: jest.fn().mockResolvedValue(testApprovals()),
+      approveMergeRequestWithAuth: jest.fn().mockResolvedValue(testApprovals()),
+    };
     mr = {
-      ...jasmine.createSpyObj('Store', ['setApprovals', 'setApprovalRules']),
+      setApprovals: jest.fn(),
+      setApprovalRules: jest.fn(),
       approvalsHelpPath: TEST_HELP_PATH,
       approvals: testApprovals(),
       approvalRules: [],
       isOpen: true,
       state: 'open',
     };
-    createFlash = spyOnDependency(Approvals, 'createFlash');
 
-    spyOn(eventHub, '$emit');
+    jest.spyOn(eventHub, '$emit').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -99,6 +99,8 @@ describe('EE MRWidget approvals', () => {
 
   describe('when created', () => {
     beforeEach(() => {
+      service.fetchApprovals.mockImplementation(() => new Promise(resolve => setTimeout(resolve)));
+
       createComponent();
     });
 
@@ -113,7 +115,7 @@ describe('EE MRWidget approvals', () => {
 
   describe('when fetch approvals success', () => {
     beforeEach(done => {
-      service.fetchApprovals.and.returnValue(Promise.resolve());
+      service.fetchApprovals.mockReturnValue(Promise.resolve());
       createComponent();
       waitForTick(done);
     });
@@ -126,7 +128,7 @@ describe('EE MRWidget approvals', () => {
 
   describe('when fetch approvals error', () => {
     beforeEach(done => {
-      service.fetchApprovals.and.returnValue(Promise.reject());
+      service.fetchApprovals.mockReturnValue(Promise.reject());
       createComponent();
       waitForTick(done);
     });
@@ -236,14 +238,14 @@ describe('EE MRWidget approvals', () => {
         });
 
         it('shows loading icon', done => {
-          service.approveMergeRequest.and.callFake(() => new Promise(() => {}));
+          service.approveMergeRequest.mockImplementation(() => new Promise(() => {}));
           const action = findAction();
 
           expect(action.find(GlLoadingIcon).exists()).toBe(false);
 
           action.vm.$emit('click');
 
-          tick()
+          waitForPromises()
             .then(() => {
               expect(action.find(GlLoadingIcon).exists()).toBe(true);
             })
@@ -276,7 +278,7 @@ describe('EE MRWidget approvals', () => {
 
         describe('and error', () => {
           beforeEach(done => {
-            service.approveMergeRequest.and.returnValue(Promise.reject());
+            service.approveMergeRequest.mockReturnValue(Promise.reject());
             findAction().vm.$emit('click');
             waitForTick(done);
           });
@@ -304,7 +306,7 @@ describe('EE MRWidget approvals', () => {
             let authReject;
 
             beforeEach(done => {
-              service.approveMergeRequestWithAuth.and.returnValue(
+              service.approveMergeRequestWithAuth.mockReturnValue(
                 new Promise((resolve, reject) => {
                   authReject = reject;
                 }),
@@ -324,7 +326,7 @@ describe('EE MRWidget approvals', () => {
             it('sets hasError when auth fails', done => {
               authReject({ response: { status: 401 } });
 
-              tick()
+              waitForPromises()
                 .then(() => {
                   expect(wrapper.find(ApprovalsAuth).props('hasError')).toBe(true);
                 })
@@ -335,7 +337,7 @@ describe('EE MRWidget approvals', () => {
             it('shows flash if general error', done => {
               authReject('something really bad!');
 
-              tick()
+              waitForPromises()
                 .then(() => {
                   expect(createFlash).toHaveBeenCalledWith(APPROVE_ERROR);
                 })
@@ -390,7 +392,7 @@ describe('EE MRWidget approvals', () => {
 
         describe('and error', () => {
           beforeEach(done => {
-            service.unapproveMergeRequest.and.returnValue(Promise.reject());
+            service.unapproveMergeRequest.mockReturnValue(Promise.reject());
             findAction().vm.$emit('click');
             waitForTick(done);
           });
@@ -460,7 +462,7 @@ describe('EE MRWidget approvals', () => {
       expect(findOptionalSummary().exists()).toBe(false);
       expect(summary.exists()).toBe(true);
       expect(summary.props()).toEqual(
-        jasmine.objectContaining({
+        expect.objectContaining({
           approvalsLeft: expected.approvals_left,
           rulesLeft: expected.approval_rules_left,
           approvers: testApprovedBy(),
@@ -484,7 +486,7 @@ describe('EE MRWidget approvals', () => {
     it('is rendered with props', () => {
       expect(footer.exists()).toBe(true);
       expect(footer.props()).toEqual(
-        jasmine.objectContaining({
+        expect.objectContaining({
           value: false,
           suggestedApprovers: mr.approvals.suggested_approvers,
           approvalRules: mr.approvalRules,
@@ -496,7 +498,7 @@ describe('EE MRWidget approvals', () => {
     describe('when opened', () => {
       describe('and loading', () => {
         beforeEach(done => {
-          service.fetchApprovalSettings.and.callFake(() => new Promise(() => {}));
+          service.fetchApprovalSettings.mockImplementation(() => new Promise(() => {}));
           footer.vm.$emit('input', true);
           waitForTick(done);
         });
@@ -527,7 +529,7 @@ describe('EE MRWidget approvals', () => {
 
         describe('and closed', () => {
           beforeEach(done => {
-            service.fetchApprovalSettings.calls.reset();
+            service.fetchApprovalSettings.mockReset();
             footer.vm.$emit('input', false);
             waitForTick(done);
           });
