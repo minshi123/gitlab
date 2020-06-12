@@ -21,7 +21,6 @@ module Gitlab
             diff_files = super
 
             diff_files.each { |diff_file| highlight_cache.decorate(diff_file) }
-            diff_files.each { |diff_file| diff_file.stats = diff_stats_collection&.find_by_path(diff_file.new_path) }
 
             diff_files
           end
@@ -50,17 +49,6 @@ module Gitlab
 
         private
 
-        def diff_stats_collection
-          strong_memoize(:diff_stats) do
-            # There are scenarios where we don't need to request Diff Stats,
-            # when caching for instance.
-            next unless @include_stats
-            next unless diff_refs
-
-            diff_stats_cache.read.presence || super
-          end
-        end
-
         def highlight_cache
           @highlight_cache ||= Gitlab::Diff::HighlightCache.new(self)
         end
@@ -69,13 +57,16 @@ module Gitlab
           @diff_stats_cache ||= Gitlab::Diff::StatsCache.new(self)
         end
 
-        def decorate_diff!(diff)
-          return diff if diff.is_a?(File)
+        def diff_stats_collection
+          strong_memoize(:diff_stats) do
+            # There are scenarios where we don't need to request Diff Stats,
+            # when caching for instance.
+            next unless @include_stats
+            next unless diff_refs
 
-          Gitlab::Diff::File.new(diff,
-                                 repository: project.repository,
-                                 diff_refs: diff_refs,
-                                 fallback_diff_refs: fallback_diff_refs)
+            cached = diff_stats_cache.read
+            cached || @repository.diff_stats(diff_refs.base_sha, diff_refs.head_sha)
+          end
         end
       end
     end
