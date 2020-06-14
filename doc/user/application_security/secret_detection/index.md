@@ -43,7 +43,7 @@ CAUTION: **Caution:** Our Secret Detection jobs currently expect a Linux contain
 
 CAUTION: **Caution:**
 If you use your own Runners, make sure the Docker version installed
-is **not** `19.03.0`. See [troubleshooting information](#error-response-from-daemon-error-processing-tar-file-docker-tar-relocation-error) for details.
+is **not** `19.03.0`. See [troubleshooting information](../sast#error-response-from-daemon-error-processing-tar-file-docker-tar-relocation-error) for details.
 
 ## Configuration
 
@@ -75,7 +75,7 @@ The included template creates Secret Detection jobs in your CI/CD pipeline and s
 your project's source code for secrets.
 
 The results are saved as a
-[Secret Detection report artifact](../../../ci/pipelines/job_artifacts.md#artifactsreportssecret-detection-ultimate)
+[Secret Detection report artifact](../../../ci/pipelines/job_artifacts.md#artifactsreportssecret_detection-ultimate)
 that you can later download and analyze. Due to implementation limitations, we
 always take the latest Secret Detection artifact available.
 
