@@ -64,13 +64,6 @@ detected, whereas `https://username:password@example.com/path/to/repo` would be 
 
 To enable Secret Detection for GitLab 13.1 and later, you must include the `Secret-Scanning.gitlab-ci.yml` template that’s provided as a part of your GitLab installation. For GitLab versions earlier than 11.9, you can copy and use the job as defined in that template.
 
-<!-- NOTE:
-TODO: Update how AutoDevops works with Secret Detection
-
-NOTE: **Note:**
-You don't have to configure Secret Detection manually as shown in this section if you're using [Auto Secret Detection](../../../topics/autodevops/stages.md#auto-sast-ultimate)
-provided by [Auto DevOps](../../../topics/autodevops/index.md). !-->
-
 Add the following to your `.gitlab-ci.yml` file:
 
 ```yaml
