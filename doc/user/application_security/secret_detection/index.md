@@ -96,7 +96,7 @@ CAUTION: **Planned Deprecation:**
 In a future GitLab release, configuring Secret Detection with the SAST template will be deprecated. Please begin using `Secret-Detection.gitlab-ci.yml`
 to prevent future issues. We have made a
 [video to guide you through the process of transitioning](https://www.youtube.com/watch?v=W2tjcQreDwQ&feature=emb_title)
-to this new template. 
+to this new template.
 
 When using the SAST template, Secret Detection is performed by a [specific analyzer](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml#L180)
 during the `sast` job. It runs regardless of the programming
