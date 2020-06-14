@@ -64,7 +64,7 @@ detected, whereas `https://username:password@example.com/path/to/repo` would be 
 
 To enable Secret Detection for GitLab 13.1 and later, you must include the `Secret-Scanning.gitlab-ci.yml` template that’s provided as a part of your GitLab installation. For GitLab versions earlier than 11.9, you can copy and use the job as defined in that template.
 
-<!-- NOTE: 
+<!-- NOTE:
 TODO: Update how AutoDevops works with Secret Detection
 
 NOTE: **Note:**
@@ -94,7 +94,9 @@ you don't need to manually configure it.
 
 CAUTION: **Planned Deprecation:**
 In a future GitLab release, configuring Secret Detection with the SAST template will be deprecated. Please begin using `Secret-Detection.gitlab-ci.yml`
-to prevent future issues.
+to prevent future issues. We have made a
+[video to guide you through the process of transitioning](https://www.youtube.com/watch?v=W2tjcQreDwQ&feature=emb_title)
+to this new template. 
 
 When using the SAST template, Secret Detection is performed by a [specific analyzer](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml#L180)
 during the `sast` job. It runs regardless of the programming
@@ -112,7 +114,7 @@ declare a job with the same name as the SAST job to override. Place this new job
 inclusion and specify any additional keys under it.
 
 In the following example, we include the Secret Detection template and at the same time we
-override the `secret-scan` job with the `SAST_GITLEAKS_HISTORIC_SCAN` variable to `true`:
+override the `secret-scan` job with the `SECRET_DETECTION_HISTORIC_SCAN` variable to `true`:
 
 ```yaml
 include:
@@ -120,7 +122,7 @@ include:
 
 secrets-scan:
   variables:
-    SAST_GITLEAKS_HISTORIC_SCAN: true
+    SECRET_DETECTION_HISTORIC_SCAN: true
 ```
 
 Because the template is [evaluated before](../../../ci/yaml/README.md#include)
@@ -136,9 +138,9 @@ Secret Detection can be customized by defining available variables:
 
 | Environment variable    | Default value | Description |
 |-------------------------|---------------|-------------|
-| `SD_COMMIT_FROM` | -     | The commit a Gitleaks scan starts at. |
-| `SD_COMMIT_TO` | -       | The commit a Gitleaks scan ends at. |
-| `SD_HISTORIC_SCAN` | false | Flag to enable a historic Gitleaks scan. |
+| `SECRET_DETECTION_COMMIT_FROM` | -     | The commit a Gitleaks scan starts at. |
+| `SECRET_DETECTION_COMMIT_TO` | -       | The commit a Gitleaks scan ends at. |
+| `SECRET_DETECTION_HISTORIC_SCAN` | false | Flag to enable a historic Gitleaks scan. |
 
 ## Full History Secret Scan
 
@@ -148,7 +150,7 @@ want to perform a full secret scan. Running a secret scan on the full history ca
 especially for larger repositories with lengthy Git histories. We recommend not setting this variable
 as part of your normal job definition.
 
-A new configuration variable ([`SD_HISTORIC_SCAN`](../sast/#vulnerability-filters))
+A new configuration variable ([`SECRET_DETECTION_HISTORIC_SCAN`](../sast/#vulnerability-filters))
 can be set to change the behavior of the GitLab Secret Detection scan to run on the entire Git history of a repository.
 
 We have created a [short video walkthrough](https://youtu.be/wDtc_K00Y0A) showcasing how you can perform a full history secret scan.
