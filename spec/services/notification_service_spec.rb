@@ -243,11 +243,12 @@ describe NotificationService, :mailer do
   describe '#unknown_sign_in' do
     let_it_be(:user) { create(:user) }
     let_it_be(:ip) { '127.0.0.1' }
+    let_it_be(:time) { Time.current }
 
-    subject { notification.unknown_sign_in(user, ip) }
+    subject { notification.unknown_sign_in(user, ip, time) }
 
     it 'sends email to the user' do
-      expect { subject }.to have_enqueued_email(user, ip, mail: 'unknown_sign_in_email')
+      expect { subject }.to have_enqueued_email(user, ip, time, mail: 'unknown_sign_in_email')
     end
   end
 
@@ -2457,6 +2458,8 @@ describe NotificationService, :mailer do
               group = create(:group)
 
               project.update(group: group)
+
+              create(:email, :confirmed, user: u_custom_notification_enabled, email: group_notification_email)
               create(:notification_setting, user: u_custom_notification_enabled, source: group, notification_email: group_notification_email)
             end
 
@@ -2491,6 +2494,7 @@ describe NotificationService, :mailer do
               group = create(:group)
 
               project.update(group: group)
+              create(:email, :confirmed, user: u_member, email: group_notification_email)
               create(:notification_setting, user: u_member, source: group, notification_email: group_notification_email)
             end
 
@@ -2584,6 +2588,7 @@ describe NotificationService, :mailer do
               group = create(:group)
 
               project.update(group: group)
+              create(:email, :confirmed, user: u_member, email: group_notification_email)
               create(:notification_setting, user: u_member, source: group, notification_email: group_notification_email)
             end
 

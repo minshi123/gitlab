@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe QuickActions::InterpretService do
+RSpec.describe QuickActions::InterpretService do
   let(:current_user) { create(:user) }
   let(:user) { create(:user) }
   let(:user2) { create(:user) }
@@ -761,30 +761,6 @@ describe QuickActions::InterpretService do
           service.execute(content, merge_request)
 
           expect(merge_request.approved_by_users).to be_empty
-        end
-      end
-    end
-
-    context 'submit_review command' do
-      using RSpec::Parameterized::TableSyntax
-
-      where(:note) do
-        [
-          'I like it',
-          '/submit_review'
-        ]
-      end
-
-      with_them do
-        let(:merge_request) { create(:merge_request, source_project: project) }
-        let(:content) { '/submit_review' }
-        let!(:draft_note) { create(:draft_note, note: note, merge_request: merge_request, author: current_user) }
-
-        it 'submits the users current review' do
-          _, _, message = service.execute(content, merge_request)
-
-          expect { draft_note.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect(message).to eq('Submitted the current review.')
         end
       end
     end

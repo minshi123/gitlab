@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe MergeRequests::UpdateService, :mailer do
+RSpec.describe MergeRequests::UpdateService, :mailer do
   include ProjectForksHelper
 
   let(:project) { create(:project, :repository) }
@@ -134,7 +134,7 @@ describe MergeRequests::UpdateService, :mailer do
           update_merge_request(approver_ids: [existing_approver, removed_approver].map(&:id).join(','))
         end
 
-        Todo.where(action: Todo::APPROVAL_REQUIRED).destroy_all # rubocop: disable DestroyAll
+        Todo.where(action: Todo::APPROVAL_REQUIRED).destroy_all # rubocop: disable Cop/DestroyAll
         ActionMailer::Base.deliveries.clear
       end
 

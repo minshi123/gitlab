@@ -16,9 +16,10 @@ describe Spam::SpamVerdictService do
   let(:request) { double(:request, env: env) }
 
   let(:check_for_spam) { true }
-  let(:issue) { build(:issue) }
+  let_it_be(:user) { create(:user) }
+  let(:issue) { build(:issue, author: user) }
   let(:service) do
-    described_class.new(target: issue, request: request, options: {})
+    described_class.new(user: user, target: issue, request: request, options: {})
   end
 
   describe '#execute' do
@@ -169,7 +170,7 @@ describe Spam::SpamVerdictService do
       before do
         stub_application_setting(spam_check_endpoint_enabled: true)
         stub_application_setting(spam_check_endpoint_url: "http://www.spamcheckurl.com/spam_check")
-        stub_request(:any, /.*spamcheckurl.com.*/).to_return( body: spam_check_body.to_json, status: spam_check_http_status )
+        stub_request(:post, /.*spamcheckurl.com.*/).to_return( body: spam_check_body.to_json, status: spam_check_http_status )
       end
 
       context 'if the endpoint is accessible' do
@@ -248,7 +249,7 @@ describe Spam::SpamVerdictService do
 
       context 'if the endpoint times out' do
         before do
-          stub_request(:any, /.*spamcheckurl.com.*/).to_timeout
+          stub_request(:post, /.*spamcheckurl.com.*/).to_timeout
         end
 
         it 'returns nil' do

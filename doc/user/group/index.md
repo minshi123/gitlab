@@ -1,5 +1,8 @@
 ---
 type: reference, howto
+stage: Manage
+group: Access
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 ---
 
 # Groups
@@ -502,9 +505,10 @@ This will disable the option for all users who previously had permissions to
 operate project memberships, so no new users can be added. Furthermore, any
 request to add a new user to a project through API will not be possible.
 
-#### IP access restriction **(ULTIMATE)**
+#### IP access restriction **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/1985) in [GitLab Ultimate and Gold](https://about.gitlab.com/pricing/) 12.0.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/1985) in [GitLab Ultimate and Gold](https://about.gitlab.com/pricing/) 12.0.
+> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/215410) to [GitLab Premium and Silver](https://about.gitlab.com/pricing/) in 13.1.
 
 To make sure only people from within your organization can access particular
 resources, you have the option to restrict access to groups and their
@@ -512,7 +516,7 @@ underlying projects, issues, etc, by IP address. This can help ensure that
 particular content doesn't leave the premises, while not blocking off access to
 the entire instance.
 
-Add one or more whitelisted IP subnets using CIDR notation in comma separated format to the group settings and anyone
+Add one or more allowed IP subnets using CIDR notation in comma separated format to the group settings and anyone
 coming from a different IP address won't be able to access the restricted
 content.
 
@@ -527,13 +531,12 @@ the group regardless of the IP restriction.
 
 #### Allowed domain restriction **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/7297) in [GitLab Premium and Silver](https://about.gitlab.com/pricing/) 12.2.
+>- [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/7297) in [GitLab Premium and Silver](https://about.gitlab.com/pricing/) 12.2.
+>- Support for specifying multiple email domains [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/33143) in GitLab 13.1
 
-You can restrict access to groups by
-allowing only users with email addresses in particular domains to be added to the group.
+You can restrict access to groups by allowing only users with email addresses in particular domains to be added to the group.
 
-Add email domains you want to whitelist and users with emails from different
-domains won't be allowed to be added to this group.
+Add email domains you want to allow and users with emails from different domains won't be allowed to be added to this group.
 
 Some domains cannot be restricted. These are the most popular public email domains, such as:
 
@@ -551,7 +554,7 @@ Some domains cannot be restricted. These are the most popular public email domai
 To enable this feature:
 
 1. Navigate to the group's **Settings > General** page.
-1. Expand the **Permissions, LFS, 2FA** section, and enter the domain name into **Restrict membership by email** field.
+1. Expand the **Permissions, LFS, 2FA** section, and enter the domain names into **Restrict membership by email** field. You can enter multiple domains by separating each domain with a comma (,).
 1. Click **Save changes**.
 
 This will enable the domain-checking for all new users added to the group from this moment on.

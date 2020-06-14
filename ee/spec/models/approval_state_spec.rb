@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe ApprovalState do
+RSpec.describe ApprovalState do
   def create_rule(additional_params = {})
     default_approver = create(:user)
     params = additional_params.reverse_merge(merge_request: merge_request, users: [default_approver])
@@ -1605,6 +1605,19 @@ describe ApprovalState do
           end
         end
       end
+    end
+  end
+
+  describe '#total_approvals_count' do
+    let(:rule) { create_rule(approvals_required: 1, rule_type: :any_approver, users: [approver1]) }
+
+    before do
+      create(:approval, merge_request: merge_request, user: rule.users.first)
+      create(:approval, merge_request: merge_request, user: approver2)
+    end
+
+    it 'returns the total number of approvals (required + optional)' do
+      expect(subject.total_approvals_count).to eq(2)
     end
   end
 end

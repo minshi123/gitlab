@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-describe "Admin uploads license" do
+RSpec.describe "Admin uploads license" do
   let_it_be(:admin) { create(:admin) }
 
   before do
@@ -12,7 +12,7 @@ describe "Admin uploads license" do
 
   context "when license key is provided in the query string" do
     before do
-      License.destroy_all # rubocop: disable DestroyAll
+      License.destroy_all # rubocop: disable Cop/DestroyAll
 
       visit(admin_license_path(trial_key: license.data))
 
@@ -43,7 +43,7 @@ describe "Admin uploads license" do
 
   context "when license key is not provided in the query string, as it is a repeat trial" do
     before do
-      License.destroy_all # rubocop: disable DestroyAll
+      License.destroy_all # rubocop: disable Cop/DestroyAll
 
       visit(admin_license_path(trial_key: ""))
     end

@@ -158,6 +158,7 @@ When the user is authenticated and `simple` is not set this returns something li
     "public_jobs": true,
     "shared_with_groups": [],
     "only_allow_merge_if_pipeline_succeeds": false,
+    "allow_merge_on_skipped_pipeline": false,
     "only_allow_merge_if_all_discussions_are_resolved": false,
     "remove_source_branch_after_merge": false,
     "request_access_enabled": false,
@@ -248,6 +249,7 @@ When the user is authenticated and `simple` is not set this returns something li
     "public_jobs": true,
     "shared_with_groups": [],
     "only_allow_merge_if_pipeline_succeeds": false,
+    "allow_merge_on_skipped_pipeline": false,
     "only_allow_merge_if_all_discussions_are_resolved": false,
     "remove_source_branch_after_merge": false,
     "request_access_enabled": false,
@@ -407,6 +409,7 @@ This endpoint supports [keyset pagination](README.md#keyset-based-pagination) fo
     "public_jobs": true,
     "shared_with_groups": [],
     "only_allow_merge_if_pipeline_succeeds": false,
+    "allow_merge_on_skipped_pipeline": false,
     "only_allow_merge_if_all_discussions_are_resolved": false,
     "remove_source_branch_after_merge": false,
     "request_access_enabled": false,
@@ -497,6 +500,7 @@ This endpoint supports [keyset pagination](README.md#keyset-based-pagination) fo
     "public_jobs": true,
     "shared_with_groups": [],
     "only_allow_merge_if_pipeline_succeeds": false,
+    "allow_merge_on_skipped_pipeline": false,
     "only_allow_merge_if_all_discussions_are_resolved": false,
     "remove_source_branch_after_merge": false,
     "request_access_enabled": false,
@@ -623,6 +627,7 @@ Example response:
     "public_jobs": true,
     "shared_with_groups": [],
     "only_allow_merge_if_pipeline_succeeds": false,
+    "allow_merge_on_skipped_pipeline": false,
     "only_allow_merge_if_all_discussions_are_resolved": false,
     "remove_source_branch_after_merge": false,
     "request_access_enabled": false,
@@ -708,6 +713,7 @@ Example response:
     "public_jobs": true,
     "shared_with_groups": [],
     "only_allow_merge_if_pipeline_succeeds": false,
+    "allow_merge_on_skipped_pipeline": false,
     "only_allow_merge_if_all_discussions_are_resolved": false,
     "remove_source_branch_after_merge": false,
     "request_access_enabled": false,
@@ -861,6 +867,7 @@ GET /projects/:id
   ],
   "repository_storage": "default",
   "only_allow_merge_if_pipeline_succeeds": false,
+  "allow_merge_on_skipped_pipeline": false,
   "only_allow_merge_if_all_discussions_are_resolved": false,
   "remove_source_branch_after_merge": false,
   "printing_merge_requests_link_enabled": true,
@@ -1044,6 +1051,7 @@ POST /projects
 | `import_url` | string | no | URL to import repository from |
 | `public_builds` | boolean | no | If `true`, jobs can be viewed by non-project-members |
 | `only_allow_merge_if_pipeline_succeeds` | boolean | no | Set whether merge requests can only be merged with successful jobs |
+| `allow_merge_on_skipped_pipeline` | boolean | no | Set whether or not merge requests can be merged with skipped jobs |
 | `only_allow_merge_if_all_discussions_are_resolved` | boolean | no | Set whether merge requests can only be merged when all the discussions are resolved |
 | `merge_method` | string | no | Set the [merge method](#project-merge-method) used |
 | `autoclose_referenced_issues` | boolean | no | Set whether auto-closing referenced issues on default branch |
@@ -1113,6 +1121,7 @@ POST /projects/user/:user_id
 | `import_url` | string | no | URL to import repository from |
 | `public_builds` | boolean | no | If `true`, jobs can be viewed by non-project-members |
 | `only_allow_merge_if_pipeline_succeeds` | boolean | no | Set whether merge requests can only be merged with successful jobs |
+| `allow_merge_on_skipped_pipeline` | boolean | no | Set whether or not merge requests can be merged with skipped jobs |
 | `only_allow_merge_if_all_discussions_are_resolved` | boolean | no | Set whether merge requests can only be merged when all the discussions are resolved |
 | `merge_method` | string | no | Set the [merge method](#project-merge-method) used |
 | `autoclose_referenced_issues` | boolean | no | Set whether auto-closing referenced issues on default branch |
@@ -1183,6 +1192,7 @@ PUT /projects/:id
 | `import_url` | string | no | URL to import repository from |
 | `public_builds` | boolean | no | If `true`, jobs can be viewed by non-project-members |
 | `only_allow_merge_if_pipeline_succeeds` | boolean | no | Set whether merge requests can only be merged with successful jobs |
+| `allow_merge_on_skipped_pipeline` | boolean | no | Set whether or not merge requests can be merged with skipped jobs |
 | `only_allow_merge_if_all_discussions_are_resolved` | boolean | no | Set whether merge requests can only be merged when all the discussions are resolved |
 | `merge_method` | string | no | Set the [merge method](#project-merge-method) used |
 | `autoclose_referenced_issues` | boolean | no | Set whether auto-closing referenced issues on default branch |
@@ -1204,7 +1214,7 @@ PUT /projects/:id
 | `approvals_before_merge` | integer | no | **(STARTER)** How many approvers should approve merge request by default |
 | `external_authorization_classification_label` | string | no | **(PREMIUM)** The classification label for the project |
 | `mirror` | boolean | no | **(STARTER)** Enables pull mirroring in a project |
-| `mirror_user_id` | integer | no | **(STARTER)** User responsible for all the activity surrounding a pull mirror event |
+| `mirror_user_id` | integer | no | **(STARTER)** User responsible for all the activity surrounding a pull mirror event. Can only be set by admins. |
 | `mirror_trigger_builds` | boolean | no | **(STARTER)** Pull mirroring triggers builds |
 | `only_mirror_protected_branches` | boolean | no | **(STARTER)** Only mirror protected branches |
 | `mirror_overwrites_diverged_branches` | boolean | no | **(STARTER)** Pull mirror overwrites diverged branches |
@@ -1317,6 +1327,7 @@ Example responses:
     "public_jobs": true,
     "shared_with_groups": [],
     "only_allow_merge_if_pipeline_succeeds": false,
+    "allow_merge_on_skipped_pipeline": false,
     "only_allow_merge_if_all_discussions_are_resolved": false,
     "remove_source_branch_after_merge": false,
     "request_access_enabled": false,
@@ -1408,6 +1419,7 @@ Example response:
   "public_jobs": true,
   "shared_with_groups": [],
   "only_allow_merge_if_pipeline_succeeds": false,
+  "allow_merge_on_skipped_pipeline": false,
   "only_allow_merge_if_all_discussions_are_resolved": false,
   "remove_source_branch_after_merge": false,
   "request_access_enabled": false,
@@ -1498,6 +1510,7 @@ Example response:
   "public_jobs": true,
   "shared_with_groups": [],
   "only_allow_merge_if_pipeline_succeeds": false,
+  "allow_merge_on_skipped_pipeline": false,
   "only_allow_merge_if_all_discussions_are_resolved": false,
   "remove_source_branch_after_merge": false,
   "request_access_enabled": false,
@@ -1680,6 +1693,7 @@ Example response:
   "public_jobs": true,
   "shared_with_groups": [],
   "only_allow_merge_if_pipeline_succeeds": false,
+  "allow_merge_on_skipped_pipeline": false,
   "only_allow_merge_if_all_discussions_are_resolved": false,
   "remove_source_branch_after_merge": false,
   "request_access_enabled": false,
@@ -1789,6 +1803,7 @@ Example response:
   "public_jobs": true,
   "shared_with_groups": [],
   "only_allow_merge_if_pipeline_succeeds": false,
+  "allow_merge_on_skipped_pipeline": false,
   "only_allow_merge_if_all_discussions_are_resolved": false,
   "remove_source_branch_after_merge": false,
   "request_access_enabled": false,
@@ -1857,7 +1872,7 @@ The `file=` parameter must point to a file on your filesystem and be preceded
 by `@`. For example:
 
 ```shell
-curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" --form "file=@dk.png" https://gitlab.example.com/api/v4/projects/5/uploads
+curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" --form "file=@dk.png" "https://gitlab.example.com/api/v4/projects/5/uploads"
 ```
 
 Returned object:
@@ -1904,7 +1919,7 @@ DELETE /projects/:id/share/:group_id
 | `group_id` | integer | yes | The ID of the group |
 
 ```shell
-curl --request DELETE --header "PRIVATE-TOKEN: <your_access_token>" https://gitlab.example.com/api/v4/projects/5/share/17
+curl --request DELETE --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects/5/share/17"
 ```
 
 ## Hooks
@@ -2070,7 +2085,7 @@ GET /projects
 | `sort` | string | no | Return requests sorted in `asc` or `desc` order |
 
 ```shell
-curl --header "PRIVATE-TOKEN: <your_access_token>" https://gitlab.example.com/api/v4/projects?search=test
+curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects?search=test"
 ```
 
 ## Start the Housekeeping task for a Project
@@ -2230,7 +2245,7 @@ POST /projects/:id/mirror/pull
 | `id` | integer/string | yes | The ID or [URL-encoded path of the project](README.md#namespaced-path-encoding) |
 
 ```shell
-curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" https://gitlab.example.com/api/v4/projects/:id/mirror/pull
+curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects/:id/mirror/pull"
 ```
 
 ## Project badges

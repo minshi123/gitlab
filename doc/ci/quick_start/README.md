@@ -1,4 +1,7 @@
 ---
+stage: Verify
+group: Continuous Integration
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 type: reference
 ---
 
@@ -184,7 +187,7 @@ can be found at <https://docs.gitlab.com/runner/>.
 In order to have a functional Runner you need to follow two steps:
 
 1. [Install it](https://docs.gitlab.com/runner/install/)
-1. [Configure it](../runners/README.md#registering-a-specific-runner)
+1. [Configure it](https://docs.gitlab.com/runner/configuration/)
 
 Follow the links above to set up your own Runner or use a Shared Runner as
 described in the next section.

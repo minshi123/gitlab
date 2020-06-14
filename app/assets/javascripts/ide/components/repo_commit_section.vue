@@ -3,7 +3,7 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 import tooltip from '~/vue_shared/directives/tooltip';
 import CommitFilesList from './commit_sidebar/list.vue';
 import EmptyState from './commit_sidebar/empty_state.vue';
-import { leftSidebarViews, stageKeys } from '../constants';
+import { stageKeys } from '../constants';
 
 export default {
   components: {
@@ -16,7 +16,7 @@ export default {
   computed: {
     ...mapState(['changedFiles', 'stagedFiles', 'lastCommitMsg']),
     ...mapState('commit', ['commitMessage', 'submitCommitLoading']),
-    ...mapGetters(['lastOpenedFile', 'hasChanges', 'someUncommittedChanges', 'activeFile']),
+    ...mapGetters(['lastOpenedFile', 'someUncommittedChanges', 'activeFile']),
     ...mapGetters('commit', ['discardDraftButtonDisabled']),
     showStageUnstageArea() {
       return Boolean(this.someUncommittedChanges || this.lastCommitMsg);
@@ -25,28 +25,26 @@ export default {
       return this.activeFile ? this.activeFile.key : null;
     },
   },
-  watch: {
-    hasChanges() {
-      if (!this.hasChanges) {
-        this.updateActivityBarView(leftSidebarViews.edit.name);
-      }
-    },
-  },
   mounted() {
-    if (this.lastOpenedFile && this.lastOpenedFile.type !== 'tree') {
-      this.openPendingTab({
-        file: this.lastOpenedFile,
-        keyPrefix: this.lastOpenedFile.staged ? stageKeys.staged : stageKeys.unstaged,
+    const file =
+      this.lastOpenedFile && this.lastOpenedFile.type !== 'tree'
+        ? this.lastOpenedFile
+        : this.activeFile;
+
+    if (!file) return;
+
+    this.openPendingTab({
+      file,
+      keyPrefix: file.staged ? stageKeys.staged : stageKeys.unstaged,
+    })
+      .then(changeViewer => {
+        if (changeViewer) {
+          this.updateViewer('diff');
+        }
       })
-        .then(changeViewer => {
-          if (changeViewer) {
-            this.updateViewer('diff');
-          }
-        })
-        .catch(e => {
-          throw e;
-        });
-    }
+      .catch(e => {
+        throw e;
+      });
   },
   methods: {
     ...mapActions(['openPendingTab', 'updateViewer', 'updateActivityBarView']),
