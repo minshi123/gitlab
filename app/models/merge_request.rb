@@ -856,6 +856,7 @@ class MergeRequest < ApplicationRecord
 
     clear_memoization(:source_branch_head)
     clear_memoization(:target_branch_head)
+    clear_memoization(:source_branch_exists)
   end
 
   def reload_diff_if_branch_changed
@@ -1104,9 +1105,19 @@ class MergeRequest < ApplicationRecord
   end
 
   def source_branch_exists?
-    return false unless self.source_project
+    if Feature.enabled?(:memoize_source_branch_merge_request, project)
+      strong_memoize(:source_branch_exists) do
+        if self.source_project
+          self.source_project.repository.branch_exists?(self.source_branch)
+        else
+          false
+        end
+      end
+    else
+      return false unless self.source_project
 
-    self.source_project.repository.branch_exists?(self.source_branch)
+      self.source_project.repository.branch_exists?(self.source_branch)
+    end
   end
 
   def target_branch_exists?

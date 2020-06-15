@@ -1196,6 +1196,35 @@ describe MergeRequest do
     end
   end
 
+  describe "#source_branch_exists?" do
+    let(:merge_request) { subject }
+    let(:repository) { merge_request.source_project.repository }
+
+    context 'when memoize_source_branch_merge_request feature is enabled' do
+      before do
+        stub_feature_flags(memoize_source_branch_merge_request: true)
+      end
+
+      it 'memoizes the value' do
+        expect(repository).to receive(:branch_exists?).once.with(merge_request.source_branch)
+
+        2.times { merge_request.source_branch_exists? }
+      end
+    end
+
+    context 'when memoize_source_branch_merge_request feature is disabled' do
+      before do
+        stub_feature_flags(memoize_source_branch_merge_request: false)
+      end
+
+      it 'does not memoize the value' do
+        expect(repository).to receive(:branch_exists?).twice.with(merge_request.source_branch)
+
+        2.times { merge_request.source_branch_exists? }
+      end
+    end
+  end
+
   describe '#default_merge_commit_message' do
     it 'includes merge information as the title' do
       request = build(:merge_request, source_branch: 'source', target_branch: 'target')
