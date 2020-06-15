@@ -28,7 +28,7 @@ export const baseReportHasLicenses = (state) => {
   return state.existingLicenses.length;
 };
 
-export const licenseReportLength = (state, getters) => {
+export const licenseReportLength = (_, getters) => {
   return getters.licenseReport.length;
 };
 
