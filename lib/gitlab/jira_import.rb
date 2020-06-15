@@ -81,6 +81,12 @@ module Gitlab
       cache_class.expire(self.already_imported_cache_key(:issues, project_id), JIRA_IMPORT_CACHE_TIMEOUT)
     end
 
+    # this is implemented in https://gitlab.com/gitlab-org/gitlab/-/merge_requests/34067
+    def self.get_user_mapping(project_id, jira_account_id)
+
+    end
+
+
     def self.cache_class
       Gitlab::Cache::Import::Caching
     end
