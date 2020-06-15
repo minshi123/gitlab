@@ -244,6 +244,8 @@ In the code below there is an example of this configuration file:
 
 ```yaml
 terminal:
+  # This can be any image that has the necessary runtime environment for your project.
+  image: node:10-alpine
   before_script:
     - apt-get update
   script: sleep 60
