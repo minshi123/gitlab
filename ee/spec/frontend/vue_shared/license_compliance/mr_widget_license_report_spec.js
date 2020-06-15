@@ -60,7 +60,7 @@ describe('License Report MR Widget', () => {
     setAPISettings: () => {},
     fetchManagedLicenses: () => {},
     fetchParsedLicenseReport: () => {},
-    fetchLicenseCheckApprovalRule: () => {}
+    fetchLicenseCheckApprovalRule: () => {},
   };
 
   const mountComponent = ({
@@ -343,7 +343,7 @@ describe('License Report MR Widget', () => {
     const actions = {
       setAPISettings: jest.fn(() => {}),
       fetchParsedLicenseReport: jest.fn(() => {}),
-      fetchLicenseCheckApprovalRule: jest.fn(() => {})
+      fetchLicenseCheckApprovalRule: jest.fn(() => {}),
     };
     mountComponent({ actions });
 
