@@ -263,7 +263,7 @@ export default {
       </gl-alert>
 
       <gl-alert v-if="showEmptyStacktraceAlert" @dismiss="isStacktraceEmptyAlertVisible = false">
-        {{ __('No stacktrace for this error') }}
+        {{ __('No stack trace for this error') }}
       </gl-alert>
 
       <div class="error-details-header d-flex py-2 justify-content-between">

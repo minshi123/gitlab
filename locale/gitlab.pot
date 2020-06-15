@@ -14963,7 +14963,7 @@ msgstr ""
 msgid "No schedules"
 msgstr ""
 
-msgid "No stacktrace for this error"
+msgid "No stack trace for this error"
 msgstr ""
 
 msgid "No starrers matched your search"

@@ -286,7 +286,7 @@ describe('ErrorDetails', () => {
         return wrapper.vm.$nextTick().then(() => {
           expect(wrapper.find(GlLoadingIcon).exists()).toBe(false);
           expect(wrapper.find(Stacktrace).exists()).toBe(false);
-          expect(findAlert().text()).toBe('No stacktrace for this error');
+          expect(findAlert().text()).toBe('No stack trace for this error');
         });
       });
     });
