@@ -215,7 +215,7 @@ to work:
 
 If you have the terminal open and the job has finished with its tasks, the
 terminal will block the job from finishing for the duration configured in
-[`[session_server].terminal_max_retention_time`](https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-session_server-section)
+[`[session_server].session_timeout`](https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-session_server-section)
 until you close the terminal window.
 
 NOTE: **Note:** Not all executors are
