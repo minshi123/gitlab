@@ -12,6 +12,16 @@
   .geo-node-actions-container {
     flex-direction: column;
   }
+
+  .geo-node-form-container {
+    #node-name-field {
+      width: 100%;
+    }
+
+    #node-url-field {
+      width: 100%;
+    }
+  }
 }
 
 .project-card-errors {
