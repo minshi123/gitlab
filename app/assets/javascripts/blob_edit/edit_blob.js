@@ -3,7 +3,7 @@
 import $ from 'jquery';
 import axios from '~/lib/utils/axios_utils';
 import createFlash from '~/flash';
-import { __ } from '~/locale';
+import { BLOB_EDITOR_ERROR, BLOB_PREVIEW_ERROR } from './constants';
 import TemplateSelectorMediator from '../blob/file_template_mediator';
 import getModeByFileExtension from '~/lib/utils/ace_utils';
 import { addEditorMarkdownListeners } from '~/lib/utils/text_markdown';
@@ -13,28 +13,70 @@ export default class EditBlob {
   // assetsPath, filePath, currentAction, projectId, isMarkdown
   constructor(options) {
     this.options = options;
-    this.configureAceEditor();
-    this.initModePanesAndLinks();
-    this.initSoftWrap();
-    this.initFileSelectors();
+    const { isMarkdown } = this.options;
+    const bootstrap = () => {
+      this.initModePanesAndLinks();
+      this.initSoftWrap();
+      this.initFileSelectors();
+      this.editorPostHandling(isMarkdown);
+    };
+    if (window?.gon?.features?.monacoBlobs) {
+      this.configureMonacoEditor()
+        .then(() => {
+          bootstrap();
+        })
+        .catch(() => createFlash(BLOB_EDITOR_ERROR));
+    } else {
+      this.configureAceEditor();
+      bootstrap();
+    }
+  }
+
+  editorPostHandling(isMarkdown) {
+    if (isMarkdown) {
+      addEditorMarkdownListeners(this.editor);
+    }
+    this.editor.focus();
+  }
+
+  configureMonacoEditor() {
+    return import(/* webpackChunkName: 'monaco_editor_lite' */ '~/editor/editor_lite').then(
+      EditorModule => {
+        const EditorLite = EditorModule.default;
+        const editorEl = document.getElementById('editor');
+        const fileNameEl = document.getElementById('file_path');
+        const fileContentEl = document.getElementById('file-content');
+        const form = document.querySelector('.js-edit-blob-form');
+
+        this.editor = new EditorLite();
+
+        this.editor.createInstance({
+          el: editorEl,
+          blobPath: fileNameEl.value,
+          blobContent: editorEl.innerText,
+        });
+
+        fileNameEl.addEventListener('change', () => {
+          this.editor.updateModelLanguage(fileNameEl.value);
+        });
+
+        form.addEventListener('submit', () => {
+          fileContentEl.value = this.editor.getValue();
+        });
+      },
+    );
   }
 
   configureAceEditor() {
-    const { filePath, assetsPath, isMarkdown } = this.options;
+    const { filePath, assetsPath } = this.options;
     ace.config.set('modePath', `${assetsPath}/ace`);
     ace.config.loadModule('ace/ext/searchbox');
     ace.config.loadModule('ace/ext/modelist');
 
     this.editor = ace.edit('editor');
 
-    if (isMarkdown) {
-      addEditorMarkdownListeners(this.editor);
-    }
-
     // This prevents warnings re: automatic scrolling being logged
     this.editor.$blockScrolling = Infinity;
-
-    this.editor.focus();
 
     if (filePath) {
       this.editor.getSession().setMode(getModeByFileExtension(filePath));
@@ -81,7 +123,7 @@ export default class EditBlob {
           currentPane.empty().append(data);
           currentPane.renderGFM();
         })
-        .catch(() => createFlash(__('An error occurred previewing the blob')));
+        .catch(() => createFlash(BLOB_PREVIEW_ERROR));
     }
 
     this.$toggleButton.show();
