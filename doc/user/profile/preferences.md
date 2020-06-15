@@ -41,7 +41,7 @@ The default theme is Indigo. You can choose between 10 themes:
 NOTE: **Note:**
 GitLab uses the [rouge Ruby library](http://rouge.jneen.net/ "Rouge website")
 for syntax highlighting outside of any Editor context. The WebIDE (like Snippets)
-use [Monaco Editor](https://microsoft.github.io/monaco-editor/) and it's provided [Monarch](https://microsoft.github.io/monaco-editor/monarch.html) library for
+uses [Monaco Editor](https://microsoft.github.io/monaco-editor/) and it's provided [Monarch](https://microsoft.github.io/monaco-editor/monarch.html) library for
 syntax highlighting. For a list of supported languages, visit the documentation of
 the respective libraries.
 

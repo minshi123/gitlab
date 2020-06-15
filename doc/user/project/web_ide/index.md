@@ -39,7 +39,7 @@ The Web IDE currently provides:
 Because the Web IDE is based on the [Monaco Editor](https://microsoft.github.io/monaco-editor/),
 you can find a more complete list of supported languages in the
 [Monaco languages](https://github.com/Microsoft/monaco-languages) repository. Under the hood,
-Monaco uses [Monarch library](https://microsoft.github.io/monaco-editor/monarch.html) for syntax highlighting.
+Monaco uses the [Monarch](https://microsoft.github.io/monaco-editor/monarch.html) library for syntax highlighting.
 
 If you are missing syntax highlighting support for any language, you can [contribute to GitLab](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/assets/javascripts/ide/lib/languages/README.md)
 to add support.
