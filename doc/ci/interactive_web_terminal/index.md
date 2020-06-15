@@ -69,4 +69,4 @@ close the terminal window.
 
 ## Interactive Web Terminals for the Web IDE **(ULTIMATE ONLY)**
 
-Read the Web IDE docs to learn how to run [Interactive Terminals through the Web IDE](../../user/project/web_ide/index.md).
+Read the Web IDE docs to learn how to run [Interactive Terminals through the Web IDE](../../user/project/web_ide/index.md#interactive-web-terminals-for-the-web-ide).
