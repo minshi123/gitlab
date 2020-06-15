@@ -107,6 +107,7 @@ export default {
       errorPollTimeout: 0,
       issueCreationInProgress: false,
       isAlertVisible: false,
+      isStacktraceEmptyAlertVisible: true,
       closedIssueId: null,
     };
   },
@@ -167,6 +168,9 @@ export default {
     },
     resolveBtnLabel() {
       return this.errorStatus !== errorStatus.RESOLVED ? __('Resolve') : __('Unresolve');
+    },
+    showEmptyStacktraceAlert() {
+      return !this.loadingStacktrace && !this.showStacktrace && this.isStacktraceEmptyAlertVisible;
     },
   },
   watch: {
@@ -256,6 +260,10 @@ export default {
             <span>{{ closedIssueId }}</span>
           </template>
         </gl-sprintf>
+      </gl-alert>
+
+      <gl-alert v-if="showEmptyStacktraceAlert" @dismiss="isStacktraceEmptyAlertVisible = false">
+        {{ __('No stacktrace for this error') }}
       </gl-alert>
 
       <div class="error-details-header d-flex py-2 justify-content-between">
