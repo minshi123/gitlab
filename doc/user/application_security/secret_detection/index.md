@@ -88,8 +88,15 @@ you don't need to manually configure it.
 CAUTION: **Planned Deprecation:**
 In a future GitLab release, configuring Secret Detection with the SAST template will be deprecated. Please begin using `Secret-Detection.gitlab-ci.yml`
 to prevent future issues. We have made a
-[video to guide you through the process of transitioning](https://www.youtube.com/watch?v=W2tjcQreDwQ&feature=emb_title)
+[video to guide you through the process of transitioning](https://www.youtube.com/watch?v=W2tjcQreDwQ)
 to this new template.
+
+<div class="video-fallback">
+  See the video: <a href="https://www.youtube.com/watch?v=W2tjcQreDwQ">Walkthrough of historical secret scan</a>.
+</div>
+<figure class="video-container">
+  <iframe src="https://www.youtube.com/embed/W2tjcQreDwQ" frameborder="0" allowfullscreen="true"> </iframe>
+</figure>
 
 When using the SAST template, Secret Detection is performed by a [specific analyzer](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml#L180)
 during the `sast` job. It runs regardless of the programming
