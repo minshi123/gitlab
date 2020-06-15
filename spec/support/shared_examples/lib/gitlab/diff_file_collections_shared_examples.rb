@@ -100,15 +100,6 @@ RSpec.shared_examples 'cacheable diff collection' do
     end
   end
 
-  # TODO: Why do we have this method ? - THIS IS CURRENTLY xdescribe
-  xdescribe '#cache_key' do
-    it 'calls Gitlab::Diff::HighlightCache#key' do
-      expect(highlight_cache).to receive(:key).once
-
-      subject.cache_key
-    end
-  end
-
   describe '#diff_files' do
     it 'calls Gitlab::Diff::HighlightCache#decorate' do
       expect(highlight_cache).to receive(:decorate)

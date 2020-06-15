@@ -38,11 +38,6 @@ module Gitlab
           diff_stats_cache.clear
         end
 
-        # TODO Why do we need this exposed?
-        def cache_key
-          highlight_cache.key
-        end
-
         def real_size
           @merge_request_diff.real_size
         end
