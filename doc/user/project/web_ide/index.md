@@ -208,7 +208,7 @@ to work:
 
 - The Runner needs to have
   [`[session_server]` configured properly](https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-session_server-section).
-  This section requires at least a `session_timeout` value (which defaults to 1800 
+  This section requires at least a `session_timeout` value (which defaults to 1800
   seconds) and a `listen_address` value. If `advertise_address` is not defined, `listen_address` is used.
 - If you are using a reverse proxy with your GitLab instance, web terminals need to be
   [enabled](../../../administration/integration/terminal.md#enabling-and-disabling-terminal-support). **(ULTIMATE ONLY)**
