@@ -569,9 +569,7 @@ class MergeRequest < ApplicationRecord
     return unless diff_refs
 
     strong_memoize(:diff_stats) do
-      Rails.cache.fetch("merge_request:diff_stats:#{diff_refs.base_sha}:#{diff_refs.head_sha}", expires_in: 10.minutes) do
-        project.repository.diff_stats(diff_refs.base_sha, diff_refs.head_sha)
-      end
+      project.repository.diff_stats(diff_refs.base_sha, diff_refs.head_sha)
     end
   end
 
