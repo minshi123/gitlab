@@ -22,6 +22,9 @@ module EE
           expose :marked_for_deletion_on, if: ->(project, _) { project.feature_available?(:adjourned_deletion_for_projects_and_groups) } do |project, _|
             project.marked_for_deletion_at
           end
+          expose :compliance_frameworks, if: ->(_, _) { License.feature_available?(:compliance_framework) } do |project, _|
+            [project.compliance_framework_setting&.framework].compact
+          end
         end
       end
     end

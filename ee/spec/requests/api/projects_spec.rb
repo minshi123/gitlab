@@ -160,6 +160,49 @@ RSpec.describe API::Projects do
       end
     end
 
+    describe 'compliance_frameworks attribute' do
+      context 'when compliance_framework feature is available' do
+        before do
+          stub_licensed_features(compliance_framework: true)
+        end
+
+        context 'when project has a compliance framework' do
+          before do
+            project.update!(compliance_framework_setting: create(:compliance_framework_project_setting, :sox))
+            get api("/projects/#{project.id}", user)
+          end
+
+          it 'exposes framework names as array of strings' do
+            expect(json_response).to have_key 'compliance_frameworks'
+            expect(json_response['compliance_frameworks']).to contain_exactly('sox')
+          end
+        end
+
+        context 'when project has no compliance framework' do
+          before do
+            get api("/projects/#{project.id}", user)
+          end
+
+          it 'returns an empty array' do
+            expect(json_response).to have_key 'compliance_frameworks'
+            expect(json_response['compliance_frameworks']).to match_array([])
+          end
+        end
+      end
+
+      context 'when compliance_framework feature is unavailable' do
+        before do
+          stub_licensed_features(compliance_framework: false)
+        end
+
+        it 'is not exposed' do
+          get api("/projects/#{project.id}", user)
+
+          expect(json_response).not_to have_key 'compliance_frameworks'
+        end
+      end
+    end
+
     describe 'service desk attributes' do
       it 'are exposed when the feature is available' do
         stub_licensed_features(service_desk: true)
