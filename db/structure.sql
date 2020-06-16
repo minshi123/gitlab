@@ -477,6 +477,7 @@ CREATE TABLE public.application_settings (
     elasticsearch_pause_indexing boolean DEFAULT false NOT NULL,
     repository_storages_weighted jsonb DEFAULT '{}'::jsonb NOT NULL,
     max_import_size integer DEFAULT 50 NOT NULL,
+    enforce_pat_expiration boolean DEFAULT true NOT NULL,
     CONSTRAINT check_d03919528d CHECK ((char_length(container_registry_vendor) <= 255)),
     CONSTRAINT check_d820146492 CHECK ((char_length(spam_check_endpoint_url) <= 255)),
     CONSTRAINT check_e5aba18f02 CHECK ((char_length(container_registry_version) <= 255))
@@ -3181,6 +3182,31 @@ CREATE TABLE public.group_deletion_schedules (
     marked_for_deletion_on date NOT NULL
 );
 
+CREATE TABLE public.group_deploy_keys (
+    id bigint NOT NULL,
+    user_id bigint,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    last_used_at timestamp with time zone,
+    expires_at timestamp with time zone,
+    key text NOT NULL,
+    title text,
+    fingerprint text NOT NULL,
+    fingerprint_sha256 bytea,
+    CONSTRAINT check_cc0365908d CHECK ((char_length(title) <= 255)),
+    CONSTRAINT check_e4526dcf91 CHECK ((char_length(fingerprint) <= 255)),
+    CONSTRAINT check_f58fa0a0f7 CHECK ((char_length(key) <= 4096))
+);
+
+CREATE SEQUENCE public.group_deploy_keys_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.group_deploy_keys_id_seq OWNED BY public.group_deploy_keys.id;
+
 CREATE TABLE public.group_deploy_tokens (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -4647,7 +4673,8 @@ ALTER SEQUENCE public.packages_build_infos_id_seq OWNED BY public.packages_build
 
 CREATE TABLE public.packages_composer_metadata (
     package_id bigint NOT NULL,
-    target_sha bytea NOT NULL
+    target_sha bytea NOT NULL,
+    composer_json jsonb DEFAULT '{}'::jsonb NOT NULL
 );
 
 CREATE TABLE public.packages_conan_file_metadata (
@@ -5241,7 +5268,7 @@ ALTER SEQUENCE public.project_import_data_id_seq OWNED BY public.project_import_
 
 CREATE TABLE public.project_incident_management_settings (
     project_id integer NOT NULL,
-    create_issue boolean DEFAULT true NOT NULL,
+    create_issue boolean DEFAULT false NOT NULL,
     send_email boolean DEFAULT false NOT NULL,
     issue_template_key text
 );
@@ -5930,7 +5957,7 @@ ALTER SEQUENCE public.resource_label_events_id_seq OWNED BY public.resource_labe
 
 CREATE TABLE public.resource_milestone_events (
     id bigint NOT NULL,
-    user_id bigint NOT NULL,
+    user_id bigint,
     issue_id bigint,
     merge_request_id bigint,
     milestone_id bigint,
@@ -5950,7 +5977,7 @@ ALTER SEQUENCE public.resource_milestone_events_id_seq OWNED BY public.resource_
 
 CREATE TABLE public.resource_state_events (
     id bigint NOT NULL,
-    user_id bigint NOT NULL,
+    user_id bigint,
     issue_id bigint,
     merge_request_id bigint,
     created_at timestamp with time zone NOT NULL,
@@ -5970,7 +5997,7 @@ ALTER SEQUENCE public.resource_state_events_id_seq OWNED BY public.resource_stat
 
 CREATE TABLE public.resource_weight_events (
     id bigint NOT NULL,
-    user_id bigint NOT NULL,
+    user_id bigint,
     issue_id bigint NOT NULL,
     weight integer,
     created_at timestamp with time zone NOT NULL
@@ -7689,6 +7716,8 @@ ALTER TABLE ONLY public.grafana_integrations ALTER COLUMN id SET DEFAULT nextval
 
 ALTER TABLE ONLY public.group_custom_attributes ALTER COLUMN id SET DEFAULT nextval('public.group_custom_attributes_id_seq'::regclass);
 
+ALTER TABLE ONLY public.group_deploy_keys ALTER COLUMN id SET DEFAULT nextval('public.group_deploy_keys_id_seq'::regclass);
+
 ALTER TABLE ONLY public.group_deploy_tokens ALTER COLUMN id SET DEFAULT nextval('public.group_deploy_tokens_id_seq'::regclass);
 
 ALTER TABLE ONLY public.group_group_links ALTER COLUMN id SET DEFAULT nextval('public.group_group_links_id_seq'::regclass);
@@ -8496,6 +8525,9 @@ ALTER TABLE ONLY public.group_custom_attributes
 
 ALTER TABLE ONLY public.group_deletion_schedules
     ADD CONSTRAINT group_deletion_schedules_pkey PRIMARY KEY (group_id);
+
+ALTER TABLE ONLY public.group_deploy_keys
+    ADD CONSTRAINT group_deploy_keys_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.group_deploy_tokens
     ADD CONSTRAINT group_deploy_tokens_pkey PRIMARY KEY (id);
@@ -9952,6 +9984,12 @@ CREATE INDEX index_group_custom_attributes_on_key_and_value ON public.group_cust
 CREATE INDEX index_group_deletion_schedules_on_marked_for_deletion_on ON public.group_deletion_schedules USING btree (marked_for_deletion_on);
 
 CREATE INDEX index_group_deletion_schedules_on_user_id ON public.group_deletion_schedules USING btree (user_id);
+
+CREATE UNIQUE INDEX index_group_deploy_keys_on_fingerprint ON public.group_deploy_keys USING btree (fingerprint);
+
+CREATE INDEX index_group_deploy_keys_on_fingerprint_sha256 ON public.group_deploy_keys USING btree (fingerprint_sha256);
+
+CREATE INDEX index_group_deploy_keys_on_user_id ON public.group_deploy_keys USING btree (user_id);
 
 CREATE INDEX index_group_deploy_tokens_on_deploy_token_id ON public.group_deploy_tokens USING btree (deploy_token_id);
 
@@ -12177,6 +12215,9 @@ ALTER TABLE ONLY public.clusters_applications_knative
 ALTER TABLE ONLY public.terraform_states
     ADD CONSTRAINT fk_rails_558901b030 FOREIGN KEY (locked_by_user_id) REFERENCES public.users(id);
 
+ALTER TABLE ONLY public.group_deploy_keys
+    ADD CONSTRAINT fk_rails_5682fc07f8 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE RESTRICT;
+
 ALTER TABLE ONLY public.issue_user_mentions
     ADD CONSTRAINT fk_rails_57581fda73 FOREIGN KEY (issue_id) REFERENCES public.issues(id) ON DELETE CASCADE;
 
@@ -13831,6 +13872,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200429182245
 20200430103158
 20200430130048
+20200430174637
 20200505164958
 20200505171834
 20200505172405
@@ -13918,6 +13960,7 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200602013900
 20200602013901
 20200603073101
+20200603180338
 20200604143628
 20200604145731
 20200604174544
@@ -13925,6 +13968,12 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200605003204
 20200608072931
 20200608075553
+20200608214008
 20200609002841
+20200609142506
+20200609142507
+20200609142508
+20200609212701
+20200615083635
 \.
 

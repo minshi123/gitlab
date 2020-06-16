@@ -264,9 +264,9 @@ module API
         user = User.find_by(id: params.delete(:id))
         not_found!('User') unless user
 
-        key = user.keys.new(declared_params(include_missing: false))
+        key = ::Keys::CreateService.new(current_user, declared_params(include_missing: false).merge(user: user)).execute
 
-        if key.save
+        if key.persisted?
           present key, with: Entities::SSHKey
         else
           render_validation_error!(key)
@@ -285,7 +285,8 @@ module API
         user = find_user(params[:user_id])
         not_found!('User') unless user && can?(current_user, :read_user, user)
 
-        present paginate(user.keys), with: Entities::SSHKey
+        keys = user.keys.preload_users
+        present paginate(keys), with: Entities::SSHKey
       end
 
       desc 'Delete an existing SSH key from a specified user. Available only for admins.' do
@@ -697,7 +698,9 @@ module API
         use :pagination
       end
       get "keys" do
-        present paginate(current_user.keys), with: Entities::SSHKey
+        keys = current_user.keys.preload_users
+
+        present paginate(keys), with: Entities::SSHKey
       end
 
       desc 'Get a single key owned by currently authenticated user' do

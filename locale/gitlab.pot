@@ -371,7 +371,10 @@ msgstr ""
 msgid "%{host} sign-in from new location"
 msgstr ""
 
-msgid "%{icon}You are about to add %{usersTag} people to the discussion. Proceed with caution."
+msgid "%{icon}You are about to add %{usersTag} people to the discussion. They will all receive a notification."
+msgstr ""
+
+msgid "%{integrations_link_start}Integrations%{link_end} enable you to make third-party applications part of your GitLab workflow. If the available integrations don't meet your needs, consider using a %{webhooks_link_start}webhook%{link_end}."
 msgstr ""
 
 msgid "%{issuableType} will be removed! Are you sure?"
@@ -426,9 +429,6 @@ msgid "%{link_start}Learn more%{link_end} about what information is shared with 
 msgstr ""
 
 msgid "%{link_start}Read more%{link_end} about role permissions"
-msgstr ""
-
-msgid "%{link} can be used for binding events when something is happening within the project."
 msgstr ""
 
 msgid "%{listToShow}, and %{awardsListLength} more."
@@ -656,6 +656,12 @@ msgid "%{value} s"
 msgstr ""
 
 msgid "%{verb} %{time_spent_value} spent time."
+msgstr ""
+
+msgid "%{webhooks_link_start}%{webhook_type}%{link_end} enable you to send notifications to web applications in response to events in a group or project."
+msgstr ""
+
+msgid "%{webhooks_link_start}%{webhook_type}%{link_end} enable you to send notifications to web applications in response to events in a group or project. We recommend using an %{integrations_link_start}integration%{link_end} in preference to a webhook."
 msgstr ""
 
 msgid "'%{level}' is not a valid visibility level"
@@ -1846,6 +1852,9 @@ msgid_plural "Alerts"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "AlertManagement| assign yourself"
+msgstr ""
+
 msgid "AlertManagement|Acknowledged"
 msgstr ""
 
@@ -1870,16 +1879,13 @@ msgstr ""
 msgid "AlertManagement|All alerts"
 msgstr ""
 
-msgid "AlertManagement|Assign Assignees"
+msgid "AlertManagement|Assign To"
 msgstr ""
 
 msgid "AlertManagement|Assign status"
 msgstr ""
 
 msgid "AlertManagement|Assignee"
-msgstr ""
-
-msgid "AlertManagement|Assignee(s)"
 msgstr ""
 
 msgid "AlertManagement|Assignees"
@@ -1934,6 +1940,9 @@ msgid "AlertManagement|No alerts to display."
 msgstr ""
 
 msgid "AlertManagement|None"
+msgstr ""
+
+msgid "AlertManagement|None -"
 msgstr ""
 
 msgid "AlertManagement|Open"
@@ -2929,6 +2938,9 @@ msgid "Assets:"
 msgstr ""
 
 msgid "Assign"
+msgstr ""
+
+msgid "Assign Iteration"
 msgstr ""
 
 msgid "Assign custom color like #FF0000"
@@ -8405,6 +8417,9 @@ msgstr ""
 msgid "Enforce DNS rebinding attack protection"
 msgstr ""
 
+msgid "Enforce personal access token expiration"
+msgstr ""
+
 msgid "Ensure connectivity is available from the GitLab server to the Prometheus server"
 msgstr ""
 
@@ -9455,6 +9470,9 @@ msgstr ""
 msgid "Failed to set due date because the date format is invalid."
 msgstr ""
 
+msgid "Failed to set iteration on this issue. Please try again."
+msgstr ""
+
 msgid "Failed to signing using smartcard authentication"
 msgstr ""
 
@@ -10214,6 +10232,9 @@ msgstr ""
 msgid "GeoNodes|Not checksummed"
 msgstr ""
 
+msgid "GeoNodes|Package files"
+msgstr ""
+
 msgid "GeoNodes|Pausing replication stops the sync process. Are you sure?"
 msgstr ""
 
@@ -10757,6 +10778,9 @@ msgstr ""
 msgid "Go to %{link_to_google_takeout}."
 msgstr ""
 
+msgid "Go to <strong>Issues</strong> > <strong>Boards</strong> to access your personalized learning issue board."
+msgstr ""
+
 msgid "Go to Pipelines"
 msgstr ""
 
@@ -10928,9 +10952,6 @@ msgstr ""
 msgid "Group %{group_name} was successfully created."
 msgstr ""
 
-msgid "Group '%{group_name}' is being imported."
-msgstr ""
-
 msgid "Group Audit Events"
 msgstr ""
 
@@ -10967,9 +10988,6 @@ msgstr ""
 msgid "Group by:"
 msgstr ""
 
-msgid "Group could not be imported: %{errors}"
-msgstr ""
-
 msgid "Group description"
 msgstr ""
 
@@ -10995,6 +11013,9 @@ msgid "Group has been already marked for deletion"
 msgstr ""
 
 msgid "Group has not been marked for deletion"
+msgstr ""
+
+msgid "Group import could not be scheduled"
 msgstr ""
 
 msgid "Group info:"
@@ -11061,6 +11082,24 @@ msgid "GroupActivyMetrics|Merge Requests created"
 msgstr ""
 
 msgid "GroupActivyMetrics|Recent activity (last 90 days)"
+msgstr ""
+
+msgid "GroupImport|Failed to import group."
+msgstr ""
+
+msgid "GroupImport|Group '%{group_name}' is being imported."
+msgstr ""
+
+msgid "GroupImport|Group could not be imported: %{errors}"
+msgstr ""
+
+msgid "GroupImport|Please wait while we import the group for you. Refresh at will."
+msgstr ""
+
+msgid "GroupImport|The group was successfully imported."
+msgstr ""
+
+msgid "GroupImport|Unable to process group import file"
 msgstr ""
 
 msgid "GroupRoadmap|%{dateWord} – No end date"
@@ -11475,6 +11514,9 @@ msgid "Helps reduce alert volume (e.g. if creating too many issues)"
 msgstr ""
 
 msgid "Helps reduce request volume for protected paths"
+msgstr ""
+
+msgid "Here are all your projects in your group, including the one you just created. To start, let’s take a look at your personalized learning project which will help you learn about GitLab at your own pace."
 msgstr ""
 
 msgid "Here you will find recent merge request activity"
@@ -12083,9 +12125,6 @@ msgstr ""
 msgid "Integrations"
 msgstr ""
 
-msgid "Integrations allow you to integrate GitLab with other applications"
-msgstr ""
-
 msgid "Integrations|All details"
 msgstr ""
 
@@ -12435,6 +12474,9 @@ msgid "It seems like the Dependency Scanning job ran successfully, but no depend
 msgstr ""
 
 msgid "It's you"
+msgstr ""
+
+msgid "Iteration"
 msgstr ""
 
 msgid "Iteration changed to"
@@ -12995,6 +13037,9 @@ msgid "License Compliance"
 msgstr ""
 
 msgid "License History"
+msgstr ""
+
+msgid "License URL"
 msgstr ""
 
 msgid "License-Check"
@@ -14864,6 +14909,9 @@ msgstr ""
 msgid "No grouping"
 msgstr ""
 
+msgid "No iteration"
+msgstr ""
+
 msgid "No iterations to show"
 msgstr ""
 
@@ -15290,6 +15338,9 @@ msgid "One or more groups that you don't have access to."
 msgstr ""
 
 msgid "One or more of you personal access tokens were revoked"
+msgstr ""
+
+msgid "One or more of your %{provider} projects cannot be imported into GitLab directly because they use Subversion or Mercurial for version control, rather than Git."
 msgstr ""
 
 msgid "One or more of your Bitbucket projects cannot be imported into GitLab directly because they use Subversion or Mercurial for version control, rather than Git."
@@ -16298,6 +16349,9 @@ msgid "Please choose a group URL with no special characters."
 msgstr ""
 
 msgid "Please complete your profile with email address"
+msgstr ""
+
+msgid "Please convert %{linkStart}them to Git%{linkEnd}, and go through the %{linkToImportFlow} again."
 msgstr ""
 
 msgid "Please convert them to %{link_to_git}, and go through the %{link_to_import_flow} again."
@@ -18208,6 +18262,9 @@ msgstr ""
 msgid "Recipe"
 msgstr ""
 
+msgid "Reconfigure"
+msgstr ""
+
 msgid "Recover hidden stage"
 msgstr ""
 
@@ -19629,6 +19686,9 @@ msgstr ""
 msgid "SecurityReports|False positive"
 msgstr ""
 
+msgid "SecurityReports|Group Security Dashboard"
+msgstr ""
+
 msgid "SecurityReports|Hide dismissed"
 msgstr ""
 
@@ -20803,7 +20863,7 @@ msgstr ""
 msgid "Something went wrong while updating your list settings"
 msgstr ""
 
-msgid "Something went wrong with your automatic subscription renewal"
+msgid "Something went wrong with your automatic subscription renewal."
 msgstr ""
 
 msgid "Something went wrong, unable to add %{project} to dashboard"
@@ -22768,6 +22828,9 @@ msgstr ""
 msgid "This is a Work in Progress"
 msgstr ""
 
+msgid "This is a confidential epic."
+msgstr ""
+
 msgid "This is a confidential issue."
 msgstr ""
 
@@ -23868,9 +23931,6 @@ msgid "Unable to load the diff. %{button_try_again}"
 msgstr ""
 
 msgid "Unable to load the merge request widget. Try reloading the page."
-msgstr ""
-
-msgid "Unable to process group import file"
 msgstr ""
 
 msgid "Unable to resolve"
@@ -26159,13 +26219,13 @@ msgstr ""
 msgid "Your subscription expired!"
 msgstr ""
 
-msgid "Your subscription has been downgraded"
+msgid "Your subscription has been downgraded."
 msgstr ""
 
-msgid "Your subscription will automatically renew in %{remaining_days}"
+msgid "Your subscription will automatically renew in %{remaining_days}."
 msgstr ""
 
-msgid "Your subscription will expire in %{remaining_days}"
+msgid "Your subscription will expire in %{remaining_days}."
 msgstr ""
 
 msgid "Zoom meeting added"

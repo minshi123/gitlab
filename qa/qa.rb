@@ -137,6 +137,7 @@ module QA
       module Instance
         autoload :All, 'qa/scenario/test/instance/all'
         autoload :Smoke, 'qa/scenario/test/instance/smoke'
+        autoload :Airgapped, 'qa/scenario/test/instance/airgapped'
       end
 
       module Integration
@@ -353,6 +354,7 @@ module QA
     end
 
     module Issuable
+      autoload :New, 'qa/page/issuable/new'
       autoload :Sidebar, 'qa/page/issuable/sidebar'
     end
 

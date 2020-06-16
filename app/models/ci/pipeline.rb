@@ -254,6 +254,7 @@ module Ci
     scope :for_sha_or_source_sha, -> (sha) { for_sha(sha).or(for_source_sha(sha)) }
     scope :for_ref, -> (ref) { where(ref: ref) }
     scope :for_id, -> (id) { where(id: id) }
+    scope :for_iid, -> (iid) { where(iid: iid) }
     scope :created_after, -> (time) { where('ci_pipelines.created_at > ?', time) }
 
     scope :with_reports, -> (reports_scope) do
@@ -391,7 +392,7 @@ module Ci
     end
 
     def ordered_stages
-      if Feature.enabled?(:ci_atomic_processing, project, default_enabled: false)
+      if ::Gitlab::Ci::Features.atomic_processing?(project)
         # The `Ci::Stage` contains all up-to date data
         # as atomic processing updates all data in-bulk
         stages
@@ -439,7 +440,7 @@ module Ci
     end
 
     def legacy_stages
-      if Feature.enabled?(:ci_composite_status, project, default_enabled: false)
+      if ::Gitlab::Ci::Features.composite_status?(project)
         legacy_stages_using_composite_status
       else
         legacy_stages_using_sql
