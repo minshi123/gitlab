@@ -145,6 +145,14 @@ class MergeRequestPollWidgetEntity < Grape::Entity
     presenter(merge_request).revert_in_fork_path
   end
 
+  expose :squash_enabled_by_default do |merge_request|
+    presenter(merge_request).project.squash_enabled_by_default?
+  end
+
+  expose :squash_readonly do |merge_request|
+    presenter(merge_request).project.squash_readonly?
+  end
+
   private
 
   delegate :current_user, to: :request

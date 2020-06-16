@@ -3,6 +3,7 @@
 module MergeRequests
   class SquashService < MergeRequests::BaseService
     SquashInProgressError = Class.new(RuntimeError)
+    SquashForbiddenError = Class.new(RuntimeError)
 
     def execute
       # If performing a squash would result in no change, then
@@ -11,11 +12,14 @@ module MergeRequests
         return success(squash_sha: merge_request.diff_head_sha)
       end
 
+      return error(s_('MergeRequests|This repository prohibits Squash-and-Merge.')) if squash_forbidden?
+
       if squash_in_progress?
         return error(s_('MergeRequests|Squash task canceled: another squash is already in progress.'))
       end
 
       squash! || error(s_('MergeRequests|Failed to squash. Should be done manually.'))
+
     rescue SquashInProgressError
       error(s_('MergeRequests|An error occurred while checking whether another squash is in progress.'))
     end
@@ -38,6 +42,10 @@ module MergeRequests
       log_error(exception: e, message: 'Failed to check squash in progress')
 
       raise SquashInProgressError, e.message
+    end
+
+    def squash_forbidden?
+      target_project.never_squash?
     end
 
     def repository

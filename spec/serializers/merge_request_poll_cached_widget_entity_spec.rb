@@ -4,6 +4,7 @@ require 'spec_helper'
 
 describe MergeRequestPollCachedWidgetEntity do
   include ProjectForksHelper
+  using RSpec::Parameterized::TableSyntax
 
   let(:project)  { create :project, :repository }
   let(:resource) { create(:merge_request, source_project: project, target_project: project) }
@@ -177,6 +178,26 @@ describe MergeRequestPollCachedWidgetEntity do
 
       it 'returns auto merge related information' do
         expect(subject[:auto_merge_enabled]).to be_falsy
+      end
+    end
+  end
+
+  describe 'squash defaults for projects' do
+    where(:squash_option, :default, :readonly) do
+      "always_squash"            | true  | true
+      "never_squash"             | false | true
+      "enabled_with_default_on"  | true  | false
+      "enabled_with_default_off" | false | false
+    end
+
+    with_them do
+      before do
+        project.project_setting.update!(squash_option: squash_option)
+      end
+
+      it 'the key reflects the correct value' do
+        expect(subject[:squash_enabled_by_default]).to eq(default)
+        expect(subject[:squash_readonly]).to eq(readonly)
       end
     end
   end

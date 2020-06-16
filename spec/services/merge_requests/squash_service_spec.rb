@@ -131,6 +131,42 @@ describe MergeRequests::SquashService do
       include_examples 'the squash succeeds'
     end
 
+    context 'when squashing is disabled by default on the project' do
+      # Squashing is disabled by default, but it should still allow you
+      # to squash-and-merge if selected through the UI
+      let(:merge_request) { merge_request_with_only_new_files }
+
+      before do
+        merge_request.project.project_setting.squash_option = 'enabled_with_default_off'
+      end
+
+      include_examples 'the squash succeeds'
+    end
+
+    context 'when squashing is forbidden on the project' do
+      let(:merge_request) { merge_request_with_only_new_files }
+
+      before do
+        merge_request.project.project_setting.squash_option = 'never_squash'
+      end
+
+      it 'raises a squash error' do
+        expect(service.execute).to match(
+          status: :error,
+          message: a_string_including('prohibits Squash-and-Merge'))
+      end
+    end
+
+    context 'when squashing is enabled by default on the project' do
+      let(:merge_request) { merge_request_with_only_new_files }
+
+      before do
+        merge_request.project.project_setting.squash_option = 'always_squash'
+      end
+
+      include_examples 'the squash succeeds'
+    end
+
     context 'when squashing with files too large to display' do
       let(:merge_request) { merge_request_with_large_files }
 
