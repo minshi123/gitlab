@@ -16,8 +16,8 @@ export default class EditBlob {
     const { isMarkdown } = this.options;
     const bootstrap = () => {
       this.initModePanesAndLinks();
-      this.initSoftWrap();
       this.initFileSelectors();
+      this.initSoftWrap();
       this.editorPostHandling(isMarkdown);
     };
     if (window?.gon?.features?.monacoBlobs) {
@@ -44,7 +44,8 @@ export default class EditBlob {
       EditorModule => {
         const EditorLite = EditorModule.default;
         const editorEl = document.getElementById('editor');
-        const fileNameEl = document.getElementById('file_path');
+        const fileNameEl =
+          document.getElementById('file_path') || document.getElementById('file_name');
         const fileContentEl = document.getElementById('file-content');
         const form = document.querySelector('.js-edit-blob-form');
 
@@ -132,14 +133,19 @@ export default class EditBlob {
   }
 
   initSoftWrap() {
-    this.isSoftWrapped = false;
+    this.isSoftWrapped = Boolean(window?.gon?.features?.monacoBlobs);
     this.$toggleButton = $('.soft-wrap-toggle');
+    this.$toggleButton.toggleClass('soft-wrap-active', this.isSoftWrapped);
     this.$toggleButton.on('click', () => this.toggleSoftWrap());
   }
 
   toggleSoftWrap() {
     this.isSoftWrapped = !this.isSoftWrapped;
     this.$toggleButton.toggleClass('soft-wrap-active', this.isSoftWrapped);
-    this.editor.getSession().setUseWrapMode(this.isSoftWrapped);
+    if (window?.gon?.features?.monacoBlobs) {
+      this.editor.updateOptions({ wordWrap: this.isSoftWrapped ? 'on' : 'off' });
+    } else {
+      this.editor.getSession().setUseWrapMode(this.isSoftWrapped);
+    }
   }
 }
