@@ -1143,6 +1143,13 @@ class MergeRequest < ApplicationRecord
     end
   end
 
+  def squash_on_merge?
+    return true if target_project.squash_always?
+    return false if target_project.squash_never?
+
+    squash?
+  end
+
   def has_ci?
     return false if has_no_commits?
 
