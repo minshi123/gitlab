@@ -129,7 +129,7 @@ module API
         success Entities::DeployTokenWithToken
       end
       post ':id/deploy_tokens' do
-        authorize!(:create_deploy_token, user_group)
+        authorize!(:admin_group, user_group)
 
         result = ::Groups::DeployTokens::CreateService.new(
           user_group, current_user, scope_params.merge(declared(params, include_missing: false, include_parent_namespaces: false))
@@ -149,7 +149,7 @@ module API
         requires :token_id, type: Integer, desc: 'The deploy token ID'
       end
       delete ':id/deploy_tokens/:token_id' do
-        authorize!(:destroy_deploy_token, user_group)
+        authorize!(:admin_group, user_group)
 
         ::Groups::DeployTokens::DestroyService.new(
           user_group, current_user, token_id: params[:token_id]

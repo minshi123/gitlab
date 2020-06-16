@@ -315,9 +315,17 @@ describe API::DeployTokens do
       it { is_expected.to have_gitlab_http_status(:forbidden) }
     end
 
-    context 'when authenticated as maintainer' do
+    context 'when authenticated as maintainer user' do
       before do
         group.add_maintainer(user)
+      end
+
+      it { is_expected.to have_gitlab_http_status(:forbidden) }
+    end
+
+    context 'when authenticated as maintainer' do
+      before do
+        group.add_owner(user)
       end
 
       it 'calls the deploy token destroy service' do
