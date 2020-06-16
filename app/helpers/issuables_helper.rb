@@ -479,6 +479,12 @@ module IssuablesHelper
   def parent
     @project || @group
   end
+
+  def issuable_squash_option?(issuable, project)
+    return project.squash_enabled_by_default? if project.squash_readonly?
+    return issuable.squash if issuable.persisted?
+    project.squash_enabled_by_default?
+  end
 end
 
 IssuablesHelper.prepend_if_ee('EE::IssuablesHelper')
