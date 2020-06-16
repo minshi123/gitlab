@@ -532,3 +532,13 @@ to the original comment, so a note about when it was last edited will appear und
 
 This feature only exists for Issues, Merge requests, and Epics. Commits, Snippets and Merge request diff threads are
 not supported yet.
+
+## Quickly assign a commenter to an issue
+
+> [Introduce](https://gitlab.com/gitlab-org/gitlab/-/issues/191455) in GitLab 13.1
+
+To quickly assign a commenter to an issue, open the More Actions menu in their comment and click the button that says _Assign to commenting user_.
+
+Clicking this button on an assigned commenter will perform the reverse action and unassign them.
+
+![Quickly assign a commenter to an issue](img/quickly_assign_commenter_v13_1.png)
