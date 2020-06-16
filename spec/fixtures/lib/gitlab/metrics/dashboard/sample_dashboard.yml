@@ -13,6 +13,12 @@ templating:
       options:
         default_value: 'default'
     text_variable_simple_syntax: 'default value'
+    metric_label_values_variable:
+      label: 'Variable 3'
+      type: metric_label_values
+      options:
+        query: 'backend:haproxy_backend_availability:ratio{env="{{env}}"}'
+        label: 'backend'
 panel_groups:
 - group: Group A
   priority: 1
