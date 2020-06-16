@@ -2,9 +2,10 @@ import Vue from 'vue';
 import { pick } from 'lodash';
 import * as types from './mutation_types';
 import { mapToDashboardViewModel, normalizeQueryResult } from './utils';
+import httpStatusCodes from '~/lib/utils/http_status';
 import { BACKOFF_TIMEOUT } from '../../lib/utils/common_utils';
 import { endpointKeys, initialStateKeys, metricStates } from '../constants';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { optionsFromSeriesData } from './variable_mapping';
 
 /**
  * Locate and return a metric in the dashboard by its id
@@ -195,10 +196,26 @@ export default {
   [types.SET_VARIABLES](state, variables) {
     state.variables = variables;
   },
-  [types.UPDATE_VARIABLES](state, updatedVariable) {
-    Object.assign(state.variables[updatedVariable.key], {
-      ...state.variables[updatedVariable.key],
-      value: updatedVariable.value,
+  [types.UPDATE_VARIABLE_VALUE](state, { key, value }) {
+    Object.assign(state.variables[key], {
+      ...state.variables[key],
+      value,
+    });
+  },
+  [types.UPDATE_VARIABLE_OPTIONS](state, { key, label, data = [] }) {
+    const variable = state.variables[key];
+    const options = optionsFromSeriesData({ label, data });
+
+    // Take first value as default, if none is set.
+    let { value } = variable;
+    if (!value) {
+      value = options[0].value;
+    }
+
+    // Add new options to variable, forcing reactivity
+    Object.assign(variable, {
+      options,
+      value,
     });
   },
 };

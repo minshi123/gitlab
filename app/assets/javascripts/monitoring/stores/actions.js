@@ -36,6 +36,15 @@ function prometheusMetricQueryParams(timeRange) {
   };
 }
 
+function prometheusSeriesParams(timeRange) {
+  const { start, end } = convertToFixedRange(timeRange);
+  // TODO Should params be start or start_time / end or end_time ?
+  return {
+    start,
+    end,
+  };
+}
+
 function backOffRequest(makeRequestCallback) {
   return backOff((next, stop) => {
     makeRequestCallback()
@@ -160,6 +169,9 @@ export const receiveMetricsDashboardSuccess = ({ commit, dispatch }, { response 
   commit(types.SET_ALL_DASHBOARDS, all_dashboards);
   commit(types.RECEIVE_METRICS_DASHBOARD_SUCCESS, dashboard);
   commit(types.SET_ENDPOINTS, convertObjectPropsToCamelCase(metrics_data));
+
+  // TODO Not sure when to call this, should at least be called when variables change or time range changes.
+  dispatch('fetchVariableOptions');
 
   return dispatch('fetchDashboardData');
 };
@@ -416,9 +428,56 @@ export const duplicateSystemDashboard = ({ state }, payload) => {
 // Variables manipulation
 
 export const updateVariablesAndFetchData = ({ commit, dispatch }, updatedVariable) => {
-  commit(types.UPDATE_VARIABLES, updatedVariable);
+  commit(types.UPDATE_VARIABLE_VALUE, updatedVariable);
 
   return dispatch('fetchDashboardData');
+};
+
+export const fetchVariableOptions = ({ state, commit }) => {
+  const optionsRequests = [];
+
+  Object.entries(state.variables).forEach(([key, variable]) => {
+    const { prometheusEndpointPath, label } = variable;
+
+    if (prometheusEndpointPath) {
+      const optionsRequest = backOffRequest(() =>
+        // TODO Should match[] parms should be added, or are they included with prometheusEndpointPath?
+        axios.get(prometheusEndpointPath, { params: prometheusSeriesParams(state.timeRange) }),
+      )
+        .then(({ data }) => data)
+        .then(data => {
+          // TODO Remove this test data
+          data = [
+            {
+              __name__: 'up',
+              job: 'prometheus',
+              instance: 'localhost:9090',
+            },
+            {
+              __name__: 'up',
+              job: 'node',
+              instance: 'localhost:9091',
+            },
+            {
+              __name__: 'process_start_time_seconds',
+              job: 'prometheus',
+              instance: 'localhost:9090',
+            },
+            {
+              __name__: 'process_start_time_seconds',
+              job: 'POD',
+              instance: 'localhost:9090',
+            },
+          ];
+          // TODO Remove test data END
+
+          commit(types.UPDATE_VARIABLE_OPTIONS, { key, label, data });
+        });
+      optionsRequests.push(optionsRequest);
+    }
+  });
+
+  return Promise.all(optionsRequests);
 };
 
 // prevent babel-plugin-rewire from generating an invalid default during karma tests

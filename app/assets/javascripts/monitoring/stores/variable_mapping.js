@@ -63,12 +63,19 @@ const normalizeCustomVariableOptions = ({ default: defaultOpt = false, text, val
  */
 const customAdvancedVariableParser = advVariable => {
   const options = (advVariable?.options?.values ?? []).map(normalizeCustomVariableOptions);
+  const prometheusEndpointPath = advVariable?.options?.prometheus_endpoint_path;
+
   const defaultOpt = options.find(opt => opt.default === true) || options[0];
   return {
     type: VARIABLE_TYPES.custom,
-    label: advVariable.label,
+    label: advVariable.label, // TODO Label seems to be something different for static vs. dynamic
     value: defaultOpt?.value,
+
+    // Static
     options,
+
+    // Dynamic
+    prometheusEndpointPath,
   };
 };
 
@@ -79,7 +86,7 @@ const customAdvancedVariableParser = advVariable => {
  * @param {String} opt option from simple custom variable
  * @returns {Object}
  */
-const parseSimpleCustomOptions = opt => ({ text: opt, value: opt });
+export const parseSimpleCustomOptions = opt => ({ text: opt, value: opt });
 
 /**
  * Custom simple variables are rendered as dropdown elements in the dashboard
@@ -163,5 +170,68 @@ export const parseTemplatingVariables = ({ variables = {} } = {}) =>
     }
     return acc;
   }, {});
+
+/**
+ * Converts series data to options that can be added to a
+ * variable. Series data is returned from the Prometheus API
+ * `/api/v1/series`.
+ *
+ * Finds a `label` in the series data, so it can be used as
+ * a filter.
+ *
+ * For example, for the arguments:
+ *
+ * {
+ *   "label": "job"
+ *   "data" : [
+ *     {
+ *       "__name__" : "up",
+ *       "job" : "prometheus",
+ *       "instance" : "localhost:9090"
+ *     },
+ *     {
+ *       "__name__" : "up",
+ *       "job" : "node",
+ *       "instance" : "localhost:9091"
+ *     },
+ *     {
+ *       "__name__" : "process_start_time_seconds",
+ *       "job" : "prometheus",
+ *       "instance" : "localhost:9090"
+ *     }
+ *   ]
+ * }
+ *
+ * It returns all the different "job" values:
+ *
+ * [
+ *   {
+ *     "label": "node",
+ *     "value": "node"
+ *   },
+ *   {
+ *     "label": "prometheus",
+ *     "value": "prometheus"
+ *   }
+ * ]
+ *
+ * @param {options} options object
+ * @param {options.label} name of the searched series label
+ * @param {options.data} series data from the series API
+ * @return {array} Options objects with the shape `{ label, value }`
+ *
+ * @see https://prometheus.io/docs/prometheus/latest/querying/api/#finding-series-by-label-matchers
+ */
+export const optionsFromSeriesData = ({ label, data }) => {
+  const optionsSet = data.reduce((set, seriesObject) => {
+    // Use `new Set` to deduplicate options
+    if (seriesObject[label]) {
+      set.add(seriesObject[label]);
+    }
+    return set;
+  }, new Set());
+
+  return [...optionsSet].map(parseSimpleCustomOptions);
+};
 
 export default {};

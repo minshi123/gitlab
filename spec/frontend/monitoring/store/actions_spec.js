@@ -424,14 +424,14 @@ describe('Monitoring store actions', () => {
   });
 
   describe('updateVariablesAndFetchData', () => {
-    it('should commit UPDATE_VARIABLES mutation and fetch data', done => {
+    it('should commit UPDATE_VARIABLE_VALUE mutation and fetch data', done => {
       testAction(
         updateVariablesAndFetchData,
         { pod: 'POD' },
         state,
         [
           {
-            type: types.UPDATE_VARIABLES,
+            type: types.UPDATE_VARIABLE_VALUE,
             payload: { pod: 'POD' },
           },
         ],

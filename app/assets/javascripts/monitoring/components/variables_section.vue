@@ -13,12 +13,13 @@ export default {
     ...mapState('monitoringDashboard', ['variables']),
   },
   methods: {
-    ...mapActions('monitoringDashboard', ['updateVariablesAndFetchData']),
+    ...mapActions('monitoringDashboard', ['updateVariablesAndFetchData', 'fetchVariableOptions']),
     refreshDashboard(variable, value) {
       if (this.variables[variable].value !== value) {
         const changedVariable = { key: variable, value };
         // update the Vuex store
         this.updateVariablesAndFetchData(changedVariable);
+
         // the below calls can ideally be moved out of the
         // component and into the actions and let the
         // mutation respond directly.
