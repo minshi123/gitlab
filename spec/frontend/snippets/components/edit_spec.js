@@ -307,6 +307,16 @@ describe('Snippet Edit app', () => {
         });
       });
 
+      it('makes sure there are no unsaved changes in the snippet', () => {
+        createComponent();
+        clickSubmitBtn();
+
+        return waitForPromises().then(() => {
+          expect(wrapper.vm.originalContent).toBe(wrapper.vm.content);
+          expect(wrapper.vm.hasChanges()).toBe(false);
+        });
+      });
+
       it.each`
         newSnippet | projectPath           | mutationName
         ${true}    | ${rawProjectPathMock} | ${'CreateSnippetMutation with projectPath'}
@@ -417,6 +427,18 @@ describe('Snippet Edit app', () => {
 
         clickSubmitBtn();
         expect(resolveMutate).toHaveBeenCalledWith(updateMutationPayload());
+      });
+    });
+
+    describe('on before unload', () => {
+      it('prevents page navigation if there are some changes in the snippet content', () => {
+        createComponent();
+
+        expect(window.onbeforeunload({})).toBeUndefined();
+
+        wrapper.vm.content = 'new content';
+
+        expect(window.onbeforeunload({})).toBe('Are you sure you want to lose unsaved changes?');
       });
     });
   });
