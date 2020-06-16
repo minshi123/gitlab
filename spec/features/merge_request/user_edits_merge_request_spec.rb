@@ -17,29 +17,6 @@ RSpec.describe 'User edits a merge request', :js do
     visit(edit_project_merge_request_path(project, merge_request))
   end
 
-  context "when the Squash-and-Merge feature is enabled" do
-    where(:squash_option, :checkbox_selected, :checkbox_disabled) do
-      "always_squash"            | true  | true
-      "never_squash"             | false | true
-      "enabled_with_default_on"  | true  | false
-      "enabled_with_default_off" | false | false
-    end
-
-    with_them do
-      before do
-        project.project_setting.update!(squash_option: squash_option)
-      end
-
-      it 'the checkbox reflects the correct option' do
-        visit(edit_project_merge_request_path(project, merge_request))
-
-        checkbox = find("#merge_request_squash")
-        expect(checkbox.disabled?).to eql(checkbox_disabled)
-        expect(checkbox.selected?).to eql(checkbox_selected)
-      end
-    end
-  end
-
   it 'changes the target branch' do
     expect(page).to have_content('From master into feature')
 

@@ -394,6 +394,13 @@ module IssuablesHelper
     end
   end
 
+  def issuable_squash_option?(issuable, project)
+    return project.squash_enabled_by_default? if project.squash_readonly?
+    return issuable.squash if issuable.persisted?
+
+    project.squash_enabled_by_default?
+  end
+
   private
 
   def sidebar_gutter_collapsed?
@@ -478,12 +485,6 @@ module IssuablesHelper
 
   def parent
     @project || @group
-  end
-
-  def issuable_squash_option?(issuable, project)
-    return project.squash_enabled_by_default? if project.squash_readonly?
-    return issuable.squash if issuable.persisted?
-    project.squash_enabled_by_default?
   end
 end
 

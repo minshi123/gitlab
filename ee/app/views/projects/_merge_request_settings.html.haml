@@ -8,7 +8,7 @@
 
 = render 'projects/merge_request_merge_suggestions_settings', project: @project, form: form
 
-- if Feature.enabled?(:squash_options)
+- if Feature.enabled?(:squash_options, @project)
   = render_ce 'projects/merge_request_squash_options_settings', form: form
 
 - if @project.feature_available?(:issuable_default_templates)
