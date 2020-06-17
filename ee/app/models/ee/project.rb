@@ -711,7 +711,10 @@ module EE
     end
 
     def license_compliance
-      strong_memoize(:license_compliance) { SCA::LicenseCompliance.new(self) }
+      strong_memoize(:license_compliance) do
+        for_license_scanning = ::Ci::JobArtifact.license_scanning_reports
+        SCA::LicenseCompliance.new(self, latest_pipeline_with_reports(for_license_scanning))
+      end
     end
 
     override :template_source?

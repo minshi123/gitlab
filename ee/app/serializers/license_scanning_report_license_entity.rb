@@ -1,17 +1,9 @@
 # frozen_string_literal: true
 
 class LicenseScanningReportLicenseEntity < Grape::Entity
-  include RequestAwareEntity
-
   expose :name
-  expose :classification
+  expose(:classification) { |entity| { id: entity.id, name: entity.name, approval_status: entity.approval_status } }
   expose :dependencies, using: LicenseScanningReportDependencyEntity
-  expose :count
+  expose(:count) { |entity| entity.dependencies.count }
   expose :url
-
-  def classification
-    default = { id: nil, name: value_for(:name), approval_status: 'unclassified' }
-    found = SoftwareLicensePoliciesFinder.new(request&.current_user, request&.project, name: value_for(:name)).find
-    ManagedLicenseEntity.represent(found || default)
-  end
 end

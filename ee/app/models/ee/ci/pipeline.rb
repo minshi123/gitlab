@@ -102,6 +102,10 @@ module EE
         batch_lookup_report_artifact_for_file_type(:license_scanning).present?
       end
 
+      def license_compliance
+        strong_memoize(:license_compliance) { SCA::LicenseCompliance.new(self.project, self) }
+      end
+
       def security_reports
         ::Gitlab::Ci::Reports::Security::Reports.new(sha).tap do |security_reports|
           builds.latest.with_reports(::Ci::JobArtifact.security_reports).each do |build|

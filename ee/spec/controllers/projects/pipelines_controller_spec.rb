@@ -115,6 +115,23 @@ RSpec.describe Projects::PipelinesController do
           expect(payload.first['name']).to eq('Apache 2.0')
           expect(payload.last['name']).to eq('unknown')
         end
+
+        it 'returns a JSON representation of the license data' do
+          expect(payload).to be_present
+
+          payload.each do |item|
+            expect(item['name']).to be_present
+            expect(item['classification']).to have_key('id')
+            expect(item.dig('classification', 'approval_status')).to be_present
+            expect(item.dig('classification', 'name')).to be_present
+            expect(item).to have_key('dependencies')
+            item['dependencies'].each do |dependency|
+              expect(dependency['name']).to be_present
+            end
+            expect(item['count']).to be_present
+            expect(item).to have_key('url')
+          end
+        end
       end
 
       context 'with feature disabled' do
