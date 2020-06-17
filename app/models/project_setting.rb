@@ -8,7 +8,7 @@ class ProjectSetting < ApplicationRecord
     always_squash: 1,
     enabled_with_default_on: 2,
     enabled_with_default_off: 3
-  }
+  }, _prefix: 'squash'
 
   self.primary_key = :project_id
 
