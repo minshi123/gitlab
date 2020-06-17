@@ -98,8 +98,11 @@ export default {
       return `${this.isProjectSnippet ? 'project' : 'personal'}_snippet_description`;
     },
   },
-  mounted() {
-    window.onbeforeunload = e => this.onBeforeUnload(e);
+  created() {
+    window.addEventListener('beforeunload', this.onBeforeUnload);
+  },
+  destroyed() {
+    window.removeEventListener('beforeunload', this.onBeforeUnload);
   },
   methods: {
     onBeforeUnload(e = {}) {
