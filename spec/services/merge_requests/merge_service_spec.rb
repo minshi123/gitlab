@@ -363,7 +363,7 @@ describe MergeRequests::MergeService do
       context 'when squashing is required' do
         before do
           merge_request.update!(source_branch: 'master', target_branch: 'feature')
-          merge_request.target_project.project_setting.always_squash!
+          merge_request.target_project.project_setting.squash_always_squash!
         end
 
         it 'raises an error if squashing is not done' do

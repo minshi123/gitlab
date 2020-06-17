@@ -20,6 +20,14 @@ class ProjectSetting < ApplicationRecord
     %w[always_squash never_squash].include?(squash_option)
   end
 
+  def always_squash?
+    squash_always_squash?
+  end
+
+  def never_squash?
+    squash_never_squash?
+  end
+
   def self.where_or_create_by(attrs)
     where(primary_key => safe_find_or_create_by(attrs))
   end

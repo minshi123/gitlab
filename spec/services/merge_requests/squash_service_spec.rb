@@ -153,7 +153,7 @@ describe MergeRequests::SquashService do
       it 'raises a squash error' do
         expect(service.execute).to match(
           status: :error,
-          message: a_string_including('prohibits Squash-and-Merge'))
+          message: a_string_including('prohibits squashing for merge requests'))
       end
     end
 

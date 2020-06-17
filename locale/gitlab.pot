@@ -13946,7 +13946,7 @@ msgstr ""
 msgid "MergeRequests|Squash task canceled: another squash is already in progress."
 msgstr ""
 
-msgid "MergeRequests|This repository prohibits Squash-and-Merge."
+msgid "MergeRequests|This repository prohibits squashing for merge requests."
 msgstr ""
 
 msgid "MergeRequests|Thread stays resolved"
