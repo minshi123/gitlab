@@ -745,7 +745,7 @@ Note the following properties:
 | query_range | yes | yes | For area panel types, you must use a [range query](https://prometheus.io/docs/prometheus/latest/querying/api/#range-queries) |
 
 CAUTION: **Warning:**
-When the query returns too many data points, heatmap data bucket dimensions tend to 0 thus it becomes invisible. In this case, try to scope down the data by changing the time range filter on the metrics dashboard UI or adding **step** property to metric `yaml` configuration.
+When a query returns too many data points, the heatmap data bucket dimensions will tend downwards to 0 so the chart will become invisible. In this case, try to scope down the data by changing the time range filter on the metrics dashboard UI or adding **step** property to metric `yaml` configuration.
 
 ![heatmap panel type](img/heatmap_panel_type.png)
 
