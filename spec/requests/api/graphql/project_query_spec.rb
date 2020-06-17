@@ -60,6 +60,26 @@ describe 'getting project information' do
         expect(graphql_data['project']['pipelines']['edges'].size).to eq(1)
       end
     end
+
+    context 'when the project has no compliance framework assigned' do
+      it 'is an empty array' do
+        post_graphql(query, current_user: current_user)
+
+        expect(graphql_data.dig('project', 'complianceFrameworks', 'nodes')).to match_array([])
+      end
+    end
+
+    context 'when the project has a compliance framework assigned' do
+      before do
+        project.update!(compliance_framework_setting: create(:compliance_framework_project_setting, framework: 'sox'))
+      end
+
+      it 'includes its name' do
+        post_graphql(query, current_user: current_user)
+
+        expect(graphql_data.dig('project', 'complianceFrameworks', 'nodes', 0, 'name')).to eq('sox')
+      end
+    end
   end
 
   describe 'performance' do
