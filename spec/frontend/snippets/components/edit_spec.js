@@ -431,14 +431,30 @@ describe('Snippet Edit app', () => {
     });
 
     describe('on before unload', () => {
-      it('prevents page navigation if there are some changes in the snippet content', () => {
+      let event;
+      let returnValueSetter;
+
+      beforeEach(() => {
         createComponent();
 
-        expect(window.onbeforeunload({})).toBeUndefined();
+        event = new Event('beforeunload');
+        returnValueSetter = jest.spyOn(event, 'returnValue', 'set');
+      });
 
-        wrapper.vm.content = 'new content';
+      it('does not prevent page navigation if there are no changes to the snippet content', () => {
+        window.dispatchEvent(event);
 
-        expect(window.onbeforeunload({})).toBe('Are you sure you want to lose unsaved changes?');
+        expect(returnValueSetter).not.toHaveBeenCalled();
+      });
+
+      it('prevents page navigation if there are some changes in the snippet content', () => {
+        wrapper.setData({ content: 'new content' });
+
+        window.dispatchEvent(event);
+
+        expect(returnValueSetter).toHaveBeenCalledWith(
+          'Are you sure you want to lose unsaved changes?',
+        );
       });
     });
   });
