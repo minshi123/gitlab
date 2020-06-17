@@ -1984,15 +1984,28 @@ Represents a vulnerability.
 | ---   |  ---- | ----------  |
 | `description` | String | Description of the vulnerability |
 | `id` | ID! | GraphQL ID of the vulnerability |
+| `identifiers` | VulnerabilityIdentifier! => Array | Identifiers of the vulnerability. |
 | `location` | VulnerabilityLocation | Location metadata for the vulnerability. Its fields depend on the type of security scan that found the vulnerability |
 | `project` | Project | The project on which the vulnerability was found |
 | `reportType` | VulnerabilityReportType | Type of the security report that found the vulnerability (SAST, DEPENDENCY_SCANNING, CONTAINER_SCANNING, DAST, SECRET_DETECTION) |
+| `scanner` | VulnerabilityScanner! | Scanner metadata for the vulnerability. |
 | `severity` | VulnerabilitySeverity | Severity of the vulnerability (INFO, UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL) |
 | `state` | VulnerabilityState | State of the vulnerability (DETECTED, DISMISSED, RESOLVED, CONFIRMED) |
 | `title` | String | Title of the vulnerability |
 | `userNotesCount` | Int! | Number of user notes attached to the vulnerability |
 | `userPermissions` | VulnerabilityPermissions! | Permissions for the current user on the resource |
 | `vulnerabilityPath` | String | URL to the vulnerability's details page |
+
+## VulnerabilityIdentifier
+
+Represents a vulnerability identifier.
+
+| Name  | Type  | Description |
+| ---   |  ---- | ----------  |
+| `externalId` | String | External ID of the vulnerability identifier |
+| `externalType` | String | External type of the vulnerability identifier |
+| `name` | String | Name of the vulnerability identifier |
+| `url` | String | URL of the vulnerability identifier |
 
 ## VulnerabilityIssueLink
 
@@ -2072,6 +2085,14 @@ Check permissions for the current user on a vulnerability
 | `destroyVulnerabilityFeedback` | Boolean! | Indicates the user can perform `destroy_vulnerability_feedback` on this resource |
 | `readVulnerabilityFeedback` | Boolean! | Indicates the user can perform `read_vulnerability_feedback` on this resource |
 | `updateVulnerabilityFeedback` | Boolean! | Indicates the user can perform `update_vulnerability_feedback` on this resource |
+
+## VulnerabilityScanner
+
+Represents a vulnerability scanner.
+
+| Name  | Type  | Description |
+| ---   |  ---- | ----------  |
+| `name` | String | Name of the vulnerability scanner |
 
 ## VulnerabilitySeveritiesCount
 
