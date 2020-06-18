@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe 'User edits a merge request', :js do
   include Select2Helper
-  using RSpec::Parameterized::TableSyntax
 
   let(:project) { create(:project, :repository) }
   let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }

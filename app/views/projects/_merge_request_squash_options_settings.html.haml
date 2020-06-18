@@ -11,7 +11,7 @@
 
     .form-check.gl-mb-2
       = settings.radio_button :squash_option, :never_squash, class: "form-check-input"
-      = label_tag :project_squash_option_never_squash, class: 'form-check-label' do
+      = label_tag :project_project_setting_attributes_squash_option_never_squash, class: 'form-check-label' do
         .gl-font-weight-bold
           = s_('ProjectSettings|Do not allow')
         .text-secondary
@@ -19,25 +19,24 @@
 
     .form-check.gl-mb-2
       = settings.radio_button :squash_option, :enabled_with_default_off, class: "form-check-input"
-      = label_tag :project_squash_option_enabled_with_default_off, class: 'form-check-label' do
+      = label_tag :project_project_setting_attributes_squash_option_enabled_with_default_off, class: 'form-check-label' do
         .gl-font-weight-bold
           = s_('ProjectSettings|Allow')
         .text-secondary
-          = s_('ProjectSettings|Option is visible but unselected by default.')
+          = s_('ProjectSettings|Option is visible but disabled by default.')
 
     .form-check.gl-mb-2
       = settings.radio_button :squash_option, :enabled_with_default_on, class: "form-check-input"
-      = label_tag :project_squash_option_enabled_with_default_on, class: 'form-check-label' do
+      = label_tag :project_project_setting_attributes_squash_option_enabled_with_default_on, class: 'form-check-label' do
         .gl-font-weight-bold
           = s_('ProjectSettings|Encourage')
         .text-secondary
-          = s_('ProjectSettings|Option is visible and selected by default.')
+          = s_('ProjectSettings|Option is visible and enabled by default.')
 
     .form-check.gl-mb-2
       = settings.radio_button :squash_option, :always_squash, class: "form-check-input"
-      = label_tag :project_squash_option_always_squash, class: 'form-check-label' do
+      = label_tag :project_project_setting_attributes_squash_option_always_squash, class: 'form-check-label' do
         .gl-font-weight-bold
           = s_('ProjectSettings|Require')
         .text-secondary
-          = s_('ProjectSettings|Squashing is always performed. Option is visible and selected, but users cannot change it.')
-
+          = s_('ProjectSettings|Squashing is always performed. Option is visible and enabled, but cannot be changed.')

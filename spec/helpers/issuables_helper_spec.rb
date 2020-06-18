@@ -307,19 +307,17 @@ describe IssuablesHelper do
   describe '#issuable_squash_option?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:squash_read_only, :squash_enabled_by_default, :issuable_persisted, :squash, :expectation) do
-      true  | false | false | true  | false
-      true  | true  | false | true  | true
-      false | true  | false | true  | true
-      false | true  | true  | true  | true
-      false | true  | true  | false | false
-      false | false | false | false | false
+    where(:issuable_persisted, :squash, :squash_enabled_by_default, :expectation) do
+      true  | true  | true  | true
+      true  | false | true  | false
+      false | false | false | false
+      false | true  | false | false
+      false | true  | true  | true
     end
 
     with_them do
       it 'returns the correct value' do
         project = double(
-          squash_readonly?: squash_read_only,
           squash_enabled_by_default?: squash_enabled_by_default
         )
         issuable = double(persisted?: issuable_persisted, squash: squash)

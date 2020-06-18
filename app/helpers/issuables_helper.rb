@@ -395,10 +395,11 @@ module IssuablesHelper
   end
 
   def issuable_squash_option?(issuable, project)
-    return project.squash_enabled_by_default? if project.squash_readonly?
-    return issuable.squash if issuable.persisted?
-
-    project.squash_enabled_by_default?
+    if issuable.persisted?
+      issuable.squash
+    else
+      project.squash_enabled_by_default?
+    end
   end
 
   private

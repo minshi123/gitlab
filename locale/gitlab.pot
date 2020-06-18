@@ -17551,10 +17551,10 @@ msgstr ""
 msgid "ProjectSettings|Only signed commits can be pushed to this repository."
 msgstr ""
 
-msgid "ProjectSettings|Option is visible and selected by default."
+msgid "ProjectSettings|Option is visible and enabled by default."
 msgstr ""
 
-msgid "ProjectSettings|Option is visible but unselected by default."
+msgid "ProjectSettings|Option is visible but disabled by default."
 msgstr ""
 
 msgid "ProjectSettings|Packages"
@@ -17614,7 +17614,7 @@ msgstr ""
 msgid "ProjectSettings|Squash commits when merging"
 msgstr ""
 
-msgid "ProjectSettings|Squashing is always performed. Option is visible and selected, but users cannot change it."
+msgid "ProjectSettings|Squashing is always performed. Option is visible and enabled, but cannot be changed."
 msgstr ""
 
 msgid "ProjectSettings|Squashing is never performed and option is hidden."

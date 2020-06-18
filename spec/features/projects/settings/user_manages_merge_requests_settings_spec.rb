@@ -39,21 +39,21 @@ RSpec.describe 'Projects > Settings > User manages merge request settings' do
     it 'shows "Allow" option' do
       page.within '#js-merge-request-settings' do
         expect(page).to have_content 'Allow'
-        expect(page).to have_content 'Option is visible but unselected by default.'
+        expect(page).to have_content 'Option is visible but disabled by default.'
       end
     end
 
     it 'shows "Encourage" option' do
       page.within '#js-merge-request-settings' do
         expect(page).to have_content 'Encourage'
-        expect(page).to have_content 'Option is visible and selected by default.'
+        expect(page).to have_content 'Option is visible and enabled by default.'
       end
     end
 
     it 'shows "Require" option' do
       page.within '#js-merge-request-settings' do
         expect(page).to have_content 'Require'
-        expect(page).to have_content 'Squashing is always performed. Option is visible and selected, but users cannot change it.'
+        expect(page).to have_content 'Squashing is always performed. Option is visible and enabled, but cannot be changed.'
       end
     end
   end
