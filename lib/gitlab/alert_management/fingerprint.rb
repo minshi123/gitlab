@@ -14,6 +14,10 @@ module Gitlab
           data = flatten_array(data)
         end
 
+        if data.is_a?(Hash)
+          data = flatten_hash(data)
+        end
+
         Digest::SHA1.hexdigest(data.to_s)
       end
 
@@ -21,6 +25,11 @@ module Gitlab
 
       def flatten_array(array)
         array.flatten.map!(&:to_s).join
+      end
+
+      def flatten_hash(hash)
+        # Sort hash so SHA generated is the same
+        Gitlab::Utils::SafeInlineHash.merge_keys!(hash).sort.to_s
       end
     end
   end
