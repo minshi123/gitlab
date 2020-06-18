@@ -22,7 +22,10 @@ export default class MergeRequestStore {
     const pipelineStatus = data.pipeline ? data.pipeline.details.status : null;
 
     this.squash = data.squash;
+    this.squashIsEnabledByDefault = data.squash_enabled_by_default;
+    this.squashIsReadonly = data.squash_readonly;
     this.enableSquashBeforeMerge = this.enableSquashBeforeMerge || true;
+    this.squashIsSelected = data.squash_readonly ? data.squash_enabled_by_default : data.squash;
 
     this.iid = data.iid;
     this.title = data.title;
@@ -49,6 +52,13 @@ export default class MergeRequestStore {
     this.squashCommitMessage = data.default_squash_commit_message;
     this.rebaseInProgress = data.rebase_in_progress;
     this.mergeRequestDiffsPath = data.diffs_path;
+
+    console.log('>>>', data);
+
+    // squash: true
+    // squash_before_merge_help_path: "/help/user/project/merge_requests/squash_and_merge"
+    // squash_enabled_by_default: true
+    // squash_readonly: false
 
     if (data.issues_links) {
       const links = data.issues_links;

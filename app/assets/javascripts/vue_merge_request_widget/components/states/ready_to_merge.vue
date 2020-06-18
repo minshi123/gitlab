@@ -45,7 +45,8 @@ export default {
       isMakingRequest: false,
       isMergingImmediately: false,
       commitMessage: this.mr.commitMessage,
-      squashBeforeMerge: this.mr.squash,
+      // squashBeforeMerge: this.mr.squash,
+      squashBeforeMerge: this.mr.squashIsSelected,
       successSvg,
       warningSvg,
       squashCommitMessage: this.mr.squashCommitMessage,
@@ -108,6 +109,12 @@ export default {
     shouldShowSquashBeforeMerge() {
       const { commitsCount, enableSquashBeforeMerge } = this.mr;
       return enableSquashBeforeMerge && commitsCount > 1;
+    },
+    isSquashButtonSelected() {
+      return this.mr.squashIsSelected;
+    },
+    isSquashButtonDisabled() {
+      return this.mr.squashIsReadonly;
     },
     shouldShowMergeControls() {
       return this.mr.isMergeAllowed || this.isAutoMergeAvailable;
@@ -340,11 +347,17 @@ export default {
               </label>
 
               <!-- Placeholder for EE extension of this component -->
-              <squash-before-merge
+              <!-- <squash-before-merge
                 v-if="shouldShowSquashBeforeMerge"
                 v-model="squashBeforeMerge"
                 :help-path="mr.squashBeforeMergeHelpPath"
                 :is-disabled="isMergeButtonDisabled"
+              /> -->
+              <squash-before-merge
+                v-if="shouldShowSquashBeforeMerge"
+                v-model="squashBeforeMerge"
+                :help-path="mr.squashBeforeMergeHelpPath"
+                :is-disabled="isSquashButtonDisabled"
               />
             </template>
             <template v-else>
