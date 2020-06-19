@@ -1,0 +1,5 @@
+---
+title: Remove the elasticsearch_web_indexing feature flag
+merge_request: 34945
+author:
+type: other
