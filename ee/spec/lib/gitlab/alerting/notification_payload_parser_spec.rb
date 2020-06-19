@@ -21,7 +21,7 @@ describe Gitlab::Alerting::NotificationPayloadParser do
     describe 'fingerprint' do
       context 'license feature enabled' do
         before do
-          stub_licensed_features(gitlab_alert_fingerprinting: true)
+          stub_licensed_features(generic_alert_fingerprinting: true)
         end
 
         it 'generates the fingerprint from the payload' do

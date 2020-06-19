@@ -17,8 +17,8 @@ module EE
           super if payload[:fingerprint].present?
 
           # TODO Scope by project
-          return unless License.feature_available?(:gitlab_alert_fingerprinting) &&
-                        ::Feature.enabled?(:gitlab_alert_fingerprinting)
+          return unless License.feature_available?(:generic_alert_fingerprinting) &&
+                        ::Feature.enabled?(:generic_alert_fingerprinting)
 
           payload_excluding_params = payload.excluding(EXCLUDED_PAYLOAD_FINGERPRINT_PARAMS)
 
