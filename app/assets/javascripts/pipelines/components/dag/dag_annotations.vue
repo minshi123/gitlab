@@ -8,17 +8,32 @@ export default {
       required: true,
     },
   },
+  computed: {
+    wrapperClasses() {
+      return [
+        'gl-display-flex',
+        'gl-flex-direction-column',
+        'gl-fixed',
+        'gl-right-1',
+        'gl-w-max-content',
+        'gl-pr-5',
+        'gl-rounded-base',
+        Object.keys(this.annotations).length > 0 ? 'gl-bg-white' : '',
+      ].join(' ')
+    }
+  }
 }
 
 </script>
 <template>
-  <div class="gl-display-flex gl-flex-wrap">
+  <div :class="wrapperClasses">
     <div v-for="note in annotations" :key="note.uuid" class="gl-ml-4 gl-display-flex gl-align-items-center">
-      <div class="gl-text-white gl-px-2 gl-font-base pointy-polygon gl-align-items-center" :style="{ backgroundColor: note.source.color}">
-        <p class="gl-m-0">{{ note.source.name }}</p>
-      </div>
-      <div class="gl-text-white gl-px-2 gl-font-base indented-polygon gl-align-items-center" :style="{ backgroundColor: note.target.color, marginLeft: '-20px'  }">
-        <p class="gl-m-0">{{ note.target.name }}</p>
+      <div
+        class="gl-w-6 gl-h-5"
+        :style="{ background: `linear-gradient(0.25turn, ${note.source.color} 40%, ${note.target.color} 60%)`}"
+      />
+      <div class="gl-px-2 gl-font-base gl-align-items-center">
+        {{ note.source.name }} → {{ note.target.name }}
       </div>
     </div>
   </div>
