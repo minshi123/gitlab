@@ -12,7 +12,7 @@ import {
   UNSUPPORTED_DATA,
   ADD_NOTE,
   REMOVE_NOTE,
-  TOGGLE_NOTE
+  REPLACE_NOTES,
 } from './constants';
 import { parseData } from './parsing_utils';
 
@@ -135,6 +135,7 @@ export default {
       this.failureType = type;
     },
     updateAnnotation ({ type, data }) {
+      // currently need to deal with hovers interfering with live again
       switch (type) {
         case ADD_NOTE:
           data.forEach(item => {
@@ -145,6 +146,9 @@ export default {
           data.forEach((item) => {
             this.removeAnnotationFromMap(item);
           });
+          break;
+        case REPLACE_NOTES:
+          this.annotationsMap = data;
           break;
         default:
           return;

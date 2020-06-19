@@ -7,10 +7,11 @@ import {
   PARSE_FAILURE,
   ADD_NOTE,
   REMOVE_NOTE,
-  TOGGLE_NOTE
+  REPLACE_NOTES,
 } from './constants';
 import {
-  getAllLinkAncestors,
+  currentIsLive,
+  getLiveLinks,
   highlightLinks,
   restoreLinks,
   toggleLinkHighlight,
@@ -100,33 +101,23 @@ export default {
     appendLinkInteractions(link) {
       return link
         .on('mouseover', (d, idx, collection) => {
-          if (d.hold) {
+          if(currentIsLive(idx, collection)) {
             return;
           }
           this.$emit('update-annotation', { type: ADD_NOTE, data: [d]});
           highlightLinks(d, idx, collection);
         })
         .on('mouseout', (d, idx, collection) => {
-          if (d.hold) {
+          if(currentIsLive(idx, collection)) {
             return;
           }
           this.$emit('update-annotation', { type: REMOVE_NOTE, data: [d]});
           restoreLinks(this.$options.viewOptions.baseOpacity, d, idx, collection);
         })
         .on('click', (d, idx, collection) => {
-
-          let type;
-
-          if (d.hold) {
-            type = REMOVE_NOTE;
-            d.hold = false;
-          } else {
-            type = ADD_NOTE;
-            d.hold = true;
-          }
-
-          this.$emit('update-annotation', { type, data: [d] });
           toggleLinkHighlight(this.$options.viewOptions.baseOpacity, d, idx, collection)
+          const data = Object.fromEntries(getLiveLinks().map((datum) => [datum.uid, datum]))
+          this.$emit('update-annotation', { type: REPLACE_NOTES, data });
          });
     },
 
@@ -134,23 +125,9 @@ export default {
       return node.on(
         'click',
         (d, idx, collection) => {
-          let relatedLinks = getAllLinkAncestors(d);
-          let type;
-
-          if (d.hold) {
-            type = REMOVE_NOTE;
-            [d, ...relatedLinks].forEach((item) => {
-              item.hold = false;
-            });
-          } else {
-            type = ADD_NOTE;
-            [d, ...relatedLinks].forEach((item) => {
-              item.hold = true;
-            });
-          }
-
-          this.$emit('update-annotation', { type, data: relatedLinks});
           togglePathHighlights(this.$options.viewOptions.baseOpacity, d, idx, collection);
+          const data = Object.fromEntries(getLiveLinks().map((datum) => [datum.uid, datum]))
+          this.$emit('update-annotation', { type: REPLACE_NOTES, data });
         },
       );
     },

@@ -5,9 +5,11 @@ export const highlightIn = 1;
 export const highlightOut = 0.2;
 
 const getCurrent = (idx, collection) => d3.select(collection[idx]);
-const currentIsLive = (idx, collection) => getCurrent(idx, collection).classed(IS_HIGHLIGHTED);
 const getOtherLinks = () => d3.selectAll(`.${LINK_SELECTOR}:not(.${IS_HIGHLIGHTED})`);
 const getNodesNotLive = () => d3.selectAll(`.${NODE_SELECTOR}:not(.${IS_HIGHLIGHTED})`);
+
+export const getLiveLinks = () => d3.selectAll(`.${LINK_SELECTOR}.${IS_HIGHLIGHTED}`).data();
+export const currentIsLive = (idx, collection) => getCurrent(idx, collection).classed(IS_HIGHLIGHTED);
 
 const backgroundLinks = selection => selection.style('stroke-opacity', highlightOut);
 const backgroundNodes = selection => selection.attr('stroke', '#f2f2f2');
@@ -89,11 +91,6 @@ const restorePath = (parentLinks, parentNodes, baseOpacity) => {
 };
 
 export const restoreLinks = (baseOpacity, d, idx, collection) => {
-  /* in this case, it has just been clicked */
-  if (currentIsLive(idx, collection)) {
-    return;
-  }
-
   /*
     if there exist live links, reset to highlight out / pale
     otherwise, reset to base

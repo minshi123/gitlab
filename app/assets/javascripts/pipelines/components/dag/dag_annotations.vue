@@ -27,7 +27,7 @@ export default {
 </script>
 <template>
   <div :class="wrapperClasses">
-    <div v-for="note in annotations" :key="note.uuid" class="gl-ml-4 gl-display-flex gl-align-items-center">
+    <div v-for="note in annotations" :key="note.uid" class="gl-ml-4 gl-display-flex gl-align-items-center">
       <div
         class="gl-w-6 gl-h-5"
         :style="{ background: `linear-gradient(0.25turn, ${note.source.color} 40%, ${note.target.color} 60%)`}"

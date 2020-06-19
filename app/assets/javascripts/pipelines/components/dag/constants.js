@@ -12,3 +12,4 @@ export const NODE_SELECTOR = 'dag-node';
 /* Annotation types */
 export const ADD_NOTE = 'add';
 export const REMOVE_NOTE = 'remove';
+export const REPLACE_NOTES = 'replace';
