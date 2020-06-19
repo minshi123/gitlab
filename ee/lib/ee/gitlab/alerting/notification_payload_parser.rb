@@ -14,15 +14,17 @@ module EE
         # See https://gitlab.com/gitlab-org/gitlab/-/issues/214557#note_362795447
         override :fingerprint
         def fingerprint
-          super if payload[:fingerprint].present?
-
-          # TODO Scope by project
-          return unless License.feature_available?(:generic_alert_fingerprinting) &&
-                        ::Feature.enabled?(:generic_alert_fingerprinting)
+          return super if payload[:fingerprint].present? || !generic_alert_fingerprinting_enabled?
 
           payload_excluding_params = payload.excluding(EXCLUDED_PAYLOAD_FINGERPRINT_PARAMS)
 
           ::Gitlab::AlertManagement::Fingerprint.generate(payload_excluding_params)
+        end
+
+        private
+
+        def generic_alert_fingerprinting_enabled?
+          License.feature_available?(:generic_alert_fingerprinting) && ::Feature.enabled?(:generic_alert_fingerprinting)
         end
       end
     end
