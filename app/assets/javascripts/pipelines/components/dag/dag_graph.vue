@@ -100,6 +100,9 @@ export default {
     appendLinkInteractions(link) {
       return link
         .on('mouseover', (d, idx, collection) => {
+          if (d.hold) {
+            return;
+          }
           this.$emit('update-annotation', { type: ADD_NOTE, data: [d]});
           highlightLinks(d, idx, collection);
         })
@@ -131,17 +134,22 @@ export default {
       return node.on(
         'click',
         (d, idx, collection) => {
+          let relatedLinks = getAllLinkAncestors(d);
           let type;
 
           if (d.hold) {
             type = REMOVE_NOTE;
-            d.hold = false;
+            [d, ...relatedLinks].forEach((item) => {
+              item.hold = false;
+            });
           } else {
             type = ADD_NOTE;
-            d.hold = true;
+            [d, ...relatedLinks].forEach((item) => {
+              item.hold = true;
+            });
           }
 
-          this.$emit('update-annotation', { type, data: getAllLinkAncestors(d)});
+          this.$emit('update-annotation', { type, data: relatedLinks});
           togglePathHighlights(this.$options.viewOptions.baseOpacity, d, idx, collection);
         },
       );
