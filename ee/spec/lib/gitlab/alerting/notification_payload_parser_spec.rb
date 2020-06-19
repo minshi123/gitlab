@@ -30,6 +30,20 @@ describe Gitlab::Alerting::NotificationPayloadParser do
 
           expect(subject.dig('annotations', 'fingerprint')).to eq(expected_fingerprint)
         end
+
+        context 'payload has no values' do
+          let(:payload) do
+            {
+              'start_time' => Time.current,
+              'hosts' => ['gitlab.com'],
+              'title' => ' '
+            }
+          end
+
+          it 'does not generate the fingerprint from the payload' do
+            expect(subject.dig('annotations', 'fingerprint')).to eq(nil)
+          end
+        end
       end
 
       context 'license feature not enabled' do
