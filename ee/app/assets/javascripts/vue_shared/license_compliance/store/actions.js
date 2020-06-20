@@ -138,8 +138,8 @@ export const receiveLicenseCheckApprovalRuleSuccess = ({ commit }, rule) => {
   commit(types.RECEIVE_LICENSE_CHECK_APPROVAL_RULE_SUCCESS, rule);
 };
 
-export const receiveLicenseCheckApprovalRuleError = ({ commit }, rule) => {
-  commit(types.RECEIVE_LICENSE_CHECK_APPROVAL_RULE_ERROR, rule);
+export const receiveLicenseCheckApprovalRuleError = ({ commit }, error) => {
+  commit(types.RECEIVE_LICENSE_CHECK_APPROVAL_RULE_ERROR, error);
 };
 
 export const setIsAdmin = ({ commit }, payload) => {
