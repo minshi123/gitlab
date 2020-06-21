@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlDeprecatedButton, GlLoadingIcon } from '@gitlab/ui';
+import { GlDeprecatedButton, GlLoadingIcon, GlIcon, GlPopover } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
@@ -67,6 +67,10 @@ const createComponent = ({ state, getters, props, actionMocks, isAdmin }) => {
 };
 
 describe('License Management', () => {
+  beforeEach(() => {
+    window.gon = { features: { licenseComplianceDeniesMr: false } };
+  });
+
   afterEach(() => {
     wrapper.destroy();
     wrapper = null;
@@ -167,6 +171,34 @@ describe('License Management', () => {
           expect(wrapper.find(AdminLicenseManagementRow).exists()).toBe(true);
         });
       });
+
+      describe('when licenseComplianceDeniesMr feature flag enabled', () => {
+        it('should not show the developer only tooltip', () => {
+          window.gon.features.licenseComplianceDeniesMr = true;
+
+          createComponent({
+            state: { isLoadingManagedLicenses: false },
+            isAdmin: true,
+          });
+
+          expect(wrapper.find(GlIcon).exists()).toBe(false);
+          expect(wrapper.find(GlPopover).exists()).toBe(false);
+        });
+      });
+
+      describe('when licenseComplianceDeniesMr feature flag disabled', () => {
+        it('should not show the developer only tooltip', () => {
+          window.gon.features.licenseComplianceDeniesMr = false;
+
+          createComponent({
+            state: { isLoadingManagedLicenses: false },
+            isAdmin: true,
+          });
+
+          expect(wrapper.find(GlIcon).exists()).toBe(false);
+          expect(wrapper.find(GlPopover).exists()).toBe(false);
+        });
+      });
     });
     describe('when developer', () => {
       it('should not invoke `setLicenseAprroval` action or `addLicense` event on form', () => {
@@ -198,6 +230,34 @@ describe('License Management', () => {
         it('renders the read only row', () => {
           expect(wrapper.find(LicenseManagementRow).exists()).toBe(true);
           expect(wrapper.find(AdminLicenseManagementRow).exists()).toBe(false);
+        });
+      });
+
+      describe('when licenseComplianceDeniesMr feature flag enabled', () => {
+        it('should show the developer only tooltip', () => {
+          window.gon.features.licenseComplianceDeniesMr = true;
+
+          createComponent({
+            state: { isLoadingManagedLicenses: false },
+            isAdmin: false,
+          });
+
+          expect(wrapper.find(GlIcon).exists()).toBe(true);
+          expect(wrapper.find(GlPopover).exists()).toBe(true);
+        });
+      });
+
+      describe('when licenseComplianceDeniesMr feature flag disabled', () => {
+        it('should not show the developer only tooltip', () => {
+          window.gon.features.licenseComplianceDeniesMr = false;
+
+          createComponent({
+            state: { isLoadingManagedLicenses: false },
+            isAdmin: false,
+          });
+
+          expect(wrapper.find(GlIcon).exists()).toBe(false);
+          expect(wrapper.find(GlPopover).exists()).toBe(false);
         });
       });
     });
