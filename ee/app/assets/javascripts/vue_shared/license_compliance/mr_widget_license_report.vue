@@ -111,8 +111,8 @@ export default {
     this.fetchParsedLicenseReport();
 
     /* 
-      If we rendering this widget from the "License" tab in the pipeline view,
-      then we don't fetch the approvals since we don't have Merge request context.
+      If we render this widget from the "License" tab in the pipeline view,
+      then we don't fetch the approvals since we aren't in the Merge request context.
     */
     if (approvalsApiPath) {
       this.fetchLicenseCheckApprovalRule();

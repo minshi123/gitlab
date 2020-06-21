@@ -485,7 +485,7 @@ describe('License store actions', () => {
   describe('fetchLicenseCheckApprovalRule ', () => {
     it('dispatches request/receive with detected approval rule', done => {
       const APPROVAL_RULE_RESPONSE = {
-        approval_rules_left: [{name: 'License-Check'}],
+        approval_rules_left: [{ name: 'License-Check' }],
       };
 
       axiosMock.onGet(approvalsApiPath).replyOnce(200, APPROVAL_RULE_RESPONSE);
@@ -497,7 +497,10 @@ describe('License store actions', () => {
         [],
         [
           { type: 'requestLicenseCheckApprovalRule' },
-          { type: 'receiveLicenseCheckApprovalRuleSuccess', payload: { hasLicenseCheckApprovalRule: true } },
+          {
+            type: 'receiveLicenseCheckApprovalRuleSuccess',
+            payload: { hasLicenseCheckApprovalRule: true },
+          },
         ],
         done,
       );
@@ -505,7 +508,7 @@ describe('License store actions', () => {
 
     it('dispatches request/receive without detected approval rule', done => {
       const APPROVAL_RULE_RESPONSE = {
-        approval_rules_left: [{name: 'Another Approval Rule'}],
+        approval_rules_left: [{ name: 'Another Approval Rule' }],
       };
 
       axiosMock.onGet(approvalsApiPath).replyOnce(200, APPROVAL_RULE_RESPONSE);
@@ -517,7 +520,10 @@ describe('License store actions', () => {
         [],
         [
           { type: 'requestLicenseCheckApprovalRule' },
-          { type: 'receiveLicenseCheckApprovalRuleSuccess', payload: { hasLicenseCheckApprovalRule: false } },
+          {
+            type: 'receiveLicenseCheckApprovalRuleSuccess',
+            payload: { hasLicenseCheckApprovalRule: false },
+          },
         ],
         done,
       );
@@ -526,19 +532,22 @@ describe('License store actions', () => {
     it('dispatches request/receive on error', done => {
       const error = new Error('Request failed with status code 500');
       axiosMock.onGet(approvalsApiPath).replyOnce(500);
-      
+
       testAction(
         actions.fetchLicenseCheckApprovalRule,
         null,
         state,
         [],
-        [{ type: 'requestLicenseCheckApprovalRule' }, { type: 'receiveLicenseCheckApprovalRuleError', payload: error }],
+        [
+          { type: 'requestLicenseCheckApprovalRule' },
+          { type: 'receiveLicenseCheckApprovalRuleError', payload: error },
+        ],
         done,
       );
     });
   });
 
-  describe('requestLicenseCheckApprovalRule', () =>{
+  describe('requestLicenseCheckApprovalRule', () => {
     it('commits REQUEST_LICENSE_CHECK_APPROVAL_RULE', done => {
       testAction(
         actions.requestLicenseCheckApprovalRule,
@@ -552,25 +561,30 @@ describe('License store actions', () => {
     });
   });
 
-  describe('receiveLicenseCheckApprovalRuleSuccess', () =>{
+  describe('receiveLicenseCheckApprovalRuleSuccess', () => {
     it('commits REQUEST_LICENSE_CHECK_APPROVAL_RULE', done => {
-      const hasLicenseCheckApprovalRule = true; 
+      const hasLicenseCheckApprovalRule = true;
 
       testAction(
         actions.receiveLicenseCheckApprovalRuleSuccess,
-        {hasLicenseCheckApprovalRule},
+        { hasLicenseCheckApprovalRule },
         state,
-        [{ type: mutationTypes.RECEIVE_LICENSE_CHECK_APPROVAL_RULE_SUCCESS, payload: {hasLicenseCheckApprovalRule} }],
+        [
+          {
+            type: mutationTypes.RECEIVE_LICENSE_CHECK_APPROVAL_RULE_SUCCESS,
+            payload: { hasLicenseCheckApprovalRule },
+          },
+        ],
         [],
       )
         .then(done)
         .catch(done.fail);
     });
-  });  
+  });
 
-  describe('receiveLicenseCheckApprovalRuleError', () =>{
+  describe('receiveLicenseCheckApprovalRuleError', () => {
     it('commits RECEIVE_LICENSE_CHECK_APPROVAL_RULE_ERROR', done => {
-      const error =  new Error("Error");
+      const error = new Error('Error');
 
       testAction(
         actions.receiveLicenseCheckApprovalRuleError,
@@ -582,7 +596,7 @@ describe('License store actions', () => {
         .then(done)
         .catch(done.fail);
     });
-  });  
+  });
 
   describe('requestParsedLicenseReport', () => {
     it(`should commit ${mutationTypes.REQUEST_PARSED_LICENSE_REPORT}`, done => {
