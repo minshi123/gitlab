@@ -18,7 +18,7 @@ module EE
 
           payload_excluding_params = payload.excluding(EXCLUDED_PAYLOAD_FINGERPRINT_PARAMS)
 
-          return if payload_excluding_params.filter { |_, v| v.present? }.blank?
+          return if payload_excluding_params.none? { |_, v| v.present? }
 
           ::Gitlab::AlertManagement::Fingerprint.generate(payload_excluding_params)
         end
