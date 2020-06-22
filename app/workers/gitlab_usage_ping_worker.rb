@@ -12,7 +12,7 @@ class GitlabUsagePingWorker # rubocop:disable Scalability/IdempotentWorker
   feature_category :collection
 
   # Retry for up to approximately three hours then give up.
-  sidekiq_options retry: 10, dead: false
+  sidekiq_options retry: 10, dead: false # try for longer?
 
   def perform
     # Multiple Sidekiq workers could run this. We should only do this at most once a day.

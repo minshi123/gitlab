@@ -24,13 +24,15 @@ class SubmitUsagePingService
       headers: { 'Content-type' => 'application/json' }
     )
 
+    raise Gitlab::HTTP::ResponseError(response.response) unless response.code == 204
+
     store_metrics(response)
 
     true
   rescue Gitlab::HTTP::Error => e
     Gitlab::AppLogger.info("Unable to contact GitLab, Inc.: #{e}")
 
-    false
+    raise e
   end
 
   private
