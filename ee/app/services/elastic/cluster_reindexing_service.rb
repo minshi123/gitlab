@@ -25,7 +25,19 @@ module Elastic
       end
     end
 
+    def current_job_documents_count
+      elastic_helper.index_size(index_name: current_job[:index_name]).dig('docs', 'count').to_i
+    end
+
     private
+
+    def update_or_create_job_info(info)
+      old_job_info = current_job || {}
+
+      with_redis do |redis|
+        redis.set(REDIS_KEY, old_job_info.merge(info).to_json)
+      end
+    end
 
     def preflight_check!
       # Check that no other operation is in progress
@@ -46,7 +58,7 @@ module Elastic
     def index_options(for_reindexing:)
       if for_reindexing
         {
-          refresh_interval: -1, # Disable automatic refreshing
+          refresh_interval: '10s',
           number_of_replicas: 0,
           translog: { durability: 'async' }
         }
@@ -62,6 +74,8 @@ module Elastic
     def initial_stage!
       # Pause indexing
       ApplicationSetting.current.update!(elasticsearch_pause_indexing: true)
+
+      update_or_create_job_info(stage: :initial)
     end
 
     def indexing_stage!
@@ -76,15 +90,14 @@ module Elastic
 
       # Save job info
       info = {
+        stage: 'indexing',
         old_index_name: elastic_helper.target_index_name,
         index_name: index_name,
         documents_count: documents_count,
         task_id: task_id
       }
 
-      with_redis do |redis|
-        redis.set(REDIS_KEY, info.to_json)
-      end
+      update_or_create_job_info(info)
 
       info
     rescue StandardError => e
@@ -106,7 +119,7 @@ module Elastic
 
       # Compare documents count
       old_documents_count = job_info[:documents_count]
-      new_documents_count = elastic_helper.index_size.dig('docs', 'count')
+      new_documents_count = current_job_documents_count
       raise StandardError, "Documents count is different, #{new_documents_count} != #{old_documents_count}" if old_documents_count != new_documents_count
 
       # Change index settings back

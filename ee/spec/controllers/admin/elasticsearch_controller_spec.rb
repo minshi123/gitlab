@@ -49,4 +49,22 @@ RSpec.describe Admin::ElasticsearchController do
       end
     end
   end
+
+  describe 'POST #trigger_reindexing' do
+    before do
+      sign_in(admin)
+    end
+
+    it 'starts indexing' do
+      # expect(Gitlab::Elastic::Helper.default).to(receive(:index_exists?)).and_return(true)
+      # expect_next_instance_of(::Elastic::IndexProjectsService) do |service|
+      #   expect(service).to receive(:execute)
+      # end
+
+      # post :enqueue_index
+
+      # expect(controller).to set_flash[:notice].to include('/admin/sidekiq/queues/elastic_full_index')
+      # expect(response).to redirect_to integrations_admin_application_settings_path(anchor: 'js-elasticsearch-settings')
+    end
+  end
 end

@@ -89,6 +89,28 @@
               = _('This only applies to repository indexing operations.')
 
         .sub-section
+          - cluster_reindexing_service = Elastic::ClusterReindexingService.new
+          - current_reindexing_job = cluster_reindexing_service.current_job
+          %h4= _('Elasticsearch zero-downtime reindexing')
+          = link_to _('Trigger cluster reindexing'), admin_elasticsearch_trigger_reindexing_path,
+              class: ['btn', 'btn-success'], method: :post, disabled: current_reindexing_job
+          - if current_reindexing_job
+            - processed_documents = cluster_reindexing_service.current_job_documents_count
+            - expected_documents = current_reindexing_job[:documents_count]
+            - task_id = current_reindexing_job[:task_id]
+            %h5= _('Reindexing progress')
+            %p= _('Current stage') + ': ' + current_reindexing_job[:stage]
+            - if task_id
+              %p= _('Task_id') + ': ' + task_id
+            - if expected_documents
+              %p= _('Expected documents') + ': ' + expected_documents.to_s
+            - if processed_documents && expected_documents
+              - percentage = (processed_documents / expected_documents.to_f) * 100
+              %p= "#{_('Documents reindexed')}: #{processed_documents} (#{percentage.round(2)}%)"
+              .progress
+                .progress-bar.progress-bar-striped.bg-success{"aria-valuemax" => "100", "aria-valuemin" => "0", "aria-valuenow" => percentage, :role => "progressbar", :style => "width: #{percentage}%"}
+
+        .sub-section
           %h4= _('Elasticsearch indexing restrictions')
           .form-group
             .form-check
