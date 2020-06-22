@@ -77,12 +77,12 @@ describe('Security Dashboard Table Row', () => {
       ).toContain(wrapper.props().vulnerability.severity);
     });
 
-    it('should render the scanner name', () => {
+    it('should render the report type', () => {
       expect(
         findContent(2)
           .text()
           .toLowerCase(),
-      ).toContain(wrapper.props().vulnerability.scanner.name.toLowerCase());
+      ).toContain(wrapper.props().vulnerability.report_type.toLowerCase());
     });
 
     describe('the project name', () => {

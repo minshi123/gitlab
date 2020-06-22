@@ -5,6 +5,7 @@ import {
   countIssues,
   groupedReportText,
 } from 'ee/vue_shared/security_reports/store/utils';
+import convertReportType from 'ee/vue_shared/security_reports/store/utils/convert_report_type';
 import filterByKey from 'ee/vue_shared/security_reports/store/utils/filter_by_key';
 import getFileLocation from 'ee/vue_shared/security_reports/store/utils/get_file_location';
 
@@ -34,6 +35,20 @@ describe('security reports utils', () => {
       };
 
       expect(findIssueIndex(issuesList, issue)).toEqual(-1);
+    });
+  });
+
+  describe('convertReportType', () => {
+    it.each([
+      ['sast', 'SAST'],
+      ['dependency_scanning', 'Dependency Scanning'],
+      ['CONTAINER_SCANNING', 'Container Scanning'],
+      ['CUSTOM_SCANNER', 'custom scanner'],
+      ['mast', 'mast'],
+      ['TAST', 'tast'],
+      [undefined, ''],
+    ])('converts the report type "%s" to the human-readable string "%s"', (input, output) => {
+      expect(convertReportType(input)).toEqual(output);
     });
   });
 
