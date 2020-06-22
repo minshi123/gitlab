@@ -16,7 +16,7 @@ RSpec.describe AdjournedProjectsDeletionCronWorker do
     end
 
     it 'only schedules to delete projects marked for deletion before number of days from settings' do
-      expect(AdjournedProjectDeletionWorker).to receive(:perform_in).with(0, project_marked_for_deletion.id)
+      expect(AdjournedProjectDeletionWorker).to receive(:perform_async).with(project_marked_for_deletion.id)
 
       worker.perform
     end
@@ -25,7 +25,7 @@ RSpec.describe AdjournedProjectsDeletionCronWorker do
       let(:marked_for_deletion_at) { 7.days.ago }
 
       it 'schedules to delete project ' do
-        expect(AdjournedProjectDeletionWorker).to receive(:perform_in).with(0, project_marked_for_deletion.id)
+        expect(AdjournedProjectDeletionWorker).to receive(:perform_async).with(project_marked_for_deletion.id)
 
         worker.perform
       end
@@ -38,7 +38,7 @@ RSpec.describe AdjournedProjectsDeletionCronWorker do
       end
 
       it 'only schedules to delete projects marked for deletion before number of days from settings' do
-        expect(AdjournedProjectDeletionWorker).to receive(:perform_in).twice
+        expect(AdjournedProjectDeletionWorker).to receive(:perform_async).twice
 
         worker.perform
       end
