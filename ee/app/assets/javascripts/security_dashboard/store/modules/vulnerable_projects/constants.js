@@ -35,6 +35,7 @@ export const severityGroupTypes = {
   A: 'A',
 };
 
+// Note: the severityLevels needs to be ordered by criticality.
 export const SEVERITY_GROUPS = [
   {
     type: severityGroupTypes.F,

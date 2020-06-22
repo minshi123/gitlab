@@ -1,5 +1,6 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 #import "ee/vulnerabilities/graphql/vulnerability.fragment.graphql"
+#import "./vulnerablity_severities_count.fragment.graphql"
 #import "./project.fragment.graphql"
 
 query instance(
@@ -14,6 +15,7 @@ query instance(
     projects{
       nodes{
         ...Project
+        ...VulnerabilitySeveritiesCount
       }
     }
   }

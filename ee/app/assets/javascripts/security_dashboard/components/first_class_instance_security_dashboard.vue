@@ -4,7 +4,7 @@ import { GlLoadingIcon, GlButton, GlEmptyState, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import SecurityDashboardLayout from 'ee/security_dashboard/components/security_dashboard_layout.vue';
 import InstanceSecurityVulnerabilities from './first_class_instance_security_dashboard_vulnerabilities.vue';
-import VulnerabilitySeverity from 'ee/security_dashboard/components/vulnerability_severity.vue';
+import VulnerabilitySeverities from 'ee/security_dashboard/components/first_class_vulnerability_severities.vue';
 import VulnerabilityChart from 'ee/security_dashboard/components/first_class_vulnerability_chart.vue';
 import Filters from 'ee/security_dashboard/components/first_class_vulnerability_filters.vue';
 import ProjectManager from './project_manager.vue';
@@ -17,7 +17,7 @@ export default {
     CsvExportButton,
     SecurityDashboardLayout,
     InstanceSecurityVulnerabilities,
-    VulnerabilitySeverity,
+    VulnerabilitySeverities,
     VulnerabilityChart,
     Filters,
     GlEmptyState,
@@ -31,10 +31,6 @@ export default {
       required: true,
     },
     emptyStateSvgPath: {
-      type: String,
-      required: true,
-    },
-    vulnerableProjectsEndpoint: {
       type: String,
       required: true,
     },
@@ -165,7 +161,7 @@ export default {
         :query="vulnerabilityHistoryQuery"
         class="mb-4"
       />
-      <vulnerability-severity v-if="shouldShowDashboard" :endpoint="vulnerableProjectsEndpoint" />
+      <vulnerability-severities v-if="shouldShowDashboard" :projects="graphqlProjectList" />
     </template>
   </security-dashboard-layout>
 </template>
