@@ -14,6 +14,7 @@ RSpec.describe Vulnerabilities::Scanner do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:project) }
     it { is_expected.to validate_presence_of(:external_id) }
+    it { is_expected.to validate_presence_of(:vendor) }
     it { is_expected.to validate_uniqueness_of(:external_id).scoped_to(:project_id) }
   end
 

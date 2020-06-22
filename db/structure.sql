@@ -7267,7 +7267,9 @@ CREATE TABLE public.vulnerability_scanners (
     updated_at timestamp with time zone NOT NULL,
     project_id integer NOT NULL,
     external_id character varying NOT NULL,
-    name character varying NOT NULL
+    name character varying NOT NULL,
+    vendor text DEFAULT 'GitLab'::text NOT NULL,
+    CONSTRAINT check_37608c9db5 CHECK ((char_length(vendor) <= 255))
 );
 
 CREATE SEQUENCE public.vulnerability_scanners_id_seq
@@ -14086,5 +14088,6 @@ COPY "schema_migrations" (version) FROM STDIN;
 20200617002030
 20200618134223
 20200618134723
+20200622070606
 \.
 
