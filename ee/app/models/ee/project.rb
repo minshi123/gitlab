@@ -796,4 +796,4 @@ module EE
 end
 
 EE::Project.include_if_ee('::EE::GitlabRoutingHelper')
-EE::Project.include_if_ee('::EE::DeploymentPlatform')
+
