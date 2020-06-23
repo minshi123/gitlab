@@ -12,6 +12,12 @@ module EE
               description: "Vulnerabilities reported on projects on the current user's instance security dashboard",
               resolver: ::Resolvers::VulnerabilitiesResolver
 
+        field :vulnerability_scanners,
+              ::Types::VulnerabilityScannerType.connection_type,
+              null: true,
+              description: 'Vulnerability scanners reported on the project vulnerabilties',
+              resolver: ::Resolvers::Vulnerabilities::ScannersResolver
+
         field :vulnerabilities_count_by_day_and_severity,
               ::Types::VulnerabilitiesCountByDayAndSeverityType.connection_type,
               null: true,
