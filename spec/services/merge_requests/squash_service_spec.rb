@@ -137,7 +137,7 @@ describe MergeRequests::SquashService do
       let(:merge_request) { merge_request_with_only_new_files }
 
       before do
-        merge_request.project.project_setting.squash_option.squash_default_off!
+        merge_request.project.project_setting.squash_default_off!
       end
 
       include_examples 'the squash succeeds'
@@ -147,7 +147,7 @@ describe MergeRequests::SquashService do
       let(:merge_request) { merge_request_with_only_new_files }
 
       before do
-        merge_request.project.project_setting.squash_option.squash_never!
+        merge_request.project.project_setting.squash_never!
       end
 
       it 'raises a squash error' do
@@ -161,7 +161,7 @@ describe MergeRequests::SquashService do
       let(:merge_request) { merge_request_with_only_new_files }
 
       before do
-        merge_request.project.project_setting.squash_option.squash_always!
+        merge_request.project.project_setting.squash_always!
       end
 
       include_examples 'the squash succeeds'
