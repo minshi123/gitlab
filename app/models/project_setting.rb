@@ -19,10 +19,6 @@ class ProjectSetting < ApplicationRecord
   def squash_readonly?
     %w[always never].include?(squash_option)
   end
-
-  def self.where_or_create_by(attrs)
-    where(primary_key => safe_find_or_create_by(attrs))
-  end
 end
 
 ProjectSetting.prepend_if_ee('EE::ProjectSetting')
