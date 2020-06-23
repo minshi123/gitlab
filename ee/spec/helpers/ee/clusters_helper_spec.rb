@@ -27,22 +27,6 @@ RSpec.describe ClustersHelper do
     end
   end
 
-  describe '#has_multiple_clusters?' do
-    subject { helper.has_multiple_clusters? }
-
-    context 'project level' do
-      let(:clusterable) { instance_double(Project) }
-
-      it_behaves_like 'feature availablilty', :multiple_clusters
-    end
-
-    context 'group level' do
-      let(:clusterable) { instance_double(Group) }
-
-      it_behaves_like 'feature availablilty', :multiple_clusters
-    end
-  end
-
   describe '#show_cluster_health_graphs?' do
     subject { helper.show_cluster_health_graphs? }
 
