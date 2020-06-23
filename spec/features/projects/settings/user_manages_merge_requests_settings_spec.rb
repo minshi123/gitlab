@@ -162,13 +162,13 @@ RSpec.describe 'Projects > Settings > User manages merge request settings' do
   end
 
   describe 'Squash commits when merging', :js do
-    it 'initially has :squash_option set to :enabled_with_default_off' do
-      radio = find_field('project_project_setting_attributes_squash_option_enabled_with_default_off')
+    it 'initially has :squash_option set to :default_off' do
+      radio = find_field('project_project_setting_attributes_squash_option_default_off')
       expect(radio).to be_checked
     end
 
-    it 'allows :squash_option to be set to :enabled_with_default_on' do
-      choose('project_project_setting_attributes_squash_option_enabled_with_default_on')
+    it 'allows :squash_option to be set to :default_on' do
+      choose('project_project_setting_attributes_squash_option_default_on')
 
       within('.merge-request-settings-form') do
         find('.qa-save-merge-request-changes')
@@ -176,14 +176,14 @@ RSpec.describe 'Projects > Settings > User manages merge request settings' do
       end
 
       find('.flash-notice')
-      radio = find_field('project_project_setting_attributes_squash_option_enabled_with_default_on')
+      radio = find_field('project_project_setting_attributes_squash_option_default_on')
 
       expect(radio).to be_checked
-      expect(project.reload.project_setting.squash_option).to eq('enabled_with_default_on')
+      expect(project.reload.project_setting.squash_option).to eq('default_on')
     end
 
-    it 'allows :squash_option to be set to :always_squash' do
-      choose('project_project_setting_attributes_squash_option_always_squash')
+    it 'allows :squash_option to be set to :always' do
+      choose('project_project_setting_attributes_squash_option_always')
 
       within('.merge-request-settings-form') do
         find('.qa-save-merge-request-changes')
@@ -191,14 +191,14 @@ RSpec.describe 'Projects > Settings > User manages merge request settings' do
       end
 
       find('.flash-notice')
-      radio = find_field('project_project_setting_attributes_squash_option_always_squash')
+      radio = find_field('project_project_setting_attributes_squash_option_always')
 
       expect(radio).to be_checked
-      expect(project.reload.project_setting.squash_option).to eq('always_squash')
+      expect(project.reload.project_setting.squash_option).to eq('always')
     end
 
-    it 'allows :squash_option to be set to :never_squash' do
-      choose('project_project_setting_attributes_squash_option_never_squash')
+    it 'allows :squash_option to be set to :never' do
+      choose('project_project_setting_attributes_squash_option_never')
 
       within('.merge-request-settings-form') do
         find('.qa-save-merge-request-changes')
@@ -206,10 +206,10 @@ RSpec.describe 'Projects > Settings > User manages merge request settings' do
       end
 
       find('.flash-notice')
-      radio = find_field('project_project_setting_attributes_squash_option_never_squash')
+      radio = find_field('project_project_setting_attributes_squash_option_never')
 
       expect(radio).to be_checked
-      expect(project.reload.project_setting.squash_option).to eq('never_squash')
+      expect(project.reload.project_setting.squash_option).to eq('never')
     end
   end
 end
