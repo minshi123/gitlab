@@ -54,6 +54,7 @@ const Api = {
   rawFilePath: '/api/:version/projects/:id/repository/files/:path/raw',
   issuePath: '/api/:version/projects/:id/issues/:issue_iid',
   tagsPath: '/api/:version/projects/:id/repository/tags',
+  applicationSettingsPath: '/api/:version/application/settings',
 
   group(groupId, callback = () => {}) {
     const url = Api.buildUrl(Api.groupPath).replace(':id', groupId);
@@ -579,6 +580,11 @@ const Api = {
 
   buildUrl(url) {
     return joinPaths(gon.relative_url_root || '', url.replace(':version', gon.api_version));
+  },
+
+  getApplicationSettings() {
+    const url = Api.buildUrl(this.applicationSettingsPath);
+    return axios.get(url);
   },
 };
 
