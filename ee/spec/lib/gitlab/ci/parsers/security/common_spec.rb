@@ -36,7 +36,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
             "cve": "CVE-1020",
             "severity": "High",
             "solution": "Upgrade to latest version.",
-            "scanner": { "id": "gemnasium", "name": "Gemnasium" },
+            "scanner": { "id": "gemnasium", "name": "Gemnasium", "vendor": { "name": "GitLab" } },
             "location": {},
             "identifiers": [],
             "links": [{ "url": "" }]
@@ -52,7 +52,8 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
             "solution": "Upgrade to latest versions.",
             "scanner": {
               "id": "gemnasium",
-              "name": "Gemnasium"
+              "name": "Gemnasium",
+              "vendor": { "name": "GitLab" }
             },
             "location": {},
             "identifiers": [],
@@ -68,7 +69,8 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
             "solution": "Upgrade to fixed version.\r\n",
             "scanner": {
               "id": "gemnasium",
-              "name": "Gemnasium"
+              "name": "Gemnasium",
+              "vendor": { "name": "GitLab" }
             },
             "location": {},
             "identifiers": [],
