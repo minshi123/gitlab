@@ -14,3 +14,16 @@
       = _('Last Accessed On')
     .table-mobile-content
       = (last_used_at = ssh_key.last_used_at).present? ? last_used_at.to_date : _('Never')
+  .table-section.section-15
+    .table-mobile-header{ role: 'rowheader' }
+      = _('Expiration')
+    .table-mobile-content
+      - if ssh_key.expires_at&.past? || ssh_key.expires_at&.today?
+        %span{ class: 'text-danger has-tooltip', title: _('Expiration not enforced') }
+          = ssh_key.expires_at
+      - elsif ssh_key.expires_at.present?
+        %span{ class: ('text-warning' if ssh_key.expires_soon?) }
+          = ssh_key.expires_at
+      - else
+        = _('Never')
+
