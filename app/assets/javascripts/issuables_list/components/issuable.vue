@@ -24,6 +24,7 @@ export default {
     Icon,
     IssueAssignees,
     GlLink,
+    IssueSubepicFlag: () => import('ee_component/issue/issue_subpepic_flag.vue'),
   },
   directives: {
     GlTooltip,
@@ -210,7 +211,7 @@ export default {
       <!-- Issuable info container -->
       <!-- Issuable main info -->
       <div class="flex-grow-1">
-        <div class="title">
+        <div class="title gl-display-flex gl-align-items-center">
           <span class="issue-title-text">
             <i
               v-if="issuable.confidential"
@@ -221,6 +222,7 @@ export default {
             ></i>
             <gl-link :href="issuable.web_url">{{ issuable.title }}</gl-link>
           </span>
+          <issue-subepic-flag :issue="issuable" />
           <span v-if="issuable.has_tasks" class="ml-1 task-status d-none d-sm-inline-block">{{
             issuable.task_status
           }}</span>
