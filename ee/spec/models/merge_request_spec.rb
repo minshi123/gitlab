@@ -64,6 +64,43 @@ RSpec.describe MergeRequest do
     end
   end
 
+  describe '#has_denied_policies?' do
+    subject { merge_request.has_denied_policies? }
+
+    context 'without existing pipeline' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'with existing pipeline' do
+      # context 'without license_scanning report' do
+      #
+      # end
+
+      context 'with license_scanning report' do
+        let(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project) }
+
+        before do
+          stub_licensed_features(license_scanning: true)
+        end
+
+        context 'without denied policies' do
+          it { is_expected.to be_falsey }
+        end
+
+        context 'with denied policies' do
+          let(:apache_license) { create(:software_license, :apache_2_0, spdx_identifier: nil) }
+          let!(:denied_policy) { create(:software_license_policy, :denied, software_license: apache_license) }
+
+          before do
+            project.software_license_policies << denied_policy
+          end
+
+          it { is_expected.to be_truthy }
+        end
+      end
+    end
+  end
+
   describe '#enabled_reports' do
     let(:project) { create(:project, :repository) }
 

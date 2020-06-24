@@ -146,10 +146,10 @@ module EE
     end
 
     def has_denied_policies?
-      return false if Feature.disabled?(:license_compliance_denies_mr, project, default_enabled: false)
+      return false if ::Feature.disabled?(:license_compliance_denies_mr, project, default_enabled: false)
       return false unless has_license_scanning_reports?
 
-      # proj.software_policies - compare_license_scanning_rep['new_policies']
+      actual_head_pipeline.license_scanning_report.violates?(project.software_license_policies)
     end
 
     def enabled_reports
