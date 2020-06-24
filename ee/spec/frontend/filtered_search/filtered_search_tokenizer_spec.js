@@ -14,7 +14,7 @@ describe('Filtered Search Tokenizer', () => {
         const results = FilteredSearchTokenizer.processTokens(searchQuery, allowedKeys);
 
         expect(results.searchToken).toBe('');
-        expect(results.tokens.length).toBe(1);
+        expect(results.tokens).toHaveLength(1);
         expect(results.tokens[0].key).toBe('epic');
         expect(results.tokens[0].operator).toBe(operator);
         expect(results.tokens[0].symbol).toBe('&');
@@ -25,7 +25,7 @@ describe('Filtered Search Tokenizer', () => {
         const results = FilteredSearchTokenizer.processTokens('epic:=any', allowedKeys);
 
         expect(results.searchToken).toBe('');
-        expect(results.tokens.length).toBe(1);
+        expect(results.tokens).toHaveLength(1);
         expect(results.tokens[0].key).toBe('epic');
         expect(results.tokens[0].operator).toBe('=');
         expect(results.tokens[0].symbol).toBe('');
