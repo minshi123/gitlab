@@ -49,6 +49,28 @@ describe Gitlab::MarkdownCache::Redis::Extension, :clean_gitlab_redis_cache do
     expect(thing.cached_markdown_version).to eq(cache_version)
   end
 
+  describe '.preload_markdown_cache!' do
+    before do
+      Gitlab::Redis::Cache.with do |r|
+        r.mapped_hmset(expected_cache_key,
+                       title_html: 'hello',
+                       description_html: 'world',
+                       cached_markdown_version: cache_version)
+      end
+    end
+
+    it 'correctly preloads the markdown if it was stored in redis' do
+      klass.preload_markdown_cache!([thing])
+
+      aggregate_failures do
+        expect(Gitlab::Redis::Cache).not_to receive(:with)
+        expect(thing.title_html).to eq('hello')
+        expect(thing.description_html).to eq('world')
+        expect(thing.cached_markdown_version).to eq(cache_version)
+      end
+    end
+  end
+
   describe "#refresh_markdown_cache!" do
     it "stores the value in redis" do
       expected_results = { "title_html" => "`Hello`",
