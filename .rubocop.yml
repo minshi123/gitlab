@@ -281,6 +281,12 @@ Cop/ActiveRecordAssociationReload:
 Gitlab/AvoidFeatureGet:
   Enabled: true
 
+Gitlab/DocsLinter:
+  Enabled: true
+  Include:
+    - 'app/views/**/*.haml'
+    - 'ee/app/views/**/*.haml'
+
 Naming/PredicateName:
   Enabled: true
   Exclude:
