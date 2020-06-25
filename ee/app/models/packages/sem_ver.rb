@@ -25,6 +25,59 @@ class Packages::SemVer
     self.build == other.build
   end
 
+  def <=>(other)
+    a, b = self, other
+    raise ArgumentError.new('Not the same type') unless a.class == b.class
+    return 0 if a == b
+
+    return -1 if a.major < b.major
+    return +1 if a.major > b.major
+    return -1 if a.minor < b.minor
+    return +1 if a.minor > b.minor
+    return -1 if a.patch < b.patch
+    return +1 if a.patch > b.patch
+
+    if a.prerelease == b.prerelease
+      # "Build metadata MUST be ignored when determining version precedence."
+      # But that would lead to unstable ordering, so check it anyways.
+      return 0 if a.build == b.build
+      return -1 if !a.build.nil? &&  b.build.nil?
+      return +1 if  a.build.nil? && !b.build.nil?
+      return -1 if a.build < b.build
+      return +1 ## a.build > b.build
+    end
+
+    # "Precedence for [...] patch versions MUST be determined by comparing each
+    # dot separated identifier from left to right."
+    a_parts = a.prerelease&.split('.') || []
+    b_parts = b.prerelease&.split('.') || []
+    (0...[a_parts.length, b_parts.length].min).each do |i|
+      a_part, b_part = a_parts[i], b_parts[i]
+      next if a_part == b_part
+
+      a_num = a_part.to_i if /^\d+$/.match?(a_part)
+      b_num = b_part.to_i if /^\d+$/.match?(b_part)
+
+      unless a_num.nil? || b_num.nil?
+        return -1 if a_num < b_num
+        return +1 if a_num > b_num
+        # '0' and '000' have the same precedence, but stable ordering is good.
+      end
+
+      # "Numeric identifiers always have lower precedence than non-numeric identifiers."
+      return -1 if !a_num.nil? &&  b_num.nil?
+      return +1 if  a_num.nil? && !b_num.nil?
+
+      return -1 if a_part < b_part
+      return +1 if a_part > b_part
+    end
+
+    return -1 if a_parts.length < b_parts.length
+    return +1 if a_parts.length > b_parts.length
+
+    return 0
+  end
+
   def to_s
     s = "#{prefixed? ? 'v' : ''}#{major || 0}.#{minor || 0}.#{patch || 0}"
     s += "-#{prerelease}" if prerelease
