@@ -72,30 +72,42 @@ RSpec.describe MergeRequest do
     end
 
     context 'with existing pipeline' do
-      # context 'without license_scanning report' do
-      #
-      # end
+      before do
+        stub_licensed_features(license_scanning: true)
+      end
+
+      context 'without license_scanning report' do
+        let(:merge_request) { create(:ee_merge_request, :with_dependency_scanning_reports, source_project: project) }
+
+        context 'without denied policies' do
+          it { is_expected.to be_falsey }
+        end
+      end
 
       context 'with license_scanning report' do
         let(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project) }
-
-        before do
-          stub_licensed_features(license_scanning: true)
-        end
 
         context 'without denied policies' do
           it { is_expected.to be_falsey }
         end
 
         context 'with denied policies' do
-          let(:apache_license) { create(:software_license, :apache_2_0, spdx_identifier: nil) }
-          let!(:denied_policy) { create(:software_license_policy, :denied, software_license: apache_license) }
+          let(:mit_license) { build(:software_license, :mit, spdx_identifier: nil) }
+          let(:denied_policy) { build(:software_license_policy, :denied, software_license: mit_license) }
 
           before do
             project.software_license_policies << denied_policy
           end
 
           it { is_expected.to be_truthy }
+
+          context 'with disabled licensed feature' do
+            before do
+              stub_licensed_features(license_scanning: false)
+            end
+
+            it { is_expected.to be_falsey }
+          end
         end
       end
     end
