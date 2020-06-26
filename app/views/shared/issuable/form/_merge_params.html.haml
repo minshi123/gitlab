@@ -15,13 +15,13 @@
         = check_box_tag 'merge_request[force_remove_source_branch]', '1', issuable.force_remove_source_branch?, class: 'form-check-input'
         = label_tag 'merge_request[force_remove_source_branch]', class: 'form-check-label' do
           Delete source branch when merge request is accepted.
-    .form-check{ class:('hidden' if project.squash_readonly? && !issuable.squash_on_merge?) }
-      = hidden_field_tag 'merge_request[squash]', '0', id: nil
-      - if project.squash_readonly?
-        = check_box_tag 'merge_request[squash]', '1', project.squash_enabled_by_default?, class: 'form-check-input', disabled: 'true'
-        = hidden_field_tag 'merge_request[squash]', '1', id: nil
-      - else
-        = check_box_tag 'merge_request[squash]', '1', issuable_squash_option?(issuable, project), class: 'form-check-input'
-      = label_tag 'merge_request[squash]', class: 'form-check-label' do
-        Squash commits when merge request is accepted.
-        = link_to icon('question-circle'), help_page_path('user/project/merge_requests/squash_and_merge'), target: '_blank'
+    - if !project.squash_never?
+      .form-check
+        = hidden_field_tag 'merge_request[squash]', '0', id: nil
+        - if project.squash_always?
+          = check_box_tag 'merge_request[squash]', '1', project.squash_enabled_by_default?, class: 'form-check-input', disabled: 'true'
+        - else
+          = check_box_tag 'merge_request[squash]', '1', issuable_squash_option?(issuable, project), class: 'form-check-input'
+        = label_tag 'merge_request[squash]', class: 'form-check-label' do
+          Squash commits when merge request is accepted.
+          = link_to icon('question-circle'), help_page_path('user/project/merge_requests/squash_and_merge'), target: '_blank'
