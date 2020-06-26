@@ -20,6 +20,7 @@
         = hidden_field_tag 'merge_request[squash]', '0', id: nil
         - if project.squash_always?
           = check_box_tag 'merge_request[squash]', '1', project.squash_enabled_by_default?, class: 'form-check-input', disabled: 'true'
+          = hidden_field_tag 'merge_request[squash]', '1', id: nil # this will make recovery not possible
         - else
           = check_box_tag 'merge_request[squash]', '1', issuable_squash_option?(issuable, project), class: 'form-check-input'
         = label_tag 'merge_request[squash]', class: 'form-check-label' do
