@@ -39,8 +39,10 @@ class CommitCollection
   # Setting the pipeline for each commit ahead of time removes the need for running
   # a query for every commit we're displaying.
   def with_latest_pipeline(ref = nil)
+    # use container id or commit project_ids to limit ci pipelines returned
+    project_ids = container.present? ? [container.id] : map(&:project_id)
     # since commit ids are not unique across all projects, use project_key = true to get commits by project
-    pipelines = ::Ci::Pipeline.ci_sources.latest_pipeline_per_commit(map(&:id), ref, project_key: true)
+    pipelines = ::Ci::Pipeline.ci_sources.where(project_id: project_ids).latest_pipeline_per_commit(map(&:id), ref, project_key: true)
 
     # set the pipeline for each commit by project_id and commit for the latest pipeline for ref
     each do |commit|
