@@ -122,9 +122,9 @@ class TodoService
   #
   #  * create a todo for each merge participant
   #
-  def merge_request_became_unmergeable(merge_request)
+  def merge_request_became_unmergeable(merge_request, note = nil)
     merge_request.merge_participants.each do |user|
-      create_unmergeable_todo(merge_request, user)
+      create_unmergeable_todo(merge_request, user, note)
     end
   end
 
@@ -275,8 +275,8 @@ class TodoService
     create_todos(todo_author, attributes)
   end
 
-  def create_unmergeable_todo(merge_request, todo_author)
-    attributes = attributes_for_todo(merge_request.project, merge_request, todo_author, Todo::UNMERGEABLE)
+  def create_unmergeable_todo(merge_request, todo_author, note = nil)
+    attributes = attributes_for_todo(merge_request.project, merge_request, todo_author, Todo::UNMERGEABLE, note)
     create_todos(todo_author, attributes)
   end
 

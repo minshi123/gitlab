@@ -30,7 +30,9 @@ module EE
         ##
         # TODO: Abort message should be sent by the system, not a particular user.
         # See https://gitlab.com/gitlab-org/gitlab/issues/29467.
-        create_note(NoteSummary.new(noteable, project, author, body, action: 'merge'))
+        note = create_note(NoteSummary.new(noteable, project, author, body, action: 'merge'))
+
+        ::TodoService.new.merge_request_became_unmergeable(noteable, note)
       end
 
       # Called when 'add to merge train when pipeline succeeds' is executed
@@ -54,7 +56,9 @@ module EE
         ##
         # TODO: Abort message should be sent by the system, not a particular user.
         # See https://gitlab.com/gitlab-org/gitlab/issues/29467.
-        create_note(NoteSummary.new(noteable, project, author, body, action: 'merge'))
+        note = create_note(NoteSummary.new(noteable, project, author, body, action: 'merge'))
+
+        ::TodoService.new.merge_request_became_unmergeable(noteable, note)
       end
     end
   end
