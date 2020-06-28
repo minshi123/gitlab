@@ -69,6 +69,11 @@ module EE
           attrs << :group_owners_can_manage_default_branch_protection
         end
 
+        if License.feature_available?(:geo)
+          attrs << :maintenance_mode
+          attrs << :maintenance_mode_message
+        end
+
         attrs
       end
       # rubocop:enable Metrics/CyclomaticComplexity
