@@ -51,11 +51,19 @@ module Projects
 
       def smart_delete(container_repository, tag_names)
         fast_delete_enabled = Feature.enabled?(:container_registry_fast_tag_delete, default_enabled: true)
-        if fast_delete_enabled && container_repository.client.supports_tag_delete?
-          fast_delete(container_repository, tag_names)
+        response = if fast_delete_enabled && container_repository.client.supports_tag_delete?
+                     fast_delete(container_repository, tag_names)
+                   else
+                     slow_delete(container_repository, tag_names)
+                   end
+
+        if response[:status] == :success
+          log_info(message: 'deleted tags', container_repository_id: container_repository.id, deleted_tags_count: response[:deleted].size)
         else
-          slow_delete(container_repository, tag_names)
+          log_error(message: response[:message], container_repository_id: container_repository.id)
         end
+
+        response
       end
 
       # update the manifests of the tags with the new dummy image
