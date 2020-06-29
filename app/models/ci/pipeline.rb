@@ -258,6 +258,7 @@ module Ci
     scope :for_id, -> (id) { where(id: id) }
     scope :for_iid, -> (iid) { where(iid: iid) }
     scope :created_after, -> (time) { where('ci_pipelines.created_at > ?', time) }
+    scope :for_project, -> (project) { where(project: project) }
 
     scope :with_reports, -> (reports_scope) do
       where('EXISTS (?)', ::Ci::Build.latest.with_reports(reports_scope).where('ci_pipelines.id=ci_builds.commit_id').select(1))
