@@ -46,6 +46,10 @@ module Metrics
       def sequence
         self.class::SEQUENCE
       end
+
+      def self.out_of_the_box_dashboard?
+        true
+      end
     end
   end
 end

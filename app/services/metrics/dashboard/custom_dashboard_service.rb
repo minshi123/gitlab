@@ -21,7 +21,8 @@ module Metrics
                 path: filepath,
                 display_name: name_for_path(filepath),
                 default: false,
-                system_dashboard: false
+                system_dashboard: false,
+                out_of_the_box_dashboard: out_of_the_box_dashboard?
               }
             end
         end
@@ -47,6 +48,10 @@ module Metrics
 
       def cache_key
         "project_#{project.id}_metrics_dashboard_#{dashboard_path}"
+      end
+
+      def self.out_of_the_box_dashboard?
+        false
       end
     end
   end
