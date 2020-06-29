@@ -11,7 +11,6 @@ import PaginatedList from '~/vue_shared/components/paginated_list.vue';
 
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
 
-
 export default {
   name: 'LicenseManagement',
   components: {
@@ -103,7 +102,7 @@ export default {
 
         <template v-else>
           <div
-            class="table-section d-flex pl-2"
+            class="table-section gl-d-flex gl-pl-2"
             :class="tableHeaders[0].className"
             role="rowheader"
           >
@@ -113,7 +112,7 @@ export default {
               v-if="isTooltipEnabled"
               ref="reportInfo"
               name="question"
-              class="text-info ml-1"
+              class="text-info gl-ml-1 gl-cursor-pointer"
               :aria-label="__('help')"
               :size="14"
             />
@@ -122,9 +121,9 @@ export default {
               :target="() => $refs.reportInfo.$el"
               placement="bottom"
               triggers="click blur"
-              :css-classes="['mt-3']"
+              :css-classes="['gl-mt-3']"
             >
-              <h5>{{ __('Allowed') }}</h5>
+              <div class="h5">{{ __('Allowed') }}</div>
               <span class="text-secondary">
                 {{ s__('Licenses|Acceptable license to be used in the project') }}</span
               >
@@ -132,7 +131,7 @@ export default {
               <span class="text-secondary">
                 {{
                   s__(
-                    'Licenses|Dissallow Merge request if detected and will instruct the developer to remove',
+                    'Licenses|Disallow Merge request if detected and will instruct the developer to remove',
                   )
                 }}</span
               >
