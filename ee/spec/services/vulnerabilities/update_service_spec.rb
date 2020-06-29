@@ -23,7 +23,7 @@ RSpec.describe Vulnerabilities::UpdateService do
       project.add_developer(user)
     end
 
-    context 'when neither severity nor confidence are overriden' do
+    context 'when neither severity nor confidence are overridden' do
       it 'updates the vulnerability from updated finding (title, severity and confidence only)', :aggregate_failures do
         expect { subject }.not_to change { project.vulnerabilities.count }
         expect(vulnerability.previous_changes.keys).to contain_exactly(*%w[updated_at title title_html severity confidence])
