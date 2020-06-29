@@ -126,7 +126,7 @@ RSpec.describe Security::StoreReportService, '#execute' do
       expect { subject }.to change { Vulnerability.count }.by(32)
     end
 
-    it 'updates existing occurences with new data' do
+    it 'updates existing occurrences with new data' do
       subject
       expect(occurrence.reload).to have_attributes(severity: 'medium', name: 'Probable insecure usage of temp file/directory.')
     end
