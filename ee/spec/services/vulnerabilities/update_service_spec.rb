@@ -50,7 +50,7 @@ RSpec.describe Vulnerabilities::UpdateService do
       end
     end
 
-    context 'when confidence is overriden' do
+    context 'when confidence is overridden' do
       let(:confidence_overridden) { true }
 
       it 'updates the vulnerability from updated finding (title and severity only)' do
