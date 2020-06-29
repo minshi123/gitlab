@@ -1,7 +1,10 @@
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import { GlFormGroup, GlFormInput, GlButton } from '@gitlab/ui';
+import { mapComputed } from '~/vuex_shared/bindings';
 import { visitUrl } from '~/lib/utils/url_utility';
+import { validateTimeout, validateAllowedIp } from '../validations';
+import { VALIDATION_FIELD_KEYS } from '../constants';
 
 export default {
   name: 'GeoSettingsForm',
@@ -11,13 +14,26 @@ export default {
     GlButton,
   },
   computed: {
-    // The real connection between vuex and the component will be implemented in
-    // a later MR, this feature is anyhow behind feature flag
-    ...mapState(['timeout', 'allowedIp']),
+    ...mapState(['formErrors']),
+    ...mapGetters(['formHasError']),
+    ...mapComputed([
+      { key: 'timeout', updateFn: 'setTimeout' },
+      { key: 'allowedIp', updateFn: 'setAllowedIp' },
+    ]),
   },
   methods: {
+    ...mapActions(['updateGeoSettings', 'setError']),
     redirect() {
       visitUrl('/admin/geo/nodes');
+    },
+    checkTimeout() {
+      this.setError({ key: VALIDATION_FIELD_KEYS.TIMEOUT, error: validateTimeout(this.timeout) });
+    },
+    checkAllowedIp() {
+      this.setError({
+        key: VALIDATION_FIELD_KEYS.ALLOWED_IP,
+        error: validateAllowedIp(this.allowedIp),
+      });
     },
   },
 };
@@ -29,19 +45,32 @@ export default {
       :label="__('Connection timeout')"
       label-for="settings-timeout-field"
       :description="__('Time in seconds')"
+      :state="Boolean(formErrors.timeout)"
+      :invalid-feedback="formErrors.timeout"
     >
-      <gl-form-input id="settings-timeout-field" v-model="timeout" class="col-sm-2" type="number" />
+      <gl-form-input
+        id="settings-timeout-field"
+        v-model="timeout"
+        class="col-sm-2"
+        type="number"
+        :class="{ 'is-invalid': Boolean(formErrors.timeout) }"
+        @input="checkTimeout"
+      />
     </gl-form-group>
     <gl-form-group
       :label="__('Allowed Geo IP')"
       label-for="settings-allowed-ip-field"
       :description="__('Comma-separated, e.g. \'1.1.1.1, 2.2.2.0/24\'')"
+      :state="Boolean(formErrors.allowedIp)"
+      :invalid-feedback="formErrors.allowedIp"
     >
       <gl-form-input
         id="settings-allowed-ip-field"
         v-model="allowedIp"
         class="col-sm-6"
         type="text"
+        :class="{ 'is-invalid': Boolean(formErrors.allowedIp) }"
+        @input="checkAllowedIp"
       />
     </gl-form-group>
     <section
@@ -51,6 +80,8 @@ export default {
         data-testid="settingsSaveButton"
         data-qa-selector="add_node_button"
         variant="success"
+        :disabled="formHasError"
+        @click="updateGeoSettings"
         >{{ __('Save changes') }}</gl-button
       >
       <gl-button data-testid="settingsCancelButton" class="gl-ml-auto" @click="redirect">{{
