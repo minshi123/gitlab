@@ -458,6 +458,9 @@ msgstr ""
 msgid "%{mergeLength}/%{usersLength} can merge"
 msgstr ""
 
+msgid "%{milestone} (expired)"
+msgstr ""
+
 msgid "%{mrText}, this issue will be closed automatically."
 msgstr ""
 

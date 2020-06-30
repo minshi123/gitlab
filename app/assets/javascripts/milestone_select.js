@@ -4,10 +4,11 @@
 
 import $ from 'jquery';
 import { template, escape } from 'lodash';
-import { __ } from '~/locale';
+import { __, sprintf } from '~/locale';
 import '~/gl_dropdown';
+import Api from '~/api';
 import axios from './lib/utils/axios_utils';
-import { timeFor } from './lib/utils/datetime_utility';
+import { timeFor, parsePikadayDate } from './lib/utils/datetime_utility';
 import ModalStore from './boards/stores/modal_store';
 import boardsStore, {
   boardStoreIssueSet,
@@ -37,7 +38,6 @@ export default class MilestoneSelect {
         selectedMilestone,
         selectedMilestoneDefault;
       const $dropdown = $(dropdown);
-      const milestonesUrl = $dropdown.data('milestones');
       const issueUpdateURL = $dropdown.data('issueUpdate');
       const showNo = $dropdown.data('showNo');
       const showAny = $dropdown.data('showAny');
@@ -68,53 +68,76 @@ export default class MilestoneSelect {
       return $dropdown.glDropdown({
         showMenuAbove,
         data: (term, callback) =>
-          axios.get(milestonesUrl).then(({ data }) => {
-            const extraOptions = [];
-            if (showAny) {
-              extraOptions.push({
-                id: null,
-                name: null,
-                title: __('Any milestone'),
-              });
-            }
-            if (showNo) {
-              extraOptions.push({
-                id: -1,
-                name: __('No milestone'),
-                title: __('No milestone'),
-              });
-            }
-            if (showUpcoming) {
-              extraOptions.push({
-                id: -2,
-                name: '#upcoming',
-                title: __('Upcoming'),
-              });
-            }
-            if (showStarted) {
-              extraOptions.push({
-                id: -3,
-                name: '#started',
-                title: __('Started'),
-              });
-            }
-            if (extraOptions.length) {
-              extraOptions.push({ type: 'divider' });
-            }
+          // We don't use $.data() as it caches initial value and never updates!
+          Api.projectMilestones($dropdown.get(0).dataset.projectPath, { state: 'active' })
+            .then(({ data }) =>
+              data.map(m => ({
+                ...m,
+                // Public API uses `title` instead of `name`.
+                name: m.title,
+                // Identify milestones which are expired as per due date and flag them.
+                expired: m.due_date ? parsePikadayDate(m.due_date).getTime() < Date.now() : false,
+              })),
+            )
+            .then(data => {
+              const extraOptions = [];
+              if (showAny) {
+                extraOptions.push({
+                  id: null,
+                  name: null,
+                  title: __('Any milestone'),
+                });
+              }
+              if (showNo) {
+                extraOptions.push({
+                  id: -1,
+                  name: __('No milestone'),
+                  title: __('No milestone'),
+                });
+              }
+              if (showUpcoming) {
+                extraOptions.push({
+                  id: -2,
+                  name: '#upcoming',
+                  title: __('Upcoming'),
+                });
+              }
+              if (showStarted) {
+                extraOptions.push({
+                  id: -3,
+                  name: '#started',
+                  title: __('Started'),
+                });
+              }
+              if (extraOptions.length) {
+                extraOptions.push({ type: 'divider' });
+              }
 
-            callback(extraOptions.concat(data));
-            if (showMenuAbove) {
-              $dropdown.data('glDropdown').positionMenuAbove();
-            }
-            $(`[data-milestone-id="${escape(selectedMilestone)}"] > a`).addClass('is-active');
-          }),
-        renderRow: milestone => `
+              callback(extraOptions.concat(data));
+              if (showMenuAbove) {
+                $dropdown.data('glDropdown').positionMenuAbove();
+              }
+              $(`[data-milestone-id="${selectedMilestone}"] > a`).addClass('is-active');
+            }),
+        renderRow: milestone => {
+          const hrefClasses = ['dropdown-menu-milestone-link'];
+          let milestoneName = escape(milestone.name);
+
+          if (milestone.expired) {
+            hrefClasses.push('text-danger');
+            milestoneName = sprintf(__('%{milestone} (expired)'), {
+              milestone: milestoneName,
+            });
+          }
+
+          return `
           <li data-milestone-id="${escape(milestone.name)}">
-            <a href='#' class='dropdown-menu-milestone-link'>
-              ${escape(milestone.title)}
+            <a href='#' class='${hrefClasses.join(' ')}'>
+              ${milestoneName}
             </a>
           </li>
-        `,
+        `;
+        },
         filterable: true,
         search: {
           fields: ['title'],
@@ -149,7 +172,7 @@ export default class MilestoneSelect {
             selectedMilestone = $dropdown[0].dataset.selected || selectedMilestoneDefault;
           }
           $('a.is-active', $el).removeClass('is-active');
-          $(`[data-milestone-id="${escape(selectedMilestone)}"] > a`, $el).addClass('is-active');
+          $(`[data-milestone-id="${selectedMilestone}"] > a`, $el).addClass('is-active');
         },
         vue: $dropdown.hasClass('js-issue-board-sidebar'),
         clicked: clickEvent => {

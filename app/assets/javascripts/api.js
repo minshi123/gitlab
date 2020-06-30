@@ -262,10 +262,12 @@ const Api = {
     });
   },
 
-  projectMilestones(id) {
+  projectMilestones(id, params = {}) {
     const url = Api.buildUrl(Api.projectMilestonesPath).replace(':id', encodeURIComponent(id));
 
-    return axios.get(url);
+    return axios.get(url, {
+      params,
+    });
   },
 
   mergeRequests(params = {}) {
