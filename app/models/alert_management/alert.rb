@@ -123,6 +123,8 @@ module AlertManagement
 
     scope :counts_by_status, -> { group(:status).count }
 
+    alias_method :state, :human_status_name
+
     def self.sort_by_attribute(method)
       case method.to_s
       when 'started_at_asc'     then order_start_time(:asc)
