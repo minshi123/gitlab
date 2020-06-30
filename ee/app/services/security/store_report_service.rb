@@ -78,7 +78,7 @@ module Security
     end
 
     def create_vulnerability_pipeline_object(vulnerability_finding, pipeline)
-      vulnerability_finding.occurrence_pipelines.find_or_create_by!(pipeline: pipeline) # rubocop: disable CodeReuse/ActiveRecord
+      vulnerability_finding.finding_pipelines.find_or_create_by!(pipeline: pipeline) # rubocop: disable CodeReuse/ActiveRecord
     rescue ActiveRecord::RecordNotUnique
     end
 
