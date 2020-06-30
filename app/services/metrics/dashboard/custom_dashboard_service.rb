@@ -34,6 +34,10 @@ module Metrics
         def name_for_path(filepath)
           filepath.delete_prefix("#{DASHBOARD_ROOT}/")
         end
+
+        def out_of_the_box_dashboard?
+          false
+        end
       end
 
       private

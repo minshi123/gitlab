@@ -18,15 +18,13 @@ module Metrics
         :refresh_repository_method_caches
 
       class << self
-        def allowed_dashboard_templates
-          @allowed_dashboard_templates ||= Set[::Metrics::Dashboard::SystemDashboardService::DASHBOARD_PATH].freeze
-        end
-
         def sequences
           @sequences ||= {
-            ::Metrics::Dashboard::SystemDashboardService::DASHBOARD_PATH => [::Gitlab::Metrics::Dashboard::Stages::CommonMetricsInserter,
-                                                                             ::Gitlab::Metrics::Dashboard::Stages::CustomMetricsInserter,
-                                                                             ::Gitlab::Metrics::Dashboard::Stages::Sorter].freeze
+            ::Metrics::Dashboard::SystemDashboardService::DASHBOARD_PATH => [
+              ::Gitlab::Metrics::Dashboard::Stages::CommonMetricsInserter,
+              ::Gitlab::Metrics::Dashboard::Stages::CustomMetricsInserter,
+              ::Gitlab::Metrics::Dashboard::Stages::Sorter
+            ].freeze
           }.freeze
         end
       end
@@ -56,8 +54,14 @@ module Metrics
         success(result)
       end
 
+      # Only allow out of the box metrics dashboards to be cloned. This can be
+      # changed to allow cloning of any metrics dashboard, if desired.
+      # However, only metrics dashboards should be allowed. If any file is
+      # allowed to be cloned, this will become a security risk.
       def check_dashboard_template(result)
-        return error(_('Not found.'), :not_found) unless self.class.allowed_dashboard_templates.include?(params[:dashboard])
+        dashboard_service = Gitlab::Metrics::Dashboard::ServiceSelector.call(embedded: false, dashboard_path: params[:dashboard])
+
+        return error(_('Not found.'), :not_found) unless dashboard_service&.out_of_the_box_dashboard?
 
         success(result)
       end
@@ -153,7 +157,7 @@ module Metrics
       end
 
       def sequence
-        self.class.sequences[dashboard_template]
+        self.class.sequences[dashboard_template] || []
       end
     end
   end

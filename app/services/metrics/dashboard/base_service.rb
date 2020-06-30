@@ -37,6 +37,13 @@ module Metrics
         Gitlab::Metrics::Dashboard::Cache.fetch(cache_key) { get_raw_dashboard }
       end
 
+      # Should return true if this dashboard service is for an out-of-the-box
+      # dashboard
+      # @return Boolean
+      def self.out_of_the_box_dashboard?
+        raise NotImplementedError
+      end
+
       private
 
       # Determines whether users should be able to view
