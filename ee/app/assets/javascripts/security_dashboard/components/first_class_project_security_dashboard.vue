@@ -23,20 +23,11 @@ export default {
     GlBanner,
   },
   props: {
-    emptyStateSvgPath: {
-      type: String,
-      required: true,
-    },
     securityDashboardHelpPath: {
       type: String,
       required: true,
     },
     projectFullPath: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    dashboardDocumentation: {
       type: String,
       required: false,
       default: '',
@@ -70,6 +61,7 @@ export default {
       isBannerVisible: this.showIntroductionBanner && !parseBoolean(Cookies.get(BANNER_COOKIE_KEY)), // The and statement is for backward compatibility. See https://gitlab.com/gitlab-org/gitlab/-/issues/213671 for more information.
     };
   },
+  inject: ['dashboardDocumentation', 'emptyStateSvgPath'],
   methods: {
     handleFilterChange(filters) {
       this.filters = filters;
@@ -118,7 +110,6 @@ export default {
         </template>
         <project-vulnerabilities-app
           :dashboard-documentation="dashboardDocumentation"
-          :empty-state-svg-path="emptyStateSvgPath"
           :project-full-path="projectFullPath"
           :filters="filters"
         />

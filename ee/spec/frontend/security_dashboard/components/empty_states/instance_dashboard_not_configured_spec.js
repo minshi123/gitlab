@@ -1,16 +1,20 @@
 import { mount } from '@vue/test-utils';
 import { GlEmptyState, GlButton, GlLink } from '@gitlab/ui';
-import DashboardNotConfigured from 'ee/security_dashboard/components/empty_states/dashboard_not_configured.vue';
+import DashboardNotConfigured from 'ee/security_dashboard/components/empty_states/instance_dashboard_not_configured.vue';
 
 describe('first class instance security dashboard empty state', () => {
   let wrapper;
   const dashboardDocumentation = '/path/to/dashboard/documentation';
-  const svgPath = '/placeholder.svg';
+  const emptyStateSvgPath = '/placeholder.svg';
 
   const createWrapper = () =>
     mount(DashboardNotConfigured, {
-      propsData: { svgPath, dashboardDocumentation },
+      provide: {
+        dashboardDocumentation,
+        emptyStateSvgPath,
+      },
     });
+
   const findGlEmptyState = () => wrapper.find(GlEmptyState);
   const findButton = () => wrapper.find(GlButton);
   const findLink = () => wrapper.find(GlLink);
@@ -24,15 +28,12 @@ describe('first class instance security dashboard empty state', () => {
   });
 
   it('should render correctly', () => {
-    expect(wrapper.props()).toEqual({
-      svgPath,
-      dashboardDocumentation,
-    });
+    expect(wrapper.props()).toEqual({});
   });
 
   it('contains a GlEmptyState', () => {
     expect(findGlEmptyState().exists()).toBe(true);
-    expect(findGlEmptyState().props()).toMatchObject({ svgPath });
+    expect(findGlEmptyState().props()).toMatchObject({ svgPath: emptyStateSvgPath });
   });
 
   it('contains a GlLink with href attribute equal to dashboardDocumentation', () => {

@@ -47,8 +47,6 @@ describe('First Class Group Dashboard Component', () => {
 
   it('should render correctly', () => {
     expect(findGroupVulnerabilities().props()).toEqual({
-      dashboardDocumentation,
-      emptyStateSvgPath,
       groupFullPath,
       filters: {},
     });

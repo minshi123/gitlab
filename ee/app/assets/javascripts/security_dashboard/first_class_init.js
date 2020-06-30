@@ -41,6 +41,7 @@ export default (
     projectAddEndpoint: el.dataset.projectAddEndpoint,
     projectListEndpoint: el.dataset.projectListEndpoint,
     vulnerabilitiesExportEndpoint: el.dataset.vulnerabilitiesExportEndpoint,
+    noVulnerabilitiesSvgPath: el.dataset.noVulnerabilitiesSvgPath,
   };
 
   let component;
@@ -68,6 +69,11 @@ export default (
     store,
     router,
     apolloProvider,
+    provide: () => ({
+      dashboardDocumentation: el.dataset.dashboardDocumentation,
+      noVulnerabilitiesSvgPath: el.dataset.noVulnerabilitiesSvgPath,
+      emptyStateSvgPath: el.dataset.emptyStateSvgPath,
+    }),
     render(createElement) {
       return createElement(component, { props });
     },
