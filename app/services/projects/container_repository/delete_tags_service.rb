@@ -57,10 +57,15 @@ module Projects
                      slow_delete(container_repository, tag_names)
                    end
 
+        log_data = {
+          service_class: self.class.to_s,
+          container_repository_id: container_repository.id
+        }
+
         if response[:status] == :success
-          log_info(message: 'deleted tags', container_repository_id: container_repository.id, deleted_tags_count: response[:deleted].size)
+          log_info(log_data.merge(message: 'deleted tags', deleted_tags_count: response[:deleted].size))
         else
-          log_error(message: response[:message], container_repository_id: container_repository.id)
+          log_error(log_data.merge(message: response[:message]))
         end
 
         response

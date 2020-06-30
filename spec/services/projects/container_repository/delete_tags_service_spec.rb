@@ -23,6 +23,7 @@ RSpec.describe Projects::ContainerRepository::DeleteTagsService do
   RSpec.shared_examples 'logging a success response' do
     it 'logs an info message' do
       expect(service).to receive(:log_info).with(
+        service_class: 'Projects::ContainerRepository::DeleteTagsService',
         message: 'deleted tags',
         container_repository_id: repository.id,
         deleted_tags_count: tags.size
@@ -35,6 +36,7 @@ RSpec.describe Projects::ContainerRepository::DeleteTagsService do
   RSpec.shared_examples 'logging an error response' do |message: 'could not delete tags'|
     it 'logs an error message' do
       expect(service).to receive(:log_error).with(
+        service_class: 'Projects::ContainerRepository::DeleteTagsService',
         message: message,
         container_repository_id: repository.id
       )
