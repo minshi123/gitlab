@@ -9962,9 +9962,6 @@ msgstr ""
 msgid "Filter by Git revision"
 msgstr ""
 
-msgid "Filter by commit message"
-msgstr ""
-
 msgid "Filter by issues that are currently closed."
 msgstr ""
 
@@ -19778,6 +19775,9 @@ msgid "Search branches and tags"
 msgstr ""
 
 msgid "Search by author"
+msgstr ""
+
+msgid "Search by message"
 msgstr ""
 
 msgid "Search files"
