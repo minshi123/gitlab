@@ -92,9 +92,7 @@ RSpec.describe ProjectsHelper do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, :repository, group: group) }
 
-    let(:pipeline) { nil }
-
-    subject { helper.project_security_dashboard_config(project, pipeline) }
+    subject { helper.project_security_dashboard_config(project) }
 
     before do
       group.add_owner(user)
@@ -117,7 +115,7 @@ RSpec.describe ProjectsHelper do
         create(:vulnerability, project: project)
       end
 
-      let(:expected_core_values) do
+      let(:expected_values) do
         hash_including(
           project: { id: project.id, name: project.name },
           project_full_path: project.full_path,
@@ -133,48 +131,7 @@ RSpec.describe ProjectsHelper do
         )
       end
 
-      it { is_expected.to match(expected_core_values) }
-
-      context 'project without pipeline' do
-        let(:expected_sub_hash) do
-          hash_including(
-            has_pipeline_data: 'false'
-          )
-        end
-
-        it { is_expected.to match(expected_sub_hash) }
-      end
-
-      context 'project with pipeline' do
-        let_it_be(:pipeline) do
-          create(:ee_ci_pipeline,
-                 :with_sast_report,
-                 user: user,
-                 project: project,
-                 ref: project.default_branch,
-                 sha: project.commit.sha)
-        end
-
-        let(:project_path) { "http://test.host/#{project.full_path}" }
-        let(:expected_sub_hash) do
-          hash_including(
-            pipeline_id: pipeline.id,
-            user_path: "http://test.host/#{pipeline.user.username}",
-            user_avatar_path: pipeline.user.avatar_url,
-            user_name: pipeline.user.name,
-            commit_id: pipeline.commit.short_id,
-            commit_path: "#{project_path}/-/commit/#{pipeline.commit.sha}",
-            ref_id: project.default_branch,
-            ref_path: "#{project_path}/-/commits/#{project.default_branch}",
-            pipeline_path: "#{project_path}/-/pipelines/#{pipeline.id}",
-            pipeline_created: pipeline.created_at.to_s(:iso8601),
-            has_pipeline_data: 'true',
-            vulnerabilities_export_endpoint: "/api/v4/security/projects/#{project.id}/vulnerability_exports"
-          )
-        end
-
-        it { is_expected.to match(expected_sub_hash) }
-      end
+      it { is_expected.to match(expected_values) }
     end
   end
 
