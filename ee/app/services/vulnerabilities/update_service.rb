@@ -6,23 +6,25 @@ module Vulnerabilities
 
     attr_reader :project, :author, :finding
 
+    delegate :vulnerability, to: :finding
+
     def initialize(project, author, finding:)
       @project = project
       @author = author
       @finding = finding
     end
 
-    def execute(vulnerability)
+    def execute
       raise Gitlab::Access::AccessDeniedError unless can?(author, :create_vulnerability, project)
 
-      vulnerability.update(vulnerability_params(vulnerability))
+      vulnerability.update!(vulnerability_params)
 
       vulnerability
     end
 
     private
 
-    def vulnerability_params(vulnerability)
+    def vulnerability_params
       {
         title: finding.name,
         severity: vulnerability.severity_overridden? ? vulnerability.severity : finding.severity,

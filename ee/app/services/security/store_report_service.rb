@@ -74,17 +74,17 @@ module Security
 
     def update_vulnerability_scanner(occurrence)
       scanner = scanners_objects[occurrence.scanner.key]
-      scanner.update(occurrence.scanner.to_hash)
+      scanner.update!(occurrence.scanner.to_hash)
     end
 
     def update_vulnerability_finding(vulnerability_finding, update_params)
-      vulnerability_finding.update(update_params)
+      vulnerability_finding.update!(update_params)
     end
 
     def create_or_update_vulnerability_identifier_object(vulnerability_finding, identifier)
       identifier_object = identifiers_objects[identifier.key]
       vulnerability_finding.occurrence_identifiers.find_or_create_by!(identifier: identifier_object)
-      identifier_object.update(identifier.to_hash)
+      identifier_object.update!(identifier.to_hash)
     rescue ActiveRecord::RecordNotUnique
     end
 
@@ -96,7 +96,7 @@ module Security
 
     def create_vulnerability(vulnerability_finding, pipeline)
       if vulnerability_finding.vulnerability_id
-        Vulnerabilities::UpdateService.new(vulnerability_finding.project, pipeline.user, finding: vulnerability_finding).execute(vulnerability_finding.vulnerability)
+        Vulnerabilities::UpdateService.new(vulnerability_finding.project, pipeline.user, finding: vulnerability_finding).execute
       else
         Vulnerabilities::CreateService.new(vulnerability_finding.project, pipeline.user, finding_id: vulnerability_finding.id).execute
       end
