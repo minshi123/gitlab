@@ -45,6 +45,22 @@ RSpec.describe AlertManagement::UpdateAlertStatusService do
       expect { response }.to change { alert.acknowledged? }.to(true)
     end
 
+    context 'resolving status' do
+      let(:new_status) { Types::AlertManagement::StatusEnum.values['RESOLVED'].value }
+
+      it 'updates the status' do
+        expect { response }.to change { alert.resolved? }.to(true)
+      end
+
+      context 'user has a pending todo' do
+        let!(:todo) { create(:todo, :pending, target: alert, user: user) }
+
+        it 'resolves the todo' do
+          expect { response }.to change { todo.state }.from('pending').to('done')
+        end
+      end
+    end
+
     context 'when user has no permissions' do
       let(:can_update) { false }
 
