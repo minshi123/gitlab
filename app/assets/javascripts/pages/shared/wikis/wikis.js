@@ -1,5 +1,6 @@
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { s__, sprintf } from '~/locale';
+import Tracking from '~/tracking';
 
 const MARKDOWN_LINK_TEXT = {
   markdown: '[Link Title](page-slug)',
@@ -57,6 +58,8 @@ export default class Wikis {
         window.onbeforeunload = null;
       });
     }
+
+    Wikis.trackPageView();
   }
 
   handleWikiTitleChange(e) {
@@ -96,5 +99,15 @@ export default class Wikis {
       classList.add('right-sidebar-collapsed');
       classList.remove('right-sidebar-expanded');
     }
+  }
+
+  static trackPageView() {
+    const trackingPayload = document.querySelector('.wiki-page-content[data-tracking-payload]');
+    if (!trackingPayload) return;
+
+    Tracking.event(document.body.dataset.page, 'page_viewed', {
+      label: 'page_viewed',
+      value: JSON.parse(trackingPayload.dataset.trackingPayload)
+    });
   }
 }

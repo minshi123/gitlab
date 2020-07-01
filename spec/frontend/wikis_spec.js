@@ -1,5 +1,7 @@
 import Wikis from '~/pages/shared/wikis/wikis';
 import { setHTMLFixture } from './helpers/fixtures';
+import { mockTracking } from 'helpers/tracking_helper';
+import { escape } from 'lodash';
 
 describe('Wikis', () => {
   describe('setting the commit message when the title changes', () => {
@@ -119,6 +121,33 @@ describe('Wikis', () => {
           findForm().dispatchEvent(new Event('submit'));
           expect(findBeforeUnloadWarning()).toBeUndefined();
         });
+      });
+    });
+  });
+
+  describe('trackPageView', () => {
+    const trackingPage = 'projects:wikis:show';
+    const trackingPayload = { 'foo': 'bar' };
+    const showPageHtmlFixture = `
+      <div class="wiki-page-content" data-tracking-payload="${escape(JSON.stringify(trackingPayload))}"></div>
+    `;
+
+    let trackingSpy;
+
+    beforeEach(() => {
+      setHTMLFixture(showPageHtmlFixture);
+      document.body.dataset.page = trackingPage;
+
+      trackingSpy = mockTracking('_category_', document, jest.spyOn);
+      trackingSpy.mockImplementation(() => {});
+
+      Wikis.trackPageView();
+    });
+
+    it('sends the tracking event and payload', () => {
+      expect(trackingSpy).toHaveBeenCalledWith(trackingPage, 'page_viewed', {
+        label: 'page_viewed',
+        value: trackingPayload,
       });
     });
   });
