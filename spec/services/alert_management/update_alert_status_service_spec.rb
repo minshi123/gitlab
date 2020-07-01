@@ -53,10 +53,11 @@ RSpec.describe AlertManagement::UpdateAlertStatusService do
       end
 
       context 'user has a pending todo' do
+        let(:user) { create(:user) }
         let!(:todo) { create(:todo, :pending, target: alert, user: user) }
 
         it 'resolves the todo' do
-          expect { response }.to change { todo.state }.from('pending').to('done')
+          expect { response }.to change { todo.reload.state }.from('pending').to('done')
         end
       end
     end
