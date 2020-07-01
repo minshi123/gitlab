@@ -475,6 +475,23 @@ When performing a search, the GitLab index will use the following scopes:
 
 ## Tuning
 
+### Guidance on choosing optimal cluster configuration
+
+For basic guidance on choosing a cluster configuration you may refer to [Elasic Cloud Calculator](https://cloud.elastic.co/pricing). You can find more information below.
+
+- Generally you might want to use at least 2-node cluster configuration with 1 replica. This will allow you to have resilience. If your storage usage is growing quickly, you may want to plan horisontal scaling (by adding more nodes) beforehand.
+- It's not recommended to use HDD storage with the search cluster since it will take a hit performance. It's better to use SSD storage (NVMe or SATA ssd drives for example).
+- Number of CPUs (CPU cores) per node is usually corresponds to the `Number of Elasticsearch shards` setting described below.
+- You can use [Gitlab Performance Tool](https://gitlab.com/gitlab-org/quality/performance) to benchmark search performance with different search cluster sizes and configurations.
+- `Heap size` should be set to no more than 50% of your physical RAM. Additionally, it shouldn't be set to more than the threshold for zero-based compressed oops. The exact threshold varies but 26 GB is safe on most systems, but can be as large as 30 GB on some systems. Please see [Setting the heap size](https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html#heap-size) for more details.
+- A good rule-of-thumb is to ensure you keep the number of shards per node below 20 per GB heap it has configured. A node with a 30GB heap should therefore have a maximum of 600 shards, but the further below this limit you can keep it the better. This will generally help the cluster stay in good health.
+- Small shards result in small segments, which increases overhead. Aim to keep the average shard size between at least a few GB and a few tens of GB. For use-cases with time-based data, it is common to see shards between 20GB and 40GB in size.
+
+### Elasticsearch integration settings guidance
+
+- The `Number of Elasticsearch shards` setting usually corresponds with number of CPUs available in your cluster. For example, if you have 3-node cluster with 4 cores each, this means you will benefit from having 3*4=12 shards in the cluster. Please note, it's only possible to change the shards number by using [Split index API](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-split-index.html) or by reindexing to a different index with a changed number of shards.
+- The `Number of Elasticsearch replicas` setting most of the time should be equal to 1 (each shard will have 1 replica). Using 0 is not recommended because losing one node will corrupt the index.
+
 ### Deleted documents
 
 Whenever a change or deletion is made to an indexed GitLab object (a merge request description is changed, a file is deleted from the master branch in a repository, a project is deleted, etc), a document in the index is deleted. However, since these are "soft" deletes, the overall number of "deleted documents", and therefore wasted space, increases. Elasticsearch does intelligent merging of segments in order to remove these deleted documents. However, depending on the amount and type of activity in your GitLab installation, it's possible to see as much as 50% wasted space in the index.
