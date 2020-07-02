@@ -4,6 +4,39 @@
     - .default-before_script
     - .rails-cache
 
+.rspec-migration-parallel:
+  parallel: 5
+
+.rspec-ee-migration-parallel:
+  parallel: 2
+
+.rspec-unit-parallel:
+  parallel: 20
+
+.rspec-ee-unit-parallel:
+  parallel: 10
+
+.rspec-ee-unit-geo-parallel:
+  parallel: 2
+
+.rspec-integration-parallel:
+  parallel: 8
+
+.rspec-ee-integration-parallel:
+  parallel: 4
+
+.rspec-ee-integration-geo-parallel:
+  parallel: 1
+
+.rspec-system-parallel:
+  parallel: 24
+
+.rspec-ee-system-parallel:
+  parallel: 6
+
+.rspec-ee-system-geo-parallel:
+  parallel: 1
+
 #######################################################
 # EE/FOSS: default refs (MRs, master, schedules) jobs #
 setup-test-env:
@@ -126,25 +159,25 @@ rspec migration pg11:
   extends:
     - .rspec-base-pg11
     - .rspec-base-migration
-  parallel: 5
+    - .rspec-migration-parallel
 
 rspec unit pg11:
   extends:
     - .rspec-base-pg11
     - .rails:rules:ee-and-foss-unit
-  parallel: 20
+    - .rspec-unit-parallel
 
 rspec integration pg11:
   extends:
     - .rspec-base-pg11
     - .rails:rules:ee-and-foss-integration
-  parallel: 8
+    - .rspec-integration-parallel
 
 rspec system pg11:
   extends:
     - .rspec-base-pg11
     - .rails:rules:ee-and-foss-system
-  parallel: 24
+    - .rspec-system-parallel
 
 rspec fast_spec_helper:
   extends:
@@ -275,25 +308,25 @@ rspec migration pg11-as-if-foss:
     - .rspec-base-pg11-as-if-foss
     - .rspec-base-migration
     - .rails:rules:as-if-foss-migration
-  parallel: 5
+    - .rspec-migration-parallel
 
 rspec unit pg11-as-if-foss:
   extends:
     - .rspec-base-pg11-as-if-foss
     - .rails:rules:as-if-foss-unit
-  parallel: 20
+    - .rspec-unit-parallel
 
 rspec integration pg11-as-if-foss:
   extends:
     - .rspec-base-pg11-as-if-foss
     - .rails:rules:as-if-foss-integration
-  parallel: 8
+    - .rspec-integration-parallel
 
 rspec system pg11-as-if-foss:
   extends:
     - .rspec-base-pg11-as-if-foss
     - .rails:rules:as-if-foss-system
-  parallel: 24
+    - .rspec-system-parallel
 
 .rspec-ee-base-pg11:
   extends:
@@ -305,25 +338,25 @@ rspec-ee migration pg11:
     - .rspec-ee-base-pg11
     - .rspec-base-migration
     - .rails:rules:ee-only-migration
-  parallel: 2
+    - .rspec-ee-migration-parallel
 
 rspec-ee unit pg11:
   extends:
     - .rspec-ee-base-pg11
     - .rails:rules:ee-only-unit
-  parallel: 10
+    - .rspec-ee-unit-parallel
 
 rspec-ee integration pg11:
   extends:
     - .rspec-ee-base-pg11
     - .rails:rules:ee-only-integration
-  parallel: 4
+    - .rspec-ee-integration-parallel
 
 rspec-ee system pg11:
   extends:
     - .rspec-ee-base-pg11
     - .rails:rules:ee-only-system
-  parallel: 6
+    - .rspec-ee-system-parallel
 
 .rspec-ee-base-geo:
   extends: .rspec-base
@@ -343,17 +376,19 @@ rspec-ee unit pg11 geo:
   extends:
     - .rspec-ee-base-geo-pg11
     - .rails:rules:ee-only-unit
-  parallel: 2
+    - .rspec-ee-unit-geo-parallel
 
 rspec-ee integration pg11 geo:
   extends:
     - .rspec-ee-base-geo-pg11
     - .rails:rules:ee-only-integration
+    - .rspec-ee-integration-geo-parallel
 
 rspec-ee system pg11 geo:
   extends:
     - .rspec-ee-base-geo-pg11
     - .rails:rules:ee-only-system
+    - .rspec-ee-system-geo-parallel
 
 db:rollback geo:
   extends:
