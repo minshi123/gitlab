@@ -549,6 +549,20 @@
       when: never
     - <<: *if-master-schedule-2-hourly
 
+.rails:rules:master-schedule-nightly--code-backstage:
+  rules:
+    - <<: *if-master-schedule-nightly
+    - <<: *if-merge-request
+      changes: [".gitlab/ci/rails.gitlab-ci.yml"]
+
+.rails:rules:master-schedule-nightly--code-backstage-ee-only:
+  rules:
+    - <<: *if-not-ee
+      when: never
+    - <<: *if-master-schedule-nightly
+    - <<: *if-merge-request
+      changes: [".gitlab/ci/rails.gitlab-ci.yml"]
+
 ##################
 # Releases rules #
 ##################

@@ -42,6 +42,11 @@
     - .rspec-base
     - .use-pg11
 
+.rspec-base-pg12:
+  extends:
+    - .rspec-base
+    - .use-pg12
+
 .rspec-base-pg11-as-if-foss:
   extends:
     - .rspec-base
@@ -53,6 +58,11 @@
   extends:
     - .rspec-base
     - .use-pg11-ee
+
+.rspec-ee-base-pg12:
+  extends:
+    - .rspec-base
+    - .use-pg12-ee
 
 .rspec-ee-base-geo:
   extends: .rspec-base
@@ -67,6 +77,11 @@
   extends:
     - .rspec-ee-base-geo
     - .use-pg11-ee
+
+.rspec-ee-base-geo-pg12:
+  extends:
+    - .rspec-ee-base-geo
+    - .use-pg12-ee
 
 .db-job-base:
   extends:
@@ -407,6 +422,75 @@ db:rollback geo:
     - bundle exec rake geo:db:migrate
 # EE: default refs (MRs, master, schedules) jobs #
 ##################################################
+
+##########################################
+# EE/FOSS: master nightly scheduled jobs #
+rspec migration pg12:
+  extends:
+    - .rspec-base-pg12
+    - .rspec-base-migration
+    - .rails:rules:master-schedule-nightly--code-backstage
+    - .rspec-migration-parallel
+
+rspec unit pg12:
+  extends:
+    - .rspec-base-pg12
+    - .rails:rules:master-schedule-nightly--code-backstage
+    - .rspec-unit-parallel
+
+rspec integration pg12:
+  extends:
+    - .rspec-base-pg12
+    - .rails:rules:master-schedule-nightly--code-backstage
+    - .rspec-integration-parallel
+
+rspec system pg12:
+  extends:
+    - .rspec-base-pg12
+    - .rails:rules:master-schedule-nightly--code-backstage
+    - .rspec-system-parallel
+# EE/FOSS: master nightly scheduled jobs #
+##########################################
+
+#####################################
+# EE: master nightly scheduled jobs #
+rspec-ee unit pg12:
+  extends:
+    - .rspec-ee-base-pg12
+    - .rails:rules:master-schedule-nightly--code-backstage-ee-only
+    - .rspec-ee-unit-parallel
+
+rspec-ee integration pg12:
+  extends:
+    - .rspec-ee-base-pg12
+    - .rails:rules:master-schedule-nightly--code-backstage-ee-only
+    - .rspec-ee-integration-parallel
+
+rspec-ee system pg12:
+  extends:
+    - .rspec-ee-base-pg12
+    - .rails:rules:master-schedule-nightly--code-backstage-ee-only
+    - .rspec-ee-system-parallel
+
+rspec-ee unit pg12 geo:
+  extends:
+    - .rspec-ee-base-geo-pg12
+    - .rails:rules:master-schedule-nightly--code-backstage-ee-only
+    - .rspec-ee-unit-geo-parallel
+
+rspec-ee integration pg12 geo:
+  extends:
+    - .rspec-ee-base-geo-pg12
+    - .rails:rules:master-schedule-nightly--code-backstage-ee-only
+    - .rspec-ee-integration-geo-parallel
+
+rspec-ee system pg12 geo:
+  extends:
+    - .rspec-ee-base-geo-pg12
+    - .rails:rules:master-schedule-nightly--code-backstage-ee-only
+    - .rspec-ee-system-geo-parallel
+# EE: master nightly scheduled jobs #
+#####################################
 
 ##################################################
 # EE: Canonical MR pipelines
