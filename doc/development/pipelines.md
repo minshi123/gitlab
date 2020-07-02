@@ -370,6 +370,7 @@ and are as follows:
 | MRs | 11 |
 | `master` (non-scheduled pipelines) | 11 |
 | 2-hourly scheduled pipelines | 11 |
+| `nightly` scheduled pipelines | 11, 12 |
 
 #### Long-term plan
 
@@ -380,7 +381,7 @@ We follow the [PostgreSQL versions shipped with Omnibus GitLab](https://docs.git
 | PG9.6  | MRs/`master`/`2-hour`/`nightly` | -               | -                | -                | -                  | -            | -                    | -                |
 | PG10   | `nightly`           | -               | -                | -                | -                  | -            | -                    | -                |
 | PG11   | `master`/`2-hour` | MRs/`master`/`2-hour`/`nightly` | MRs/`master`/`2-hour`/`nightly` | MRs/`master`/`2-hour`/`nightly` | MRs/`master`/`2-hour`/`nightly` | MRs/`master`/`2-hour`/`nightly` | `nightly`              | -                |
-| PG12   | -                  | -               | -                | -                | `master`/`2-hour` | `master`/`2-hour` | MRs/`master`/`2-hour`/`nightly`         | `master`/`2-hour` |
+| PG12   | -                  | -               | -                | `nightly`        | `master`/`2-hour` | `master`/`2-hour` | MRs/`master`/`2-hour`/`nightly`         | `master`/`2-hour` |
 | PG13   | -                  | -               | -                | -                | -                  | -            | -                    | MRs/`master`/`2-hour`/`nightly`     |
 
 ### Test jobs
