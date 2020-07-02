@@ -9,7 +9,9 @@ module ApprovalRules
       filter_eligible_groups!
       filter_eligible_protected_branches!
 
-      if rule.update(params)
+      result = with_audit(current_user) { rule.update(params) }
+
+      if result
         log_audit_event(rule)
         rule.reset
 
@@ -20,6 +22,13 @@ module ApprovalRules
     end
 
     private
+
+    def with_audit(user)
+      AuditEvent.store[:user] = current_user
+      yield
+    ensure
+      AuditEvent.store[:user] = nil
+    end
 
     def filter_eligible_users!
       return unless params.key?(:user_ids)

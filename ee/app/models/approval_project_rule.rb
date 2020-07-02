@@ -51,7 +51,22 @@ class ApprovalProjectRule < ApplicationRecord
     rule
   end
 
+  def audit_add(model)
+    message = "Added #{model.class.name} #{model.name} on #{self.name}"
+    log_audit_event(action: :custom, custom_message: message)
+  end
+
+  def audit_remove(model)
+    message = "Removed #{model.class.name} #{model.name} on #{self.name}"
+    log_audit_event(action: :custom, custom_message: message)
+  end
+
   private
+
+  def log_audit_event(params)
+    audited_user = Thread.current[:audited_user]
+    ::AuditEventService.new(audited_user, self.project, params).for_approval_rule(self.name).security_event
+  end
 
   def report_type_for(rule)
     ApprovalProjectRule::REPORT_TYPES_BY_DEFAULT_NAME[rule.name]

@@ -9,6 +9,10 @@ module EE
       scope :by_entity, -> (entity_type, entity_id) { by_entity_type(entity_type).by_entity_id(entity_id) }
     end
 
+    def store
+      Thread.current[:audit_store] ||= {}
+    end
+
     def entity
       lazy_entity
     end
