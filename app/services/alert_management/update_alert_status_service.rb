@@ -29,7 +29,6 @@ module AlertManagement
 
     attr_reader :alert, :user, :status
 
-    delegate :project, to: :alert
     delegate :project, :resolved?, to: :alert
 
     def allowed?
@@ -37,9 +36,7 @@ module AlertManagement
     end
 
     def resolve_todos
-      todos = Todo.for_user(user).for_target(alert).pending
-
-      TodoService.new.resolve_todos(todos, user)
+      TodoService.new.resolve_todos_for_target(alert, user)
     end
 
     def status_key
