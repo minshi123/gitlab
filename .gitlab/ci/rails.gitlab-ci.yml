@@ -116,17 +116,11 @@
 .rspec-ee-integration-parallel:
   parallel: 4
 
-.rspec-ee-integration-geo-parallel:
-  parallel: 1
-
 .rspec-system-parallel:
   parallel: 24
 
 .rspec-ee-system-parallel:
   parallel: 6
-
-.rspec-ee-system-geo-parallel:
-  parallel: 1
 # rspec job parallel configs
 ############################
 
@@ -405,13 +399,11 @@ rspec-ee integration pg11 geo:
   extends:
     - .rspec-ee-base-geo-pg11
     - .rails:rules:ee-only-integration
-    - .rspec-ee-integration-geo-parallel
 
 rspec-ee system pg11 geo:
   extends:
     - .rspec-ee-base-geo-pg11
     - .rails:rules:ee-only-system
-    - .rspec-ee-system-geo-parallel
 
 db:rollback geo:
   extends:
@@ -482,13 +474,11 @@ rspec-ee integration pg12 geo:
   extends:
     - .rspec-ee-base-geo-pg12
     - .rails:rules:master-schedule-nightly--code-backstage-ee-only
-    - .rspec-ee-integration-geo-parallel
 
 rspec-ee system pg12 geo:
   extends:
     - .rspec-ee-base-geo-pg12
     - .rails:rules:master-schedule-nightly--code-backstage-ee-only
-    - .rspec-ee-system-geo-parallel
 # EE: master nightly scheduled jobs #
 #####################################
 
