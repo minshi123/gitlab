@@ -1,9 +1,85 @@
+######################
+# rspec job base specs
 .rails-job-base:
   extends:
     - .default-retry
     - .default-before_script
     - .rails-cache
 
+.rspec-base:
+  extends: .rails-job-base
+  stage: test
+  needs: ["setup-test-env", "retrieve-tests-metadata", "compile-test-assets"]
+  script:
+    - run_timed_command "scripts/gitaly-test-build"
+    - run_timed_command "scripts/gitaly-test-spawn"
+    - source scripts/rspec_helpers.sh
+    - rspec_paralellized_job "--tag ~quarantine --tag ~geo --tag ~level:migration"
+  artifacts:
+    expire_in: 31d
+    when: always
+    paths:
+      - coverage/
+      - knapsack/
+      - rspec_flaky/
+      - rspec_profiling/
+      - tmp/capybara/
+      - tmp/memory_test/
+      - log/*.log
+    reports:
+      junit: junit_rspec.xml
+
+.rspec-base-migration:
+  extends: .rails:rules:ee-and-foss-migration
+  script:
+    - run_timed_command "scripts/gitaly-test-build"
+    - run_timed_command "scripts/gitaly-test-spawn"
+    - source scripts/rspec_helpers.sh
+    - rspec_paralellized_job "--tag ~quarantine --tag ~geo --tag level:migration"
+
+.rspec-base-pg11:
+  extends:
+    - .rspec-base
+    - .use-pg11
+
+.rspec-base-pg11-as-if-foss:
+  extends:
+    - .rspec-base
+    - .as-if-foss
+    - .use-pg11
+  needs: ["setup-test-env", "retrieve-tests-metadata", "compile-test-assets as-if-foss"]
+
+.rspec-ee-base-pg11:
+  extends:
+    - .rspec-base
+    - .use-pg11-ee
+
+.rspec-ee-base-geo:
+  extends: .rspec-base
+  script:
+    - run_timed_command "scripts/gitaly-test-build"
+    - run_timed_command "scripts/gitaly-test-spawn"
+    - source scripts/rspec_helpers.sh
+    - scripts/prepare_postgres_fdw.sh
+    - rspec_paralellized_job "--tag ~quarantine --tag geo"
+
+.rspec-ee-base-geo-pg11:
+  extends:
+    - .rspec-ee-base-geo
+    - .use-pg11-ee
+
+.db-job-base:
+  extends:
+    - .rails-job-base
+    - .rails:rules:ee-and-foss-migration
+    - .use-pg11
+  stage: test
+  needs: ["setup-test-env"]
+# rspec job base specs
+######################
+
+############################
+# rspec job parallel configs
 .rspec-migration-parallel:
   parallel: 5
 
@@ -36,6 +112,8 @@
 
 .rspec-ee-system-geo-parallel:
   parallel: 1
+# rspec job parallel configs
+############################
 
 #######################################################
 # EE/FOSS: default refs (MRs, master, schedules) jobs #
@@ -119,42 +197,6 @@ downtime_check:
   script:
     - bundle exec rake downtime_check
 
-.rspec-base:
-  extends: .rails-job-base
-  stage: test
-  needs: ["setup-test-env", "retrieve-tests-metadata", "compile-test-assets"]
-  script:
-    - run_timed_command "scripts/gitaly-test-build"
-    - run_timed_command "scripts/gitaly-test-spawn"
-    - source scripts/rspec_helpers.sh
-    - rspec_paralellized_job "--tag ~quarantine --tag ~geo --tag ~level:migration"
-  artifacts:
-    expire_in: 31d
-    when: always
-    paths:
-      - coverage/
-      - knapsack/
-      - rspec_flaky/
-      - rspec_profiling/
-      - tmp/capybara/
-      - tmp/memory_test/
-      - log/*.log
-    reports:
-      junit: junit_rspec.xml
-
-.rspec-base-pg11:
-  extends:
-    - .rspec-base
-    - .use-pg11
-
-.rspec-base-migration:
-  extends: .rails:rules:ee-and-foss-migration
-  script:
-    - run_timed_command "scripts/gitaly-test-build"
-    - run_timed_command "scripts/gitaly-test-spawn"
-    - source scripts/rspec_helpers.sh
-    - rspec_paralellized_job "--tag ~quarantine --tag ~geo --tag level:migration"
-
 rspec migration pg11:
   extends:
     - .rspec-base-pg11
@@ -185,14 +227,6 @@ rspec fast_spec_helper:
     - .rails:rules:ee-and-foss-fast_spec_helper
   script:
     - bin/rspec spec/fast_spec_helper.rb
-
-.db-job-base:
-  extends:
-    - .rails-job-base
-    - .rails:rules:ee-and-foss-migration
-    - .use-pg11
-  stage: test
-  needs: ["setup-test-env"]
 
 db:migrate:reset:
   extends: .db-job-base
@@ -296,13 +330,6 @@ rspec:coverage:
 
 ##################################################
 # EE: default refs (MRs, master, schedules) jobs #
-.rspec-base-pg11-as-if-foss:
-  extends:
-    - .rspec-base
-    - .as-if-foss
-    - .use-pg11
-  needs: ["setup-test-env", "retrieve-tests-metadata", "compile-test-assets as-if-foss"]
-
 rspec migration pg11-as-if-foss:
   extends:
     - .rspec-base-pg11-as-if-foss
@@ -328,11 +355,6 @@ rspec system pg11-as-if-foss:
     - .rails:rules:as-if-foss-system
     - .rspec-system-parallel
 
-.rspec-ee-base-pg11:
-  extends:
-    - .rspec-base
-    - .use-pg11-ee
-
 rspec-ee migration pg11:
   extends:
     - .rspec-ee-base-pg11
@@ -357,20 +379,6 @@ rspec-ee system pg11:
     - .rspec-ee-base-pg11
     - .rails:rules:ee-only-system
     - .rspec-ee-system-parallel
-
-.rspec-ee-base-geo:
-  extends: .rspec-base
-  script:
-    - run_timed_command "scripts/gitaly-test-build"
-    - run_timed_command "scripts/gitaly-test-spawn"
-    - source scripts/rspec_helpers.sh
-    - scripts/prepare_postgres_fdw.sh
-    - rspec_paralellized_job "--tag ~quarantine --tag geo"
-
-.rspec-ee-base-geo-pg11:
-  extends:
-    - .rspec-ee-base-geo
-    - .use-pg11-ee
 
 rspec-ee unit pg11 geo:
   extends:
@@ -420,5 +428,5 @@ rspec foss-impact:
     paths:
       - tmp/matching_foss_tests.txt
       - tmp/capybara/
-# EE: Merge Request pipelines
+# EE: Canonical MR pipelines
 ##################################################
