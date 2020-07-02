@@ -9,27 +9,22 @@ module Metrics
 
       ALLOWED_FILE_TYPE = '.yml'
       USER_DASHBOARDS_DIR = ::Metrics::Dashboard::CustomDashboardService::DASHBOARD_ROOT
+      SEQUENCES = {
+        ::Metrics::Dashboard::SystemDashboardService::DASHBOARD_PATH => [::Gitlab::Metrics::Dashboard::Stages::CommonMetricsInserter,
+                                                                         ::Gitlab::Metrics::Dashboard::Stages::CustomMetricsInserter,
+                                                                         ::Gitlab::Metrics::Dashboard::Stages::Sorter].freeze,
+        ::Metrics::Dashboard::ClusterDashboardService::DASHBOARD_PATH => [::Gitlab::Metrics::Dashboard::Stages::CommonMetricsInserter,
+                                                                          ::Gitlab::Metrics::Dashboard::Stages::Sorter].freeze
+      }.freeze
 
+      ALLOWED_DASHBOARD_TEMPLATES = Set[::Metrics::Dashboard::SystemDashboardService::DASHBOARD_PATH,
+                                        ::Metrics::Dashboard::ClusterDashboardService::DASHBOARD_PATH].freeze
       steps :check_push_authorized,
         :check_branch_name,
         :check_file_type,
         :check_dashboard_template,
         :create_file,
         :refresh_repository_method_caches
-
-      class << self
-        def allowed_dashboard_templates
-          @allowed_dashboard_templates ||= Set[::Metrics::Dashboard::SystemDashboardService::DASHBOARD_PATH].freeze
-        end
-
-        def sequences
-          @sequences ||= {
-            ::Metrics::Dashboard::SystemDashboardService::DASHBOARD_PATH => [::Gitlab::Metrics::Dashboard::Stages::CommonMetricsInserter,
-                                                                             ::Gitlab::Metrics::Dashboard::Stages::CustomMetricsInserter,
-                                                                             ::Gitlab::Metrics::Dashboard::Stages::Sorter].freeze
-          }.freeze
-        end
-      end
 
       def execute
         execute_steps
@@ -57,7 +52,7 @@ module Metrics
       end
 
       def check_dashboard_template(result)
-        return error(_('Not found.'), :not_found) unless self.class.allowed_dashboard_templates.include?(params[:dashboard])
+        return error(_('Not found.'), :not_found) unless ALLOWED_DASHBOARD_TEMPLATES.include?(params[:dashboard])
 
         success(result)
       end
@@ -153,7 +148,7 @@ module Metrics
       end
 
       def sequence
-        self.class.sequences[dashboard_template]
+        SEQUENCES[dashboard_template]
       end
     end
   end
