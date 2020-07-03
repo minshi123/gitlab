@@ -12,10 +12,34 @@ class BranchesFinder < GitRefsFinder
     branches
   end
 
+  def with_gitaly_pagination
+    if names || search
+      execute
+    else
+      repository.branches_sorted_by(sort, pagination_params)
+    end
+  end
+
   private
 
   def names
     @params[:names].presence
+  end
+
+  def per_page
+    @params[:per_page].presence
+  end
+
+  def page_token
+    @params[:page_token].presence
+  end
+
+  def branch_ref
+    Gitlab::Git::BRANCH_REF_PREFIX + page_token if page_token
+  end
+
+  def pagination_params
+    { limit: per_page, page_token: branch_ref }
   end
 
   def by_names(branches)
