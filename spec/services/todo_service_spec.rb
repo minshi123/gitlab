@@ -813,6 +813,23 @@ RSpec.describe TodoService do
       end
     end
 
+    describe '#merge_train_removed' do
+      let(:merge_participants) { [admin, create(:user)] }
+
+      before do
+        allow(mr_unassigned).to receive(:merge_participants).and_return(merge_participants)
+      end
+
+      it 'creates a pending todo for each merge_participant' do
+        mr_unassigned.update(merge_when_pipeline_succeeds: true, merge_user: admin)
+        service.merge_train_removed(mr_unassigned)
+
+        merge_participants.each do |participant|
+          should_create_todo(user: participant, author: participant, target: mr_unassigned, action: Todo::MERGE_TRAIN_REMOVED)
+        end
+      end
+    end
+
     describe '#mark_todo' do
       it 'creates a todo from a merge request' do
         service.mark_todo(mr_unassigned, author)

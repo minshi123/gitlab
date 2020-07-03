@@ -128,6 +128,16 @@ class TodoService
     end
   end
 
+  # When a merge train is aborted for some reason, we should:
+  #
+  #  * create a todo for each merge request participant
+  #
+  def merge_train_removed(merge_request)
+    merge_request.merge_participants.each do |user|
+      create_merge_train_removed_todo(merge_request, user)
+    end
+  end
+
   # When create a note we should:
   #
   #  * mark all pending todos related to the noteable for the note author as done
@@ -277,6 +287,11 @@ class TodoService
 
   def create_unmergeable_todo(merge_request, todo_author)
     attributes = attributes_for_todo(merge_request.project, merge_request, todo_author, Todo::UNMERGEABLE)
+    create_todos(todo_author, attributes)
+  end
+
+  def create_merge_train_removed_todo(merge_request, todo_author)
+    attributes = attributes_for_todo(merge_request.project, merge_request, todo_author, Todo::MERGE_TRAIN_REMOVED)
     create_todos(todo_author, attributes)
   end
 

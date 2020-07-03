@@ -163,4 +163,25 @@ RSpec.describe TodosHelper do
       expect(design_option).to include(text: 'Design')
     end
   end
+
+  describe '#todo_author_display?' do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { helper.todo_author_display?(alert_todo) }
+
+    where(:action, :result) do
+      Todo::BUILD_FAILED        | false
+      Todo::UNMERGEABLE         | false
+      Todo::MERGE_TRAIN_REMOVED | false
+      Todo::ASSIGNED            | true
+    end
+
+    with_them do
+      before do
+        alert_todo.action = action
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
 end
