@@ -5,7 +5,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import DashboardsDropdown from '~/monitoring/components/dashboards_dropdown.vue';
 import DuplicateDashboardForm from '~/monitoring/components/duplicate_dashboard_form.vue';
 
-import { dashboardGitResponse } from '../mock_data';
+import { dashboardGitResponse, selfMonitoringDashboardGitResponse } from '../mock_data';
 
 const defaultBranch = 'master';
 
@@ -151,12 +151,12 @@ describe('DashboardsDropdown', () => {
     });
   });
 
-  describe('when a system dashboard is selected', () => {
+  describe('when an out of the box dashboard is selected', () => {
     let duplicateDashboardAction;
     let modalDirective;
 
     beforeEach(() => {
-      [mockSelectedDashboard] = dashboardGitResponse;
+      [,mockSelectedDashboard] = dashboardGitResponse;
       modalDirective = jest.fn();
       duplicateDashboardAction = jest.fn().mockResolvedValue();
 
@@ -249,7 +249,7 @@ describe('DashboardsDropdown', () => {
           });
 
           return waitForPromises().then(() => {
-            expect(wrapper.emitted().selectDashboard[0][0]).toEqual(dashboardGitResponse[0]);
+            expect(wrapper.emitted().selectDashboard[0][0]).toEqual(mockSelectedDashboard);
           });
         });
       });
@@ -300,11 +300,20 @@ describe('DashboardsDropdown', () => {
 
   describe('when a custom dashboard is selected', () => {
     const findModal = () => wrapper.find(GlModal);
+    let modalDirective;
 
     beforeEach(() => {
-      wrapper = createComponent({
-        selectedDashboard: dashboardGitResponse[1],
-      });
+      [,,mockSelectedDashboard] = dashboardGitResponse;
+      modalDirective = jest.fn();
+
+      wrapper = createComponent(
+        {},
+        {
+          directives: {
+            GlModal: modalDirective,
+          },
+        },
+      );
     });
 
     it('displays an item for each dashboard', () => {
@@ -316,6 +325,37 @@ describe('DashboardsDropdown', () => {
 
     it('modal form does not exist and contains a form to duplicate a dashboard', () => {
       expect(findModal().exists()).toBe(false);
+    });
+  });
+
+  describe('when the self monitoring dashboard is selected', () => {
+    const findModal = () => wrapper.find(GlModal);
+    let modalDirective;
+
+    beforeEach(() => {
+      [mockSelectedDashboard] = selfMonitoringDashboardGitResponse;
+      modalDirective = jest.fn();
+
+      wrapper = createComponent(
+        {},
+        {
+          directives: {
+            GlModal: modalDirective,
+          },
+        },
+      );
+    });
+
+    it('displays an item for each dashboard plus a "duplicate dashboard" item', () => {
+      const item = wrapper.findAll({ ref: 'duplicateDashboardItem' });
+
+      expect(findItems()).toHaveLength(dashboardGitResponse.length + 1);
+      expect(item.length).toBe(1);
+    });
+
+    it('modal form exists and contains a form to duplicate a dashboard', () => {
+      expect(findModal().exists()).toBe(true);
+      expect(findModal().contains(DuplicateDashboardForm)).toBe(true);
     });
   });
 
