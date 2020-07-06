@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module PipelineSchedulesHelper
+module Ci::PipelineSchedulesHelper
   def timezone_data
     ActiveSupport::TimeZone.all.map do |timezone|
       {
