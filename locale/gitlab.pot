@@ -984,9 +984,6 @@ msgstr ""
 msgid "A CI/CD pipeline must run and be successful before merge. %{linkStart}(?)%{linkEnd}"
 msgstr ""
 
-msgid "A CI/CD pipeline must run and be successful before merge. %{linkStart}(?)%{linkEnd}"
-msgstr ""
-
 msgid "A GitBook site that uses Netlify for CI/CD instead of GitLab, but still with all the other great GitLab features."
 msgstr ""
 
