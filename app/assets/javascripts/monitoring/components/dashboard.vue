@@ -219,12 +219,14 @@ export default {
     window.removeEventListener('keyup', this.onKeyup);
   },
   mounted() {
-    if (!this.hasMetrics) {
-      this.setGettingStartedEmptyState();
-    } else {
+    // if (!this.hasMetrics) {
+    //   console.log("no data");
+    //   this.setGettingStartedEmptyState();
+    // } else {
+    //   console.log("got data");
       this.setTimeRange(this.selectedTimeRange);
       this.fetchData();
-    }
+    // }
   },
   methods: {
     ...mapActions('monitoringDashboard', [
