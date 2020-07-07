@@ -24,6 +24,9 @@ export const setBaseBlobPath = ({ commit }, blobPath) => commit(types.SET_BASE_B
 
 export const setSourceBranch = ({ commit }, branch) => commit(types.SET_SOURCE_BRANCH, branch);
 
+export const setCanReadVulnerabilityFeedback = ({ commit }, value) =>
+  commit(types.SET_CAN_READ_VULNERABILITY_FEEDBACK, value);
+
 export const setVulnerabilityFeedbackPath = ({ commit }, path) =>
   commit(types.SET_VULNERABILITY_FEEDBACK_PATH, path);
 
@@ -40,6 +43,21 @@ export const setCreateVulnerabilityFeedbackDismissalPath = ({ commit }, path) =>
   commit(types.SET_CREATE_VULNERABILITY_FEEDBACK_DISMISSAL_PATH, path);
 
 export const setPipelineId = ({ commit }, id) => commit(types.SET_PIPELINE_ID, id);
+
+export const fetchVulnerabilityFeedback = (
+  { canReadVulnerabilityFeedback, vulnerabilityFeedbackPath },
+  category,
+) => {
+  if (canReadVulnerabilityFeedback) {
+    axios.get(vulnerabilityFeedbackPath, {
+      params: {
+        category,
+      },
+    });
+  } else {
+    return Promise.resolve({});
+  }
+};
 
 /**
  * CONTAINER SCANNING
@@ -62,11 +80,7 @@ export const fetchContainerScanningDiff = ({ state, dispatch }) => {
 
   return Promise.all([
     pollUntilComplete(state.containerScanning.paths.diffEndpoint),
-    axios.get(state.vulnerabilityFeedbackPath, {
-      params: {
-        category: 'container_scanning',
-      },
-    }),
+    fetchVulnerabilityFeedback(state, 'container_scanning'),
   ])
     .then(values => {
       dispatch('receiveContainerScanningDiffSuccess', {
@@ -101,11 +115,7 @@ export const fetchDastDiff = ({ state, dispatch }) => {
 
   return Promise.all([
     pollUntilComplete(state.dast.paths.diffEndpoint),
-    axios.get(state.vulnerabilityFeedbackPath, {
-      params: {
-        category: 'dast',
-      },
-    }),
+    fetchVulnerabilityFeedback(state, 'dast'),
   ])
     .then(values => {
       dispatch('receiveDastDiffSuccess', {
@@ -139,11 +149,7 @@ export const fetchDependencyScanningDiff = ({ state, dispatch }) => {
 
   return Promise.all([
     pollUntilComplete(state.dependencyScanning.paths.diffEndpoint),
-    axios.get(state.vulnerabilityFeedbackPath, {
-      params: {
-        category: 'dependency_scanning',
-      },
-    }),
+    fetchVulnerabilityFeedback(state, 'dependency_scanning'),
   ])
     .then(values => {
       dispatch('receiveDependencyScanningDiffSuccess', {
@@ -179,11 +185,7 @@ export const fetchSecretScanningDiff = ({ state, dispatch }) => {
 
   return Promise.all([
     pollUntilComplete(state.secretScanning.paths.diffEndpoint),
-    axios.get(state.vulnerabilityFeedbackPath, {
-      params: {
-        category: 'secret_scanning',
-      },
-    }),
+    fetchVulnerabilityFeedback(state, 'secret_scanning'),
   ])
     .then(values => {
       dispatch('receiveSecretScanningDiffSuccess', {

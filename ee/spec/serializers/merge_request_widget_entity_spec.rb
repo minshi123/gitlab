@@ -226,6 +226,10 @@ RSpec.describe MergeRequestWidgetEntity do
     expect(subject.as_json).to include(:create_vulnerability_feedback_dismissal_path)
   end
 
+  it 'has can_read_vulnerability_feedback ability' do
+    expect(subject.as_json[:can_read_vulnerability_feedback]).to eq(true)
+  end
+
   it 'has pipeline id' do
     allow(merge_request).to receive(:head_pipeline).and_return(pipeline)
 

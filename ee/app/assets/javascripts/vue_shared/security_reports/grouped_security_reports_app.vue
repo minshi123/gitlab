@@ -74,6 +74,11 @@ export default {
       required: false,
       default: '',
     },
+    canReadVulnerabilityFeedback: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     vulnerabilityFeedbackPath: {
       type: String,
       required: false,
@@ -195,6 +200,7 @@ export default {
     this.setBaseBlobPath(this.baseBlobPath);
     this.setSourceBranch(this.sourceBranch);
 
+    this.setCanReadVulnerabilityFeedback(this.canReadVulnerabilityFeedback);
     this.setVulnerabilityFeedbackPath(this.vulnerabilityFeedbackPath);
     this.setVulnerabilityFeedbackHelpPath(this.vulnerabilityFeedbackHelpPath);
     this.setCreateVulnerabilityFeedbackIssuePath(this.createVulnerabilityFeedbackIssuePath);
@@ -244,6 +250,7 @@ export default {
       'setHeadBlobPath',
       'setBaseBlobPath',
       'setSourceBranch',
+      'setCanReadVulnerabilityFeedback',
       'setVulnerabilityFeedbackPath',
       'setVulnerabilityFeedbackHelpPath',
       'setCreateVulnerabilityFeedbackIssuePath',

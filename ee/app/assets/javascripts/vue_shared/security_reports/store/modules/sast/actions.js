@@ -1,6 +1,6 @@
-import axios from '~/lib/utils/axios_utils';
 import pollUntilComplete from '~/lib/utils/poll_until_complete';
 import * as types from './mutation_types';
+import { fetchVulnerabilityFeedback } from '../../actions';
 
 export const setDiffEndpoint = ({ commit }, path) => commit(types.SET_DIFF_ENDPOINT, path);
 
@@ -20,11 +20,7 @@ export const fetchDiff = ({ state, rootState, dispatch }) => {
 
   return Promise.all([
     pollUntilComplete(state.paths.diffEndpoint),
-    axios.get(rootState.vulnerabilityFeedbackPath, {
-      params: {
-        category: 'sast',
-      },
-    }),
+    fetchVulnerabilityFeedback(rootState.vulnerabilityFeedbackPath, 'sast'),
   ])
     .then(values => {
       dispatch('receiveDiffSuccess', {
