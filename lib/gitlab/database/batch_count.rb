@@ -18,13 +18,49 @@
 #  batch_distinct_count(::Project.with_active_services.service_desk_enabled.where(time_period), start: ::User.minimum(:id), finish: ::User.maximum(:id))
 module Gitlab
   module Database
-    module BatchCount
+    module BatchCount # TODO: Rename to BatchCalculations
       def batch_count(relation, column = nil, batch_size: nil, start: nil, finish: nil)
-        BatchCounter.new(relation, column: column).count(batch_size: batch_size, start: start, finish: finish)
+        count = 0
+
+        BatchExecutor.new(relation, column: column).execute(batch_size: batch_size, start: start, finish: finish) do |group|
+          count += group.select(column).count
+        end
+
+        count
       end
 
+      # TODO: Change column to keyword arguments (separate MR?)
       def batch_distinct_count(relation, column = nil, batch_size: nil, start: nil, finish: nil)
-        BatchCounter.new(relation, column: column).count(mode: :distinct, batch_size: batch_size, start: start, finish: finish)
+        count = 0
+
+        BatchExecutor.new(relation, column: column).execute(batch_size: batch_size, start: start, finish: finish) do |group|
+          count += group.select(column).distinct.count
+        end
+
+        count
+      end
+
+      def batch_sum(relation, on:, column: nil, batch_size: nil, start: nil, finish: nil)
+        sum = 0
+
+        BatchExecutor.new(relation, column: column).execute(batch_size: batch_size, start: start, finish: finish) do |group|
+          sum += group.sum(on)
+        end
+
+        sum
+      end
+
+      def batch_average(relation, on:, column: nil, batch_size: nil, start: nil, finish: nil)
+        sum, count = 0, 0
+
+        BatchExecutor.new(relation, column: column).execute(batch_size: batch_size, start: start, finish: finish) do |group|
+          result = group.pluck(relation.arel_table[on].sum, relation.arel_table[on].count).first
+
+          sum += result.first
+          count += result.last
+        end
+
+        sum / count
       end
 
       class << self
@@ -32,7 +68,7 @@ module Gitlab
       end
     end
 
-    class BatchCounter
+    class BatchExecutor
       FALLBACK = -1
       MIN_REQUIRED_BATCH_SIZE = 1_250
       MAX_ALLOWED_LOOPS = 10_000
@@ -54,13 +90,13 @@ module Gitlab
           start > finish
       end
 
-      def count(batch_size: nil, mode: :itself, start: nil, finish: nil)
+      def execute(batch_size: nil, start: nil, finish: nil, &block)
         raise 'BatchCount can not be run inside a transaction' if ActiveRecord::Base.connection.transaction_open?
 
-        check_mode!(mode)
+        # check_mode!(mode)
 
         # non-distinct have better performance
-        batch_size ||= mode == :distinct ? DEFAULT_DISTINCT_BATCH_SIZE : DEFAULT_BATCH_SIZE
+        batch_size ||= DEFAULT_BATCH_SIZE
 
         start = actual_start(start)
         finish = actual_finish(finish)
@@ -68,13 +104,13 @@ module Gitlab
         raise "Batch counting expects positive values only for #{@column}" if start < 0 || finish < 0
         return FALLBACK if unwanted_configuration?(finish, batch_size, start)
 
-        counter = 0
         batch_start = start
 
         while batch_start <= finish
           begin
-            counter += batch_fetch(batch_start, batch_start + batch_size, mode)
-            batch_start += batch_size
+            @relation = @relation.where(between_condition(batch_start, batch_start += batch_size))
+            yield(@relation)
+            batch_start
           rescue ActiveRecord::QueryCanceled
             # retry with a safe batch size & warmer cache
             if batch_size >= 2 * MIN_REQUIRED_BATCH_SIZE
@@ -83,15 +119,8 @@ module Gitlab
               return FALLBACK
             end
           end
-          sleep(SLEEP_TIME_IN_SECONDS)
+          sleep(SLEEP_TIME_IN_SECONDS) # TODO: Why is this needed?
         end
-
-        counter
-      end
-
-      def batch_fetch(start, finish, mode)
-        # rubocop:disable GitlabSecurity/PublicSend
-        @relation.select(@column).public_send(mode).where(between_condition(start, finish)).count
       end
 
       private

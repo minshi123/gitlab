@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Database::BatchCount do
-  let_it_be(:fallback) { ::Gitlab::Database::BatchCounter::FALLBACK }
-  let_it_be(:small_batch_size) { ::Gitlab::Database::BatchCounter::MIN_REQUIRED_BATCH_SIZE - 1 }
+  let_it_be(:fallback) { ::Gitlab::Database::BatchExecutor::FALLBACK }
+  let_it_be(:small_batch_size) { ::Gitlab::Database::BatchExecutor::MIN_REQUIRED_BATCH_SIZE - 1 }
   let(:model) { Issue }
   let(:column) { :author_id }
 
@@ -79,7 +79,7 @@ RSpec.describe Gitlab::Database::BatchCount do
       end
 
       it 'returns fallback if loops more than allowed' do
-        large_finish = Gitlab::Database::BatchCounter::MAX_ALLOWED_LOOPS * Gitlab::Database::BatchCounter::DEFAULT_BATCH_SIZE + 1
+        large_finish = Gitlab::Database::BatchExecutor::MAX_ALLOWED_LOOPS * Gitlab::Database::BatchExecutor::DEFAULT_BATCH_SIZE + 1
         expect(described_class.batch_count(model, start: 1, finish: large_finish)).to eq(fallback)
       end
 
@@ -134,7 +134,7 @@ RSpec.describe Gitlab::Database::BatchCount do
       end
 
       it 'returns fallback if loops more than allowed' do
-        large_finish = Gitlab::Database::BatchCounter::MAX_ALLOWED_LOOPS * Gitlab::Database::BatchCounter::DEFAULT_DISTINCT_BATCH_SIZE + 1
+        large_finish = Gitlab::Database::BatchExecutor::MAX_ALLOWED_LOOPS * Gitlab::Database::BatchExecutor::DEFAULT_DISTINCT_BATCH_SIZE + 1
         expect(described_class.batch_distinct_count(model, column, start: 1, finish: large_finish)).to eq(fallback)
       end
 
