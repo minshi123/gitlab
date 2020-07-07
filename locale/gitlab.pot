@@ -27580,6 +27580,11 @@ msgstr ""
 msgid "mrWidget|Are you adding technical debt or code vulnerabilities?"
 msgstr ""
 
+msgid "mrWidget|Before this can be merged, 1 thread must be resolved."
+msgid_plural "mrWidget|Before this can be merged, %d threads must be resolved."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "mrWidget|Cancel automatic merge"
 msgstr ""
 
@@ -27602,9 +27607,6 @@ msgid "mrWidget|Closed by"
 msgstr ""
 
 msgid "mrWidget|Closes"
-msgstr ""
-
-msgid "mrWidget|Create an issue to resolve them later"
 msgstr ""
 
 msgid "mrWidget|Delete source branch"
@@ -27635,6 +27637,9 @@ msgid "mrWidget|If the %{missingBranchName} branch exists in your local reposito
 msgstr ""
 
 msgid "mrWidget|In the merge train at position %{mergeTrainPosition}"
+msgstr ""
+
+msgid "mrWidget|Jump to first unresolved thread"
 msgstr ""
 
 msgid "mrWidget|Loading deployment statistics"
@@ -27700,6 +27705,9 @@ msgstr ""
 msgid "mrWidget|Resolve WIP status"
 msgstr ""
 
+msgid "mrWidget|Resolve all threads in new issue"
+msgstr ""
+
 msgid "mrWidget|Resolve conflicts"
 msgstr ""
 
@@ -27749,9 +27757,6 @@ msgid "mrWidget|The source branch will not be deleted"
 msgstr ""
 
 msgid "mrWidget|There are merge conflicts"
-msgstr ""
-
-msgid "mrWidget|There are unresolved threads. Please resolve these threads"
 msgstr ""
 
 msgid "mrWidget|This feature merges changes from the target branch to the source branch. You cannot use this feature since the source branch is protected."
