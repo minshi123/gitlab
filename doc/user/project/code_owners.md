@@ -105,7 +105,7 @@ be owners of the file. Groups must be added as [members of the project](members/
 or they will be ignored.
 
 Starting in [GitLab 13.0](https://gitlab.com/gitlab-org/gitlab/-/issues/32432), you can additionally specify
-groups or subgroups from the project's group hierarchy as potential code owners.
+groups or subgroups from the project's group hierarchy as potential code owners, without having to invite them specifically to the project.
 
 For example, consider the following hierarchy for the example project `example_project`:
 
@@ -129,7 +129,39 @@ Starting a line with a `#` indicates a comment. This needs to be
 escaped using `\#` to address files for which the name starts with a
 `#`.
 
-Example `CODEOWNERS` file:
+### Sections
+
+Code Owner rules can be grouped into labeled sections. This allows for better organization of broader categories of Code Owner rules to be applied. Additionally, the usual guidance that only the last pattern matching the file is applied is expanded such that the last pattern matching _for each section_ is applied.
+
+Sections can be added to `CODEOWNERS` files as a new line with the name of the section inside square brackets. Every entry following it is assigned to that section. For example, this would create 2 Code Owner rules for the "README Owners" section:
+
+```plaintext
+[README Owners]
+README.md @user1 @user 2
+internal/README.md @user2
+```
+
+Multiple sections can be used, even with matching file or directory patterns. Reusuing the same section name will group the results together under the same section. For example, consider the following entries in a `CODEOWNERS` file:
+
+```plaintext
+[Documentation]
+ee/docs    @docs_team
+docs       @docs_team
+
+[Groups]
+* @group_membership_team
+
+[Documentation]
+README.md  @docs_team
+```
+
+This will result in 3 entries under the "Documentation" section header, and 2 entries under "Database." Case is not considered when combining sections, so for example entries defined under the sections "Database" and "DataBase" would be combined into one, using the case of the first instance of the section encountered in the file.
+
+When assigned to a section, each code owner rule displayed in merge requests widgets is sorted under a section label. In the screenshot below, we can see the rules for the "Groups" and "Documentation"
+
+![MR widget - Sectional Code Owners](img/sectional_code_owners_v13.2.png)
+
+## Example `CODEOWNERS` file:
 
 ```plaintext
 # This is an example of a code owners file
@@ -185,4 +217,14 @@ lib/ @lib-owner
 
 # If the path contains spaces, these need to be escaped like this:
 path\ with\ spaces/ @space-owner
+
+[Documentation]
+ee/docs    @docs_team
+docs       @docs_team
+
+[Groups]
+* @group_membership_team
+
+[Documentation]
+README.md  @docs_team
 ```
