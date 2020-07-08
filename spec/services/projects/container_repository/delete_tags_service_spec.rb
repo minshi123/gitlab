@@ -140,9 +140,9 @@ RSpec.describe Projects::ContainerRepository::DeleteTagsService do
             stub_put_manifest_request('Ba')
           end
 
-          it 'fallbacks to slow delete' do
-            expect(service).not_to receive(:fast_delete)
-            expect(service).to receive(:slow_delete).with(repository, tags).and_call_original
+          it 'fallbacks to third party delete tags service' do
+            expect(::Projects::ContainerRepository::Gitlab::DeleteTagsService).not_to receive(:new)
+            expect(::Projects::ContainerRepository::ThirdParty::DeleteTagsService).to receive(:new).with(repository, tags).and_call_original
 
             expect_delete_tag_by_digest('sha256:dummy')
 
@@ -151,7 +151,6 @@ RSpec.describe Projects::ContainerRepository::DeleteTagsService do
 
           it_behaves_like 'logging a success response' do
             before do
-              allow(service).to receive(:slow_delete).and_call_original
               expect_delete_tag_by_digest('sha256:dummy')
             end
           end
