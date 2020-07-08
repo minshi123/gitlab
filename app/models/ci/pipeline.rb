@@ -258,7 +258,6 @@ module Ci
     scope :for_id, -> (id) { where(id: id) }
     scope :for_iid, -> (iid) { where(iid: iid) }
     scope :created_after, -> (time) { where('ci_pipelines.created_at > ?', time) }
-    scope :for_project, -> (project) { where(project: project) }
 
     scope :with_reports, -> (reports_scope) do
       where('EXISTS (?)', ::Ci::Build.latest.with_reports(reports_scope).where('ci_pipelines.id=ci_builds.commit_id').select(1))
@@ -321,9 +320,7 @@ module Ci
     # ref - The ref to scope the data to (e.g. "master"). If the ref is not
     #       given we simply get the latest pipelines for the commits, regardless
     #       of what refs the pipelines belong to.
-    # project_key - Support `commits` from different projects, returns results
-    #       keyed by `hash[project_id][commit_id]`
-    def self.latest_pipeline_per_commit(commits, ref = nil, project_key: false)
+    def self.latest_pipeline_per_commit(commits, ref = nil)
       p1 = arel_table
       p2 = arel_table.alias
 
@@ -344,13 +341,7 @@ module Ci
       relation = relation.where(ref: ref) if ref
 
       relation.each_with_object({}) do |pipeline, hash|
-        commits = if project_key
-                    hash[pipeline.project_id] ||= {}
-                  else
-                    hash
-                  end
-
-        commits[pipeline.sha] = pipeline
+        hash[pipeline.sha] = pipeline
       end
     end
 

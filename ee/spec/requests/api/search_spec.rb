@@ -125,7 +125,7 @@ RSpec.describe API::Search do
         ensure_elasticsearch_index!
 
         # Some N+1 queries still exist
-        expect { get api(endpoint, user), params: { scope: 'commits', search: 'folder' } }.not_to exceed_query_limit(control.count + 2)
+        expect { get api(endpoint, user), params: { scope: 'commits', search: 'folder' } }.not_to exceed_query_limit(control.count + 9)
       end
     end
 

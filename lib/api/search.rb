@@ -39,9 +39,6 @@ module API
 
         results = SearchService.new(current_user, search_params).search_objects(preload_method)
 
-        # preload commit data
-        results = CommitCollection.new(nil, results).with_latest_pipeline if params[:scope].to_sym == :commits
-
         Gitlab::UsageDataCounters::SearchCounter.count(:all_searches)
 
         paginate(results)
