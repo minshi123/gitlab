@@ -22,7 +22,7 @@ who is responsible for each file or path.
 
 ## Why is this useful?
 
-Code Owners allows for a version controlled single source of
+Code Owners allows for a version controlled, single source of
 truth file outlining the exact GitLab users or groups that
 own certain files or paths in a repository. Code Owners can be
 utilized in the merge request approval process which can streamline
@@ -38,9 +38,9 @@ approval.
 
 You can use a `CODEOWNERS` file to specify users or
 [shared groups](members/share_project_with_groups.md)
-that are responsible for certain files in a repository.
+that are responsible for specific files and directories in a repository.
 
-You can choose and add the `CODEOWNERS` file in three places:
+You can choose to add the `CODEOWNERS` file in three places:
 
 - To the root directory of the repository
 - Inside the `.gitlab/` directory
@@ -49,7 +49,7 @@ You can choose and add the `CODEOWNERS` file in three places:
 The `CODEOWNERS` file is scoped to a branch, which means that with the
 introduction of new files, the person adding the new content can
 specify themselves as a code owner, all before the new changes
-get merged to the default branch.
+get merged to the target branch.
 
 When a file matches multiple entries in the `CODEOWNERS` file,
 the users from last pattern matching the file are displayed on the
@@ -67,7 +67,7 @@ The user that would show for `README.md` would be `@user2`.
 
 ## Approvals by Code Owners
 
-Once you've set Code Owners to a project, you can configure it to
+Once you've added Code Owners to a project, you can configure it to
 be used for merge request approvals:
 
 - As [merge request eligible approvers](merge_requests/merge_request_approvals.md#code-owners-as-eligible-approvers).
@@ -81,7 +81,7 @@ Once set, Code Owners are displayed in merge requests widgets:
 
 ![MR widget - Code Owners](img/code_owners_mr_widget_v12_4.png)
 
-While the `CODEOWNERS` file can be used in addition to Merge Request [Approval Rules](merge_requests/merge_request_approvals.md#approval-rules)
+While the `CODEOWNERS` file can be used in addition to Merge Request [Approval Rules](merge_requests/merge_request_approvals.md#approval-rules),
 it can also be used as the sole driver of merge request approvals
 (without using [Approval Rules](merge_requests/merge_request_approvals.md#approval-rules)).
 To do so, create the file in one of the three locations specified above and
@@ -89,7 +89,7 @@ set the code owners as required approvers for [protected branches](protected_bra
 Use [the syntax of Code Owners files](code_owners.md#the-syntax-of-code-owners-files)
 to specify the actual owners and granular permissions.
 
-Using Code Owners in conjunction with [Protected Branches Approvals](protected_branches.md#protected-branches-approval-by-code-owners-premium)
+Using Code Owners in conjunction with [Protected Branches ](protected_branches.md#protected-branches-approval-by-code-owners-premium)
 will prevent any user who is not specified in the `CODEOWNERS` file from pushing changes
 for the specified files/paths, even if their role is included in the **Allowed to push** column.
 This allows for a more inclusive push strategy, as administrators don't have to restrict developers
@@ -100,17 +100,17 @@ files where a review by Code Owners is required.
 
 Files can be specified using the same kind of patterns you would use
 in the `.gitignore` file followed by the `@username` or email of one
-or more users or by the `@name` of one or more groups that should
+or more users, or by the `@name` of one or more groups that should
 be owners of the file. Groups must be added as [members of the project](members/index.md),
 or they will be ignored.
 
-Starting in [GitLab 13.0](https://gitlab.com/gitlab-org/gitlab/-/issues/32432), you can now specify
+Starting in [GitLab 13.0](https://gitlab.com/gitlab-org/gitlab/-/issues/32432), you can additionally specify
 groups or subgroups from the project's group hierarchy as potential code owners.
 
-For example, consider the following hierarchy for a given project:
+For example, consider the following hierarchy for the example project `example_project`:
 
 ```plaintext
-group >> sub-group >> sub-subgroup >> myproject >> file.md
+group >> sub-group >> sub-subgroup >> example_project >> file.md
 ```
 
 Any of the following groups would be eligible to be specified as code owners:
