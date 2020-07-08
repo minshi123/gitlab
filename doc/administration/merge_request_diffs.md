@@ -195,3 +195,34 @@ conditions become true:
 These rules strike a balance between space and performance by only storing
 frequently-accessed diffs in the database. Diffs that are less likely to be
 accessed are moved to external storage instead.
+
+## Correcting incorrectly-migrated diffs
+
+Versions of GitLab earlier than `v13.0.0` would incorrectly record the location
+of some merge request diffs when [external diffs in object storage](#object-storage-settings)
+were enabled. This mainly affected imported merge requests, and was resolved
+with [this merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/31005).
+
+If you are using this configuration, have never used on-disk form for external
+diffs, the "changes" tab for some merge requests fails to load with a 500 error,
+and the exception for that error is of this form:
+
+```
+Errno::ENOENT (No such file or directory @ rb_sysopen - /var/opt/gitlab/gitlab-rails/shared/external-diffs/merge_request_diffs/mr-6167082/diff-8199789)
+```
+
+Then you are affected by this issue. Since it's not possible to safely determine
+all these conditions automatically, a rake task can be run manually to correct
+the data:
+
+**In Omnibus installations:**
+
+```shell
+sudo gitlab-rake gitlab:...
+```
+
+**In installations from source:**
+
+```shell
+sudo -u git -H bundle exec rake gitlab:... RAILS_ENV=production
+```
