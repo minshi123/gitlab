@@ -817,6 +817,11 @@ type Blob implements Entry {
   Web URL of the blob
   """
   webUrl: String
+
+  """
+  File mode of the blob
+  """
+  mode: String
 }
 
 """
