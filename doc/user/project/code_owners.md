@@ -149,17 +149,18 @@ Multiple sections can be used, even with matching file or directory patterns. Re
 
 ```plaintext
 [Documentation]
-ee/docs    @docs_team
-docs       @docs_team
+ee/docs    @gl-docs
+docs       @gl-docs
 
-[Groups]
-* @group_membership_team
+[Database]
+README.md  @gl-database
+model/db   @gl-database
 
-[Documentation]
-README.md  @docs_team
+[DOCUMENTATION]
+README.md  @gl-docs
 ```
 
-This will result in 3 entries under the "Documentation" section header, and 2 entries under "Database." Case is not considered when combining sections, so for example entries defined under the sections "Database" and "DataBase" would be combined into one, using the case of the first instance of the section encountered in the file.
+This will result in 3 entries under the "Documentation" section header, and 2 entries under "Database." Case is not considered when combining sections, so in this example, entries defined under the sections "Documentation" and "DOCUMENTATION" would be combined into one, using the case of the first instance of the section encountered in the file.
 
 When assigned to a section, each code owner rule displayed in merge requests widgets is sorted under a section label. In the screenshot below, we can see the rules for the "Groups" and "Documentation"
 
@@ -223,12 +224,13 @@ lib/ @lib-owner
 path\ with\ spaces/ @space-owner
 
 [Documentation]
-ee/docs    @docs_team
-docs       @docs_team
+ee/docs    @gl-docs
+docs       @gl-docs
 
-[Groups]
-* @group_membership_team
+[Database]
+README.md  @gl-database
+model/db   @gl-database
 
-[Documentation]
-README.md  @docs_team
+[DOCUMENTATION]
+README.md  @gl-docs
 ```
