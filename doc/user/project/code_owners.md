@@ -89,7 +89,7 @@ set the code owners as required approvers for [protected branches](protected_bra
 Use [the syntax of Code Owners files](code_owners.md#the-syntax-of-code-owners-files)
 to specify the actual owners and granular permissions.
 
-Using Code Owners in conjunction with [Protected Branches ](protected_branches.md#protected-branches-approval-by-code-owners-premium)
+Using Code Owners in conjunction with [Protected Branches](protected_branches.md#protected-branches-approval-by-code-owners-premium)
 will prevent any user who is not specified in the `CODEOWNERS` file from pushing changes
 for the specified files/paths, even if their role is included in the **Allowed to push** column.
 This allows for a more inclusive push strategy, as administrators don't have to restrict developers
@@ -162,11 +162,11 @@ README.md  @gl-docs
 
 This will result in 3 entries under the "Documentation" section header, and 2 entries under "Database." Case is not considered when combining sections, so in this example, entries defined under the sections "Documentation" and "DOCUMENTATION" would be combined into one, using the case of the first instance of the section encountered in the file.
 
-When assigned to a section, each code owner rule displayed in merge requests widgets is sorted under a section label. In the screenshot below, we can see the rules for the "Groups" and "Documentation"
+When assigned to a section, each code owner rule displayed in merge requests widgets is sorted under a section label. In the screenshot below, we can see the rules for the "Groups" and "Documentation."
 
 ![MR widget - Sectional Code Owners](img/sectional_code_owners_v13.2.png)
 
-## Example `CODEOWNERS` file:
+## Example `CODEOWNERS` file
 
 ```plaintext
 # This is an example of a code owners file
