@@ -105,7 +105,7 @@ be owners of the file. Groups must be added as [members of the project](members/
 or they will be ignored.
 
 Starting in [GitLab 13.0](https://gitlab.com/gitlab-org/gitlab/-/issues/32432), you can additionally specify
-groups or subgroups from the project's group hierarchy as potential code owners, without having to invite them specifically to the project.
+groups or subgroups from the project's upper group hierarchy as potential code owners, without having to invite them specifically to the project. Groups outside the project's hierarchy or children beneath the hierarchy must still be explicitly invited to the project in order to show as Code Owners.
 
 For example, consider the following hierarchy for the example project `example_project`:
 
