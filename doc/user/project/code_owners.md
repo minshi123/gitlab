@@ -99,9 +99,13 @@ files where a review by Code Owners is required.
 ## The syntax of Code Owners files
 
 Files can be specified using the same kind of patterns you would use
-in the `.gitignore` file followed by the `@username` or email of one
-or more users, or by the `@name` of one or more groups that should
-be owners of the file. Groups must be added as [members of the project](members/index.md),
+in the `.gitignore` file followed by one or more of:
+
+- a user's `@username`
+- an email address
+- the `@name` of one or more groups that should be owners of the file
+
+Groups must be added as [members of the project](members/index.md),
 or they will be ignored.
 
 Starting in [GitLab 13.0](https://gitlab.com/gitlab-org/gitlab/-/issues/32432), you can additionally specify
