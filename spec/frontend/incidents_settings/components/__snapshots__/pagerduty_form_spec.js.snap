@@ -1,0 +1,167 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Alert integration settings form Webhook reset should show error message and NOT reset webhook url 1`] = `
+<div>
+  <!---->
+   
+  <p>
+    Setting up a webhook with PagerDuty will automatically create a GitLab issue for each PagerDuty incident.
+  </p>
+   
+  <form>
+    <gl-form-group-stub
+      class="col-8 col-md-9 gl-p-0"
+    >
+      <gl-toggle-stub
+        id="active"
+        label="Active"
+        labelposition="top"
+        value="true"
+      />
+    </gl-form-group-stub>
+     
+    <gl-form-group-stub
+      class="col-8 col-md-9 gl-p-0"
+      label="Webhook URL"
+      label-class="label-bold"
+      label-for="url"
+    >
+      <div
+        class="input-group"
+      >
+        <gl-form-input-stub
+          id="url"
+          readonly="true"
+          value="pagerduty.webhook.com"
+        />
+         
+        <span
+          class="input-group-append"
+        >
+          <clipboard-button-stub
+            cssclass="btn-default"
+            text="pagerduty.webhook.com"
+            title="Copy"
+            tooltipplacement="top"
+          />
+        </span>
+      </div>
+       
+      <div
+        class="gl-text-gray-400 gl-pt-2"
+      >
+        <gl-sprintf-stub
+          message="Create a GitLab issue for each PagerDuty incident by %{docsLink}"
+        />
+      </div>
+       
+      <gl-button-stub
+        category="tertiary"
+        class="gl-mt-3"
+        data-testid="webhook-reset-btn"
+        icon=""
+        size="medium"
+        variant="default"
+      >
+        Reset webhook URL
+      </gl-button-stub>
+    </gl-form-group-stub>
+     
+    <gl-button-stub
+      category="tertiary"
+      class="gl-mt-5 js-no-auto-disable"
+      icon=""
+      size="medium"
+      type="submit"
+      variant="success"
+    >
+      
+      Save changes
+    
+    </gl-button-stub>
+  </form>
+</div>
+`;
+
+exports[`Alert integration settings form should match the default snapshot 1`] = `
+<div>
+  <!---->
+   
+  <p>
+    Setting up a webhook with PagerDuty will automatically create a GitLab issue for each PagerDuty incident.
+  </p>
+   
+  <form>
+    <gl-form-group-stub
+      class="col-8 col-md-9 gl-p-0"
+    >
+      <gl-toggle-stub
+        id="active"
+        label="Active"
+        labelposition="top"
+        value="true"
+      />
+    </gl-form-group-stub>
+     
+    <gl-form-group-stub
+      class="col-8 col-md-9 gl-p-0"
+      label="Webhook URL"
+      label-class="label-bold"
+      label-for="url"
+    >
+      <div
+        class="input-group"
+      >
+        <gl-form-input-stub
+          id="url"
+          readonly="true"
+          value="pagerduty.webhook.com"
+        />
+         
+        <span
+          class="input-group-append"
+        >
+          <clipboard-button-stub
+            cssclass="btn-default"
+            text="pagerduty.webhook.com"
+            title="Copy"
+            tooltipplacement="top"
+          />
+        </span>
+      </div>
+       
+      <div
+        class="gl-text-gray-400 gl-pt-2"
+      >
+        <gl-sprintf-stub
+          message="Create a GitLab issue for each PagerDuty incident by %{docsLink}"
+        />
+      </div>
+       
+      <gl-button-stub
+        category="tertiary"
+        class="gl-mt-3"
+        data-testid="webhook-reset-btn"
+        icon=""
+        size="medium"
+        variant="default"
+      >
+        Reset webhook URL
+      </gl-button-stub>
+    </gl-form-group-stub>
+     
+    <gl-button-stub
+      category="tertiary"
+      class="gl-mt-5 js-no-auto-disable"
+      icon=""
+      size="medium"
+      type="submit"
+      variant="success"
+    >
+      
+      Save changes
+    
+    </gl-button-stub>
+  </form>
+</div>
+`;
