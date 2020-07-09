@@ -135,7 +135,7 @@ escaped using `\#` to address files for which the name starts with a
 
 ### Sections
 
-Code Owner rules can be grouped into labeled sections. This allows for better organization of broader categories of Code Owner rules to be applied. Additionally, the usual guidance that only the last pattern matching the file is applied is expanded such that the last pattern matching _for each section_ is applied.
+Code Owner rules can be grouped into named sections. This allows for better organization of broader categories of Code Owner rules to be applied. Additionally, the usual guidance that only the last pattern matching the file is applied is expanded such that the last pattern matching _for each section_ is applied.
 
 Sections can be added to `CODEOWNERS` files as a new line with the name of the section inside square brackets. Every entry following it is assigned to that section. For example, this would create 2 Code Owner rules for the "README Owners" section:
 
