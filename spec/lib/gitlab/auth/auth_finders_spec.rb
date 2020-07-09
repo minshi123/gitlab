@@ -26,6 +26,44 @@ RSpec.describe Gitlab::Auth::AuthFinders do
     env.merge!(basic_auth_header(username, password))
   end
 
+  describe '#find_user_from_bearer_token' do
+    let(:job) { create(:ci_build, user: user) }
+
+    subject { find_user_from_bearer_token }
+
+    context 'when the token is passed as an oauth token' do
+      def set_token(token)
+        env['HTTP_AUTHORIZATION'] = "Bearer #{token}"
+      end
+
+      context 'with a job token' do
+        it_behaves_like 'find user from job token'
+      end
+
+      context 'with oauth token' do
+        let(:application) { Doorkeeper::Application.create!(name: 'MyApp', redirect_uri: 'https://app.com', owner: user) }
+        let(:token) { Doorkeeper::AccessToken.create!(application_id: application.id, resource_owner_id: user.id, scopes: 'api').token }
+
+        before do
+          set_token(token)
+        end
+
+        it { is_expected.to eq user }
+      end
+    end
+
+    context 'with a personal access token' do
+      let(:pat) { create(:personal_access_token, user: user) }
+      let(:token) { pat.token }
+
+      before do
+        env[described_class::PRIVATE_TOKEN_HEADER] = pat.token
+      end
+
+      it { is_expected.to eq user }
+    end
+  end
+
   describe '#find_user_from_warden' do
     context 'with CSRF token' do
       before do
