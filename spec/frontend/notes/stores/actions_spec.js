@@ -281,11 +281,7 @@ describe('Actions Notes Store', () => {
       beforeEach(() => {
         axiosMock
           .onGet(notesDataMock.notesPath)
-          .replyOnce(
-            200,
-            { notes: [], last_fetched_at: lastFetchedAt },
-            { 'poll-interval': '1000' },
-          );
+          .replyOnce(200, { notes: [], last_fetched_at: lastFetchedAt });
       });
 
       it('should commit SET_LAST_FETCHED_AT', () =>
@@ -304,11 +300,7 @@ describe('Actions Notes Store', () => {
       beforeEach(() => {
         axiosMock
           .onGet(notesDataMock.notesPath)
-          .replyOnce(
-            200,
-            { notes: discussionMock.notes, last_fetched_at: lastFetchedAt },
-            { 'poll-interval': '1000' },
-          );
+          .replyOnce(200, { notes: discussionMock.notes, last_fetched_at: lastFetchedAt });
       });
 
       it('should dispatch updateOrCreateNotes, startTaskList and commit SET_LAST_FETCHED_AT', () =>
@@ -328,7 +320,7 @@ describe('Actions Notes Store', () => {
   describe('poll', () => {
     beforeEach(done => {
       axiosMock
-        .onAny()
+        .onGet(notesDataMock.notesPath)
         .reply(200, { notes: [], last_fetched_at: '123456' }, { 'poll-interval': '1000' });
 
       store
