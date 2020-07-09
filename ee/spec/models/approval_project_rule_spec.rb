@@ -209,4 +209,90 @@ RSpec.describe ApprovalProjectRule do
       end
     end
   end
+
+  describe 'callbacks', :request_store do
+    let_it_be(:user) { create(:user, name: 'Batman') }
+    let_it_be(:group) { create(:group, name: 'Justice League') }
+
+    let_it_be(:new_user) { create(:user, name: 'Spiderman') }
+    let_it_be(:new_group) { create(:group, name: 'Avengers') }
+
+    let_it_be(:rule, reload: true) { create(:approval_project_rule, users: [user], groups: [group]) }
+
+    context 'when audit event queue is not active' do
+      before do
+        allow(::Gitlab::Audit::EventQueue).to receive(:active?).and_return(false)
+      end
+
+      describe '#audit_add users after :add' do
+        it 'add message to audit event queue' do
+          rule.update(users: [user, new_user])
+
+          expect(::Gitlab::Audit::EventQueue.current).to eq([])
+        end
+      end
+
+      describe '#audit_add groups after :add' do
+        it 'add message to audit event queue' do
+          rule.update(groups: [group, new_group])
+
+          expect(::Gitlab::Audit::EventQueue.current).to eq([])
+        end
+      end
+
+      describe '#audit_remove users after :remove' do
+        it 'add message to audit event queue' do
+          rule.update(users: [])
+
+          expect(::Gitlab::Audit::EventQueue.current).to eq([])
+        end
+      end
+
+      describe '#audit_remove groups after :remove' do
+        it 'add message to audit event queue' do
+          rule.update(groups: [])
+
+          expect(::Gitlab::Audit::EventQueue.current).to eq([])
+        end
+      end
+    end
+
+    context 'when audit event queue is active' do
+      before do
+        allow(::Gitlab::Audit::EventQueue).to receive(:active?).and_return(true)
+      end
+
+      describe '#audit_add users after :add' do
+        it 'add message to audit event queue' do
+          rule.update(users: [user, new_user])
+
+          expect(::Gitlab::Audit::EventQueue.current).to contain_exactly(/Added User Spiderman to approval group/)
+        end
+      end
+
+      describe '#audit_add groups after :add' do
+        it 'add message to audit event queue' do
+          rule.update(groups: [group, new_group])
+
+          expect(::Gitlab::Audit::EventQueue.current).to contain_exactly(/Added Group Avengers to approval group/)
+        end
+      end
+
+      describe '#audit_remove users after :remove' do
+        it 'add message to audit event queue' do
+          rule.update(users: [])
+
+          expect(::Gitlab::Audit::EventQueue.current).to contain_exactly(/Removed User Batman from approval group/)
+        end
+      end
+
+      describe '#audit_remove groups after :remove' do
+        it 'add message to audit event queue' do
+          rule.update(groups: [])
+
+          expect(::Gitlab::Audit::EventQueue.current).to contain_exactly(/Removed Group Justice League from approval group/)
+        end
+      end
+    end
+  end
 end
