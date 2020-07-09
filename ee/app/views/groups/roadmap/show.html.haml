@@ -13,7 +13,8 @@
 - has_filters_applied = params[:label_name].present? || params[:author_username].present? || params[:search].present?
 
 - if @epics_count != 0
-  = render 'shared/epic/search_bar', type: :epics, show_roadmap_presets: true, hide_extra_sort_options: true
+  - if !Feature.enabled?(:async_filtering, @group)
+    = render 'shared/epic/search_bar', type: :epics, show_roadmap_presets: true, hide_extra_sort_options: true
 
   - if @epics_count > Groups::RoadmapController::EPICS_ROADMAP_LIMIT && show_callout?(epics_limit_feature)
     .warning_message.mb-0.js-epics-limit-callout{ role: 'alert', data: { uid: epics_limit_feature } }
