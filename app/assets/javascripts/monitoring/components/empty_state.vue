@@ -1,13 +1,19 @@
 <script>
-import { GlEmptyState } from '@gitlab/ui';
+import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { dashboardEmptyStates } from '../constants';
 
 export default {
   components: {
+    GlLoadingIcon,
     GlEmptyState,
   },
   props: {
+    selectedState: {
+      type: String,
+      required: true,
+      validator: state => Object.values(dashboardEmptyStates).includes(state),
+    },
     documentationPath: {
       type: String,
       required: true,
@@ -21,10 +27,6 @@ export default {
       type: String,
       required: false,
       default: '',
-    },
-    selectedState: {
-      type: String,
-      required: true,
     },
     emptyGettingStartedSvgPath: {
       type: String,
@@ -65,16 +67,6 @@ export default {
           secondaryButtonText: __('Configure existing installation'),
           secondaryButtonPath: this.settingsPath,
         },
-        [dashboardEmptyStates.LOADING]: {
-          svgUrl: this.emptyLoadingSvgPath,
-          title: __('Waiting for performance data'),
-          description: __(`Creating graphs uses the data from the Prometheus server.
-              If this takes a long time, ensure that data is available.`),
-          buttonText: __('View documentation'),
-          buttonPath: this.documentationPath,
-          secondaryButtonText: '',
-          secondaryButtonPath: '',
-        },
         [dashboardEmptyStates.NO_DATA]: {
           svgUrl: this.emptyNoDataSvgPath,
           title: __('No data found'),
@@ -100,6 +92,9 @@ export default {
     };
   },
   computed: {
+    isLoading() {
+      return this.selectedState === dashboardEmptyStates.LOADING;
+    },
     currentState() {
       return this.states[this.selectedState];
     },
@@ -108,14 +103,19 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state
-    :title="currentState.title"
-    :description="currentState.description"
-    :primary-button-text="currentState.buttonText"
-    :primary-button-link="currentState.buttonPath"
-    :secondary-button-text="currentState.secondaryButtonText"
-    :secondary-button-link="currentState.secondaryButtonPath"
-    :svg-path="currentState.svgUrl"
-    :compact="compact"
-  />
+  <div>
+    <gl-loading-icon v-if="isLoading" size="xl" class="gl-my-9" />
+
+    <gl-empty-state
+      v-if="currentState"
+      :title="currentState.title"
+      :description="currentState.description"
+      :primary-button-text="currentState.buttonText"
+      :primary-button-link="currentState.buttonPath"
+      :secondary-button-text="currentState.secondaryButtonText"
+      :secondary-button-link="currentState.secondaryButtonPath"
+      :svg-path="currentState.svgUrl"
+      :compact="compact"
+    />
+  </div>
 </template>

@@ -161,7 +161,6 @@ export default {
     ...mapState('monitoringDashboard', [
       'dashboard',
       'emptyState',
-      'showEmptyState',
       'expandedPanel',
       'variables',
       'links',
@@ -169,6 +168,9 @@ export default {
       'hasDashboardValidationWarnings',
     ]),
     ...mapGetters('monitoringDashboard', ['selectedDashboard', 'getMetricStates']),
+    shouldShowEmptyState() {
+      return Boolean(this.emptyState);
+    },
     shouldShowVariablesSection() {
       return Boolean(this.variables.length);
     },
@@ -412,9 +414,9 @@ export default {
       @dateTimePickerInvalid="onDateTimePickerInvalid"
       @setRearrangingPanels="onSetRearrangingPanels"
     />
-    <variables-section v-if="shouldShowVariablesSection && !showEmptyState" />
-    <links-section v-if="shouldShowLinksSection && !showEmptyState" />
-    <div v-if="!showEmptyState">
+    <variables-section v-if="shouldShowVariablesSection && !shouldShowEmptyState" />
+    <links-section v-if="shouldShowLinksSection && !shouldShowEmptyState" />
+    <div v-if="!shouldShowEmptyState">
       <dashboard-panel
         v-show="expandedPanel.panel"
         ref="expandedPanel"

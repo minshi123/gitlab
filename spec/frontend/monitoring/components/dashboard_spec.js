@@ -142,7 +142,7 @@ describe('Dashboard', () => {
       setupStoreWithData(store);
 
       return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.vm.showEmptyState).toEqual(false);
+        expect(wrapper.vm.emptyState).toEqual(null);
         expect(wrapper.findAll('.prometheus-panel')).toHaveLength(0);
       });
     });
