@@ -2,6 +2,8 @@ import $ from 'jquery';
 import Vue from 'vue';
 import { mapActions } from 'vuex';
 
+import { GlLoadingIcon } from '@gitlab/ui';
+
 import 'ee_else_ce/boards/models/issue';
 import 'ee_else_ce/boards/models/list';
 import BoardContent from '~/boards/components/board_content.vue';
@@ -85,6 +87,7 @@ export default () => {
       BoardAddIssuesModal,
       BoardSettingsSidebar: () =>
         import('ee_component/boards/components/board_settings_sidebar.vue'),
+      GlLoadingIcon,
     },
     store,
     apolloProvider,

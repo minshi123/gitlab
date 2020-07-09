@@ -31,8 +31,7 @@
       ":board-id" => "boardId" }
   - else
     .boards-list.w-100.py-3.px-2.text-nowrap{ data: { qa_selector: "boards_list" } }
-      .boards-app-loading.w-100.text-center{ "v-if" => "loading" }
-        = icon("spinner spin 2x")
+      %gl-loading-icon.gl-mb-4{ "v-if" => "loading", "size" => "md" }
       %board{ "v-cloak" => "true",
         "v-for" => "list in state.lists",
         "ref" => "board",
