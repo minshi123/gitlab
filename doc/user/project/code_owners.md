@@ -141,7 +141,7 @@ README.md @user1 @user 2
 internal/README.md @user2
 ```
 
-Multiple sections can be used, even with matching file or directory patterns. Reusuing the same section name will group the results together under the same section. For example, consider the following entries in a `CODEOWNERS` file:
+Multiple sections can be used, even with matching file or directory patterns. Reusuing the same section name will group the results together under the same section, with the most specific rule or last matching pattern being used. For example, consider the following entries in a `CODEOWNERS` file:
 
 ```plaintext
 [Documentation]
