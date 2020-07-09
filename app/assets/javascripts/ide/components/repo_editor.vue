@@ -167,7 +167,7 @@ export default {
   },
   mounted() {
     if (!this.editor) {
-      this.editor = Editor.create(this.editorOptions);
+      this.editor = Editor.create(this.editorOptions, this.$store);
     }
     this.initEditor();
 
