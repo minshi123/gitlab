@@ -162,7 +162,7 @@ README.md  @gl-docs
 
 This will result in 3 entries under the "Documentation" section header, and 2 entries under "Database." Case is not considered when combining sections, so in this example, entries defined under the sections "Documentation" and "DOCUMENTATION" would be combined into one, using the case of the first instance of the section encountered in the file.
 
-When assigned to a section, each code owner rule displayed in merge requests widgets is sorted under a section label. In the screenshot below, we can see the rules for the "Groups" and "Documentation."
+When assigned to a section, each code owner rule displayed in merge requests widget is sorted under a "section" label. In the screenshot below, we can see the rules for the "Groups" and "Documentation. sections"
 
 ![MR widget - Sectional Code Owners](img/sectional_code_owners_v13.2.png)
 
