@@ -4,7 +4,7 @@ module Vulnerabilities
   class Scanner < ApplicationRecord
     self.table_name = "vulnerability_scanners"
 
-    has_many :occurrences, class_name: 'Vulnerabilities::Occurrence'
+    has_many :findings, class_name: 'Vulnerabilities::Finding', foreign_key: 'occurrence_id', inverse_of: :scanner
 
     belongs_to :project
 

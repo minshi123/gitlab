@@ -61,7 +61,7 @@ module EE
       # https://gitlab.com/gitlab-org/gitlab/issues/10252#terminology
       has_many :vulnerabilities
       has_many :vulnerability_feedback, class_name: 'Vulnerabilities::Feedback'
-      has_many :vulnerability_findings, class_name: 'Vulnerabilities::Occurrence' do
+      has_many :vulnerability_findings, class_name: 'Vulnerabilities::Finding', inverse_of: :project do
         def lock_for_confirmation!(id)
           where(vulnerability_id: nil).lock.find(id)
         end

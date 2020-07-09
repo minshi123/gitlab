@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Vulnerabilities
-  class Occurrence < ApplicationRecord
+  class Finding < ApplicationRecord
     include ShaAttribute
     include ::Gitlab::Utils::StrongMemoize
     include Presentable
@@ -15,14 +15,14 @@ module Vulnerabilities
     sha_attribute :project_fingerprint
     sha_attribute :location_fingerprint
 
-    belongs_to :project
+    belongs_to :project, inverse_of: :vulnerability_findings
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner'
-    belongs_to :primary_identifier, class_name: 'Vulnerabilities::Identifier', inverse_of: :primary_occurrences
-    belongs_to :vulnerability, inverse_of: :findings
+    belongs_to :primary_identifier, class_name: 'Vulnerabilities::Identifier', inverse_of: :primary_findings
+    belongs_to :vulnerability, class_name: 'Vulnerability', foreign_key: 'vulnerability_id', inverse_of: :findings
 
-    has_many :finding_identifiers, class_name: 'Vulnerabilities::FindingIdentifier'
+    has_many :finding_identifiers, class_name: 'Vulnerabilities::FindingIdentifier', foreign_key: 'occurrence_id'
     has_many :identifiers, through: :finding_identifiers, class_name: 'Vulnerabilities::Identifier'
-    has_many :finding_pipelines, class_name: 'Vulnerabilities::FindingPipeline'
+    has_many :finding_pipelines, class_name: 'Vulnerabilities::FindingPipeline', foreign_key: 'occurrence_id'
     has_many :pipelines, through: :finding_pipelines, class_name: 'Ci::Pipeline'
 
     attr_writer :sha
