@@ -66,6 +66,11 @@ export default {
       type: String,
       required: true,
     },
+    mode: {
+      type: String,
+      required: false,
+      default: '',
+    },
     type: {
       type: String,
       required: true,
@@ -120,6 +125,9 @@ export default {
     hasLockLabel() {
       return this.commit && this.commit.lockLabel;
     },
+    numericMode() {
+      return this.mode ? Number(this.mode) : -1;
+    },
   },
 };
 </script>
@@ -140,6 +148,7 @@ export default {
       >
         <file-icon
           :file-name="fullPath"
+          :file-mode="numericMode"
           :folder="isFolder"
           :submodule="isSubmodule"
           :loading="path === loadingPath"
