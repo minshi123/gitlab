@@ -1,4 +1,5 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+#import "ee/security_dashboard/graphql/vulnerability_scanner.fragment.graphql"
 #import "./vulnerability.fragment.graphql"
 
 query project(
@@ -7,17 +8,19 @@ query project(
   $first: Int
   $severity: [VulnerabilitySeverity!]
   $reportType: [VulnerabilityReportType!]
+  $scanner: [String!]
   $state: [VulnerabilityState!]
 ) {
   project(fullPath: $fullPath) {
     vulnerabilities(
-      after:$after
-      first:$first
+      after: $after
+      first: $first
       severity: $severity
       reportType: $reportType
+      scanner: $scanner
       state: $state
-    ){
-      nodes{
+    ) {
+      nodes {
         ...Vulnerability
       }
       pageInfo {
