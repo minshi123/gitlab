@@ -821,6 +821,7 @@ Newer deployments can also [cancel older ones](./deployment_safety.md#skip-outda
 Sometimes you may want to specify environment keyword to [protect builds from anauthorised access](./protected_environments.md) or to get access to [scoped variables](#scoping-environments-with-specs).
 
 In these cases you can use `action: prepare` keyword:
+
 ```yaml
 build:
   stage: build
