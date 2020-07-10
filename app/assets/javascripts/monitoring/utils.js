@@ -113,6 +113,8 @@ export const generateLinkToChartOptions = chartLink => {
   return { category, action, label: 'Chart link', property: chartLink };
 };
 
+// CSV Download utils
+
 /**
  * Tracks snowplow event when user downloads CSV of cluster metric
  * @param {String}  chart title that will be sent as a property for the event
@@ -130,7 +132,72 @@ export const downloadCSVOptions = title => {
 
   return { category, action, label: 'Chart title', property: title };
 };
-/* eslint-enable @gitlab/require-i18n-strings */
+
+const csvMetricHeader = (axisLabel, metricLabel, seriesMetric = {}) => {
+  const seriesLabels = Object.entries(seriesMetric);
+  if (seriesLabels.length === 0) {
+    return `"${axisLabel} > ${metricLabel}"`;
+  }
+  const seriesDetails = seriesLabels.map(([label, val]) => `${label}:'${val}'`).join(', ');
+  return `"${axisLabel} > ${metricLabel} {${seriesDetails}}"`;
+};
+
+const csvMetricsRows = (axisLabel, metrics) => {
+  const data = {};
+  const fieldNames = ['timestamp'];
+
+  metrics.forEach(panelMetric => {
+    const { label, result } = panelMetric;
+    if (!result) {
+      return;
+    }
+    result.forEach(res => {
+      const { metric, values = [] } = res;
+      fieldNames.push(csvMetricHeader(axisLabel, label, metric));
+
+      values.forEach(([timestamp, val]) => {
+        if (!data[timestamp]) {
+          data[timestamp] = [timestamp];
+        }
+        data[timestamp].push(val);
+      });
+    });
+  });
+
+  const rows = Object.keys(data)
+    .sort()
+    .map(timestamp => {
+      return data[timestamp];
+    });
+
+  return { fieldNames, rows };
+};
+
+/**
+ * Returns a panel and its data in a string in CSV format
+ *
+ * @param {object} graphData
+ */
+export const graphDataToCsv = graphData => {
+  if (!graphData) {
+    return '';
+  }
+
+  const delimiter = ',';
+  const br = '\r\n';
+
+  const { metrics = [], y_label: axisLabel } = graphData;
+  const { fieldNames, rows } = csvMetricsRows(axisLabel, metrics);
+
+  if (rows.length === 0) {
+    return '';
+  }
+
+  const header = fieldNames.join(delimiter) + br;
+  const lines = rows.map(row => row.join(delimiter));
+
+  return header + lines.join(br) + br;
+};
 
 /**
  * Generate options for snowplow to track adding a new metric via the dashboard
