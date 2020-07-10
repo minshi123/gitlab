@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlLoadingIcon, GlIcon } from '@gitlab/ui';
 import FileIcon from '~/vue_shared/components/file_icon.vue';
+import { FILE_SYMLINK_MODE } from '~/vue_shared/constants';
 
 describe('File Icon component', () => {
   let wrapper;
@@ -69,5 +70,15 @@ describe('File Icon component', () => {
 
     expect(findIcon().classes()).toContain(`s${size}`);
     expect(findIcon().classes()).toContain('extraclasses');
+  });
+
+  it('should render a symlink icon', () => {
+    createComponent({
+      fileName: 'anything',
+      fileMode: FILE_SYMLINK_MODE,
+    });
+
+    expect(findIcon().exists()).toBe(false);
+    expect(wrapper.find(GlIcon).attributes('name')).toBe('symlink');
   });
 });
