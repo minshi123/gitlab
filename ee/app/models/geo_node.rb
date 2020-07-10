@@ -293,6 +293,19 @@ class GeoNode < ApplicationRecord
     end
   end
 
+  def projects_with_designs
+    projects_table  = Project.arel_table
+    designs_table   = DesignManagement::Design.arel_table
+    design_subquery = designs_table.project(designs_table[:project_id]).distinct.as('sub_designs_table')
+
+    join_statement =
+      projects_table
+        .join(design_subquery, Arel::Nodes::InnerJoin)
+        .on(projects_table[:id].eq(design_subquery[:project_id]))
+
+    projects.joins(join_statement.join_sources)
+  end
+
   def projects_include?(project_id)
     return true unless selective_sync?
 
