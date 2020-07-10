@@ -15,7 +15,15 @@ import { __ } from '../locale';
 export default function setupVueRepositoryList() {
   const el = document.getElementById('js-tree-list');
   const { dataset } = el;
-  const { projectPath, projectShortPath, ref, escapedRef, fullName } = dataset;
+  const {
+    canPushCode,
+    projectPath,
+    projectShortPath,
+    forkPath,
+    ref,
+    escapedRef,
+    fullName,
+  } = dataset;
   const router = createRouter(projectPath, escapedRef);
 
   apolloProvider.clients.defaultClient.cache.writeData({
@@ -112,6 +120,13 @@ export default function setupVueRepositoryList() {
   const webIdeLinkEl = document.getElementById('js-tree-web-ide-link');
 
   if (webIdeLinkEl) {
+    let path = projectPath;
+    let text = __('Web IDE');
+    if (!canPushCode && forkPath) {
+      path = forkPath;
+      text = __('Edit fork in Web IDE');
+    }
+
     // eslint-disable-next-line no-new
     new Vue({
       el: webIdeLinkEl,
@@ -119,8 +134,8 @@ export default function setupVueRepositoryList() {
       render(h) {
         return h(TreeActionLink, {
           props: {
-            path: webIDEUrl(`/${projectPath}/edit/${ref}/-/${this.$route.params.path || ''}`),
-            text: __('Web IDE'),
+            path: webIDEUrl(`/${path}/edit/${ref}/-/${this.$route.params.path || ''}`),
+            text,
             cssClass: 'qa-web-ide-button',
           },
         });
