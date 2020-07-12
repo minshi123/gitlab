@@ -23,6 +23,10 @@ describe('getStateKey', () => {
 
     expect(bound()).toEqual(null);
 
+    data.work_in_progress = true;
+
+    expect(bound()).toEqual('workInProgress');
+
     context.canBeMerged = true;
 
     expect(bound()).toEqual('readyToMerge');
@@ -54,9 +58,9 @@ describe('getStateKey', () => {
 
     expect(bound()).toEqual('pipelineFailed');
 
-    data.work_in_progress = true;
+    context.shouldBeRebased = true;
 
-    expect(bound()).toEqual('workInProgress');
+    expect(bound()).toEqual('rebase');
 
     data.has_conflicts = true;
 
