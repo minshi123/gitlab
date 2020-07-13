@@ -101,9 +101,9 @@ files where a review by Code Owners is required.
 Files can be specified using the same kind of patterns you would use
 in the `.gitignore` file followed by one or more of:
 
-- a user's `@username`
-- an email address
-- the `@name` of one or more groups that should be owners of the file
+- A user's `@username`.
+- A user's email address.
+- The `@name` of one or more groups that should be owners of the file.
 
 Groups must be added as [members of the project](members/index.md),
 or they will be ignored.
