@@ -89,6 +89,10 @@ describe('Security Dashboard Table Row', () => {
       ).toContain(vulnerability.report_type.toLowerCase());
     });
 
+    it('should render the scanner vendor if the vendor does exist', () => {
+      expect(findContent(3).text()).toContain(vulnerability.scanner.vendor);
+    });
+
     describe('the project name', () => {
       it('should render the name', () => {
         expect(findContent(1).text()).toContain(vulnerability.name);
@@ -121,6 +125,20 @@ describe('Security Dashboard Table Row', () => {
 
       it('should contain project name as the namespace', () => {
         expect(findContent(1).text()).toContain(vulnerability.project.full_name);
+      });
+    });
+
+    describe('with no scanner vendor', () => {
+      beforeEach(() => {
+        // eslint-disable-next-line prefer-destructuring
+        vulnerability = mockDataVulnerabilities[8];
+
+        createComponent(shallowMount, { props: { vulnerability } });
+      });
+
+      it('should render the scanner name if the vendor does not exist', () => {
+        console.log(vulnerability);
+        expect(findContent(3).text()).toContain(vulnerability.scanner.name);
       });
     });
 

@@ -70,6 +70,10 @@ export default {
     useConvertReportType() {
       return convertReportType(this.vulnerability.report_type);
     },
+    vulnerabilityVendor() {
+      const { scanner } = this.vulnerability;
+      return scanner?.vendor || scanner?.name;
+    },
   },
   methods: {
     ...mapActions('vulnerabilities', ['openModal', 'selectVulnerability', 'deselectVulnerability']),
@@ -152,8 +156,13 @@ export default {
 
     <div class="table-section section-15">
       <div class="table-mobile-header" role="rowheader">{{ s__('Reports|Scanner') }}</div>
-      <div class="table-mobile-content text-capitalize">
-        {{ useConvertReportType }}
+      <div class="table-mobile-content">
+        <div class="text-capitalize">
+          {{ useConvertReportType }}
+        </div>
+        <div class="gl-text-gray-500">
+          {{ vulnerabilityVendor }}
+        </div>
       </div>
     </div>
 

@@ -8,6 +8,7 @@ export default [
     scanner: {
       external_id: 'find_sec_bugs',
       name: 'Find Security Bugs',
+      vendor: 'GitLab',
     },
     identifiers: [
       {
@@ -75,6 +76,7 @@ export default [
     scanner: {
       external_id: 'find_sec_bugs',
       name: 'Find Security Bugs',
+      vendor: 'GitLab',
     },
     identifiers: [
       {
@@ -128,6 +130,7 @@ export default [
     scanner: {
       external_id: 'find_sec_bugs',
       name: 'Find Security Bugs',
+      vendor: 'GitLab',
     },
     identifiers: [
       {
@@ -205,6 +208,7 @@ export default [
     scanner: {
       external_id: 'find_sec_bugs',
       name: 'Find Security Bugs',
+      vendor: 'GitLab',
     },
     identifiers: [
       {
@@ -283,6 +287,7 @@ export default [
     scanner: {
       external_id: 'find_sec_bugs',
       name: 'Find Security Bugs',
+      vendor: 'GitLab',
     },
     identifiers: [
       {
@@ -384,6 +389,7 @@ export default [
     scanner: {
       external_id: 'find_sec_bugs',
       name: 'Find Security Bugs',
+      vendor: 'GitLab',
     },
     identifiers: [
       {
@@ -437,6 +443,7 @@ export default [
     scanner: {
       external_id: 'find_sec_bugs',
       name: 'Find Security Bugs',
+      vendor: 'GitLab',
     },
     identifiers: [
       {
@@ -514,6 +521,7 @@ export default [
     scanner: {
       external_id: 'clair',
       name: 'Clair',
+      vendor: 'GitLab',
     },
     identifiers: [
       {
@@ -560,4 +568,59 @@ export default [
     state: 'opened',
     blob_path: '',
   },
+  {
+    id: 9,
+    report_type: 'container_scanning',
+    name: 'Custom Scanner in glibc',
+    severity: 'high',
+    confidence: 'unknown',
+    scanner: {
+      external_id: 'custom_scanner',
+      name: 'A custom scanner',
+    },
+    identifiers: [
+      {
+        external_type: 'new_scanner',
+        external_id: 'Custom Scanner',
+        name: 'Custom Scanner',
+        url: 'https://security-tracker.debian.org/tracker/Custom_Scanner',
+      },
+    ],
+    project_fingerprint: 'af08ab5aa899af9e74318ebc23684c9aa728ab7c',
+    create_vulnerability_feedback_issue_path: '/gitlab-org/sec-reports/vulnerability_feedback',
+    create_vulnerability_feedback_merge_request_path:
+      '/gitlab-org/sec-reports/vulnerability_feedback',
+    create_vulnerability_feedback_dismissal_path: '/gitlab-org/sec-reports/vulnerability_feedback',
+    project: {
+      id: 19,
+      name: 'sec-reports',
+      full_path: '/gitlab-org/sec-reports',
+      full_name: 'Gitlab Org / sec-reports',
+    },
+    dismissal_feedback: null,
+    issue_feedback: null,
+    merge_request_feedback: null,
+    description:
+      'In glibc 2.26 and earlier there is confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow and potential code execution.',
+    links: [
+      {
+        url: 'https://security-tracker.debian.org/tracker/Custom_Scanner',
+      },
+    ],
+    location: {
+      image:
+        'registry.gitlab.com/groulot/container-scanning-test/master:5f21de6956aee99ddb68ae49498662d9872f50ff',
+      operating_system: 'debian:9',
+      dependency: {
+        package: {
+          name: 'glibc',
+        },
+        version: '2.24-11+deb9u3',
+      },
+    },
+    remediations: null,
+    solution: null,
+    state: 'opened',
+    blob_path: '',
+  }
 ];
