@@ -44,7 +44,6 @@ module QA
 
       templates.each do |template|
         it "user adds #{template[:file_name]} via file template #{template[:name]}" do
-          unique_file_name = "#{SecureRandom.hex(8)}/#{template[:file_name]}"
           content = fetch_template_from_api(template[:api_path], template[:api_key])
 
           Flow::Login.sign_in
@@ -57,7 +56,7 @@ module QA
 
             expect(form).to have_normalized_ws_text(content[0..100])
 
-            form.add_name unique_file_name
+            form.add_name("#{SecureRandom.hex(8)}/#{template[:file_name]}")
             form.commit_changes
 
             aggregate_failures "indications of file created" do
