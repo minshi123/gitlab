@@ -16,6 +16,7 @@ Vue.use(Translate);
 Vue.use(VueApollo);
 
 function getSidebarOptions() {
+  // console.log(JSON.parse(document.querySelector('.js-sidebar-options').innerHTML));
   return JSON.parse(document.querySelector('.js-sidebar-options').innerHTML);
 }
 
@@ -93,7 +94,6 @@ function mountLockComponent(mediator) {
     render: createElement =>
       createElement(LockIssueSidebar, {
         props: {
-          isLocked: initialData.is_locked,
           isEditable: initialData.is_editable,
           mediator,
           issuableType: gl.utils.isInIssuePage() ? 'issue' : 'merge_request',

@@ -36,6 +36,10 @@ export default {
   },
 
   computed: {
+    /* 
+      OPTION A
+      Uses the vuex store attached to the noteable app.
+    */
     ...mapState({
       isLocked: ({ noteableData }) => {
         return noteableData.discussion_locked;
@@ -75,6 +79,7 @@ export default {
           discussion_locked: locked,
         })
         .then(({ data }) => {
+          /* Required for Option A */
           this.setIssuableLock(data.discussion_locked);
         })
         .catch(() =>
