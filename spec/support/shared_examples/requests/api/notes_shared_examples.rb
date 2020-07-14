@@ -128,10 +128,11 @@ RSpec.shared_examples 'noteable API' do |parent_type, noteable_type, id_name|
 
   describe "POST /#{parent_type}/:id/#{noteable_type}/:noteable_id/notes" do
     it "creates a new note" do
-      post api("/#{parent_type}/#{parent.id}/#{noteable_type}/#{noteable[id_name]}/notes", user), params: { body: 'hi!' }
+      post api("/#{parent_type}/#{parent.id}/#{noteable_type}/#{noteable[id_name]}/notes", user), params: { body: 'hi!', confidential: true }
 
       expect(response).to have_gitlab_http_status(:created)
       expect(json_response['body']).to eq('hi!')
+      expect(json_response['confidential']).to be_truthy
       expect(json_response['author']['username']).to eq(user.username)
     end
 
