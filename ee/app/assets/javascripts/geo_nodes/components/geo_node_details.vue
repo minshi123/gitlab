@@ -82,7 +82,7 @@ export default {
       :node-details="nodeDetails"
       :node-type-primary="node.primary"
     />
-    <div v-if="errorMessage">
+    <div v-if="errorMessage" data-testid="errorSection">
       <p class="p-3 mb-0 bg-danger-100 text-danger-500">
         {{ errorMessage }}
         <gl-link :href="geoTroubleshootingHelpPath">{{

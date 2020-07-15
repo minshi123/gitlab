@@ -33,7 +33,7 @@ describe('GeoNodeDetailsComponent', () => {
     wrapper.destroy();
   });
 
-  const findErrorSection = () => wrapper.find('.bg-danger-100');
+  const findErrorSection = () => wrapper.find('[data-testid="errorSection"]');
   const findTroubleshootingLink = () => findErrorSection().find(GlLink);
 
   describe('template', () => {
@@ -74,7 +74,7 @@ describe('GeoNodeDetailsComponent', () => {
         });
 
         it('does not render error message section', () => {
-          expect(findErrorSection().exists()).toBeFalsy();
+          expect(findErrorSection().exists()).toBe(false);
         });
       });
     });
@@ -85,7 +85,7 @@ describe('GeoNodeDetailsComponent', () => {
       });
 
       it('does not render error message section', () => {
-        expect(findErrorSection().exists()).toBeFalsy();
+        expect(findErrorSection().exists()).toBe(false);
       });
     });
 
@@ -105,8 +105,8 @@ describe('GeoNodeDetailsComponent', () => {
           });
         });
 
-        it('does not renders error message section', () => {
-          expect(findErrorSection().exists()).toBeFalsy();
+        it('does not render error message section', () => {
+          expect(findErrorSection().exists()).toBe(false);
         });
       });
 
