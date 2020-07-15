@@ -51,7 +51,7 @@ export default {
     errorMessage() {
       if (!this.nodeDetails.healthy) {
         return this.nodeDetails.health;
-      } else if (this.hasVersionMismatch) {
+      } else if (!this.node.primary && this.hasVersionMismatch) {
         return s__('GeoNodes|GitLab version does not match the primary node version');
       }
 
