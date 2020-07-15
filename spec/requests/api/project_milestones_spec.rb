@@ -3,10 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe API::ProjectMilestones do
-  let(:user) { create(:user) }
-  let!(:project) { create(:project, namespace: user.namespace ) }
-  let!(:closed_milestone) { create(:closed_milestone, project: project, title: 'version1', description: 'closed milestone') }
-  let!(:milestone) { create(:milestone, project: project, title: 'version2', description: 'open milestone') }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project, namespace: user.namespace ) }
+  let_it_be(:closed_milestone) { create(:closed_milestone, project: project, title: 'version1', description: 'closed milestone') }
+  let_it_be(:milestone) { create(:milestone, project: project, title: 'version2', description: 'open milestone') }
 
   before do
     project.add_developer(user)
@@ -18,45 +18,50 @@ RSpec.describe API::ProjectMilestones do
 
   describe 'GET /projects/:id/milestones' do
     context 'when include_parent_milestones is true' do
-      let(:group) { create(:group, :public) }
-      let(:project) { create(:project, group: group) }
-      let!(:group_milestone) { create(:milestone, group: group) }
+      let_it_be(:group) { create(:group, :public) }
+      let_it_be(:child_group) { create(:group, :public, parent: group) }
+      let_it_be(:child_project) { create(:project, group: child_group) }
+      let_it_be(:project_milestone) { create(:milestone, project: child_project) }
+      let_it_be(:group_milestone) { create(:milestone, group: group) }
+      let_it_be(:child_group_milestone) { create(:milestone, group: child_group) }
 
-      context 'when user has access to group parent' do
-        let(:nested_group) { create(:group, :public, parent: group) }
-        let!(:nested_group_milestone) { create(:milestone, group: nested_group) }
+      before do
+        child_project.add_developer(user)
+      end
 
-        it 'result includes parent group and subgroup milestones' do
-          milestones = [nested_group_milestone, group_milestone, milestone, closed_milestone]
+      it 'includes parent groups milestones' do
+        milestones = [child_group_milestone, group_milestone, project_milestone]
 
-          get api("/projects/#{project.id}/milestones", user),
-              params: { include_parent_milestones: true }
+        get api("/projects/#{child_project.id}/milestones", user),
+            params: { include_parent_milestones: true }
 
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response.size).to eq(4)
-
-          expect(json_response.map { |entry| entry["id"] }).to eq(milestones.map(&:id))
-        end
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response.size).to eq(3)
+        expect(json_response.map { |entry| entry["id"] }).to eq(milestones.map(&:id))
       end
 
       context 'when user has no access to group parent' do
-        it 'does not show parent group milestones' do
+        before do
           allow(Ability).to receive(:allowed?).and_call_original
-          allow(Ability).to receive(:allowed?).with(user, :read_group, group).and_return(false)
+          allow(Ability).to receive(:allowed?).with(user, :read_group, child_group).and_return(false)
+        end
 
-          get api("/projects/#{project.id}/milestones", user),
+        it 'does not show parent group milestones' do
+          get api("/projects/#{child_project.id}/milestones", user),
               params: { include_parent_milestones: true }
 
           expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response.size).to eq(2)
+          expect(json_response.size).to eq(1)
+          expect(json_response.first['title']).to eq project_milestone.title
+          expect(json_response.first['id']).to eq project_milestone.id
         end
       end
 
       context 'when filtering by iids' do
-        it 'does not filer by iids' do
-          milestones = [group_milestone, milestone, closed_milestone]
+        it 'does not filter by iids' do
+          milestones = [child_group_milestone, group_milestone, project_milestone]
 
-          get api("/projects/#{project.id}/milestones", user),
+          get api("/projects/#{child_project.id}/milestones", user),
               params: { include_parent_milestones: true, iids: [group_milestone.iid] }
 
           expect(response).to have_gitlab_http_status(:ok)
