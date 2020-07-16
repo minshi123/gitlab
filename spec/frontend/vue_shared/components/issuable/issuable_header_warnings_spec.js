@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
-import IssuableHeaderWarnings from '~/issue_show/components/issuable_header_warnings.vue';
+import IssuableHeaderWarnings from '~/vue_shared/components/issuable/issuable_header_warnings.vue';
 import createStore from '~/notes/stores';
 
 const localVue = createLocalVue();
@@ -16,7 +16,15 @@ describe('IssuableHeaderWarnings', () => {
   const lockedIconName = () => findLocked().attributes('name');
 
   const createComponent = () => {
-    wrapper = shallowMount(IssuableHeaderWarnings, { store, localVue });
+    wrapper = shallowMount(IssuableHeaderWarnings, {
+      store,
+      localVue,
+      computed: {
+        isIssuePage() {
+          return true;
+        },
+      },
+    });
   };
 
   beforeEach(() => {

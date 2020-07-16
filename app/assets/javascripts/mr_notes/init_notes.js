@@ -21,6 +21,13 @@ export default () => {
       noteableData.noteableType = notesDataset.noteableType;
       noteableData.targetType = notesDataset.targetType;
 
+      // Unlike in notes/init_notes.js
+      // `js-vue-mr-discussion` does not include `discussion_locked` field
+      // So, we use `js-lock-issue-data` which was originally intended for the sidebar initialization.
+      const dataNode = document.getElementById('js-lock-issue-data');
+      const initialData = JSON.parse(dataNode.innerHTML);
+      noteableData.discussion_locked = initialData.is_locked;
+
       return {
         noteableData,
         currentUserData: JSON.parse(notesDataset.currentUserData),

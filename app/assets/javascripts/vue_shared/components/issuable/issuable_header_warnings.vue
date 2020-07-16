@@ -1,16 +1,27 @@
 <script>
 import { mapState } from 'vuex';
 import Icon from '~/vue_shared/components/icon.vue';
+import { isInIssuePage } from '~/lib/utils/common_utils';
 
 export default {
   components: {
     Icon,
   },
   computed: {
+    isIssuePage() {
+      return isInIssuePage();
+    },
     ...mapState({
-      confidential: ({ noteableData }) => noteableData.confidential,
-      dicussionLocked: ({ noteableData }) => noteableData.discussion_locked,
+      noteableData(data) {
+        return this.isIssuePage ? data.noteableData : data.notes.noteableData;
+      },
     }),
+    confidential() {
+      return this.noteableData.confidential;
+    },
+    dicussionLocked() {
+      return this.noteableData.discussion_locked;
+    },
   },
 };
 </script>
