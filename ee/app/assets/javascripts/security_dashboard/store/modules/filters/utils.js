@@ -22,24 +22,31 @@ export const hasValidSelection = ({ selection, options }) =>
  * @param {String} payload.filterId the ID of the filter that the selected option belongs to
  * @returns {Array} the mutated filters array
  */
-export const setFilter = (filters, { optionId, filterId }) =>
-  filters.map(filter => {
-    if (filter.id === filterId) {
+export const setFilter = (filters, { optionIds, filterIds }) => {
+  // {filterIds: [ "reportType", "scanner" ], optionId: "CONTAINER_SCANNING"}
+  console.log('setFilter', filters, optionIds, filterIds);
+  return filters.map(filter => {
+    if (filterIds.filter(value => filter.ids.includes(value)).length) {
       const { selection } = filter;
 
-      if (optionId === ALL) {
-        selection.clear();
-      } else if (selection.has(optionId)) {
-        selection.delete(optionId);
-      } else {
-        selection.delete(ALL);
-        selection.add(optionId);
+      /* eslint-disable-next-line guard-for-in, no-restricted-syntax */
+      for (const optionId of optionIds) {
+        if (optionId === ALL) {
+          selection.clear();
+        } else if (selection.has(optionId)) {
+          selection.delete(optionId);
+        } else {
+          selection.delete(ALL);
+          selection.add(optionId);
+        }
+
+        if (selection.size === 0) {
+          selection.add(ALL);
+          break;
+        }
       }
 
-      if (selection.size === 0) {
-        selection.add(ALL);
-      }
-
+      console.log('setFilter: in filter', filter, selection);
       return {
         ...filter,
         selection,
@@ -47,3 +54,4 @@ export const setFilter = (filters, { optionId, filterId }) =>
     }
     return filter;
   });
+};

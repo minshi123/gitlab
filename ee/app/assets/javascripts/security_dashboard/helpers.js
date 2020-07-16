@@ -1,9 +1,52 @@
 import isPlainObject from 'lodash/isPlainObject';
 import { s__ } from '~/locale';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
-import { ALL, BASE_FILTERS } from 'ee/security_dashboard/store/modules/filters/constants';
-import { REPORT_TYPES, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
+import { ALL, BASE_FILTERS } from './store/modules/filters/constants';
+import { REPORT_TYPES, SEVERITY_LEVELS } from './store/constants';
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
+
+const parseReportTypes = (obj, specificFilters) => {
+  // console.log('obj', obj);
+  // console.log('specificFilters', specificFilters);
+  const filters = [];
+  Object.keys(specificFilters).forEach(vendor => {
+    if (vendor !== 'GitLab') {
+      const customFilters = Object.values(specificFilters[vendor]).map(filter => {
+        // console.log('filter: ', filter);
+        const { reportType: id, externalIds } = filter;
+        const name = obj[id.toLowerCase()];
+        return {
+          id,
+          name,
+          displayName: `${name} - ${vendor}`,
+          externalIds,
+        };
+      });
+      // console.log('customFilters: ', customFilters);
+      filters.push(...customFilters);
+    }
+  });
+
+  const gitlabFilters = Object.entries(obj).map(([id, name]) => {
+    const filter = {
+      displayName: `${name} - GitLab`,
+      externalIds: [],
+      id: id.toUpperCase(),
+      name,
+    };
+
+    if (specificFilters['GitLab'] && specificFilters['GitLab'][id.toUpperCase()]) {
+      filter.externalIds = specificFilters['GitLab'][id.toUpperCase()].externalIds;
+    }
+
+    return filter;
+  });
+  // console.log('gitlabFilters: ', gitlabFilters);
+  filters.push(...gitlabFilters);
+
+  console.log('filters: ', filters);
+  return filters;
+};
 
 const parseOptions = obj =>
   Object.entries(obj).map(([id, name]) => ({ id: id.toUpperCase(), name }));
@@ -11,11 +54,14 @@ const parseOptions = obj =>
 export const mapProjects = projects =>
   projects.map(p => ({ id: p.id.split('/').pop(), name: p.name }));
 
-export const initFirstClassVulnerabilityFilters = projects => {
+export const initFirstClassVulnerabilityFilters = (projects, specificFilters) => {
+  // console.log('a p:', projects);
+  // console.log('a :', specificFilters);
   const filters = [
     {
       name: s__('SecurityReports|Status'),
-      id: 'state',
+      // id: 'state',
+      ids: ['state'],
       options: [
         { id: ALL, name: s__('VulnerabilityStatusTypes|All') },
         ...parseOptions(VULNERABILITY_STATES),
@@ -24,14 +70,16 @@ export const initFirstClassVulnerabilityFilters = projects => {
     },
     {
       name: s__('SecurityReports|Severity'),
-      id: 'severity',
+      // id: 'severity',
+      ids: ['severity'],
       options: [BASE_FILTERS.severity, ...parseOptions(SEVERITY_LEVELS)],
       selection: new Set([ALL]),
     },
     {
       name: s__('Reports|Scanner'),
-      id: 'reportType',
-      options: [BASE_FILTERS.report_type, ...parseOptions(REPORT_TYPES)],
+      // id: 'reportType',
+      ids: ['reportType', 'scanner'],
+      options: [BASE_FILTERS.report_type, ...parseReportTypes(REPORT_TYPES, specificFilters)],
       selection: new Set([ALL]),
     },
   ];
@@ -39,7 +87,8 @@ export const initFirstClassVulnerabilityFilters = projects => {
   if (Array.isArray(projects)) {
     filters.push({
       name: s__('SecurityReports|Project'),
-      id: 'projectId',
+      // id: 'projectId',
+      ids: ['projectId'],
       options: [BASE_FILTERS.project_id, ...mapProjects(projects)],
       selection: new Set([ALL]),
     });

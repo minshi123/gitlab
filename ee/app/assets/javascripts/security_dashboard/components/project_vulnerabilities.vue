@@ -34,6 +34,7 @@ export default {
     vulnerabilities: {
       query: vulnerabilitiesQuery,
       variables() {
+        console.log('this.filters', this.filters);
         return {
           fullPath: this.projectFullPath,
           first: VULNERABILITIES_PER_PAGE,

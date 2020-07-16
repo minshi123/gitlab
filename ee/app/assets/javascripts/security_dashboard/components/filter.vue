@@ -20,14 +20,15 @@ export default {
     };
   },
   computed: {
-    filterId() {
-      return this.filter.id;
+    filterIds() {
+      return this.filter.ids;
     },
     selection() {
       return this.filter.selection;
     },
     firstSelectedOption() {
-      return this.filter.options.find(option => this.selection.has(option.id))?.name || '-';
+      const selectedOption = this.filter.options.find(option => this.selection.has(option.id));
+      return selectedOption ? selectedOption.displayName || selectedOption.name : '-';
     },
     extraOptionCount() {
       return this.selection.size - 1;
@@ -43,7 +44,11 @@ export default {
   },
   methods: {
     clickFilter(option) {
-      this.$emit('setFilter', { filterId: this.filterId, optionId: option.id });
+      const optionIds = option.externalIds ? [option.id, option.externalIds] : [option.id];
+      this.$emit('setFilter', {
+        filterIds: this.filterIds,
+        optionIds,
+      });
     },
     isSelected(option) {
       return this.selection.has(option.id);
@@ -97,11 +102,11 @@ export default {
 
       <div
         data-qa-selector="filter_dropdown_content"
-        :class="{ 'dropdown-content': filterId === 'project_id' }"
+        :class="{ 'dropdown-content': filterIds.indexOf('project_id') >= 0 }"
       >
         <button
           v-for="option in filteredOptions"
-          :key="option.id"
+          :key="option.displayName || option.id"
           role="menuitem"
           type="button"
           class="dropdown-item"
@@ -114,7 +119,7 @@ export default {
               name="mobile-issue-close"
             />
             <span class="gl-white-space-nowrap gl-ml-2" :class="{ 'gl-pl-5': !isSelected(option) }">
-              {{ option.name }}
+              {{ option.displayName || option.name }}
             </span>
           </span>
         </button>
