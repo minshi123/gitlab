@@ -811,6 +811,10 @@ The following is example content of the Usage Ping payload.
     "enabled": true,
     "version": "1.17.0"
   },
+  "container_registry": {
+    "vendor": "gitlab",
+    "version": "2.9.1-gitlab"
+  },
   "database": {
     "adapter": "postgresql",
     "version": "9.6.15"
