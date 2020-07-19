@@ -31,7 +31,7 @@ describe('Multi-file editor library', () => {
 
     document.body.appendChild(el);
 
-    instance = Editor.create({}, store);
+    instance = Editor.create(store);
   });
 
   afterEach(() => {
@@ -47,7 +47,7 @@ describe('Multi-file editor library', () => {
   });
 
   it('creates instance returns cached instance', () => {
-    expect(Editor.create()).toEqual(instance);
+    expect(Editor.create(store)).toEqual(instance);
   });
 
   describe('createInstance', () => {

@@ -26,7 +26,7 @@ export default class Editor {
     return this.editorInstance;
   }
 
-  constructor(options = {}, store) {
+  constructor(store, options = {}) {
     this.currentModel = null;
     this.instance = null;
     this.dirtyDiffController = null;
