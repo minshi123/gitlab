@@ -44,7 +44,7 @@ RSpec.shared_examples 'wiki controller actions' do
 
     context 'when a request in JSON format is sent' do
       it 'returns :non_acceptable' do
-        get :diff, params: routing_params.merge(params: JSON)
+        get :diff, params: routing_params.merge(params: 'json')
 
         expect(response).to have_gitlab_http_status(:not_acceptable)
       end
