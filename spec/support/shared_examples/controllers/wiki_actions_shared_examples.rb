@@ -41,6 +41,14 @@ RSpec.shared_examples 'wiki controller actions' do
         expect(flash[:notice]).to eq('Could not create Wiki Repository at this time. Please try again later.')
       end
     end
+
+    context 'when a request in JSON format is sent' do
+      it 'returns :non_acceptable' do
+        get :diff, params: routing_params.merge(params: JSON)
+
+        expect(response).to have_gitlab_http_status(:not_acceptable)
+      end
+    end
   end
 
   describe 'GET #pages' do
