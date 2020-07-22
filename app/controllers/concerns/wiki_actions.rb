@@ -32,7 +32,6 @@ module WikiActions
     end
 
     helper_method :view_file_button, :diff_file_html_data
-
   end
 
   def new
