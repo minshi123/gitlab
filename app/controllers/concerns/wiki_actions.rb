@@ -8,6 +8,8 @@ module WikiActions
   extend ActiveSupport::Concern
 
   included do
+    before_action { respond_to :html }
+
     before_action :authorize_read_wiki!
     before_action :authorize_create_wiki!, only: [:edit, :create]
     before_action :authorize_admin_wiki!, only: :destroy
@@ -31,7 +33,6 @@ module WikiActions
 
     helper_method :view_file_button, :diff_file_html_data
 
-    respond_to :html
   end
 
   def new
@@ -46,7 +47,7 @@ module WikiActions
 
     @wiki_entries = WikiPage.group_by_directory(@wiki_pages)
 
-    render 'shared/wikis/pages.html'
+    render 'shared/wikis/pages'
   end
   # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
@@ -67,7 +68,7 @@ module WikiActions
       @ref = params[:version_id]
       @path = page.path
 
-      render 'shared/wikis/show.html'
+      render 'shared/wikis/show'
     elsif file_blob
       send_blob(wiki.repository, file_blob)
     elsif show_create_form?
@@ -76,20 +77,20 @@ module WikiActions
 
       @page = build_page(title: title)
 
-      render 'shared/wikis/edit.html'
+      render 'shared/wikis/edit'
     else
-      render 'shared/wikis/empty.html'
+      render 'shared/wikis/empty'
     end
   end
   # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
   def edit
-    render 'shared/wikis/edit.html'
+    render 'shared/wikis/edit'
   end
 
   # rubocop:disable Gitlab/ModuleWithInstanceVariables
   def update
-    return render('shared/wikis/empty.html') unless can?(current_user, :create_wiki, container)
+    return render('shared/wikis/empty') unless can?(current_user, :create_wiki, container)
 
     @page = WikiPages::UpdateService.new(container: container, current_user: current_user, params: wiki_params).execute(page)
 
@@ -99,11 +100,11 @@ module WikiActions
         notice: _('Wiki was successfully updated.')
       )
     else
-      render 'shared/wikis/edit.html'
+      render 'shared/wikis/edit'
     end
   rescue WikiPage::PageChangedError, WikiPage::PageRenameError, Gitlab::Git::Wiki::OperationError => e
     @error = e
-    render 'shared/wikis/edit.html'
+    render 'shared/wikis/edit'
   end
   # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
@@ -117,12 +118,12 @@ module WikiActions
         notice: _('Wiki was successfully updated.')
       )
     else
-      render 'shared/wikis/edit.html'
+      render 'shared/wikis/edit'
     end
   rescue Gitlab::Git::Wiki::OperationError => e
     @page = build_page(wiki_params)
     @error = e
-    render 'shared/wikis/edit.html'
+    render 'shared/wikis/edit'
   end
   # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
@@ -133,7 +134,7 @@ module WikiActions
                                                total_count: page.count_versions)
         .page(params[:page])
 
-      render 'shared/wikis/history.html'
+      render 'shared/wikis/history'
     else
       redirect_to(
         wiki_path(wiki),
@@ -152,7 +153,7 @@ module WikiActions
     @diffs = page.diffs(diff_options)
     @diff_notes_disabled = true
 
-    render 'shared/wikis/diff.html'
+    render 'shared/wikis/diff'
   end
   # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
@@ -165,7 +166,7 @@ module WikiActions
                 notice: _("Page was successfully deleted")
   rescue Gitlab::Git::Wiki::OperationError => e
     @error = e
-    render 'shared/wikis/edit.html'
+    render 'shared/wikis/edit'
   end
   # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
