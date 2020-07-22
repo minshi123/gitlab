@@ -42,21 +42,21 @@ RSpec.shared_examples 'wiki controller actions' do
       end
     end
   end
-  
+
   describe 'GET #pages' do
     before do
       get :pages, params: routing_params.merge(id: wiki_title)
     end
-    
+
     it 'assigns the page collections' do
       expect(assigns(:wiki_pages)).to contain_exactly(an_instance_of(WikiPage))
       expect(assigns(:wiki_entries)).to contain_exactly(an_instance_of(WikiPage))
     end
-    
+
     it 'does not load the page content' do
       expect(assigns(:page)).to be_nil
     end
-    
+
     it 'does not load the sidebar' do
       expect(assigns(:sidebar_wiki_entries)).to be_nil
       expect(assigns(:sidebar_limited)).to be_nil
