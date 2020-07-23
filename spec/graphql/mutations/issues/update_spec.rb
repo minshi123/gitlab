@@ -3,8 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::Issues::Update do
-  let(:issue) { create(:issue) }
+  let(:project) { create(:project) }
   let(:user) { create(:user) }
+  let(:project_label) { create(:label, project: project) }
+  let(:issue) { create(:issue, project: project, labels: [project_label]) }
+
   let(:expected_attributes) do
     {
       title: 'new title',
@@ -21,7 +24,7 @@ RSpec.describe Mutations::Issues::Update do
   describe '#resolve' do
     let(:mutation_params) do
       {
-        project_path: issue.project.full_path,
+        project_path: project.full_path,
         iid: issue.iid
       }.merge(expected_attributes)
     end
@@ -34,7 +37,7 @@ RSpec.describe Mutations::Issues::Update do
 
     context 'when the user can update the issue' do
       before do
-        issue.project.add_developer(user)
+        project.add_developer(user)
       end
 
       it 'updates issue with correct values' do
@@ -48,6 +51,20 @@ RSpec.describe Mutations::Issues::Update do
           mutation_params[:iid] = non_existing_record_iid
 
           expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        end
+      end
+
+      context 'when changing labels' do
+        let(:label_1) { create(:label, project: project) }
+        let(:label_2) { create(:label, project: project) }
+
+        it 'adds and removes labels correctly' do
+          mutation_params[:add_label_ids] = [label_1.id, label_2.id]
+          mutation_params[:remove_label_ids] = [project_label.id]
+
+          subject
+
+          expect(issue.reload.labels).to match_array([label_1, label_2])
         end
       end
     end
