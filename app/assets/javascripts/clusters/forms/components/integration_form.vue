@@ -16,14 +16,16 @@ export default {
     return {
       toggleEnabled: true,
       envScope: '*',
+      baseDomainField: "",
     };
   },
   computed: {
-    ...mapState(['enabled', 'editable', 'environmentScope']),
+    ...mapState(['enabled', 'editable', 'environmentScope', 'baseDomain']),
   },
   mounted() {
     this.toggleEnabled = this.enabled;
     this.envScope = this.environmentScope;
+    this.baseDomainField = this.baseDomain;
   },
 };
 </script>
@@ -61,7 +63,7 @@ export default {
     </gl-form-group>
 
     <gl-form-group
-      id="group-id"
+      id="environment-scope"
       :label="s__('ClusterIntegration|Environment scope')"
       label-size="sm"
       label-for="cluster_environment_scope"
@@ -78,5 +80,41 @@ export default {
       />
       <gl-form-input class="col-md-6" v-model="envScope" type="text" />
     </gl-form-group>
+
+
+    <gl-form-group
+      id="base-domain"
+      :label="s__()"
+      label-size="sm"
+      label-for="cluster_base_domain"
+    >
+      <input
+        id="cluster_base_domain"
+        name="cluster[base_domain]"
+        type="hidden"
+        data-qa-selector="base_domain_field"
+        :value="baseDomainField"
+        data-testid="hidden-base-domain-input"
+
+      />
+
+      <gl-form-input class="col-md-6" v-model="baseDomainField" type="text" />
+
+        <small>
+          <gl-sprintf
+            :message="
+              s__(
+                'ClusterIntegration|Base domain. %{linkStart}More information%{linkEnd}'
+              )
+            "
+          >
+            <template #link="{ content }">
+              <gl-link>{{ content }}</gl-link>
+            </template>
+          </gl-sprintf>
+      </small>
+
+    </gl-form-group>
+
   </div>
 </template>

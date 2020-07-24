@@ -16,7 +16,7 @@ describe('ClusterIntegrationForm', () => {
     store = createStore({
       enabled: 'true',
       editable: 'true',
-      environmentScope: "*",
+      environmentScope: '*',
     });
     wrapper = mount(IntegrationForm, { store });
     return wrapper.vm.$nextTick();
@@ -52,6 +52,4 @@ describe('ClusterIntegrationForm', () => {
     expect(wrapper.text()).toContain('Environment scope');
     expect(environmentScope().attributes('value')).toBe('*');
   });
-
-
 });

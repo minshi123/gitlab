@@ -32,7 +32,8 @@ module ClustersHelper
     {
       enabled: cluster.enabled?.to_s,
       editable: can_edit.to_s,
-      environment_scope: cluster.environment_scope
+      environment_scope: cluster.environment_scope,
+      base_domain: cluster.base_domain
     }
   end
 

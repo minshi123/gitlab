@@ -4,6 +4,7 @@ export default (initialState = {}) => {
   return {
     enabled: parseBoolean(initialState.enabled),
     editable: parseBoolean(initialState.editable),
-    environmentScope: initialState.environmentScope
+    environmentScope: initialState.environmentScope,
+    baseDomain: initialState.baseDomain
   };
 };
