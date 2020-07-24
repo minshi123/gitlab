@@ -1,5 +1,12 @@
 <script>
-import { GlFormGroup, GlFormInput, GlToggle, GlTooltipDirective, GlSprintf } from '@gitlab/ui';
+import {
+  GlFormGroup,
+  GlFormInput,
+  GlToggle,
+  GlTooltipDirective,
+  GlSprintf,
+  GlLink,
+} from '@gitlab/ui';
 import { mapState } from 'vuex';
 
 export default {
@@ -8,6 +15,7 @@ export default {
     GlToggle,
     GlFormInput,
     GlSprintf,
+    GlLink,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -16,7 +24,7 @@ export default {
     return {
       toggleEnabled: true,
       envScope: '*',
-      baseDomainField: "",
+      baseDomainField: 'blah',
     };
   },
   computed: {
@@ -81,10 +89,9 @@ export default {
       <gl-form-input class="col-md-6" v-model="envScope" type="text" />
     </gl-form-group>
 
-
     <gl-form-group
       id="base-domain"
-      :label="s__()"
+      :label="s__('ClusterIntegration|Base domain')"
       label-size="sm"
       label-for="cluster_base_domain"
     >
@@ -95,26 +102,31 @@ export default {
         data-qa-selector="base_domain_field"
         :value="baseDomainField"
         data-testid="hidden-base-domain-input"
-
       />
-
       <gl-form-input class="col-md-6" v-model="baseDomainField" type="text" />
-
-        <small>
-          <gl-sprintf
-            :message="
-              s__(
-                'ClusterIntegration|Base domain. %{linkStart}More information%{linkEnd}'
-              )
-            "
-          >
-            <template #link="{ content }">
-              <gl-link>{{ content }}</gl-link>
-            </template>
-          </gl-sprintf>
-      </small>
-
+      <div class="form-text text-muted">
+        <gl-sprintf
+          :message="
+            s__(
+              'ClusterIntegration|Specifying a domain will allow you to use Auto Review Apps and Auto Deploy stages for %{linkStart}Auto DevOps%{linkEnd}. The domain should have a wildcard DNS configured matching the domain. %{link2Start}More information%{link2End}',
+            )
+          "
+        >
+          <template #link="{ content }">
+            <gl-link href="../../../../help/topics/autodevops/index.md" target="_blank">
+              {{ content }}
+            </gl-link>
+          </template>
+          <template #link2="{ content }">
+            <gl-link
+              href="../../../../help/user/clusters/applications.md#pointing-your-dns-at-the-external-endpoint"
+              target="_blank"
+            >
+              {{ content }}
+            </gl-link>
+          </template>
+        </gl-sprintf>
+      </div>
     </gl-form-group>
-
-  </div>
-</template>
+  </div> </template
+>git
