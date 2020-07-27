@@ -41836,6 +41836,16 @@
               "defaultValue": null
             },
             {
+              "name": "confidential",
+              "description": "The confidentiality flag of a note. Default is false.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
               "name": "clientMutationId",
               "description": "A unique identifier for the client performing the mutation.",
               "type": {

@@ -14177,6 +14177,11 @@ input UpdateNoteInput {
   clientMutationId: String
 
   """
+  The confidentiality flag of a note. Default is false.
+  """
+  confidential: Boolean
+
+  """
   The global id of the note to update
   """
   id: ID!

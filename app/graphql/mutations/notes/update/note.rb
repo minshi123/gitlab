@@ -11,6 +11,11 @@ module Mutations
                   required: true,
                   description: copy_field_description(Types::Notes::NoteType, :body)
 
+        argument :confidential,
+                  GraphQL::BOOLEAN_TYPE,
+                  required: false,
+                  description: 'The confidentiality flag of a note. Default is false.'
+
         private
 
         def pre_update_checks!(note, _args)
