@@ -24,8 +24,8 @@ export default {
     return {
       toggleEnabled: true,
       envScope: '*',
-      baseDomainField: 'blah',
-      externalIp: 'testTESTTest',
+      baseDomainField: '',
+      externalIp: '',
     };
   },
   computed: {
