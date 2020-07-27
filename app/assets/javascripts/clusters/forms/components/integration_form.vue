@@ -86,7 +86,7 @@ export default {
         :value="envScope"
         data-testid="hidden-environment-scope-input"
       />
-      <gl-form-input class="col-md-6" v-model="envScope" type="text" />
+      <gl-form-input v-model="envScope" class="col-md-6"  type="text" />
     </gl-form-group>
 
     <gl-form-group
