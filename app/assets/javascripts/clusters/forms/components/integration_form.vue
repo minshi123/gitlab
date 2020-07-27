@@ -141,7 +141,7 @@ export default {
             </gl-link>
           </template>
         </gl-sprintf>
-        <template v-if=!applicationIngressExternalIp>
+        <template v-if=applicationIngressExternalIp>
           <template class="js-ingress-domain-help-text">
             {{ s__('ClusterIntegration|Alternatively, ') }}
           </template>
