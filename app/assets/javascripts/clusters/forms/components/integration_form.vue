@@ -25,15 +25,23 @@ export default {
       toggleEnabled: true,
       envScope: '*',
       baseDomainField: 'blah',
+      externalIp: 'testTESTTest',
     };
   },
   computed: {
-    ...mapState(['enabled', 'editable', 'environmentScope', 'baseDomain']),
+    ...mapState([
+      'enabled',
+      'editable',
+      'environmentScope',
+      'baseDomain',
+      'applicationIngressExternalIp',
+    ]),
   },
   mounted() {
     this.toggleEnabled = this.enabled;
     this.envScope = this.environmentScope;
     this.baseDomainField = this.baseDomain;
+    this.externalIp = this.applicationIngressExternalIp;
   },
 };
 </script>
@@ -86,7 +94,7 @@ export default {
         :value="envScope"
         data-testid="hidden-environment-scope-input"
       />
-      <gl-form-input v-model="envScope" class="col-md-6"  type="text" />
+      <gl-form-input v-model="envScope" class="col-md-6" type="text" />
     </gl-form-group>
 
     <gl-form-group
@@ -108,7 +116,7 @@ export default {
         <gl-sprintf
           :message="
             s__(
-              'ClusterIntegration|Specifying a domain will allow you to use Auto Review Apps and Auto Deploy stages for %{linkStart}Auto DevOps%{linkEnd}. The domain should have a wildcard DNS configured matching the domain. %{link2Start}More information%{link2End}',
+              'ClusterIntegration|Specifying a domain will allow you to use Auto Review Apps and Auto Deploy stages for %{linkStart}Auto DevOps.%{linkEnd} The domain should have a wildcard DNS configured matching the domain. ',
             )
           "
         >
@@ -126,7 +134,28 @@ export default {
             </gl-link>
           </template>
         </gl-sprintf>
+        <template v-if=!applicationIngressExternalIp>
+          <template class="js-ingress-domain-help-text">
+            {{ s__('ClusterIntegration|Alternatively, ') }}
+          </template>
+          <gl-sprintf class="js-ingress-domain-snippet" :message="__('%{externalIp}.nip.io')">
+            <template #externalIp>{{ externalIp }}</template>
+          </gl-sprintf>
+          <template>{{
+            s__('ClusterIntegration|can be used instead of a custom domain. ')
+          }}</template>
+        </template>
+        <gl-sprintf class="js-ingress-domain-help-text" :message="s__('ClusterIntegration|%{link2Start}More information%{link2End}')">
+          <template #link2="{ content }">
+            <gl-link
+              href="../../../../help/user/clusters/applications.md#pointing-your-dns-at-the-external-endpoint"
+              target="_blank"
+            >
+              {{ content }}
+            </gl-link>
+          </template>
+        </gl-sprintf>
       </div>
     </gl-form-group>
-  </div> </template
->git
+  </div>
+</template>
