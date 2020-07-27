@@ -36,6 +36,13 @@ export default {
       'baseDomain',
       'applicationIngressExternalIp',
     ]),
+    formChanged: function() {
+      if (this.enabled === this.toggleEnabled && this.environmentScope === this.envScope && this.baseDomain === this.baseDomainField) {
+        return false;
+      }
+      else { return true; }
+
+    }
   },
   mounted() {
     this.toggleEnabled = this.enabled;
@@ -157,5 +164,17 @@ export default {
         </gl-sprintf>
       </div>
     </gl-form-group>
+    <div v-if=editable class="form group gl-display-flex gl-justify-content-end">
+      <button
+        class="btn btn-success"
+        type="submit"
+        name="commit"
+        value="Save changes"
+        :disabled="!formChanged"
+        data-qa-selector="save_changes_button"
+        data-disable-with="Save changes">Save changes
+      </button>
+    </div>
   </div>
+
 </template>
