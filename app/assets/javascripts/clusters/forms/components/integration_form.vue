@@ -36,16 +36,16 @@ export default {
       'baseDomain',
       'applicationIngressExternalIp',
     ]),
-    formChanged: function() {
+    formChanged() {
       if (
         this.enabled === this.toggleEnabled &&
         this.environmentScope === this.envScope &&
         this.baseDomain === this.baseDomainField
       ) {
         return false;
-      } else {
-        return true;
       }
+        return true;
+
     },
   },
   mounted() {
@@ -122,7 +122,7 @@ export default {
         :value="baseDomainField"
         data-testid="hidden-base-domain-input"
       />
-      <gl-form-input class="col-md-6" v-model="baseDomainField" type="text" />
+      <gl-form-input v-model="baseDomainField" class="col-md-6" type="text" />
       <div class="form-text text-muted">
         <gl-sprintf
           :message="
@@ -145,7 +145,7 @@ export default {
             </gl-link>
           </template>
         </gl-sprintf>
-        <template v-if="applicationIngressExternalIp">
+        <template v-if="!applicationIngressExternalIp">
           <template class="js-ingress-domain-help-text">
             {{ s__('ClusterIntegration|Alternatively, ') }}
           </template>
@@ -181,7 +181,7 @@ export default {
         data-qa-selector="save_changes_button"
         data-disable-with="Save changes"
       >
-        Save changes
+        {{ s__('ClusterIntegration|Save changes') }}
       </button>
     </div>
   </div>
