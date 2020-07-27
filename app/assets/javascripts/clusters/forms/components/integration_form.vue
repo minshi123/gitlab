@@ -37,12 +37,16 @@ export default {
       'applicationIngressExternalIp',
     ]),
     formChanged: function() {
-      if (this.enabled === this.toggleEnabled && this.environmentScope === this.envScope && this.baseDomain === this.baseDomainField) {
+      if (
+        this.enabled === this.toggleEnabled &&
+        this.environmentScope === this.envScope &&
+        this.baseDomain === this.baseDomainField
+      ) {
         return false;
+      } else {
+        return true;
       }
-      else { return true; }
-
-    }
+    },
   },
   mounted() {
     this.toggleEnabled = this.enabled;
@@ -141,7 +145,7 @@ export default {
             </gl-link>
           </template>
         </gl-sprintf>
-        <template v-if=applicationIngressExternalIp>
+        <template v-if="applicationIngressExternalIp">
           <template class="js-ingress-domain-help-text">
             {{ s__('ClusterIntegration|Alternatively, ') }}
           </template>
@@ -152,7 +156,10 @@ export default {
             s__('ClusterIntegration|can be used instead of a custom domain. ')
           }}</template>
         </template>
-        <gl-sprintf class="js-ingress-domain-help-text" :message="s__('ClusterIntegration|%{link2Start}More information%{link2End}')">
+        <gl-sprintf
+          class="js-ingress-domain-help-text"
+          :message="s__('ClusterIntegration|%{link2Start}More information%{link2End}')"
+        >
           <template #link2="{ content }">
             <gl-link
               href="../../../../help/user/clusters/applications.md#pointing-your-dns-at-the-external-endpoint"
@@ -164,7 +171,7 @@ export default {
         </gl-sprintf>
       </div>
     </gl-form-group>
-    <div v-if=editable class="form group gl-display-flex gl-justify-content-end">
+    <div v-if="editable" class="form group gl-display-flex gl-justify-content-end">
       <button
         class="btn btn-success"
         type="submit"
@@ -172,9 +179,10 @@ export default {
         value="Save changes"
         :disabled="!formChanged"
         data-qa-selector="save_changes_button"
-        data-disable-with="Save changes">Save changes
+        data-disable-with="Save changes"
+      >
+        Save changes
       </button>
     </div>
   </div>
-
 </template>

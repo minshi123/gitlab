@@ -10,7 +10,7 @@ describe('ClusterIntegrationForm', () => {
   const glToggle = () => wrapper.find(GlToggle);
   const toggleButton = () => glToggle().find('button');
   const toggleInput = () => wrapper.find('[data-testid="hidden-toggle-input"]');
-  const environmentScope = () => wrapper.find('[data-testid="hidden-environment-scope-input"]')
+  const environmentScope = () => wrapper.find('[data-testid="hidden-environment-scope-input"]');
   const baseDomain = () => wrapper.find('[data-testid="hidden-base-domain-input"]');
   const saveButton = () => wrapper.find('[data-qa-selector="save_changes_button"]');
 
@@ -65,7 +65,7 @@ describe('ClusterIntegrationForm', () => {
     expect(saveButton().attributes('disabled')).toBe('disabled');
   });
 
-  it ('enables the save button when form changes', () => {
+  it('enables the save button when form changes', () => {
     expect(saveButton().attributes('disabled')).toBe('disabled');
     toggleButton().trigger('click');
     wrapper.vm.$nextTick(() => {
@@ -73,4 +73,3 @@ describe('ClusterIntegrationForm', () => {
     });
   });
 });
-
