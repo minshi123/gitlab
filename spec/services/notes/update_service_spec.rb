@@ -63,8 +63,38 @@ RSpec.describe Notes::UpdateService do
       let(:opts) { { confidential: true } }
 
       context 'simple note' do
-        it 'updates the confidentiality' do
-          expect { update_note(opts) }.to change { note.reload.confidential }.from(nil).to(true)
+        context 'when only confidential param is present' do
+          it 'updates the confidentiality' do
+            expect { update_note(opts) }.to change { note.reload.confidential }.from(nil).to(true)
+          end
+        end
+
+        context 'when confidential param is present and note param is empty' do
+          let(:opts) { { confidential: true, note: '' } }
+
+          it 'does not update the content' do
+            expect { update_note(opts) }.not_to change { note.reload.note }
+          end
+
+          it 'updates the confidentiality' do
+            expect { update_note(opts) }.to change { note.reload.confidential }.from(nil).to(true)
+          end
+        end
+
+        context 'when only note param is present' do
+          let(:opts) { { note: 'new content' } }
+
+          before do
+            note.update!(confidential: true)
+          end
+
+          it 'does updates the content' do
+            expect { update_note(opts) }.to change { note.reload.note }.to('new content')
+          end
+
+          it 'does not update the confidentiality' do
+            expect { update_note(opts) }.not_to change { note.reload.confidential }.from(true)
+          end
         end
       end
 

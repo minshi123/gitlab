@@ -17,7 +17,8 @@ module API
         authorize! :admin_note, note
 
         opts = {
-          note: params[:body]
+          note: params[:body],
+          confidential: params[:confidential]
         }
         parent = noteable_parent(noteable)
         project = parent if parent.is_a?(Project)

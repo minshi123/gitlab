@@ -277,12 +277,22 @@ RSpec.shared_examples 'noteable API' do |parent_type, noteable_type, id_name|
   end
 
   describe "PUT /#{parent_type}/:id/#{noteable_type}/:noteable_id/notes/:note_id" do
-    it 'returns modified note' do
-      put api("/#{parent_type}/#{parent.id}/#{noteable_type}/#{noteable[id_name]}/"\
-                "notes/#{note.id}", user), params: { body: 'Hello!' }
+    context 'when eveything is ok' do
+      before do
+        put api("/#{parent_type}/#{parent.id}/#{noteable_type}/#{noteable[id_name]}/"\
+                  "notes/#{note.id}", user), params: { body: 'Hello!', confidential: true }
+      end
 
-      expect(response).to have_gitlab_http_status(:ok)
-      expect(json_response['body']).to eq('Hello!')
+      it 'returns modified note' do
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['body']).to eq('Hello!')
+        expect(json_response['confidential']).to be_truthy
+      end
+
+      it 'updates the note' do
+        expect(note.reload.note).to eq('Hello!')
+        expect(note.confidential).to be_truthy
+      end
     end
 
     it 'returns a 404 error when note id not found' do
@@ -292,9 +302,9 @@ RSpec.shared_examples 'noteable API' do |parent_type, noteable_type, id_name|
       expect(response).to have_gitlab_http_status(:not_found)
     end
 
-    it 'returns a 400 bad request error if body not given' do
+    it 'returns a 400 bad request error if body is empty' do
       put api("/#{parent_type}/#{parent.id}/#{noteable_type}/#{noteable[id_name]}/"\
-                "notes/#{note.id}", user)
+                "notes/#{note.id}", user), params: { body: '' }
 
       expect(response).to have_gitlab_http_status(:bad_request)
     end

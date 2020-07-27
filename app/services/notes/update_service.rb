@@ -7,6 +7,7 @@ module Notes
 
       old_mentioned_users = note.mentioned_users(current_user).to_a
 
+      params.delete(:note) if params[:note].blank? # we don't allow setting empty note but it could come through the api
       note.assign_attributes(params.merge(updated_by: current_user))
 
       note.with_transaction_returning_status do
