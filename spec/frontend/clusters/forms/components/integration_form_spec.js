@@ -10,13 +10,15 @@ describe('ClusterIntegrationForm', () => {
   const glToggle = () => wrapper.find(GlToggle);
   const toggleButton = () => glToggle().find('button');
   const toggleInput = () => wrapper.find('[data-testid="hidden-toggle-input"]');
-  const environmentScope = () => wrapper.find('[data-testid="hidden-environment-scope-input"]');
+  const environmentScope = () => wrapper.find('[data-testid="hidden-environment-scope-input"]')
+  const baseDomain = () => wrapper.find('[data-testid="hidden-base-domain-input"]');
 
   const createWrapper = () => {
     store = createStore({
       enabled: 'true',
       editable: 'true',
       environmentScope: '*',
+      baseDomain: 'testDomain',
     });
     wrapper = mount(IntegrationForm, { store });
     return wrapper.vm.$nextTick();
@@ -51,5 +53,10 @@ describe('ClusterIntegrationForm', () => {
   it('creates the environment scope input', () => {
     expect(wrapper.text()).toContain('Environment scope');
     expect(environmentScope().attributes('value')).toBe('*');
+  });
+
+  it('creates the base domain input', () => {
+    expect(wrapper.text()).toContain('Base domain');
+    expect(baseDomain().attributes('value')).toBe('testDomain');
   });
 });
