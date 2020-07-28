@@ -7,6 +7,7 @@ class CommitStatus < ApplicationRecord
   include Presentable
   include EnumWithNil
   include BulkInsertableAssociations
+  include Enums::CommitStatus
 
   self.table_name = 'ci_builds'
 
@@ -76,10 +77,6 @@ class CommitStatus < ApplicationRecord
 
     merge(or_conditions)
   end
-
-  # We use `CommitStatusEnums.failure_reasons` here so that EE can more easily
-  # extend this `Hash` with new values.
-  enum_with_nil failure_reason: ::CommitStatusEnums.failure_reasons
 
   ##
   # We still create some CommitStatuses outside of CreatePipelineService.
