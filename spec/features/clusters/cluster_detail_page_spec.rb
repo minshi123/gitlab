@@ -24,7 +24,7 @@ RSpec.describe 'Clusterable > Show page' do
       visit cluster_path
 
       within '.js-cluster-integration-form' do
-        fill_in('cluster_base_domain', with: 'test.com')
+        fill_in("cluster[base_domain]", with: 'test.com')
         click_on 'Save changes'
       end
 

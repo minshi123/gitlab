@@ -334,7 +334,6 @@ describe('Clusters', () => {
   describe('handleClusterStatusSuccess', () => {
     beforeEach(() => {
       jest.spyOn(cluster.store, 'updateStateFromServer').mockReturnThis();
-      jest.spyOn(cluster, 'toggleIngressDomainHelpText').mockReturnThis();
       jest.spyOn(cluster, 'checkForNewInstalls').mockReturnThis();
       jest.spyOn(cluster, 'updateContainer').mockReturnThis();
 
@@ -347,10 +346,6 @@ describe('Clusters', () => {
 
     it('checks for new installable apps', () => {
       expect(cluster.checkForNewInstalls).toHaveBeenCalled();
-    });
-
-    it('toggles ingress domain help text', () => {
-      expect(cluster.toggleIngressDomainHelpText).toHaveBeenCalled();
     });
 
     it('updates message containers', () => {
