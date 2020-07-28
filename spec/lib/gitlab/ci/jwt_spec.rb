@@ -93,7 +93,11 @@ RSpec.describe Gitlab::Ci::Jwt do
   end
 
   describe '.for_build' do
-    let(:rsa_key) { OpenSSL::PKey::RSA.new(Rails.application.secrets.openid_connect_signing_key) }
+    let(:rsa_key) { OpenSSL::PKey::RSA.generate(1024) }
+
+    before do
+      allow(Rails.application.secrets).to receive(:ci_jwt_signing_key).and_return(rsa_key.to_s)
+    end
 
     subject(:jwt) { described_class.for_build(build) }
 
