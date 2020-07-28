@@ -43,14 +43,8 @@ export default {
         this.baseDomain === this.baseDomainField
       ) {
         return false;
-      } else return true;
-    },
-    externalIpHelpText() {
-      if (this.applicationIngressExternalIp) {
-        return s__(
-          'ClusterIntegration|Alternatively, %{externalIp}.nip.io can be used instead of a custom domain.',
-        );
-      } else return 'BLAH';
+      }
+      return true;
     },
   },
   mounted() {
@@ -123,11 +117,11 @@ export default {
         id="cluster_base_domain"
         name="cluster[base_domain]"
         type="hidden"
-
+        data-qa-selector="base_domain_field"
         :value="baseDomainField"
         data-testid="hidden-base-domain-input"
       />
-      <gl-form-input data-qa-selector="base_domain_field" v-model="baseDomainField" class="col-md-6" type="text" />
+      <gl-form-input v-model="baseDomainField" class="col-md-6" type="text" />
       <div class="form-text text-muted">
         <gl-sprintf
           :message="
@@ -136,16 +130,34 @@ export default {
             )
           "
         >
-        </gl-sprintf>
-        <gl-sprintf :message="externalIpHelpText">
-          <template #externalIp>
-            {{ externalIp }}
+          <template #link="{ content }">
+            <gl-link href="../../../../help/topics/autodevops/index.md" target="_blank">
+              {{ content }}
+            </gl-link>
+          </template>
+          <template #link2="{ content }">
+            <gl-link
+              href="../../../../help/user/clusters/applications.md#pointing-your-dns-at-the-external-endpoint"
+              target="_blank"
+            >
+              {{ content }}
+            </gl-link>
           </template>
         </gl-sprintf>
-        <gl-sprintf
-          class="js-ingress-domain-help-text"
-          :message="s__('ClusterIntegration|%{linkStart}More information%{linkEnd}')"
-        >
+        <div class="js-ingress-domain-help-text">
+          <template v-if="applicationIngressExternalIp">
+            <template>
+              {{ s__('ClusterIntegration|Alternatively, ') }}
+            </template>
+            <gl-sprintf class="js-ingress-domain-snippet" :message="__('%{externalIp}.nip.io')">
+              <template #externalIp>{{ externalIp }}</template>
+            </gl-sprintf>
+            <template>{{
+              s__('ClusterIntegration|can be used instead of a custom domain. ')
+            }}</template>
+          </template>
+        </div>
+        <gl-sprintf :message="s__('ClusterIntegration|%{linkStart}More information%{linkEnd}')">
           <template #link="{ content }">
             <gl-link
               href="../../../../help/user/clusters/applications.md#pointing-your-dns-at-the-external-endpoint"

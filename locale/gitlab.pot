@@ -4995,7 +4995,7 @@ msgstr ""
 msgid "ClusterIntegration|%{appList} was successfully installed on your Kubernetes cluster"
 msgstr ""
 
-msgid "ClusterIntegration|%{link2Start}More information%{link2End}"
+msgid "ClusterIntegration|%{linkStart}More information%{linkEnd}"
 msgstr ""
 
 msgid "ClusterIntegration|%{title} uninstalled successfully."
