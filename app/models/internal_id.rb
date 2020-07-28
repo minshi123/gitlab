@@ -17,11 +17,10 @@
 # * (Optionally) add columns to `internal_ids` if needed for scope.
 class InternalId < ApplicationRecord
   include Gitlab::Utils::StrongMemoize
+  include Enums::InternalId
 
   belongs_to :project
   belongs_to :namespace
-
-  enum usage: ::InternalIdEnums.usage_resources
 
   validates :usage, presence: true
 
