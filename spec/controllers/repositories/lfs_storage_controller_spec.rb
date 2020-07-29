@@ -88,7 +88,7 @@ RSpec.describe Repositories::LfsStorageController do
         context 'without file' do
           let(:uploaded_file) { nil }
 
-          it { expect { subject }.to raise_error(ActionController::ParameterMissing) }
+          it_behaves_like 'returning response status', :unprocessable_entity
         end
 
         context 'when an expected error' do
