@@ -964,6 +964,29 @@ RSpec.describe Projects::IssuesController do
         expect { issue.update(description: [issue.description, labels].join(' ')) }
           .not_to exceed_query_limit(control_count + 2 * labels.count)
       end
+
+      context 'real-time sidebar feature flag' do
+        let(:project) { create(:project, :public) }
+        let(:issue) { create(:issue, project: project) }
+
+        it 'is enabled when ActionCable in-app is enabled' do
+          expect(Gitlab::ActionCable::Config).to receive(:in_app?).and_return(true)
+          stub_feature_flags(real_time_issue_sidebar: false)
+
+          go(id: issue.to_param)
+
+          expect(Gon.features).to include(real_time_issue_sidebar: true)
+        end
+
+        it 'is enabled when the feature flag is enabled' do
+          expect(Gitlab::ActionCable::Config).to receive(:in_app?).and_return(false)
+          stub_feature_flags(real_time_issue_sidebar: true)
+
+          go(id: issue.to_param)
+
+          expect(Gon.features).to include(real_time_issue_sidebar: true)
+        end
+      end
     end
 
     describe 'GET #realtime_changes' do
