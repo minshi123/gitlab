@@ -783,7 +783,7 @@ is updated:
 
    ```yaml
    deploy:
-     image: maven:3.3.9-jdk-8
+     image: maven:latest
      script:
        - 'mvn deploy -s ci_settings.xml'
      only:
