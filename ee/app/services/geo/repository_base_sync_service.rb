@@ -67,7 +67,11 @@ module Geo
     def redownload_repository
       log_info("Redownloading #{type}")
 
-      return if fetch_snapshot
+      if fetch_snapshot
+        set_temp_repository_as_main
+
+        return
+      end
 
       log_info("Attempting to fetch repository via git")
 
