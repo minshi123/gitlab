@@ -97,7 +97,7 @@ RSpec.describe Repositories::LfsStorageController do
             UploadedFile::InvalidPathError,
             ObjectStorage::RemoteStoreError
           ].each do |exception_class|
-            context "#{exception_class} is risen" do
+            context "#{exception_class} raised" do
               it 'renders lfs forbidden' do
                 expect(LfsObjectsProject).to receive(:safe_find_or_create_by!).and_raise(exception_class)
 
