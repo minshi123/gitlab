@@ -14,6 +14,12 @@ RSpec.describe API::Search do
     it { expect(json_response.size).to eq(size) }
   end
 
+  shared_examples 'no matching results returned' do
+    it { expect(response).to have_gitlab_http_status(:ok) }
+    it { expect(response).to include_limited_pagination_headers }
+    it { expect(json_response.size).to eq(0) }
+  end
+
   shared_examples 'pagination' do |scope:, search: '*'|
     it 'returns a different result for each page' do
       get api(endpoint, user), params: { scope: scope, search: search, page: 1, per_page: 1 }
@@ -55,6 +61,140 @@ RSpec.describe API::Search do
       get api(endpoint, user), params: { scope: 'commits', search: 'folder' }
 
       expect(response).to have_gitlab_http_status(:bad_request)
+    end
+  end
+
+  shared_examples 'namespace not indexed' do |level:|
+    context 'for merge_requests scope', :sidekiq_inline do
+      before do
+        create(:labeled_merge_request, target_branch: 'feature_1', source_project: project, labels: [create(:label), create(:label)])
+        create(:merge_request, target_branch: 'feature_2', source_project: project, author: create(:user))
+        create(:merge_request, target_branch: 'feature_3', source_project: project, milestone: create(:milestone, project: project))
+        create(:merge_request, target_branch: 'feature_4', source_project: project)
+        ensure_elasticsearch_index!
+
+        get api(endpoint, user), params: { scope: 'merge_requests', search: '*' }
+      end
+
+      it_behaves_like 'no matching results returned'
+    end
+
+    context 'for wiki_blobs scope', :sidekiq_might_not_need_inline do
+      before do
+        wiki = create(:project_wiki, project: project)
+        create(:wiki_page, wiki: wiki, title: 'home', content: "Awesome page")
+        create(:wiki_page, wiki: wiki, title: 'other', content: "Another page")
+
+        project.wiki.index_wiki_blobs
+        ensure_elasticsearch_index!
+
+        get api(endpoint, user), params: { scope: 'wiki_blobs', search: '*' }
+      end
+
+      it_behaves_like 'no matching results returned'
+    end
+
+    context 'for commits scope', :sidekiq_inline do
+      before do
+        project.repository.index_commits_and_blobs
+        ensure_elasticsearch_index!
+
+        get api(endpoint, user), params: { scope: 'commits', search: '*' }
+      end
+
+      it_behaves_like 'no matching results returned'
+    end
+
+    context 'for blobs scope', :sidekiq_might_not_need_inline do
+      before do
+        project.repository.index_commits_and_blobs
+        ensure_elasticsearch_index!
+
+        get api(endpoint, user), params: { scope: 'blobs', search: '*' }
+      end
+
+      it_behaves_like 'no matching results returned'
+    end
+
+    context 'for issues scope', :sidekiq_inline do
+      before do
+        create_list(:issue, 2, project: project)
+        ensure_elasticsearch_index!
+
+        get api(endpoint, user), params: { scope: 'issues', search: '*' }
+      end
+
+      it_behaves_like 'no matching results returned'
+    end
+
+    unless level == :project
+      context 'for projects scope', :sidekiq_inline do
+        before do
+          project
+          create(:project, :public, name: 'second project', group: group)
+
+          ensure_elasticsearch_index!
+
+          get api(endpoint, user), params: { scope: 'projects', search: '*' }
+        end
+
+        it_behaves_like 'no matching results returned'
+      end
+    end
+
+    context 'for milestones scope', :sidekiq_inline do
+      before do
+        create_list(:milestone, 2, project: project)
+
+        ensure_elasticsearch_index!
+
+        get api(endpoint, user), params: { scope: 'milestones', search: '*' }
+      end
+
+      it_behaves_like 'no matching results returned'
+    end
+
+    context 'for users scope', :sidekiq_inline do
+      before do
+        create_list(:user, 2).each do |user|
+          project.add_developer(user)
+          group.add_developer(user)
+        end
+
+        get api(endpoint, user), params: { scope: 'users', search: '*' }
+      end
+
+      it_behaves_like 'no matching results returned'
+    end
+
+    if level == :global
+      context 'for snippet_titles scope', :sidekiq_inline do
+        before do
+          create_list(:snippet, 2, :public, project: project, title: 'Some code', content: 'Check it out')
+
+          ensure_elasticsearch_index!
+
+          get api(endpoint, user), params: { scope: 'snippet_titles', search: '*' }
+        end
+
+        it_behaves_like 'no matching results returned'
+      end
+    end
+
+    if level == :project
+      context 'for notes scope', :sidekiq_inline do
+        before do
+          create(:note_on_merge_request, project: project, note: 'awesome note')
+          mr = create(:merge_request, source_project: project, target_branch: 'another_branch')
+          create(:note, project: project, noteable: mr, note: 'another note')
+
+          ensure_elasticsearch_index!
+
+          get api(endpoint, user), params: { scope: 'notes', search: '*' }
+        end
+
+        it_behaves_like 'no matching results returned'
+      end
     end
   end
 
@@ -292,7 +432,16 @@ RSpec.describe API::Search do
             stub_ee_application_setting(elasticsearch_limit_indexing: true)
           end
 
-          it_behaves_like 'elasticsearch disabled'
+          context 'and namespace is indexed' do
+            before do
+              create :elasticsearch_indexed_namespace, namespace: group
+            end
+
+            it_behaves_like 'elasticsearch enabled', level: :global
+          end
+          context 'and namespace is not indexed' do
+            it_behaves_like 'namespace not indexed', level: :global
+          end
         end
 
         context 'when elasticsearch_limit_indexing off' do
