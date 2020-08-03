@@ -15,6 +15,8 @@ RSpec.describe AlertManagement::AlertPresenter do
     create(:alert_management_alert, :with_description, :with_host, :with_service, :with_monitoring_tool, project: project, payload: generic_payload)
   end
 
+  let(:alert_url) { "http://localhost/#{project.full_path}/-/alert_management/#{alert.id}/details" }
+
   subject(:presenter) { described_class.new(alert) }
 
   describe '#issue_description' do
@@ -30,7 +32,8 @@ RSpec.describe AlertManagement::AlertPresenter do
           **Service:** #{alert.service}#{markdown_line_break}
           **Monitoring tool:** #{alert.monitoring_tool}#{markdown_line_break}
           **Hosts:** #{alert.hosts.join(' ')}#{markdown_line_break}
-          **Description:** #{alert.description}
+          **Description:** #{alert.description}#{markdown_line_break}
+          **GitLab alert:** #{alert_url}
 
           #### Alert Details
 

@@ -5,8 +5,11 @@ module IncidentManagement
     include Gitlab::Utils::StrongMemoize
     include IncidentManagement::Settings
 
-    def initialize(project, params)
-      super(project, User.alert_bot, params)
+    attr_reader :alert
+
+    def initialize(project, alert)
+      super(project, User.alert_bot)
+      @alert = alert.present
     end
 
     def execute
@@ -25,41 +28,9 @@ module IncidentManagement
       ::IncidentManagement::Incidents::CreateService.new(
         project,
         current_user,
-        title: issue_title,
-        description: issue_description
+        title: alert.title,
+        description: alert.issue_description
       ).execute
-    end
-
-    def issue_title
-      alert.full_title
-    end
-
-    def issue_description
-      horizontal_line = "\n\n---\n\n"
-
-      [
-        alert_summary,
-        alert_markdown,
-        issue_template_content
-      ].compact.join(horizontal_line)
-    end
-
-    def alert_summary
-      alert.issue_summary_markdown
-    end
-
-    def alert_markdown
-      alert.alert_markdown
-    end
-
-    def alert
-      strong_memoize(:alert) do
-        Gitlab::Alerting::Alert.new(project: project, payload: params).present
-      end
-    end
-
-    def issue_template_content
-      incident_management_setting.issue_template_content
     end
 
     def error(message, issue = nil)

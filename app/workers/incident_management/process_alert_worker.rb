@@ -39,7 +39,7 @@ module IncidentManagement
 
     def create_issue_for(alert)
       IncidentManagement::CreateIssueService
-        .new(alert.project, parsed_payload(alert))
+        .new(alert.project, alert)
         .execute
     end
 
