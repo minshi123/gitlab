@@ -74,7 +74,7 @@ module Repositories
 
     def create_file!(oid, size)
       uploaded_file = params[:file]
-      return unless uploaded_file.present?
+      return unless uploaded_file.is_a?(UploadedFile)
 
       LfsObject.create!(oid: oid, size: size, file: uploaded_file)
     end

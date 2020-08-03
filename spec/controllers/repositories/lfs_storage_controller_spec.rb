@@ -25,14 +25,20 @@ RSpec.describe Repositories::LfsStorageController do
         namespace_id: project.namespace.path,
         repository_id: "#{project.path}.git",
         oid: '6b9765d3888aaec789e8c309eb05b05c3a87895d6ad70d2264bd7270fff665ac',
-        size: '6725030',
-        file: uploaded_file
+        size: '6725030'
       }
     end
 
     before do
       request.headers.merge!(extra_headers)
       request.headers.merge!(headers)
+
+      if uploaded_file
+        allow_next_instance_of(ActionController::Parameters) do |params|
+          allow(params).to receive(:[]).and_call_original
+          allow(params).to receive(:[]).with(:file).and_return(uploaded_file)
+        end
+      end
     end
 
     subject do
