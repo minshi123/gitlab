@@ -1,32 +1,25 @@
 <script>
-import {
-  GlModal,
-  GlDeprecatedButton,
-  GlTooltipDirective,
-  GlLoadingIcon,
-  GlSprintf,
-  GlLink,
-} from '@gitlab/ui';
+import { escape } from 'lodash';
+import { GlModal, GlTooltipDirective, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
 import { s__, __, sprintf } from '~/locale';
 import ModalCopyButton from '~/vue_shared/components/modal_copy_button.vue';
 import Icon from '~/vue_shared/components/icon.vue';
 import Callout from '~/vue_shared/components/callout.vue';
 
 export default {
+  cancelActionLabel: __('Close'),
   modalTitle: s__('FeatureFlags|Configure feature flags'),
   apiUrlLabelText: s__('FeatureFlags|API URL'),
   apiUrlCopyText: __('Copy URL'),
   instanceIdLabelText: s__('FeatureFlags|Instance ID'),
   instanceIdCopyText: __('Copy ID'),
-  regenerateInstanceIdTooltip: __('Regenerate instance ID'),
   instanceIdRegenerateError: __('Unable to generate new instance ID'),
   instanceIdRegenerateText: __(
     'Regenerating the instance ID can break integration depending on the client you are using.',
   ),
-
+  instanceIdRegenerateActionLabel: __('Regenerate instance ID'),
   components: {
     GlModal,
-    GlDeprecatedButton,
     ModalCopyButton,
     Icon,
     Callout,
@@ -78,8 +71,38 @@ export default {
       required: true,
     },
   },
-
+  inject: ['projectName'],
+  data() {
+    return {
+      enteredProjectName: '',
+    };
+  },
   computed: {
+    cancelActionProps() {
+      return { text: this.$options.cancelActionLabel };
+    },
+    regenerateInstanceIdActionProps() {
+      return {
+        text: this.$options.instanceIdRegenerateActionLabel,
+        attributes: [{ disabled: !this.canRegenerateInstanceId, variant: 'danger' }],
+      };
+    },
+    canRegenerateInstanceId() {
+      return this.canUserRotateToken && this.enteredProjectName === this.projectName;
+    },
+    preventAccidentalActionsText() {
+      return sprintf(
+        s__(
+          `FeatureFlags|To prevent accidental actions we ask you to confirm your intention. Please type %{project_name} to proceed or close this modal to cancel.`,
+        ),
+        {
+          project_name: `<span class="gl-font-weight-bold gl-text-red-500">'${escape(
+            this.projectName,
+          )}'</span>`,
+        },
+        false,
+      );
+    },
     helpText() {
       return sprintf(
         s__(
@@ -97,14 +120,21 @@ export default {
   },
 
   methods: {
-    rotateToken() {
+    rotateToken(event) {
       this.$emit('token');
+      this.enteredProjectName = '';
+      event.preventDefault();
     },
   },
 };
 </script>
 <template>
-  <gl-modal :modal-id="modalId" :hide-footer="true">
+  <gl-modal
+    :modal-id="modalId"
+    :action-cancel="cancelActionProps"
+    :action-primary="regenerateInstanceIdActionProps"
+    @primary="rotateToken"
+  >
     <template #modal-title>
       {{ $options.modalTitle }}
     </template>
@@ -149,15 +179,6 @@ export default {
         />
 
         <div class="input-group-append">
-          <gl-deprecated-button
-            v-if="canUserRotateToken"
-            v-gl-tooltip.hover
-            :title="$options.regenerateInstanceIdTooltip"
-            class="input-group-text"
-            @click="rotateToken"
-          >
-            <icon name="retry" />
-          </gl-deprecated-button>
           <modal-copy-button
             :text="instanceId"
             :title="$options.instanceIdCopyText"
@@ -177,7 +198,7 @@ export default {
     </div>
     <callout
       v-if="canUserRotateToken"
-      category="info"
+      category="danger"
       :message="$options.instanceIdRegenerateText"
     />
     <callout category="warning">
@@ -193,5 +214,14 @@ export default {
         </template>
       </gl-sprintf>
     </callout>
+    <p v-html="preventAccidentalActionsText"></p>
+    <input
+      id="project_name"
+      v-model="enteredProjectName"
+      class="form-control"
+      name="project_name"
+      type="text"
+      :disabled="isRotating"
+    />
   </gl-modal>
 </template>
