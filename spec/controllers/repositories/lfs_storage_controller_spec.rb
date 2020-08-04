@@ -20,6 +20,7 @@ RSpec.describe Repositories::LfsStorageController do
     let(:headers) { workhorse_internal_api_request_header }
     let(:extra_headers) { {} }
     let(:uploaded_file) { temp_file }
+
     let(:params) do
       {
         namespace_id: project.namespace.path,
@@ -41,38 +42,39 @@ RSpec.describe Repositories::LfsStorageController do
       end
     end
 
+    after do
+      FileUtils.rm_r(temp_file) if temp_file
+    end
+
     subject do
       put :upload_finalize, params: params
     end
 
     context 'with lfs enabled' do
-      context 'with correct params' do
-        context 'user roles' do
-          where(:user_role, :expected_status) do
-            :developer | :ok
-            :guest     | :forbidden
-            :anonymous | :unauthorized
+      context 'with unauthorized roles' do
+        where(:user_role, :expected_status) do
+          :guest     | :forbidden
+          :anonymous | :unauthorized
+        end
+
+        with_them do
+          let(:extra_headers) do
+            if user_role == :anonymous
+              {}
+            else
+              { 'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user.username, pat.token) }
+            end
           end
 
-          with_them do
-            let(:extra_headers) do
-              if user_role == :anonymous
-                {}
-              else
-                { 'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user.username, pat.token) }
-              end
-            end
-
-            before do
-              project.send("add_#{user_role}", user) unless user_role == :anonymous
-            end
-
-            it_behaves_like 'returning response status', params[:expected_status]
+          before do
+            project.send("add_#{user_role}", user) unless user_role == :anonymous
           end
+
+          it_behaves_like 'returning response status', params[:expected_status]
         end
       end
 
-      context 'with a developer' do
+      context 'with at least developer role' do
         let(:extra_headers) { { 'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user.username, pat.token) } }
 
         before do
@@ -83,6 +85,8 @@ RSpec.describe Repositories::LfsStorageController do
           expect { subject }
             .to change { LfsObject.count }.by(1)
             .and change { LfsObjectsProject.count }.by(1)
+
+          expect(response).to have_gitlab_http_status(:ok)
         end
 
         context 'without the workhorse header' do
@@ -93,6 +97,12 @@ RSpec.describe Repositories::LfsStorageController do
 
         context 'without file' do
           let(:uploaded_file) { nil }
+
+          it_behaves_like 'returning response status', :unprocessable_entity
+        end
+
+        context 'with an invalid file' do
+          let(:uploaded_file) { 'test' }
 
           it_behaves_like 'returning response status', :unprocessable_entity
         end
