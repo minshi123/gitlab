@@ -202,10 +202,6 @@ RSpec.describe API::Search do
     context 'for merge_requests scope', :sidekiq_inline do
       before do
         create_list(:merge_request, 3, :unique_branches, source_project: project, author: create(:user), milestone: create(:milestone, project: project), labels: [create(:label)])
-        # create(:labeled_merge_request, target_branch: 'feature_1', source_project: project, labels: [create(:label), create(:label)])
-        # create(:merge_request, target_branch: 'feature_2', source_project: project, author: create(:user))
-        # create(:merge_request, target_branch: 'feature_3', source_project: project, milestone: create(:milestone, project: project))
-        # create(:merge_request, target_branch: 'feature_4', source_project: project)
         ensure_elasticsearch_index!
       end
 
@@ -213,13 +209,7 @@ RSpec.describe API::Search do
 
       it 'avoids N+1 queries' do
         control = ActiveRecord::QueryRecorder.new { get api(endpoint, user), params: { scope: 'merge_requests', search: '*' } }
-
         create_list(:merge_request, 3, :unique_branches, source_project: project, author: create(:user), milestone: create(:milestone, project: project), labels: [create(:label)])
-        # create(:labeled_merge_request, target_branch: 'feature_5', source_project: project, labels: [create(:label), create(:label)])
-        # create(:merge_request, target_branch: 'feature_6', source_project: project, author: create(:user))
-        # create(:merge_request, target_branch: 'feature_7', source_project: project, milestone: create(:milestone, project: project))
-        # create(:merge_request, target_branch: 'feature_8', source_project: project)
-
         ensure_elasticsearch_index!
 
         expect { get api(endpoint, user), params: { scope: 'merge_requests', search: '*' } }.not_to exceed_query_limit(control)
