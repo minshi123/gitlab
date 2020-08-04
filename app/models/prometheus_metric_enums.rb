@@ -28,38 +28,31 @@ module PrometheusMetricEnums
       # built-in groups
       nginx_ingress_vts: {
         group_title: _('Response metrics (NGINX Ingress VTS)'),
-        required_metrics: %w(nginx_upstream_responses_total nginx_upstream_response_msecs_avg),
-        priority: 10
+        required_metrics: %w(nginx_upstream_responses_total nginx_upstream_response_msecs_avg)
       }.freeze,
       nginx_ingress: {
         group_title: _('Response metrics (NGINX Ingress)'),
-        required_metrics: %w(nginx_ingress_controller_requests nginx_ingress_controller_ingress_upstream_latency_seconds_sum),
-        priority: 10
+        required_metrics: %w(nginx_ingress_controller_requests nginx_ingress_controller_ingress_upstream_latency_seconds_sum)
       }.freeze,
       ha_proxy: {
         group_title: _('Response metrics (HA Proxy)'),
-        required_metrics: %w(haproxy_frontend_http_requests_total haproxy_frontend_http_responses_total),
-        priority: 10
+        required_metrics: %w(haproxy_frontend_http_requests_total haproxy_frontend_http_responses_total)
       }.freeze,
       aws_elb: {
         group_title: _('Response metrics (AWS ELB)'),
-        required_metrics: %w(aws_elb_request_count_sum aws_elb_latency_average aws_elb_httpcode_backend_5_xx_sum),
-        priority: 10
+        required_metrics: %w(aws_elb_request_count_sum aws_elb_latency_average aws_elb_httpcode_backend_5_xx_sum)
       }.freeze,
       nginx: {
         group_title: _('Response metrics (NGINX)'),
-        required_metrics: %w(nginx_server_requests nginx_server_requestMsec),
-        priority: 10
+        required_metrics: %w(nginx_server_requests nginx_server_requestMsec)
       }.freeze,
       kubernetes: {
         group_title: _('System metrics (Kubernetes)'),
-        required_metrics: %w(container_memory_usage_bytes container_cpu_usage_seconds_total),
-        priority: 5
+        required_metrics: %w(container_memory_usage_bytes container_cpu_usage_seconds_total)
       }.freeze,
       cluster_health: {
         group_title: _('Cluster Health'),
-        required_metrics: %w(container_memory_usage_bytes container_cpu_usage_seconds_total),
-        priority: 10
+        required_metrics: %w(container_memory_usage_bytes container_cpu_usage_seconds_total)
       }.freeze
     }.merge(custom_group_details).freeze
   end
@@ -68,16 +61,13 @@ module PrometheusMetricEnums
   def self.custom_group_details
     {
       business: {
-        group_title: _('Business metrics (Custom)'),
-        priority: 0
+        group_title: _('Business metrics (Custom)')
       }.freeze,
       response: {
-        group_title: _('Response metrics (Custom)'),
-        priority: -5
+        group_title: _('Response metrics (Custom)')
       }.freeze,
       system: {
-        group_title: _('System metrics (Custom)'),
-        priority: -10
+        group_title: _('System metrics (Custom)')
       }.freeze
     }.freeze
   end

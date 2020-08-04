@@ -24,10 +24,6 @@ class PrometheusMetric < ApplicationRecord
   scope :common, -> { where(common: true) }
   scope :ordered, -> { reorder(created_at: :asc) }
 
-  def priority
-    group_details(group).fetch(:priority)
-  end
-
   def group_title
     group_details(group).fetch(:group_title)
   end
@@ -37,7 +33,7 @@ class PrometheusMetric < ApplicationRecord
   end
 
   def to_query_metric
-    Gitlab::Prometheus::Metric.new(id: id, title: title, required_metrics: required_metrics, weight: 0, y_label: y_label, queries: queries)
+    Gitlab::Prometheus::Metric.new(id: id, title: title, required_metrics: required_metrics, y_label: y_label, queries: queries)
   end
 
   def to_metric_hash
