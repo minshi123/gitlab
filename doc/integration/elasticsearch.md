@@ -171,7 +171,7 @@ any sub-groups and projects belonging to those sub-groups to be indexed as well.
 NOTE: **Note:**
 Elasticsearch only provides cross-group code, commit, comment, and wiki search (global) for indexed namespaces.
 
-In this particular scenario where only a subset of namespaces are indexed, a global search will provide code, commit, comment, and wiki scopes which return values from the subset of indexed namespaces. If you would like to perform a search against a namespace that is not indexed, you can select the group or project in the search filter. Additionally, it is possible to perform a global "basic search" by appending `&basic_search=true` to the URL in the browser bar. This search will use other data sources (ie. PostgreSQL data and Git data) and the code, commit, comment, and wiki scopes will not be displayed.
+In this particular scenario where only a subset of namespaces are indexed, a global search will provide code, commit, comment, and wiki scopes which return values from the subset of indexed namespaces. If you would like to perform a search against a namespace that is not indexed, you can select the group or project in the search filter. Additionally, it is possible to perform a global "basic search" by appending `&basic_search=true` to the URL in the browser bar. This search will use other data sources (that is PostgreSQL data and Git data) and the code, commit, comment, and wiki scopes will not be displayed.
 
 You can filter the selection dropdown by writing part of the namespace or project name you're interested in.
 
