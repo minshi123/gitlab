@@ -3,18 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Issues::MoveService do
-  let(:user) { create(:user) }
-  let(:author) { create(:user) }
-  let(:title) { 'Some issue' }
-  let(:description) { "Some issue description with mention to #{user.to_reference}" }
-  let(:group) { create(:group, :private) }
-  let(:sub_group_1) { create(:group, :private, parent: group) }
-  let(:sub_group_2) { create(:group, :private, parent: group) }
-  let(:old_project) { create(:project, namespace: sub_group_1) }
-  let(:new_project) { create(:project, namespace: sub_group_2) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:author) { create(:user) }
+  let_it_be(:title) { 'Some issue' }
+  let_it_be(:original_content) { "Some issue description with mention to #{user.to_reference}" }
+  let_it_be(:group) { create(:group, :private) }
+  let_it_be(:sub_group_1) { create(:group, :private, parent: group) }
+  let_it_be(:sub_group_2) { create(:group, :private, parent: group) }
+  let_it_be(:old_project) { create(:project, namespace: sub_group_1) }
+  let_it_be(:new_project) { create(:project, namespace: sub_group_2) }
 
   let(:old_issue) do
-    create(:issue, title: title, description: description, project: old_project, author: author)
+    create(:issue, title: title, description: original_content, project: old_project, author: author)
   end
 
   subject(:move_service) do
@@ -30,16 +30,18 @@ RSpec.describe Issues::MoveService do
 
   describe '#execute' do
     shared_context 'issue move executed' do
-      let!(:award_emoji) { create(:award_emoji, awardable: old_issue) }
-
       let!(:new_issue) { move_service.execute(old_issue, new_project) }
     end
 
     context 'issue movable' do
-      let!(:note_with_mention) { create(:note, noteable: old_issue, author: author, project: old_project, note: "note with mention #{user.to_reference}") }
-      let!(:note_with_no_mention) { create(:note, noteable: old_issue, author: author, project: old_project, note: "note without mention") }
-
       include_context 'user can move issue'
+
+      include_examples 'rewrites content' do
+        let(:source_project) { old_project }
+        let(:target_project) { new_project }
+        let(:execute_service) { move_service.execute(old_issue, target_project) }
+        let(:new_content) { execute_service.description }
+      end
 
       context 'generic issue' do
         include_context 'issue move executed'
@@ -48,12 +50,12 @@ RSpec.describe Issues::MoveService do
           expect(new_issue.project).to eq new_project
         end
 
-        it 'rewrites issue title' do
+        it 'copies issue title' do
           expect(new_issue.title).to eq title
         end
 
-        it 'rewrites issue description' do
-          expect(new_issue.description).to eq description
+        it 'copies issue description' do
+          expect(new_issue.description).to eq original_content
         end
 
         it 'adds system note to old issue at the end' do
@@ -93,23 +95,21 @@ RSpec.describe Issues::MoveService do
         it 'preserves create time' do
           expect(old_issue.created_at).to eq new_issue.created_at
         end
+      end
 
-        it 'moves the award emoji' do
+      context 'issue with award emoji' do
+        let!(:award_emoji) { create(:award_emoji, awardable: old_issue) }
+
+        it 'copies the award emoji' do
+          old_issue.reload
+          new_issue = move_service.execute(old_issue, new_project)
+
           expect(old_issue.award_emoji.first.name).to eq new_issue.reload.award_emoji.first.name
-        end
-
-        context 'when issue has notes with mentions' do
-          it 'saves user mentions with actual mentions for new issue' do
-            expect(new_issue.user_mentions.find_by(note_id: nil).mentioned_users_ids).to match_array([user.id])
-            expect(new_issue.user_mentions.where.not(note_id: nil).first.mentioned_users_ids).to match_array([user.id])
-            expect(new_issue.user_mentions.where.not(note_id: nil).count).to eq 1
-            expect(new_issue.user_mentions.count).to eq 2
-          end
         end
       end
 
       context 'issue with assignee' do
-        let(:assignee) { create(:user) }
+        let_it_be(:assignee) { create(:user) }
 
         before do
           old_issue.assignees = [assignee]
@@ -152,6 +152,142 @@ RSpec.describe Issues::MoveService do
           # actually get to the `after_commit` hook that queues these jobs.
           expect { move_service.execute(old_issue, new_project) }
             .not_to raise_error # Sidekiq::Worker::EnqueueFromTransactionError
+        end
+      end
+
+      context 'issue with notes' do
+        context 'does this need a context?' do
+          include_examples 'rewrites content' do
+            let!(:note) { create(:note, note: original_content, noteable: old_issue, project: old_project) }
+            let(:original_content) { 'My note' }
+            let(:execute_service) { move_service.execute(old_issue, new_project) }
+            let(:source_project) { old_project }
+            let(:target_project) { new_project }
+            let(:new_content) { execute_service.notes.first.note }
+          end
+        end
+
+        # TODO rename this to be about properties or something?
+        context 'simple notes' do
+          let!(:notes) do
+            [
+              create(:note, noteable: old_issue, project: old_project, created_at: 2.weeks.ago, updated_at: 1.week.ago),
+              create(:note, noteable: old_issue, project: old_project),
+              create(:note, system: true, noteable: old_issue, project: old_project)
+            ]
+          end
+
+          let!(:system_note_metadata) { create(:system_note_metadata, note: notes.last) }
+          let!(:award_emoji) { create(:award_emoji, awardable: notes.first, name: 'thumbsup')}
+          let(:copied_notes) { new_issue.notes.limit(notes.size) } # Remove the system note added by the copy itself
+
+          include_context 'issue move executed'
+
+          it 'copies existing notes in valid order' do
+            expect(copied_notes.order('id ASC').pluck(:note)).to eq(notes.map(&:note))
+          end
+
+          it 'copies all the issue notes' do
+            expect(copied_notes.count).to eq(3)
+          end
+
+          it 'does not change the note attributes' do
+            new_note = copied_notes.first
+
+            expect(new_note.note).to eq(note1.note)
+            expect(new_note.author).to eq(note1.author)
+          end
+
+          it 'copies the award emojis' do
+            new_note = copied_notes.first
+            new_note.award_emoji.first.name = 'thumbsup'
+          end
+
+          it 'copies system_note_metadata for system note' do
+            new_note = copied_notes.last
+
+            expect(new_note.system_note_metadata.action).to eq(system_note_metadata.action)
+            expect(new_note.system_note_metadata.id).not_to eq(system_note_metadata.id)
+          end
+        end
+
+        context 'notes with mentions' do
+          let!(:note_with_mention) { create(:note, noteable: old_issue, author: author, project: old_project, note: "note with mention #{user.to_reference}") }
+          let!(:note_with_no_mention) { create(:note, noteable: old_issue, author: author, project: old_project, note: "note without mention") }
+
+          include_context 'issue move executed'
+
+          it 'saves user mentions with actual mentions for new issue' do
+            expect(new_issue.user_mentions.find_by(note_id: nil).mentioned_users_ids).to match_array([user.id])
+            expect(new_issue.user_mentions.where.not(note_id: nil).first.mentioned_users_ids).to match_array([user.id])
+            expect(new_issue.user_mentions.where.not(note_id: nil).count).to eq 1
+            expect(new_issue.user_mentions.count).to eq 2
+          end
+        end
+
+        # context 'notes with reference' do
+        #   let(:other_issue) { create(:issue, project: old_project) }
+        #   let(:merge_request) { create(:merge_request) }
+        #   let(:text) do
+        #     "See ##{other_issue.iid} and #{merge_request.project.full_path}!#{merge_request.iid}"
+        #   end
+        #   let!(:note) { create(:note, noteable: old_issue, note: text, project: old_project) }
+
+        #   include_context 'issue move executed'
+
+        #   it 'rewrites the references correctly' do
+        #     new_note = new_issue.notes.first
+
+        #     expected_text = "See #{other_issue.project.path}##{other_issue.iid} and #{merge_request.project.full_path}!#{merge_request.iid}"
+
+        #     expect(new_note.note).to eq(expected_text)
+        #     expect(new_note.author).to eq(note.author)
+        #   end
+        # end
+
+        # context 'notes with upload' do
+        #   let(:uploader) { build(:file_uploader, project: old_project) }
+        #   let(:text) { "Simple text with image: #{uploader.markdown_link} "}
+        #   let!(:note) { create(:note, noteable: old_issue, note: text, project: old_project) }
+
+        #   include_context 'issue move executed'
+
+        #   it 'rewrites note content correctly' do
+        #     new_note = new_issue.notes.first
+
+        #     expect(note.note).to match(/Simple text with image: #{FileUploader::MARKDOWN_PATTERN}/)
+        #     expect(new_note.note).to match(/Simple text with image: #{FileUploader::MARKDOWN_PATTERN}/)
+        #     expect(note.note).not_to eq(new_note.note)
+        #     expect(note.note_html).not_to eq(new_note.note_html)
+        #   end
+        # end
+
+        context "discussion notes" do
+          let(:note) { create(:note, noteable: old_issue, note: "sample note", project: old_project) }
+          let!(:discussion) { create(:discussion_note_on_issue, in_reply_to: note, note: "reply to sample note") }
+
+          include_context 'issue move executed'
+
+          it 'rewrites discussion correctly' do
+            expect(new_issue.notes.count).to eq(old_issue.notes.count)
+            expect(new_issue.notes.where(discussion_id: discussion.discussion_id).count).to eq(0)
+            expect(old_issue.notes.where(discussion_id: discussion.discussion_id).count).to eq(1)
+          end
+        end
+      end
+
+      context 'issue with a design', :clean_gitlab_redis_cache do
+        let!(:design) { create(:design, :with_lfs_file, issue: old_issue) }
+        let!(:note) { create(:diff_note_on_design, noteable: design, issue: old_issue, project: old_issue.project) }
+
+        include_context 'issue move executed'
+
+        it 'copies the design and its notes', :sidekiq_inline do
+          expect(new_issue.designs.size).to eq(1)
+        end
+
+        it 'copies the design notes', :sidekiq_inline do
+          expect(new_issue.designs.first.notes.size).to eq(1)
         end
       end
     end
