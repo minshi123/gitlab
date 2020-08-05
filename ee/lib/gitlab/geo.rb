@@ -164,7 +164,8 @@ module Gitlab
     def self.replicator_classes
       classes = [
           ::Geo::PackageFileReplicator,
-          ::Geo::TerraformStateReplicator
+          ::Geo::TerraformStateReplicator,
+          ::Geo::SnippetRepositoryReplicator
       ]
 
       classes.select(&:enabled?)

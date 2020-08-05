@@ -176,6 +176,9 @@ configuration option in `gitlab.yml`. These metrics are served from the
 | `package_files_count`                          | Gauge   | 13.0  | Number of package files on primary | `url` |
 | `package_files_checksummed_count`              | Gauge   | 13.0  | Number of package files checksummed on primary | `url` |
 | `package_files_checksum_failed_count`          | Gauge   | 13.0  | Number of package files failed to calculate the checksum on primary
+| `snippet_repositories_count`                          | Gauge   | 13.0  | Number of snippets on primary | `url` |
+| `snippet_repositories_checksummed_count`              | Gauge   | 13.0  | Number of snippets checksummed on primary | `url` |
+| `snippet_repositories_checksum_failed_count`          | Gauge   | 13.0  | Number of snippets failed to calculate the checksum on primary
 
 ## Database load balancing metrics **(PREMIUM ONLY)**
 

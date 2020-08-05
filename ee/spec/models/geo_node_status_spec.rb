@@ -1237,6 +1237,88 @@ RSpec.describe GeoNodeStatus, :geo do
     end
   end
 
+  describe '#snippet_repositories_checksummed_count' do
+    before do
+      stub_current_geo_node(primary)
+    end
+
+    it 'returns the right number of checksummed snippet repositories' do
+      create(:snippet_repository, :checksummed)
+      create(:snippet_repository, :checksummed)
+      create(:snippet_repository, :checksum_failure)
+
+      expect(subject.snippet_repositories_checksummed_count).to eq(2)
+    end
+  end
+
+  describe '#snippet_repositories_checksum_failed_count' do
+    before do
+      stub_current_geo_node(primary)
+    end
+
+    it 'returns the right number of failed snippet repositories' do
+      create(:snippet_repository, :checksummed)
+      create(:snippet_repository, :checksum_failure)
+      create(:snippet_repository, :checksum_failure)
+
+      expect(subject.snippet_repositories_checksum_failed_count).to eq(2)
+    end
+  end
+
+  describe '#snippet_repositories_checksummed_in_percentage' do
+    before do
+      stub_current_geo_node(primary)
+    end
+
+    it 'returns 0 when no package files available' do
+      expect(subject.snippet_repositories_checksummed_in_percentage).to eq(0)
+    end
+
+    it 'returns the right percentage' do
+      create(:snippet_repository, :checksummed)
+      create(:snippet_repository, :checksummed)
+      create(:snippet_repository, :checksummed)
+      create(:snippet_repository, :checksum_failure)
+
+      expect(subject.snippet_repositories_checksummed_in_percentage).to be_within(0.0001).of(75)
+    end
+  end
+
+  describe 'snippet repositories secondary counters' do
+    context 'when package registries available' do
+      before do
+        create(:geo_snippet_repository_registry, :failed)
+        create(:geo_snippet_repository_registry, :failed)
+        create(:geo_snippet_repository_registry, :synced)
+      end
+
+      it 'returns the right number of repos in registry' do
+        expect(subject.snippet_repositories_registry_count).to eq(3)
+      end
+
+      it 'returns the right number of failed and synced repos' do
+        expect(subject.snippet_repositories_failed_count).to eq(2)
+        expect(subject.snippet_repositories_synced_count).to eq(1)
+      end
+
+      it 'returns the percent of synced package files' do
+        expect(subject.snippet_repositories_synced_in_percentage).to be_within(0.01).of(33.33)
+      end
+    end
+
+    context 'when no snippet repositories available' do
+      it 'returns 0' do
+        expect(subject.snippet_repositories_registry_count).to eq(0)
+        expect(subject.snippet_repositories_failed_count).to eq(0)
+        expect(subject.snippet_repositories_synced_count).to eq(0)
+      end
+
+      it 'returns 0' do
+        expect(subject.snippet_repositories_synced_in_percentage).to eq(0)
+      end
+    end
+  end
+
   describe '#load_data_from_current_node' do
     context 'on the primary' do
       before do

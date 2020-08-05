@@ -81,6 +81,13 @@ class GeoNodeStatus < ApplicationRecord
     package_files_synced_count
     package_files_failed_count
     package_files_registry_count
+    snippet_repositories_count
+    snippet_repositories_checksummed_count
+    snippet_repositories_checksum_failed_count
+    snippet_repositories_synced_count
+    snippet_repositories_failed_count
+    snippet_repositories_registry_count
+
   ).freeze
 
   # Be sure to keep this consistent with Prometheus naming conventions
@@ -159,7 +166,13 @@ class GeoNodeStatus < ApplicationRecord
     package_files_checksum_failed_count: 'Number of package files failed to checksum on primary',
     package_files_registry_count: 'Number of package files in the registry',
     package_files_synced_count: 'Number of package files synced on secondary',
-    package_files_failed_count: 'Number of package files failed to sync on secondary'
+    package_files_failed_count: 'Number of package files failed to sync on secondary',
+    snippet_repositories_count: 'Number of snippets on primary',
+    snippet_repositories_checksummed_count: 'Number of snippets checksummed on primary',
+    snippet_repositories_checksum_failed_count: 'Number of snippets failed to checksum on primary',
+    snippet_repositories_synced_count: 'Number of snippets synced on secondary',
+    snippet_repositories_failed_count: 'Number of snippets failed to sync on secondary',
+    snippet_repositories_registry_count: 'Number of snippets in the registry'
   }.freeze
 
   EXPIRATION_IN_MINUTES = 10
@@ -298,6 +311,7 @@ class GeoNodeStatus < ApplicationRecord
 
     self.projects_count = geo_node.projects.count
     self.package_files_count = Geo::PackageFileReplicator.primary_total_count
+    self.snippet_repositories_count = Geo::SnippetRepositoryReplicator.primary_total_count
 
     load_status_message
     load_event_data
@@ -362,21 +376,23 @@ class GeoNodeStatus < ApplicationRecord
     end
   end
 
-  attr_in_percentage :repositories_synced,           :repositories_synced_count,           :repositories_count
-  attr_in_percentage :repositories_checksummed,      :repositories_checksummed_count,      :repositories_count
-  attr_in_percentage :repositories_verified,         :repositories_verified_count,         :repositories_count
-  attr_in_percentage :repositories_checked,          :repositories_checked_count,          :repositories_count
-  attr_in_percentage :wikis_synced,                  :wikis_synced_count,                  :wikis_count
-  attr_in_percentage :wikis_checksummed,             :wikis_checksummed_count,             :wikis_count
-  attr_in_percentage :wikis_verified,                :wikis_verified_count,                :wikis_count
-  attr_in_percentage :lfs_objects_synced,            :lfs_objects_synced_count,            :lfs_objects_count
-  attr_in_percentage :job_artifacts_synced,          :job_artifacts_synced_count,          :job_artifacts_count
-  attr_in_percentage :attachments_synced,            :attachments_synced_count,            :attachments_count
-  attr_in_percentage :replication_slots_used,        :replication_slots_used_count,        :replication_slots_count
-  attr_in_percentage :container_repositories_synced, :container_repositories_synced_count, :container_repositories_count
-  attr_in_percentage :design_repositories_synced,    :design_repositories_synced_count,    :design_repositories_count
-  attr_in_percentage :package_files_checksummed,     :package_files_checksummed_count,     :package_files_count
-  attr_in_percentage :package_files_synced,          :package_files_synced_count,          :package_files_registry_count
+  attr_in_percentage :repositories_synced,              :repositories_synced_count,              :repositories_count
+  attr_in_percentage :repositories_checksummed,         :repositories_checksummed_count,         :repositories_count
+  attr_in_percentage :repositories_verified,            :repositories_verified_count,            :repositories_count
+  attr_in_percentage :repositories_checked,             :repositories_checked_count,             :repositories_count
+  attr_in_percentage :wikis_synced,                     :wikis_synced_count,                     :wikis_count
+  attr_in_percentage :wikis_checksummed,                :wikis_checksummed_count,                :wikis_count
+  attr_in_percentage :wikis_verified,                   :wikis_verified_count,                   :wikis_count
+  attr_in_percentage :lfs_objects_synced,               :lfs_objects_synced_count,               :lfs_objects_count
+  attr_in_percentage :job_artifacts_synced,             :job_artifacts_synced_count,             :job_artifacts_count
+  attr_in_percentage :attachments_synced,               :attachments_synced_count,               :attachments_count
+  attr_in_percentage :replication_slots_used,           :replication_slots_used_count,           :replication_slots_count
+  attr_in_percentage :container_repositories_synced,    :container_repositories_synced_count,    :container_repositories_count
+  attr_in_percentage :design_repositories_synced,       :design_repositories_synced_count,       :design_repositories_count
+  attr_in_percentage :package_files_checksummed,        :package_files_checksummed_count,        :package_files_count
+  attr_in_percentage :package_files_synced,             :package_files_synced_count,             :package_files_registry_count
+  attr_in_percentage :snippet_repositories_checksummed, :snippet_repositories_checksummed_count, :snippet_repositories_count
+  attr_in_percentage :snippet_repositories_synced,      :snippet_repositories_synced_count,      :snippet_repositories_registry_count
 
   def synced_in_percentage_for(replicator_class)
     public_send("#{replicator_class.replicable_name_plural}_synced_in_percentage") # rubocop:disable GitlabSecurity/PublicSend
@@ -447,6 +463,7 @@ class GeoNodeStatus < ApplicationRecord
     load_container_registry_data
     load_designs_data
     load_package_files_data
+    load_snippet_repositories_data
   end
 
   def load_repositories_data
@@ -512,6 +529,12 @@ class GeoNodeStatus < ApplicationRecord
     self.package_files_failed_count = Geo::PackageFileReplicator.failed_count
   end
 
+  def load_snippet_repositories_data
+    self.snippet_repositories_registry_count = Geo::SnippetRepositoryReplicator.registry_count
+    self.snippet_repositories_synced_count = Geo::SnippetRepositoryReplicator.synced_count
+    self.snippet_repositories_failed_count = Geo::SnippetRepositoryReplicator.failed_count
+  end
+
   def load_repository_check_data
     if Gitlab::Geo.primary?
       self.repositories_checked_count = Project.where.not(last_repository_check_at: nil).count
@@ -539,6 +562,8 @@ class GeoNodeStatus < ApplicationRecord
     self.wikis_checksum_failed_count = repository_verification_finder.count_verification_failed_wikis
     self.package_files_checksummed_count = Geo::PackageFileReplicator.checksummed_count
     self.package_files_checksum_failed_count = Geo::PackageFileReplicator.checksum_failed_count
+    self.snippet_repositories_checksummed_count = Geo::SnippetRepositoryReplicator.checksummed_count
+    self.snippet_repositories_checksum_failed_count = Geo::SnippetRepositoryReplicator.checksum_failed_count
   end
 
   def load_secondary_verification_data

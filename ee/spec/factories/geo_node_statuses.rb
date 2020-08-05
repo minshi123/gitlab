@@ -43,6 +43,12 @@ FactoryBot.define do
       package_files_failed_count { 3 }
       package_files_synced_count { 580 }
       package_files_checksum_failed_count { 585 }
+      snippet_repositories_count { 585 }
+      snippet_repositories_checksummed_count { 585 }
+      snippet_repositories_registry_count { 585 }
+      snippet_repositories_failed_count { 3 }
+      snippet_repositories_synced_count { 580 }
+      snippet_repositories_checksum_failed_count { 585 }
       repositories_verified_count { 501 }
       repositories_verification_failed_count { 100 }
       repositories_checksum_mismatch_count { 15 }

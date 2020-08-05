@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_30_133800) do
+ActiveRecord::Schema.define(version: 2020_08_11_171011) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "postgres_fdw"
 
   create_table "container_repository_registry", id: :serial, force: :cascade do |t|
     t.integer "container_repository_id", null: false
@@ -168,6 +169,21 @@ ActiveRecord::Schema.define(version: 2020_07_30_133800) do
     t.index ["wiki_verification_checksum_sha"], name: "idx_project_registry_on_wiki_checksum_sha_partial", where: "(wiki_verification_checksum_sha IS NULL)"
   end
 
+  create_table "snippet_repository_registry", force: :cascade do |t|
+    t.datetime_with_timezone "retry_at"
+    t.datetime_with_timezone "last_synced_at"
+    t.datetime_with_timezone "created_at", null: false
+    t.bigint "snippet_repository_id", null: false
+    t.integer "state", limit: 2, default: 0, null: false
+    t.integer "retry_count", limit: 2, default: 0
+    t.text "last_sync_failure"
+    t.boolean "force_to_redownload"
+    t.boolean "missing_on_primary"
+    t.index ["retry_at"], name: "index_snippet_repository_registry_on_retry_at"
+    t.index ["snippet_repository_id"], name: "index_snippet_repository_registry_on_snippet_repository_id", unique: true
+    t.index ["state"], name: "index_snippet_repository_registry_on_state"
+  end
+
   create_table "terraform_state_registry", force: :cascade do |t|
     t.datetime_with_timezone "retry_at"
     t.datetime_with_timezone "last_synced_at"
@@ -180,4 +196,5 @@ ActiveRecord::Schema.define(version: 2020_07_30_133800) do
     t.index ["state"], name: "index_terraform_state_registry_on_state"
     t.index ["terraform_state_id"], name: "index_terraform_state_registry_on_terraform_state_id"
   end
+
 end

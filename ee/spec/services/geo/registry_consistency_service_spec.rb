@@ -194,7 +194,7 @@ RSpec.describe Geo::RegistryConsistencyService, :geo, :use_clean_rails_memory_st
           end
 
           before do
-            model_class.where(id: unused_registry_ids).delete_all
+            model_class.where(model_class.primary_key => unused_registry_ids).delete_all
           end
 
           it 'deletes unused registries', :sidekiq_inline do
@@ -219,7 +219,7 @@ RSpec.describe Geo::RegistryConsistencyService, :geo, :use_clean_rails_memory_st
           end
 
           before do
-            model_class.where(id: unused_registry_ids).delete_all
+            model_class.where(model_class.primary_key => unused_registry_ids).delete_all
           end
 
           it 'deletes unused registries', :sidekiq_inline do
