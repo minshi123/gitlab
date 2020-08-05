@@ -72,17 +72,6 @@ module Gitlab
         local? && file_exist?
       end
 
-      # This checks for existence of the file on storage
-      #
-      # @return [Boolean] whether the file exists on storage
-      def file_exist?
-        if local?
-          File.exist?(replicator.carrierwave_uploader.path)
-        else
-          replicator.carrierwave_uploader.exists?
-        end
-      end
-
       def in_replicables_for_geo_node?
         self.class.replicables_for_geo_node.id_in(self).exists?
       end

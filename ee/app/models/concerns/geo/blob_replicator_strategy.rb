@@ -12,24 +12,11 @@ module Geo
       event :deleted
     end
 
-    def handle_after_create_commit
-      return unless self.class.enabled?
-
-      publish(:created, **created_params)
-      schedule_checksum_calculation if needs_checksum?
-    end
-
     # Called by Gitlab::Geo::Replicator#consume
     def consume_event_created(**params)
       return unless in_replicables_for_geo_node?
 
       download
-    end
-
-    def handle_after_destroy
-      return unless self.class.enabled?
-
-      publish(:deleted, **deleted_params)
     end
 
     # Called by Gitlab::Geo::Replicator#consume
@@ -105,22 +92,19 @@ module Geo
       ).execute
     end
 
-    def schedule_checksum_calculation
-      Geo::BlobVerificationPrimaryWorker.perform_async(replicable_name, model_record.id)
-    end
-
-    def created_params
-      { model_record_id: model_record.id }
-    end
-
     def deleted_params
       { model_record_id: model_record.id, blob_path: blob_path }
     end
 
-    def needs_checksum?
-      return true unless model_record.respond_to?(:needs_checksum?)
-
-      model_record.needs_checksum?
+    # This checks for existence of the file on storage
+    #
+    # @return [Boolean] whether the file exists on storage
+    def file_exist?
+      if local?
+        File.exist?(replicator.carrierwave_uploader.path)
+      else
+        replicator.carrierwave_uploader.exists?
+      end
     end
   end
 end

@@ -188,6 +188,10 @@ module Gitlab
         const_get("::Geo::#{name}Replicator", false)
       end
 
+      def self.replication_enabled_feature_key
+        :"geo_#{replicable_name}_replication"
+      end
+
       # @param [ActiveRecord::Base] model_record
       # @param [Integer] model_record_id
       def initialize(model_record: nil, model_record_id: nil)
@@ -284,11 +288,52 @@ module Gitlab
         { replicable_name: replicable_name, replicable_id: model_record_id }
       end
 
-      protected
+      def handle_after_create_commit
+        return unless self.class.enabled?
 
-      def self.replication_enabled_feature_key
-        :"geo_#{replicable_name}_replication"
+        publish(:created, **created_params)
+        schedule_checksum_calculation if needs_checksum?
       end
+
+      def handle_after_destroy
+        return unless self.class.enabled?
+
+        publish(:deleted, **deleted_params)
+      end
+
+      def handle_update
+        return unless self.class.enabled?
+
+        publish(:update, **updated_params)
+      end
+
+      def schedule_checksum_calculation
+        raise NotImplementedError
+      end
+
+      def created_params
+        event_params
+      end
+
+      def deleted_params
+        event_params
+      end
+
+      def updated_params
+        event_params
+      end
+
+      def event_params
+        { model_record_id: model_record.id }
+      end
+
+      def needs_checksum?
+        return true unless model_record.respond_to?(:needs_checksum?)
+
+        model_record.needs_checksum?
+      end
+
+      protected
 
       # Store an event on the database
       #
