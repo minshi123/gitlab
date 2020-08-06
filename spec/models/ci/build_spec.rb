@@ -2210,6 +2210,7 @@ RSpec.describe Ci::Build do
 
     before do
       stub_container_registry_config(enabled: container_registry_enabled, host_port: 'registry.example.com')
+      allow(Gitlab::Ci::Jwt).to receive(:for_build).and_return('ci.job.jwt')
     end
 
     subject { build.variables }
@@ -2281,7 +2282,6 @@ RSpec.describe Ci::Build do
       end
 
       before do
-        allow(Gitlab::Ci::Jwt).to receive(:for_build).with(build).and_return('ci.job.jwt')
         build.set_token('my-token')
         build.yaml_variables = []
       end
