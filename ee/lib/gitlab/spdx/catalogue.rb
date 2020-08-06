@@ -5,6 +5,8 @@ module Gitlab
     class Catalogue
       include Enumerable
 
+      OFFLINE_CATALOGUE = 'vendor/spdx.json'
+
       def initialize(catalogue = {})
         @catalogue = catalogue
       end
@@ -21,7 +23,7 @@ module Gitlab
 
       def self.latest
         if offline_env? & Feature.enabled?(:offline_spdx_catalogue)
-          new(JSON.parse(Rails.root.join('vendor/spdx.json')))
+          new(offline_catalogue)
         else
           CatalogueGateway.new.fetch
         end
@@ -41,6 +43,10 @@ module Gitlab
           name: license_hash[:name],
           deprecated: license_hash[:isDeprecatedLicenseId]
         )
+      end
+
+      def offline_catalogue
+        Gitlab::JSON.parse(Rails.root.join(OFFLINE_CATALOGUE))
       end
     end
   end
