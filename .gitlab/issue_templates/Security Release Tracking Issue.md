@@ -22,6 +22,22 @@ in the "Linked issues" section below this issue description.
 tracking issue, their merge requests will not be included in the security
 release.
 
+## Branches to target in GitLab Security
+
+Your issue in GitLab Security should be linked to 4 Merge Requests [targeting the
+following branches](https://gitlab.com/gitlab-org/release/docs/blob/master/general/security/developer.md#process):
+
+<!--
+List all the branches that each issue in GitLab Security should have an MR for
+
+Usually, master + the 3 previous versions
+-->
+
+- master
+- 12-1-stable
+- 12-0-stable
+- 11-11-stable
+
 ## Blog post
 
 Dev: {https://dev.gitlab.org/gitlab/www-gitlab-com/merge_requests/ link}<br/>
