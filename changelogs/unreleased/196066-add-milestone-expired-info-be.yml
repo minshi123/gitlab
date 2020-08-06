@@ -1,0 +1,5 @@
+---
+title: Add include_parent_group_milestones param to project milestones API endpoint
+merge_request: 38800
+author:
+type: added

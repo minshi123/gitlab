@@ -31,13 +31,28 @@ module API
         end
 
         def list_milestones_for(parent)
-          milestones = parent.milestones.order_id_desc
+          milestones = init_milestones_collection(parent)
           milestones = Milestone.filter_by_state(milestones, params[:state])
-          milestones = filter_by_iid(milestones, params[:iids]) if params[:iids].present?
+          if params[:iids].present? && !params[:include_parent_group_milestones]
+            milestones = filter_by_iid(milestones, params[:iids])
+          end
+
           milestones = filter_by_title(milestones, params[:title]) if params[:title]
           milestones = filter_by_search(milestones, params[:search]) if params[:search]
 
           present paginate(milestones), with: Entities::Milestone
+        end
+
+        def filter_milestones(milestones)
+          milestones = Milestone.filter_by_state(milestones, params[:state])
+          if params[:iids].present? && !params[:include_parent_group_milestones]
+            milestones = filter_by_iid(milestones, params[:iids])
+          end
+
+          milestones = filter_by_title(milestones, params[:title]) if params[:title]
+          milestones = filter_by_search(milestones, params[:search]) if params[:search]
+
+          milestones
         end
 
         def get_milestone_for(parent)
@@ -95,6 +110,22 @@ module API
           else
             [MergeRequestsFinder, Entities::MergeRequestBasic]
           end
+        end
+
+        def init_milestones_collection(parent)
+          milestones = if parent.is_a?(Project) && params[:include_parent_group_milestones].present?
+                         Milestone.for_projects_and_groups(parent.id, group_ids(parent))
+                       else
+                         parent.milestones
+                       end
+
+          milestones.order_id_desc
+        end
+
+        def group_ids(project)
+          project.group.self_and_ancestors
+            .public_or_visible_to_user(current_user)
+            .select(:id)
         end
       end
     end
