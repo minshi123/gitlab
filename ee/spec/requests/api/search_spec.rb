@@ -229,7 +229,7 @@ RSpec.describe API::Search do
       end
     end
 
-    context 'for users scope', :sidekiq_inline do
+    context 'for users scope', :sidekiq_might_not_need_inline do
       before do
         create_list(:user, 2).each do |user|
           project.add_developer(user)
