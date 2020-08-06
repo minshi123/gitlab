@@ -123,7 +123,7 @@ RSpec.describe API::Search do
         end
       end
 
-      context 'for blobs scope', :sidekiq_inline do
+      context 'for blobs scope' do
         before do
           get api(endpoint, user), params: { scope: 'blobs', search: 'monitors' }
         end
