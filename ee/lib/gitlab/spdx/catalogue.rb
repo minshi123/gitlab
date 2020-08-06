@@ -20,7 +20,11 @@ module Gitlab
       end
 
       def self.latest
-        CatalogueGateway.new.fetch
+        if offline_env? & Feature.enabled?(:offline_spdx_catalogue)
+          new(JSON.parse(Rails.root.join('vendor/spdx.json')))
+        else
+          CatalogueGateway.new.fetch
+        end
       end
 
       private
