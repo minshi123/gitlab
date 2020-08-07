@@ -40,10 +40,19 @@ module API
       end
     end
 
-    get :personal_access_tokens do
-      tokens = PersonalAccessTokensFinder.new(finder_params(current_user), current_user).execute
+    resources :personal_access_tokens do
+      get do
+        tokens = PersonalAccessTokensFinder.new(finder_params(current_user), current_user).execute
 
-      present paginate(tokens), with: Entities::PersonalAccessToken
+        present paginate(tokens), with: Entities::PersonalAccessToken
+      end
+
+      delete ':id' do
+        token = PersonalAccessToken.find(params[:id])
+        service = ::PersonalAccessTokens::RevokeService.new(current_user, { token: token }).execute
+
+        service.success? ? no_content! : not_found!
+      end
     end
   end
 end

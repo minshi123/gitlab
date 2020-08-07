@@ -60,3 +60,30 @@ curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/a
     }
 ]
 ```
+
+## Revoke personal access token
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/216004) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 13.3.
+
+Revoke a personal access token
+
+```plaintext
+DELETE /personal_access_tokens/:id
+```
+
+| Attribute | Type    | required | Description         |
+|-----------|---------|----------|---------------------|
+| `id` | integer/string | yes | ID of personal access token to revoke |
+
+NOTE: **Note:**
+Non-administrators can only revoke their own tokens. Administrators can revoke tokens from any user.
+
+```shell
+curl -X DELETE --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/personal_access_tokens/<personal_access_token_id>"
+```
+
+### Responses
+
+* `204: No Content` if successfully revoked.
+* `404 Not Found` if not revoked successfully.
+
