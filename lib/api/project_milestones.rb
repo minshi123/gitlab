@@ -16,7 +16,7 @@ module API
       end
       params do
         use :list_params
-        optional :include_parent_group_milestones, type: Boolean, default: false,
+        optional :include_parent_milestones, type: Boolean, default: false,
                   desc: 'Include group milestones from parent and its ancestors'
       end
       get ":id/milestones" do

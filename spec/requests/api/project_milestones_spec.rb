@@ -17,12 +17,12 @@ RSpec.describe API::ProjectMilestones do
   end
 
   describe 'GET /projects/:id/milestones' do
-    context 'when include_parent_group_milestones is true' do
-      let_it_be(:group) { create(:group, :public) }
-      let_it_be(:child_group) { create(:group, :public, parent: group) }
+    context 'when include_parent_milestones is true' do
+      let_it_be(:parent_group) { create(:group, :public, name: 'Parent Group') }
+      let_it_be(:child_group) { create(:group, :public, parent: parent_group, name: 'Child Group') }
       let_it_be(:child_project) { create(:project, group: child_group) }
-      let_it_be(:project_milestone) { create(:milestone, project: child_project) }
-      let_it_be(:group_milestone) { create(:milestone, group: group) }
+      let_it_be(:child_project_milestone) { create(:milestone, project: child_project) }
+      let_it_be(:parent_group_milestone) { create(:milestone, group: parent_group) }
       let_it_be(:child_group_milestone) { create(:milestone, group: child_group) }
 
       before do
@@ -30,10 +30,10 @@ RSpec.describe API::ProjectMilestones do
       end
 
       it 'includes parent groups milestones' do
-        milestones = [child_group_milestone, group_milestone, project_milestone]
+        milestones = [child_group_milestone, parent_group_milestone, child_project_milestone]
 
         get api("/projects/#{child_project.id}/milestones", user),
-            params: { include_parent_group_milestones: true }
+            params: { include_parent_milestones: true }
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response.size).to eq(3)
@@ -42,16 +42,16 @@ RSpec.describe API::ProjectMilestones do
 
       context 'when user has no access to an ancestor group' do
         before do
-          [child_group, group].each do |group|
+          [child_group, parent_group].each do |group|
             group.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
           end
         end
 
         it 'does not show ancestor group milestones' do
-          milestones = [child_group_milestone, project_milestone]
+          milestones = [child_group_milestone, child_project_milestone]
 
           get api("/projects/#{child_project.id}/milestones", user),
-              params: { include_parent_group_milestones: true }
+              params: { include_parent_milestones: true }
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response.size).to eq(2)
@@ -61,10 +61,10 @@ RSpec.describe API::ProjectMilestones do
 
       context 'when filtering by iids' do
         it 'does not filter by iids' do
-          milestones = [child_group_milestone, group_milestone, project_milestone]
+          milestones = [child_group_milestone, parent_group_milestone, child_project_milestone]
 
           get api("/projects/#{child_project.id}/milestones", user),
-              params: { include_parent_group_milestones: true, iids: [group_milestone.iid] }
+              params: { include_parent_milestones: true, iids: [parent_group_milestone.iid] }
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response.size).to eq(3)
