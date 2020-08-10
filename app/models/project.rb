@@ -2492,6 +2492,12 @@ class Project < ApplicationRecord
       .exists?
   end
 
+  def enabled_group_deploy_keys
+    return [] unless group
+
+    GroupDeployKey.for_groups(group.self_and_ancestors_ids)
+  end
+
   private
 
   def find_service(services, name)

@@ -16,7 +16,7 @@ module Projects
 
       def enabled_keys
         strong_memoize(:enabled_keys) do
-          project.deploy_keys.with_projects
+          project.deploy_keys.with_projects + project.enabled_group_deploy_keys
         end
       end
 
