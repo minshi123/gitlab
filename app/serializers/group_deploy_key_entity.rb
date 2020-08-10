@@ -18,6 +18,11 @@ class GroupDeployKeyEntity < Grape::Entity
   private
 
   def can_edit
-    Ability.allowed?(options[:user], :update_group_deploy_key, object)
+    Ability.allowed?(options[:user], :update_group_deploy_key, object) ||
+      Ability.allowed?(
+        options[:user],
+        :update_group_deploy_key_for_group,
+        object.group_deploy_keys_group_for(option[:group])
+      )
   end
 end

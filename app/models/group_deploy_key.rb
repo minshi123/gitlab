@@ -11,4 +11,8 @@ class GroupDeployKey < Key
   def type
     'DeployKey'
   end
+
+  def group_deploy_keys_group_for(group)
+    group_deploy_keys_groups.find_by(group: group)
+  end
 end
