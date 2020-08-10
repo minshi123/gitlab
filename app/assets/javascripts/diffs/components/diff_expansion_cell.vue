@@ -72,6 +72,7 @@ export default {
   created() {
     this.EXPAND_DOWN = EXPAND_DOWN;
     this.EXPAND_UP = EXPAND_UP;
+    this.UNFOLD_COUNT = UNFOLD_COUNT;
   },
   methods: {
     ...mapActions('diffs', ['loadMoreLines']),
@@ -229,20 +230,6 @@ export default {
   <td :colspan="colspan" class="text-center">
     <div class="content js-line-expansion-content">
       <a
-        v-if="canExpandUp"
-        v-tooltip
-        class="cursor-pointer js-unfold unfold-icon d-inline-block pt-2 pb-2"
-        data-placement="top"
-        data-container="body"
-        :title="__('Expand up')"
-        @click="handleExpandLines(EXPAND_UP)"
-      >
-        <icon :size="12" name="expand-up" aria-hidden="true" />
-      </a>
-      <a class="mx-2 cursor-pointer js-unfold-all" @click="handleExpandLines()">
-        <span>{{ s__('Diffs|Show unchanged lines') }}</span>
-      </a>
-      <a
         v-if="canExpandDown"
         v-tooltip
         class="cursor-pointer js-unfold-down has-tooltip unfold-icon d-inline-block pt-2 pb-2"
@@ -252,6 +239,27 @@ export default {
         @click="handleExpandLines(EXPAND_DOWN)"
       >
         <icon :size="12" name="expand-down" aria-hidden="true" />
+        <span>{{
+          sprintf(s__('Diffs|Show %{unfoldCount} more lines'), { unfoldCount: UNFOLD_COUNT })
+        }}</span>
+      </a>
+      <a class="mx-2 cursor-pointer js-unfold-all" @click="handleExpandLines()">
+        <icon :size="12" name="expand" aria-hidden="true" />
+        <span>{{ s__('Diffs|Show all unchanged lines') }}</span>
+      </a>
+      <a
+        v-if="canExpandUp"
+        v-tooltip
+        class="cursor-pointer js-unfold unfold-icon d-inline-block pt-2 pb-2"
+        data-placement="top"
+        data-container="body"
+        :title="__('Expand up')"
+        @click="handleExpandLines(EXPAND_UP)"
+      >
+        <icon :size="12" name="expand-up" aria-hidden="true" />
+        <span>{{
+          sprintf(s__('Diffs|Show %{unfoldCount} more lines'), { unfoldCount: UNFOLD_COUNT })
+        }}</span>
       </a>
     </div>
   </td>

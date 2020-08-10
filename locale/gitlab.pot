@@ -8397,7 +8397,10 @@ msgstr ""
 msgid "Diffs|No file name available"
 msgstr ""
 
-msgid "Diffs|Show unchanged lines"
+msgid "Diffs|Show %{unfoldCount} more lines"
+msgstr ""
+
+msgid "Diffs|Show all unchanged lines"
 msgstr ""
 
 msgid "Diffs|Something went wrong while fetching diff lines."
