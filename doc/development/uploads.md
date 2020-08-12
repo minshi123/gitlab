@@ -301,7 +301,7 @@ For a Rails controller upload, there a few things to do:
 1. The upload is available under `params[:file]`. Reading `params[:file]` should get you an [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) instance
 1. Generally speaking, it's a good idea to check if the instance is from the [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) class. See [here](https://gitlab.com/gitlab-org/gitlab/-/commit/ea30fe8a71bf16ba07f1050ab4820607b5658719#51c0cc7a17b7f12c32bc41cfab3649ff2739b0eb_79_77) for an example
 
-CAUTION: **Don't call `UploadedFile#from_params` directly**
+CAUTION: **Don't call `UploadedFile#from_params` directly:**
 Do not build an [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) instance using `UploadedFile#from_params`. This method can be unsafe to use depending on the `params` passed. Instead, use the [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) instance that [`multipart.rb`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/middleware/multipart.rb) builds automatically for you.
 
 ### For a Grape API
@@ -315,11 +315,11 @@ For a Grape API upload, things are a bit more involved:
    - Set the content type with `content_type Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE`
    - Use your dedicated Uploader class (let's say that it's `FileUploader`) to build the response with `FileUploader.workhorse_authorize(params)`
 1. Implement the endpoint for the upload request that will:
-   - Require all the `UploadedFile` objects as a params.
-      - For example, if we expect a single param `file` to be an [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) instance, use `requires :file, type: ::API::Validations::Types::WorkhorseFile`
+   - Require all the `UploadedFile` objects as parameters.
+      - For example, if we expect a single parameter `file` to be an [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) instance, use `requires :file, type: ::API::Validations::Types::WorkhorseFile`
    - Check that the request is coming from workhorse with `require_gitlab_workhorse!`
    - Check the user permissions
    - The remaining code of the processing. This is where the code must be reading `params[:file]`
 
-CAUTION: **Don't call `UploadedFile#from_params` directly**
+CAUTION: **Don't call `UploadedFile#from_params` directly:**
 Do not build an [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) object using `UploadedFile#from_params`. This method can be unsafe to use depending on the `params` passed. Instead, use the [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) object that [`multipart.rb`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/middleware/multipart.rb) builds automatically for you.
