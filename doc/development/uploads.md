@@ -264,3 +264,62 @@ sequenceDiagram
       deactivate sidekiq
     end
 ```
+
+## How to add a new upload route
+
+In this section, we will be describing how to add a new upload route that is [accelerated](#uploading-technologies) by Workhorse.
+
+We will categorize the uploads routes in 3 categories:
+
+1. Rails controller. These uploads are handled by Rails controllers
+1. Grape API. These uploads are handled by a Grape API endpoint
+1. GraphQL API. These uploads are handled by a GraphQL resolve function
+
+If you are implementing a new GraphQL API upload. Everything is ready. There is nothing to do apart from implementing the actual upload.
+
+### Workhorse part
+
+For both, the Rails controller and Grape API uploads, workhorse has to be updated in order to get the support for the new upload route.
+
+1. Open an new issue in the [Workhorse tracker](https://gitlab.com/gitlab-org/gitlab-workhorse/-/issues/new) describing precisely the new upload route:
+   - The URL the route will be using
+   - The [upload encoding](#upload-encodings)
+   - If possible, provide a dump of an upload request
+1. Implement and get the MR merged for this issue above.
+1. Ask the maintainers for a workhorse release.
+   - You can do that in the MR directly during the maintainer review
+   - Or ask it in the `#workhorse` Slack channel
+
+Once the above is done, we can:
+
+1. Bump the [workhorse version file](https://gitlab.com/gitlab-org/gitlab/-/blob/master/GITLAB_WORKHORSE_VERSION) to the version you have from the previous points.
+
+### For a Rails controller
+
+For a Rails controller upload, there a few things to do:
+
+1. The upload is available under `params[:file]`. Reading `params[:file]` should get you an [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) instance
+1. Generally speaking, it's a good idea to check if the instance is from the [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) class. See [here](https://gitlab.com/gitlab-org/gitlab/-/commit/ea30fe8a71bf16ba07f1050ab4820607b5658719#51c0cc7a17b7f12c32bc41cfab3649ff2739b0eb_79_77) for an example
+
+CAUTION: **Don't call `UploadedFile#from_params` directly**
+Do not build an [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) instance using `UploadedFile#from_params`. This method can be unsafe to use depending on the `params` passed. Instead, use the [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) instance that [`multipart.rb`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/middleware/multipart.rb) builds automatically for you.
+
+### For a Grape API
+
+For a Grape API upload, things are a bit more involved:
+
+1. Implement an endpoint with the URL + `/authorize` suffix that will:
+   - Check that the request is coming from workhorse with `require_gitlab_workhorse!`
+   - Check user permissions
+   - Set the status to `200` with `status 200`
+   - Set the content type with `content_type Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE`
+   - Use your dedicated Uploader class (let's say that it's `FileUploader`) to build the response with `FileUploader.workhorse_authorize(params)`
+1. Implement the endpoint for the upload request that will:
+   - Require all the `UploadedFile` objects as a params.
+      - For example, if we expect a single param `file` to be an [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) instance, use `requires :file, type: ::API::Validations::Types::WorkhorseFile`
+   - Check that the request is coming from workhorse with `require_gitlab_workhorse!`
+   - Check the user permissions
+   - The remaining code of the processing. This is where the code must be reading `params[:file]`
+
+CAUTION: **Don't call `UploadedFile#from_params` directly**
+Do not build an [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) object using `UploadedFile#from_params`. This method can be unsafe to use depending on the `params` passed. Instead, use the [`UploadedFile`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/uploaded_file.rb) object that [`multipart.rb`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/middleware/multipart.rb) builds automatically for you.
