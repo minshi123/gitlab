@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import { createStore } from '~/monitoring/stores';
 import * as types from '~/monitoring/stores/mutation_types';
-import { GlDeprecatedDropdownItem, GlSearchBoxByType, GlLoadingIcon, GlButton } from '@gitlab/ui';
+import { GlNewDropdownItem, GlSearchBoxByType, GlLoadingIcon, GlButton } from '@gitlab/ui';
 import DateTimePicker from '~/vue_shared/components/date_time_picker/date_time_picker.vue';
 import RefreshButton from '~/monitoring/components/refresh_button.vue';
 import DashboardHeader from '~/monitoring/components/dashboard_header.vue';
@@ -31,7 +31,7 @@ describe('Dashboard header', () => {
   const findDashboardDropdown = () => wrapper.find(DashboardsDropdown);
 
   const findEnvsDropdown = () => wrapper.find({ ref: 'monitorEnvironmentsDropdown' });
-  const findEnvsDropdownItems = () => findEnvsDropdown().findAll(GlDeprecatedDropdownItem);
+  const findEnvsDropdownItems = () => findEnvsDropdown().findAll(GlNewDropdownItem);
   const findEnvsDropdownSearch = () => findEnvsDropdown().find(GlSearchBoxByType);
   const findEnvsDropdownSearchMsg = () => wrapper.find({ ref: 'monitorEnvironmentsDropdownMsg' });
   const findEnvsDropdownLoadingIcon = () => findEnvsDropdown().find(GlLoadingIcon);
@@ -145,10 +145,15 @@ describe('Dashboard header', () => {
         });
       });
 
-      it('renders the environments dropdown with an active element', () => {
-        const selectedItems = findEnvsDropdownItems().filter(
-          item => item.attributes('active') === 'true',
-        );
+      it('environments dropdown items can be checked', () => {
+        const items = findEnvsDropdownItems();
+        const checkItems = findEnvsDropdownItems().filter(item => item.props('isCheckItem'));
+
+        expect(items.length).toBe(checkItems.length);
+      });
+
+      it('checks the currently selected environment', () => {
+        const selectedItems = findEnvsDropdownItems().filter(item => item.props('isChecked'));
 
         expect(selectedItems.length).toBe(1);
         expect(selectedItems.at(0).text()).toBe(currentEnvironmentName);
