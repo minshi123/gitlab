@@ -243,6 +243,11 @@ Gitlab/Json:
     - 'lib/quality/**/*'
     - 'lib/gitlab/danger/**/*'
 
+Gitlab/AvoidUploadedFileFromParams:
+  Enabled: true
+  Exclude:
+    - 'lib/gitlab/middleware/multipart.rb'
+
 GitlabSecurity/PublicSend:
   Enabled: true
   Exclude:
