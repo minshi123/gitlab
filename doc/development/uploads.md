@@ -267,7 +267,7 @@ sequenceDiagram
 
 ## How to add a new upload route
 
-In this section, we will be describing how to add a new upload route that is [accelerated](#uploading-technologies) by Workhorse.
+In this section, we will be describing how to add a new upload route that is [accelerated](#uploading-technologies) by Workhorse. Only [body and multipart](#upload-encodings) encoded uploads can be accelerated in this way.
 
 We will categorize the uploads routes in 3 categories:
 
