@@ -1,7 +1,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import createFlash from '~/flash';
-import { s__ } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import Icon from '~/vue_shared/components/icon.vue';
 import { UNFOLD_COUNT, INLINE_DIFF_VIEW_TYPE, PARALLEL_DIFF_VIEW_TYPE } from '../constants';
 import * as utils from '../store/utils';
@@ -17,11 +17,16 @@ const lineNumberByViewType = (viewType, diffLine) => {
     [PARALLEL_DIFF_VIEW_TYPE]: line => (line?.right || line?.left)?.new_line,
   };
   const numberGetter = numberGetters[viewType];
-
   return numberGetter && numberGetter(diffLine);
 };
 
+const i18n = {
+  showMore: sprintf(s__('Diffs|Show %{unfoldCount} more lines'), { unfoldCount: UNFOLD_COUNT }),
+  showAll: s__('Diffs|Show all unchanged lines')
+}
+
 export default {
+  i18n,
   directives: {
     tooltip,
   },
@@ -239,13 +244,11 @@ export default {
         @click="handleExpandLines(EXPAND_DOWN)"
       >
         <icon :size="12" name="expand-down" aria-hidden="true" />
-        <span>{{
-          sprintf(s__('Diffs|Show %{unfoldCount} more lines'), { unfoldCount: UNFOLD_COUNT })
-        }}</span>
+        <span>{{ $options.i18n.showMore }}</span>
       </a>
       <a class="mx-2 cursor-pointer js-unfold-all" @click="handleExpandLines()">
         <icon :size="12" name="expand" aria-hidden="true" />
-        <span>{{ s__('Diffs|Show all unchanged lines') }}</span>
+        <span>{{ $options.i18n.showAll }}</span>
       </a>
       <a
         v-if="canExpandUp"
@@ -257,9 +260,8 @@ export default {
         @click="handleExpandLines(EXPAND_UP)"
       >
         <icon :size="12" name="expand-up" aria-hidden="true" />
-        <span>{{
-          sprintf(s__('Diffs|Show %{unfoldCount} more lines'), { unfoldCount: UNFOLD_COUNT })
-        }}</span>
+
+        <span>{{ $options.i18n.showMore }}</span>
       </a>
     </div>
   </td>
