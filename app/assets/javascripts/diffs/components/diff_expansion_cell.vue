@@ -232,7 +232,7 @@ export default {
       <a
         v-if="canExpandDown"
         v-tooltip
-        class="cursor-pointer js-unfold-down has-tooltip unfold-icon d-inline-block pt-2 pb-2"
+        class="gl-cursor-pointer js-unfold-down has-tooltip unfold-icon gl-display-inline-block gl-py-4"
         data-placement="top"
         data-container="body"
         :title="__('Expand down')"
