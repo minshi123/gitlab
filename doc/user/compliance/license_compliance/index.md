@@ -695,6 +695,15 @@ Additional configuration may be needed for connecting to
 [private Python repositories](#using-private-python-repos),
 and [private Yarn registries](#using-private-yarn-registries).
 
+### SPDX license list name matching
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/212388) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 13.3.
+
+Prior GitLab 13.3 in offline environments exact name match was required for [project policies](#policies). Starting from 13.3,
+GitLab matches name of [project policies](#policies) with identifiers from the [SPDX license list](https://spdx.org/licenses/).
+A local copy of the SPDX license list is distributed with the GitLab instance. If needed, administrator of a GitLab instance can
+manually update it with a [rake task](../raketasks/spdx.md).
+
 Exact name matches are required for [project policies](#policies)
 when running in an offline environment ([see related issue](https://gitlab.com/gitlab-org/gitlab/-/issues/212388)).
 
