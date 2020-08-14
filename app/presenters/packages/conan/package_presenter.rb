@@ -47,7 +47,9 @@ module Packages
 
       def build_recipe_file_url(package_file)
         expose_url(
-          api_v4_packages_conan_v1_files_export_path(
+          # This needs to be fixed to include the old version for instance level
+          api_v4_projects_packages_conan_v1_files_export_path(
+            id: @project.id,
             package_name: package.name,
             package_version: package.version,
             package_username: package.conan_metadatum.package_username,
@@ -60,7 +62,9 @@ module Packages
 
       def build_package_file_url(package_file)
         expose_url(
-          api_v4_packages_conan_v1_files_package_path(
+          # This needs to be fixed to include the old version for instance level
+          api_v4_projects_packages_conan_v1_files_package_path(
+            id: @project.id,
             package_name: package.name,
             package_version: package.version,
             package_username: package.conan_metadatum.package_username,

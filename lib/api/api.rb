@@ -189,6 +189,7 @@ module API
       mount ::API::PypiPackages
       mount ::API::ComposerPackages
       mount ::API::ConanPackages
+      mount ::API::ConanProjectPackages
       mount ::API::MavenPackages
       mount ::API::NpmPackages
       mount ::API::GoProxy

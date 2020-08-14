@@ -46,7 +46,9 @@ module API
 
           def package_file_upload_url(file_name)
             expose_url(
-              api_v4_packages_conan_v1_files_package_path(
+              # This needs to be fixed to include the old version for instance level
+              api_v4_projects_packages_conan_v1_files_package_path(
+                id: project.id,
                 package_name: params[:package_name],
                 package_version: params[:package_version],
                 package_username: params[:package_username],
@@ -61,7 +63,9 @@ module API
 
           def recipe_file_upload_url(file_name)
             expose_url(
-              api_v4_packages_conan_v1_files_export_path(
+              # This needs to be fixed to include the old version for instance level
+              api_v4_projects_packages_conan_v1_files_export_path(
+                id: project.id,
                 package_name: params[:package_name],
                 package_version: params[:package_version],
                 package_username: params[:package_username],
@@ -78,8 +82,14 @@ module API
 
           def project
             strong_memoize(:project) do
-              full_path = ::Packages::Conan::Metadatum.full_path_from(package_username: params[:package_username])
-              Project.find_by_full_path(full_path)
+              if params[:id]
+                project = find_project(params[:id])
+              else
+                full_path = ::Packages::Conan::Metadatum.full_path_from(package_username: params[:package_username])
+                project = Project.find_by_full_path(full_path)
+              end
+
+              project
             end
           end
 
