@@ -1,8 +1,7 @@
 # SPDX license list import **(PREMIUM ONLY)**
 
 GitLab provides a Rake task for uploading a fresh copy of the [SPDX license list](https://spdx.org/licenses/)
-to GitLab instance.
-This list is needed for matching [License Compliance policies](../user/compliance/license_compliance/index.md) names.
+to a GitLab instance. This list is needed for matching the names of [License Compliance policies](../user/compliance/license_compliance/index.md).
 
 To import a fresh copy of the PDX license list, run:
 
