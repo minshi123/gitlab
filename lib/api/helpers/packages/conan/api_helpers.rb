@@ -28,19 +28,23 @@ module API
             present_download_urls(::API::Entities::ConanPackage::ConanRecipeManifest, &:recipe_urls)
           end
 
-          def recipe_upload_urls(file_names)
+          def recipe_upload_urls
             { upload_urls: Hash[
               file_names.collect do |file_name|
+                next unless ::Packages::Conan::FileMetadatum::RECIPE_FILES.include?(file_name)
+
                 [file_name, recipe_file_upload_url(file_name)]
-              end
+              end.compact
             ] }
           end
 
-          def package_upload_urls(file_names)
+          def package_upload_urls
             { upload_urls: Hash[
               file_names.collect do |file_name|
+                next unless ::Packages::Conan::FileMetadatum::PACKAGE_FILES.include?(file_name)
+
                 [file_name, package_file_upload_url(file_name)]
-              end
+              end.compact
             ] }
           end
 
@@ -128,6 +132,10 @@ module API
             if params[:file_name] == ::Packages::Conan::FileMetadatum::PACKAGE_BINARY && params['file.size'] > 0
               track_event('push_package')
             end
+          end
+
+          def file_names
+            Gitlab::Json.parse(request.body.string).keys
           end
 
           def create_package_file_with_type(file_type, current_package)
