@@ -9,8 +9,7 @@ namespace :gitlab do
     task import: :environment do
       spdx_url = ::Gitlab::SPDX::CatalogueGateway::URL
       resp = Net::HTTP.get_response(URI.parse(spdx_url))
-
-      raise 'Network failure' unless resp.is_a?(Net::HTTPOK)
+      resp = Gitlab::HTTP.get(URI.parse(spdx_url))
 
       data = ::Gitlab::Json.parse(resp.body)
 

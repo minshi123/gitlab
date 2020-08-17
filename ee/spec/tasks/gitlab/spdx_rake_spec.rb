@@ -16,7 +16,7 @@ RSpec.describe 'gitlab:rake tasks' do
     context 'with successful download of the catalogue' do
       before do
         stub_request(:get, Gitlab::SPDX::CatalogueGateway::URL).to_return(status: 200, body: data.to_json)
-        allow(IO).to receive(:write)
+        expect(IO).to receive(:write).with(path, anything, mode: 'w')
       end
 
       it 'saves the catalogue to the file' do
@@ -30,7 +30,7 @@ RSpec.describe 'gitlab:rake tasks' do
       end
 
       it 'raises parsing failure' do
-        expect { subject }.to output(/Import of SPDX catalogue failed: unexpected colon ()/).to_stdout
+        expect { subject }.to output(/Import of SPDX catalogue failed: unexpected colon \(\)/).to_stdout
       end
     end
 
