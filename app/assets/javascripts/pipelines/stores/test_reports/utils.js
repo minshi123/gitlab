@@ -1,5 +1,5 @@
 import { TestStatus } from '~/pipelines/constants';
-import { formatTime, secondsToMilliseconds } from '~/lib/utils/datetime_utility';
+import { readableTimeFormat, secondsToMilliseconds } from '~/lib/utils/datetime_utility';
 
 export function iconForTestStatus(status) {
   switch (status) {
@@ -12,7 +12,7 @@ export function iconForTestStatus(status) {
   }
 }
 
-export const formattedTime = timeInSeconds => formatTime(secondsToMilliseconds(timeInSeconds));
+export const formattedTime = timeInSeconds => readableTimeFormat(secondsToMilliseconds(timeInSeconds));
 
 export const addIconStatus = testCase => ({
   ...testCase,

@@ -2,7 +2,7 @@ import $ from 'jquery';
 import { isString, mapValues, isNumber, reduce } from 'lodash';
 import * as timeago from 'timeago.js';
 import dateFormat from 'dateformat';
-import { languageCode, s__, __, n__ } from '../../locale';
+import { languageCode, s__, __, n__, sprintf } from '../../locale';
 
 window.timeago = timeago;
 
@@ -722,4 +722,30 @@ export const dateFromParams = (year, month, day) => {
  */
 export const differenceInSeconds = (startDate, endDate) => {
   return (endDate.getTime() - startDate.getTime()) / 1000;
+};
+
+/**
+ * A utility function which returns a formatted time depending
+ * on how large the given time is. If the time is less than one
+ * second, we should show in milliseconds. If the time is less
+ * than a minute, we show in seconds. If the time is a minute or
+ * greater, then we should use the `formatTime` method.
+ * 
+ * @param {Int} the time in milliseconds
+ * 
+ * @return {String}
+ */
+export const readableTimeFormat = milliseconds => {
+  const seconds = milliseconds / 1000;
+  const minutes = milliseconds / 1000 / 60;
+  // const timeLength = Math.round(milliseconds).toString().length;
+  if (seconds < 1) {
+    // return `${milliseconds.toFixed(2)}ms`;
+    return sprintf(__('%{milliseconds}ms'), { milliseconds: milliseconds.toFixed(2) });
+  }
+  if (minutes < 1) {
+    // return `${seconds.toFixed(2)}s`;
+    return sprintf(__('%{seconds}s'), { seconds: seconds.toFixed(2) });
+  }
+  return formatTime(milliseconds);
 };
