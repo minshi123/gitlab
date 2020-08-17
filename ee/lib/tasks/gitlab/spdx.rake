@@ -8,8 +8,9 @@ namespace :gitlab do
     desc 'GitLab | SPDX | Import copy of the catalogue to store it offline'
     task import: :environment do
       spdx_url = ::Gitlab::SPDX::CatalogueGateway::URL
-      resp = Net::HTTP.get_response(URI.parse(spdx_url))
       resp = Gitlab::HTTP.get(URI.parse(spdx_url))
+
+      raise 'Network failure' if resp.code != 200
 
       data = ::Gitlab::Json.parse(resp.body)
 
