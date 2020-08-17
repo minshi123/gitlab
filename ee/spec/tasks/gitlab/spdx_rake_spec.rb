@@ -29,7 +29,7 @@ RSpec.describe 'gitlab:rake tasks' do
         stub_request(:get, Gitlab::SPDX::CatalogueGateway::URL).to_return(status: 200, body: data.inspect)
       end
 
-      it 'raises parsing failuer' do
+      it 'raises parsing failure' do
         expect { subject }.to output(/Import of SPDX catalogue failed: unexpected colon ()/).to_stdout
       end
     end
@@ -39,7 +39,7 @@ RSpec.describe 'gitlab:rake tasks' do
         stub_request(:get, Gitlab::SPDX::CatalogueGateway::URL).to_return(status: 404)
       end
 
-      it 'raise network failure error' do
+      it 'raises network failure error' do
         expect { subject }.to output("Import of SPDX catalogue failed: Network failure\n").to_stdout
       end
     end
