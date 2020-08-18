@@ -162,6 +162,7 @@ module API
       mount ::API::GroupVariables
       mount ::API::ImportBitbucketServer
       mount ::API::ImportGithub
+      mount ::API::IssueLinks
       mount ::API::Issues
       mount ::API::JobArtifacts
       mount ::API::Jobs

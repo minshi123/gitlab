@@ -121,9 +121,9 @@ RSpec.describe API::IssueLinks do
 
         it 'returns 201 status and contains the expected link response' do
           post api("/projects/#{project.id}/issues/#{issue.iid}/links", user),
-               params: { target_project_id: project.id, target_issue_iid: target_issue.iid, link_type: 'blocks' }
+               params: { target_project_id: project.id, target_issue_iid: target_issue.iid, link_type: 'relates_to' }
 
-          expect_link_response(link_type: 'blocks')
+          expect_link_response(link_type: 'relates_to')
         end
 
         it 'returns 201 when sending full path of target project' do

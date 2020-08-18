@@ -10,7 +10,7 @@ RSpec.describe Projects::IssueLinksController do
   let_it_be(:issue2) { create(:issue, project: project) }
 
   describe 'GET #index' do
-    let_it_be(:issue_link) { create(:issue_link, source: issue1, target: issue2, link_type: 'is_blocked_by') }
+    let_it_be(:issue_link) { create(:issue_link, source: issue1, target: issue2, link_type: 'relates_to') }
 
     def get_link(user, issue)
       sign_in(user)
@@ -25,7 +25,6 @@ RSpec.describe Projects::IssueLinksController do
     end
 
     before do
-      stub_licensed_features(blocked_issues: true)
       project.add_developer(user)
     end
 
@@ -36,7 +35,7 @@ RSpec.describe Projects::IssueLinksController do
 
       link = json_response.first
       expect(link['id']).to eq(issue2.id)
-      expect(link['link_type']).to eq('is_blocked_by')
+      expect(link['link_type']).to eq('relates_to')
     end
   end
 
@@ -49,40 +48,25 @@ RSpec.describe Projects::IssueLinksController do
         project_id: issue.project,
         issue_id: issue.iid,
         issuable_references: [target.to_reference],
-        link_type: 'is_blocked_by'
+        link_type: 'relates_to'
       }
 
       post :create, params: post_params, as: :json
     end
 
-    context 'when related issues are available on the project' do
-      before do
-        project.add_developer(user)
-        stub_licensed_features(blocked_issues: true)
-        stub_feature_flags(link_types: true)
-      end
-
-      it 'returns success response' do
-        create_link(user, issue1, issue2)
-
-        expect(response).to have_gitlab_http_status(:ok)
-
-        link = json_response['issuables'].first
-        expect(link['id']).to eq(issue2.id)
-        expect(link['link_type']).to eq('is_blocked_by')
-      end
+    before do
+      project.add_developer(user)
+      stub_feature_flags(link_types: true)
     end
 
-    context 'when related issues are not available on the project' do
-      before do
-        stub_licensed_features(blocked_issues: false)
-      end
+    it 'returns success response' do
+      create_link(user, issue1, issue2)
 
-      it 'returns 403' do
-        create_link(user, issue1, issue2)
+      expect(response).to have_gitlab_http_status(:ok)
 
-        expect(response).to have_gitlab_http_status(:forbidden)
-      end
+      link = json_response['issuables'].first
+      expect(link['id']).to eq(issue2.id)
+      expect(link['link_type']).to eq('relates_to')
     end
   end
 end
