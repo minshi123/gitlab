@@ -1,6 +1,6 @@
 import { shallowMount, mount } from '@vue/test-utils';
 import { GlButton, GlIcon } from '@gitlab/ui';
-import RelatedIssuesBlock from 'ee/related_issues/components/related_issues_block.vue';
+import RelatedIssuesBlock from '~/related_issues/components/related_issues_block.vue';
 import {
   issuable1,
   issuable2,
@@ -10,7 +10,7 @@ import {
   linkedIssueTypesMap,
   linkedIssueTypesTextMap,
   PathIdSeparator,
-} from 'ee/related_issues/constants';
+} from '~/related_issues/constants';
 
 describe('RelatedIssuesBlock', () => {
   let wrapper;
