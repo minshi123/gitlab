@@ -23,14 +23,6 @@ module EE
         original_entity.reset
       end
 
-      def rewrite_related_issues
-        source_issue_links = IssueLink.for_source_issue(original_entity)
-        source_issue_links.update_all(source_id: new_entity.id)
-
-        target_issue_links = IssueLink.for_target_issue(original_entity)
-        target_issue_links.update_all(target_id: new_entity.id)
-      end
-
       def rewrite_related_vulnerability_issues
         issue_links = Vulnerabilities::IssueLink.for_issue(original_entity)
         issue_links.update_all(issue_id: new_entity.id)
