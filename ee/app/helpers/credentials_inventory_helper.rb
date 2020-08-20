@@ -24,4 +24,8 @@ module CredentialsInventoryHelper
   def user_detail_path(user)
     raise NotImplementedError, "#{self.class} does not implement #{__method__}"
   end
+
+  def personal_access_token_revoke_path(token)
+    raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+  end
 end

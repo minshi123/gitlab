@@ -151,7 +151,11 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       resource :compliance_dashboard, only: [:show]
       resources :vulnerable_projects, only: [:index]
       resource :discover, only: [:show], controller: :discover
-      resources :credentials, only: [:index]
+      resources :credentials, only: [:index] do
+        member do
+          put :revoke
+        end
+      end
       resources :merge_commit_reports, only: [:index], constraints: { format: :csv }
     end
 

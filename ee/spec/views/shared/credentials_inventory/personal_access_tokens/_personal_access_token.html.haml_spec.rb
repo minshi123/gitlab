@@ -9,6 +9,8 @@ RSpec.describe('shared/credentials_inventory/personal_access_tokens/_personal_ac
 
   before do
     allow(view).to receive(:user_detail_path).and_return('abcd')
+    allow(view).to receive(:personal_access_token_revoke_path).and_return('revoke')
+
     render 'shared/credentials_inventory/personal_access_tokens/personal_access_token', personal_access_token: personal_access_token
   end
 
@@ -33,6 +35,10 @@ RSpec.describe('shared/credentials_inventory/personal_access_tokens/_personal_ac
       it 'shows the last accessed on date' do
         expect(rendered).to have_text(personal_access_token.updated_at.to_date.to_s)
       end
+
+      it 'does not show the revoke button' do
+        expect(rendered).not_to have_css('a.btn[href="revoke"]')
+      end
     end
 
     context 'when not set' do
@@ -40,6 +46,10 @@ RSpec.describe('shared/credentials_inventory/personal_access_tokens/_personal_ac
 
       it 'shows "Never" for the last accessed on date' do
         expect(rendered).not_to have_text(updated_at_date.to_date.to_s)
+      end
+
+      it 'shows the revoke button' do
+        expect(rendered).to have_css('a.btn[href="revoke"]')
       end
     end
   end
