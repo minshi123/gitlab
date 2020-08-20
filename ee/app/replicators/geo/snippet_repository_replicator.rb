@@ -8,12 +8,16 @@ module Geo
       ::SnippetRepository
     end
 
+    def self.replication_enabled_by_default?
+      false
+    end
+
     def needs_checksum?
       false
     end
 
-    def self.replication_enabled_by_default?
-      false
+    def repository
+      model_record.repository
     end
   end
 end
