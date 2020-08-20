@@ -40,13 +40,19 @@ module FinderMethods
   end
 
   def can_read_object?(object)
+    return true if object.nil?
     # When there's no policy, we'll allow the read, this is for example the case
     # for Todos
     return true unless DeclarativePolicy.has_policy?(object)
 
-    model_name = object&.model_name || model.model_name
+    Ability.allowed?(current_user, :"read_#{to_ability_name(object)}", object)
+  end
 
-    Ability.allowed?(current_user, :"read_#{model_name.singular}", object)
+  def to_ability_name(object)
+    return object.to_ability_name if object.respond_to?(:to_ability_name)
+
+    # Not all objects define `#to_ability_name`, so attempt to derive it:
+    model.model_name.singular
   end
 
   # This fetches the model from the `ActiveRecord::Relation` but does not

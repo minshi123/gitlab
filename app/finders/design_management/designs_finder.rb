@@ -3,6 +3,9 @@
 module DesignManagement
   class DesignsFinder
     include Gitlab::Allowable
+    include FinderMethods
+
+    attr_reader :current_user
 
     # Params:
     # ids: integer[]
@@ -29,7 +32,7 @@ module DesignManagement
 
     private
 
-    attr_reader :issue, :current_user, :params
+    attr_reader :issue, :params
 
     def init_collection
       return ::DesignManagement::Design.none unless can?(current_user, :read_design, issue)
