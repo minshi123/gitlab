@@ -13,6 +13,11 @@ module Types
       GitlabSchema.id_from_object(object)
     end
 
+    def self.authorized?(object, context)
+      # The accepts definition defines this method
+      Array.wrap(authorize).all? { |ability| Ability.allowed?(current_user, ability, object) }
+    end
+
     def current_user
       context[:current_user]
     end
