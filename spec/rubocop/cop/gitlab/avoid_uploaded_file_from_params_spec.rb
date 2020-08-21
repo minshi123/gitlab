@@ -14,7 +14,7 @@ RSpec.describe RuboCop::Cop::Gitlab::AvoidUploadedFileFromParams, type: :rubocop
     it 'flags its call' do
       expect_offense(<<~SOURCE)
       UploadedFile.from_params(params)
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use the `UploadedFile` set by `multipart.rb` instead of calling `UploadedFile.from_params` directly. See https://docs.gitlab.com/ee/development/uploads.html
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use the `UploadedFile` set by `multipart.rb` instead of calling `UploadedFile.from_params` directly. See https://docs.gitlab.com/ee/development/uploads.html#how-to-add-a-new-upload-route
       SOURCE
     end
   end
