@@ -1,42 +1,87 @@
 # frozen_string_literal: true
 
-RSpec.shared_context 'multipart middleware context' do
-  let(:app) { double(:app) }
-  let(:middleware) { described_class.new(app) }
-  let(:original_filename) { 'filename' }
+# This context is to provided a temporary file for multipart spec
+# It simulates the local mode where the uploaded file is present in the file system
+# Given that T is the temporary folder, multipart spec will need to be able to have the file in:
+# - /T/                                    # within_tmp_sub_dir: false, path_in_tmp_sub_dir: ''
+# - /T/*random_dir_name*/                  # within_tmp_sub_dir: true, path_in_tmp_sub_dir: ''
+# - /T/*random_dir_name*/fixed/folder/name # within_tmp_sub_dir: true, path_in_tmp_sub_dir: 'fixed/folder/name'
+RSpec.shared_context 'with one temporary file for multipart' do |within_tmp_sub_dir: false, path_in_tmp_sub_dir: ''|
+  let(:uploaded_filepath) { uploaded_file.path }
 
-  # Rails 5 doesn't combine the GET/POST parameters in
-  # ActionDispatch::HTTP::Parameters if action_dispatch.request.parameters is set:
-  # https://github.com/rails/rails/blob/aea6423f013ca48f7704c70deadf2cd6ac7d70a1/actionpack/lib/action_dispatch/http/parameters.rb#L41
-  def get_params(env)
-    req = ActionDispatch::Request.new(env)
-    req.GET.merge(req.POST)
-  end
+  around do |example|
+    @filename = 'test_file1.png'
+    @remote_id = 'remote_id'
 
-  def post_env(rewritten_fields, params, secret, issuer)
-    token = JWT.encode({ 'iss' => issuer, 'rewritten_fields' => rewritten_fields }, secret, 'HS256')
-    Rack::MockRequest.env_for(
-      '/',
-      method: 'post',
-      params: params,
-      described_class::RACK_ENV_KEY => token
-    )
-  end
+    if within_tmp_sub_dir
+      Dir.mktmpdir do |dir|
+        @tmp_sub_dir = dir
 
-  def with_tmp_dir(uploads_sub_dir, storage_path = '')
-    Dir.mktmpdir do |dir|
-      upload_dir = File.join(dir, storage_path, uploads_sub_dir)
-      FileUtils.mkdir_p(upload_dir)
+        if path_in_tmp_sub_dir.present?
+          dir_in_tmp_sub_dir = File.join(dir, path_in_tmp_sub_dir)
+          FileUtils.mkdir_p(dir_in_tmp_sub_dir)
 
-      allow(Rails).to receive(:root).and_return(dir)
-      allow(Dir).to receive(:tmpdir).and_return(File.join(Dir.tmpdir, 'tmpsubdir'))
-      allow(GitlabUploader).to receive(:root).and_return(File.join(dir, storage_path))
-
-      Tempfile.open('top-level', upload_dir) do |tempfile|
-        env = post_env({ 'file' => tempfile.path }, { 'file.name' => original_filename, 'file.path' => tempfile.path }, Gitlab::Workhorse.secret, 'gitlab-workhorse')
-
-        yield dir, env
+          with_tmp_file('uploaded_file', dir_in_tmp_sub_dir) { example.run }
+        else
+          with_tmp_file('uploaded_file', dir) { example.run }
+        end
       end
+    else
+      with_tmp_file('uploaded_file') { example.run }
     end
+  end
+
+  attr_reader :uploaded_file, :filename, :remote_id, :tmp_sub_dir
+
+  def with_tmp_file(filename, dir = nil)
+    Tempfile.open(filename, dir) do |file1|
+      @uploaded_file = file1
+
+      yield
+    end
+  end
+end
+
+RSpec.shared_context 'with two temporary files for multipart' do
+  include_context 'with one temporary file for multipart'
+
+  let(:uploaded_filepath2) { uploaded_file2.path }
+
+  around do |example|
+    Tempfile.open('uploaded_file2') do |file2|
+      @uploaded_file2 = file2
+      @filename2 = 'test_file2.png'
+      @remote_id2 = 'remote_id2'
+
+      example.run
+    end
+  end
+
+  attr_reader :uploaded_file2, :filename2, :remote_id2
+end
+
+RSpec.shared_context 'with three temporary files for multipart' do
+  include_context 'with two temporary files for multipart'
+
+  let(:uploaded_filepath3) { uploaded_file3.path }
+
+  around do |example|
+    Tempfile.open('uploaded_file3') do |file1|
+      @uploaded_file3 = file1
+      @filename3 = 'test_file1.png'
+      @remote_id3 = 'remote_id'
+
+      example.run
+    end
+  end
+
+  attr_reader :uploaded_file3, :filename3, :remote_id3
+end
+
+RSpec.shared_context 'with Dir.tmpdir stubbed to a tmp sub dir' do
+  before do
+    # We are using the tmp dir (see `with one temporary file for multipart context`) and tmp is automatically accepted by UploadedFile
+    # Moving temporarly tmp dir to a *sub* tmp dir helps us testing multipart Handler#allowed_paths
+    allow(Dir).to receive(:tmpdir).and_return(File.join(Dir.tmpdir, 'tmpsubdir'))
   end
 end
