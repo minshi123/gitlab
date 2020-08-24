@@ -8,8 +8,6 @@ RSpec.describe Gitlab::Middleware::Multipart do
   describe '#call' do
     let(:app) { double(:app) }
     let(:middleware) { described_class.new(app) }
-    let(:rewritten_fields) { {} }
-    let(:params) { {} }
     let(:secret) { Gitlab::Workhorse.secret }
     let(:issuer) { 'gitlab-workhorse' }
 
