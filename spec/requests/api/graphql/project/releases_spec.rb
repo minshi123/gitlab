@@ -10,6 +10,9 @@ RSpec.describe 'Query.project(fullPath).releases()' do
   let_it_be(:reporter) { create(:user) }
   let_it_be(:developer) { create(:user) }
 
+  let_it_be(:second_released_at) { Time.now }
+  let_it_be(:first_released_at) { second_released_at - 1.day }
+
   let(:query) do
     graphql_query_for(:project, { fullPath: project.full_path },
     %{
@@ -45,13 +48,25 @@ RSpec.describe 'Query.project(fullPath).releases()' do
     })
   end
 
-  let(:params_for_issues_and_mrs) { { scope: 'all', state: 'opened', release_tag: release.tag } }
+  let(:params_for_issues_and_mrs) { { scope: 'all', state: 'opened', release_tag: second_release.tag } }
   let(:post_query) { post_graphql(query, current_user: current_user) }
 
   let(:data) { graphql_data.dig('project', 'releases', 'nodes', 0) }
 
   before do
     stub_default_url_options(host: 'www.example.com')
+  end
+
+  shared_examples 'correct total count' do
+    let(:data) { graphql_data.dig('project', 'releases') }
+
+    before do
+      post_query
+    end
+
+    it 'returns the total count' do
+      expect(data['count']).to eq(project.releases.count)
+    end
   end
 
   shared_examples 'full access to all repository-related fields' do
@@ -61,23 +76,23 @@ RSpec.describe 'Query.project(fullPath).releases()' do
       end
 
       it 'returns data for fields that are protected in private projects' do
-        expected_sources = release.sources.map do |s|
+        expected_sources = second_release.sources.map do |s|
           { 'url' => s.url }
         end
 
-        expected_evidences = release.evidences.map do |e|
+        expected_evidences = second_release.evidences.map do |e|
           { 'sha' => e.sha }
         end
 
         expect(data).to eq(
-          'tagName' => release.tag,
-          'tagPath' => project_tag_path(project, release.tag),
-          'name' => release.name,
+          'tagName' => second_release.tag,
+          'tagPath' => project_tag_path(project, second_release.tag),
+          'name' => second_release.name,
           'commit' => {
-            'sha' => release.commit.sha
+            'sha' => second_release.commit.sha
           },
           'assets' => {
-            'count' => release.assets_count,
+            'count' => second_release.assets_count,
             'sources' => {
               'nodes' => expected_sources
             }
@@ -86,7 +101,7 @@ RSpec.describe 'Query.project(fullPath).releases()' do
             'nodes' => expected_evidences
           },
           'links' => {
-            'selfUrl' => project_release_url(project, release),
+            'selfUrl' => project_release_url(project, second_release),
             'mergeRequestsUrl' => project_merge_requests_url(project, params_for_issues_and_mrs),
             'issuesUrl' => project_issues_url(project, params_for_issues_and_mrs)
           }
@@ -107,10 +122,10 @@ RSpec.describe 'Query.project(fullPath).releases()' do
         expect(data).to eq(
           'tagName' => nil,
           'tagPath' => nil,
-          'name' => "Release-#{release.id}",
+          'name' => "Release-#{second_release.id}",
           'commit' => nil,
           'assets' => {
-            'count' => release.assets_count(except: [:sources]),
+            'count' => second_release.assets_count(except: [:sources]),
             'sources' => {
               'nodes' => []
             }
@@ -149,7 +164,7 @@ RSpec.describe 'Query.project(fullPath).releases()' do
     it 'returns editUrl' do
       expect(data).to eq(
         'links' => {
-          'editUrl' => edit_project_release_url(project, release)
+          'editUrl' => edit_project_release_url(project, second_release)
         }
       )
     end
@@ -182,18 +197,6 @@ RSpec.describe 'Query.project(fullPath).releases()' do
     end
   end
 
-  shared_examples 'correct total count' do
-    let(:data) { graphql_data.dig('project', 'releases') }
-
-    before do
-      post_query
-    end
-
-    it 'returns the total count' do
-      expect(data['count']).to eq(project.releases.count)
-    end
-  end
-
   shared_examples 'no access to any release data' do
     before do
       post_query
@@ -207,7 +210,8 @@ RSpec.describe 'Query.project(fullPath).releases()' do
   describe "ensures that the correct data is returned based on the project's visibility and the user's access level" do
     context 'when the project is private' do
       let_it_be(:project) { create(:project, :repository, :private) }
-      let_it_be(:release) { create(:release, :with_evidence, project: project) }
+      let_it_be(:first_release) { create(:release, :with_evidence, project: project, released_at: first_released_at) }
+      let_it_be(:second_release) { create(:release, :with_evidence, project: project, released_at: second_released_at) }
 
       before_all do
         project.add_guest(guest)
@@ -244,7 +248,8 @@ RSpec.describe 'Query.project(fullPath).releases()' do
 
     context 'when the project is public' do
       let_it_be(:project) { create(:project, :repository, :public) }
-      let_it_be(:release) { create(:release, :with_evidence, project: project) }
+      let_it_be(:first_release) { create(:release, :with_evidence, project: project, released_at: first_released_at) }
+      let_it_be(:second_release) { create(:release, :with_evidence, project: project, released_at: second_released_at) }
 
       before_all do
         project.add_guest(guest)
@@ -285,7 +290,8 @@ RSpec.describe 'Query.project(fullPath).releases()' do
   describe 'ensures that the release data can be contolled by a feature flag' do
     context 'when the graphql_release_data feature flag is disabled' do
       let_it_be(:project) { create(:project, :repository, :public) }
-      let_it_be(:release) { create(:release, project: project) }
+      let_it_be(:first_release) { create(:release, project: project, released_at: first_released_at) }
+      let_it_be(:second_release) { create(:release, project: project, released_at: second_released_at) }
 
       let(:current_user) { developer }
 
