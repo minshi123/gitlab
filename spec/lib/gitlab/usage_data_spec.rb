@@ -509,6 +509,7 @@ RSpec.describe Gitlab::UsageData, :aggregate_failures do
       expect(counts_monthly[:snippets]).to eq(3)
       expect(counts_monthly[:personal_snippets]).to eq(1)
       expect(counts_monthly[:project_snippets]).to eq(2)
+      expect(counts_monthly[:packages]).to eq(3)
     end
   end
 
