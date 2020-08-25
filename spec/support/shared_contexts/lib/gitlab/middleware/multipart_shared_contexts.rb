@@ -1,11 +1,18 @@
 # frozen_string_literal: true
 
-# This context is to provided a temporary file for multipart spec
+# This context provides one temporary file for the multipart spec
 # It simulates the local mode where the uploaded file is present in the file system
 # Given that T is the temporary folder, multipart spec will need to be able to have the file in:
 # - /T/                                    # within_tmp_sub_dir: false, path_in_tmp_sub_dir: ''
 # - /T/*random_dir_name*/                  # within_tmp_sub_dir: true, path_in_tmp_sub_dir: ''
 # - /T/*random_dir_name*/fixed/folder/name # within_tmp_sub_dir: true, path_in_tmp_sub_dir: 'fixed/folder/name'
+#
+# Here are the available variables:
+# - uploaded_file
+# - uploaded_filepath
+# - filename
+# - remote_id
+# - tmp_sub_dir (only when using within_tmp_sub_dir: true)
 RSpec.shared_context 'with one temporary file for multipart' do |within_tmp_sub_dir: false, path_in_tmp_sub_dir: ''|
   let(:uploaded_filepath) { uploaded_file.path }
 
@@ -42,6 +49,18 @@ RSpec.shared_context 'with one temporary file for multipart' do |within_tmp_sub_
   end
 end
 
+# This context provides two temporary files for the multipart spec
+#
+# Here are the available variables:
+# - uploaded_file
+# - uploaded_filepath
+# - filename
+# - remote_id
+# - tmp_sub_dir (only when using within_tmp_sub_dir: true)
+# - uploaded_file2
+# - uploaded_filepath2
+# - filename2
+# - remote_id2
 RSpec.shared_context 'with two temporary files for multipart' do
   include_context 'with one temporary file for multipart'
 
@@ -60,6 +79,22 @@ RSpec.shared_context 'with two temporary files for multipart' do
   attr_reader :uploaded_file2, :filename2, :remote_id2
 end
 
+# This context provides three temporary files for the multipart spec
+#
+# Here are the available variables:
+# - uploaded_file
+# - uploaded_filepath
+# - filename
+# - remote_id
+# - tmp_sub_dir (only when using within_tmp_sub_dir: true)
+# - uploaded_file2
+# - uploaded_filepath2
+# - filename2
+# - remote_id2
+# - uploaded_file3
+# - uploaded_filepath3
+# - filename3
+# - remote_id3
 RSpec.shared_context 'with three temporary files for multipart' do
   include_context 'with two temporary files for multipart'
 

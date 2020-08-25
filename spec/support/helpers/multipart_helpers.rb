@@ -11,6 +11,7 @@ module MultipartHelpers
     )
   end
 
+  # This function assumes a `mode` variable to be set
   def upload_parameters_for(filepath: nil, key: nil, filename: 'filename', remote_id: 'remote_id')
     result = {
       "#{key}.name" => filename,
@@ -24,11 +25,14 @@ module MultipartHelpers
     when :remote
       result["#{key}.remote_id"] = remote_id
       result["#{key}.size"] = 3.megabytes
+    else
+      raise ArgumentError, "can't handle #{mode} mode"
     end
 
     result
   end
 
+  # This function assumes a `mode` variable to be set
   def path_for(file)
     return file.path if mode == :local
   end
@@ -42,6 +46,7 @@ module MultipartHelpers
     end
   end
 
+  # This function assumes a `mode` variable to be set
   def expect_uploaded_file(file, expectation)
     expect(file).to be_a(::UploadedFile)
     expect(file.original_filename).to eq(expectation[:original_filename])
@@ -56,10 +61,12 @@ module MultipartHelpers
       expect(file.remote_id).to eq(expectation[:remote_id])
       expect(file.path).to be_nil
       expect(file.size).to eq(3.megabytes)
+    else
+      raise ArgumentError, "can't handle #{mode} mode"
     end
   end
 
-  # Rails 5 doesn't combine the GET/POST parameters in
+  # Rails doesn't combine the GET/POST parameters in
   # ActionDispatch::HTTP::Parameters if action_dispatch.request.parameters is set:
   # https://github.com/rails/rails/blob/aea6423f013ca48f7704c70deadf2cd6ac7d70a1/actionpack/lib/action_dispatch/http/parameters.rb#L41
   def get_params(env)
