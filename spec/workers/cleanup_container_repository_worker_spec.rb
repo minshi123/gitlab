@@ -12,20 +12,18 @@ RSpec.describe CleanupContainerRepositoryWorker, :clean_gitlab_redis_shared_stat
   let(:job_args) { [user_id, repository_id, params] }
 
   describe '#perform' do
-    let(:service) { instance_double(Projects::ContainerRepository::CleanupTagsService) }
-
     context 'bulk delete api' do
       let(:params) { { key: 'value', 'container_expiration_policy' => false } }
 
       include_examples 'an idempotent worker' do
         it 'executes the destroy service' do
-          expect(Projects::ContainerRepository::CleanupTagsService).to receive(:new)
-            .exactly(IdempotentWorkerHelper::WORKER_EXEC_TIMES).times
-            .with(project, user, params.merge('container_expiration_policy' => false))
-            .and_return(service)
+          expect_next_instance_of(Projects::ContainerRepository::CleanupTagsService) do |service|
+            expect(service).to receive(:execute)
+          end
 
-          expect(service).to receive(:execute)
-            .exactly(IdempotentWorkerHelper::WORKER_EXEC_TIMES).times
+          expect(Projects::ContainerRepository::CleanupTagsService).to receive(:new)
+            .with(project, user, params.merge('container_expiration_policy' => false))
+            .and_call_original
 
           subject
         end
@@ -50,13 +48,13 @@ RSpec.describe CleanupContainerRepositoryWorker, :clean_gitlab_redis_shared_stat
 
       include_examples 'an idempotent worker' do
         it 'executes the destroy service' do
-          expect(Projects::ContainerRepository::CleanupTagsService).to receive(:new)
-            .exactly(IdempotentWorkerHelper::WORKER_EXEC_TIMES).times
-            .with(project, nil, params.merge('container_expiration_policy' => true))
-            .and_return(service)
+          expect_next_instance_of(Projects::ContainerRepository::CleanupTagsService) do |service|
+            expect(service).to receive(:execute)
+          end
 
-          expect(service).to receive(:execute)
-            .exactly(IdempotentWorkerHelper::WORKER_EXEC_TIMES).times
+          expect(Projects::ContainerRepository::CleanupTagsService).to receive(:new)
+            .with(project, nil, params.merge('container_expiration_policy' => true))
+            .and_call_original
 
           subject
         end
@@ -69,8 +67,9 @@ RSpec.describe CleanupContainerRepositoryWorker, :clean_gitlab_redis_shared_stat
 
       before do
         stub_feature_flags(container_registry_expiration_policies_throttling: true)
-        allow(Projects::ContainerRepository::CleanupTagsService).to receive(:new).and_return(service)
-        allow(service).to receive(:execute)
+        allow_next_instance_of(Projects::ContainerRepository::CleanupTagsService) do |service|
+          allow(service).to receive(:execute)
+        end
       end
 
       include_examples 'an idempotent worker' do
