@@ -3,11 +3,12 @@
 class CleanupContainerRepositoryWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
 
-  idempotent!
-
   queue_namespace :container_repository
   feature_category :container_registry
   loggable_arguments 2
+  deduplicate :until_executing, including_scheduled: true
+
+  idempotent!
 
   attr_reader :container_repository, :current_user
 
