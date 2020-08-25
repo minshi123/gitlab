@@ -102,10 +102,11 @@ export default {
         </a>
         <span class="note-headline-light note-headline-meta">
           <span class="system-note-message"> <slot></slot> </span>
-          <div v-if="note.createdAt" class="gl-pb-2">
-            <span class="system-note-separator"></span>
-            <a class="note-timestamp system-note-separator" :href="`#note_${noteAnchorId}`">
-              <time-ago-tooltip :time="note.createdAt" tooltip-placement="bottom" />
+          <a
+            v-if="note.createdAt"
+            class="note-timestamp system-note-separator gl-display-block gl-mb-2"
+            :href="`#note_${noteAnchorId}`"
+          >
             </a>
           </div>
         </span>
