@@ -19,6 +19,8 @@ class CleanupContainerRepositoryWorker # rubocop:disable Scalability/IdempotentW
     Projects::ContainerRepository::CleanupTagsService
       .new(project, current_user, params)
       .execute(container_repository)
+  ensure
+    remove_from_cache
   end
 
   private
@@ -30,10 +32,31 @@ class CleanupContainerRepositoryWorker # rubocop:disable Scalability/IdempotentW
   end
 
   def run_by_container_expiration_policy?
-    @params['container_expiration_policy'] && container_repository && project
+    container_expiration_policy && container_repository && project
   end
 
   def project
     container_repository&.project
+  end
+
+  def remove_from_cache
+    return unless throttling_enabled? && jids_cache_key.present?
+
+    # Remove jid from array stored in jids_cache_key
+    Sidekiq.redis do |redis|
+      redis.lrem(jids_cache_key, 0, jid)
+    end
+  end
+
+  def throttling_enabled?
+    Feature.enabled?(:container_registry_expiration_policies_throttling)
+  end
+
+  def container_expiration_policy
+    @params['container_expiration_policy']
+  end
+
+  def jids_cache_key
+    @params['jids_cache_key']
   end
 end
