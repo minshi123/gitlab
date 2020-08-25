@@ -103,12 +103,11 @@ export default {
         <span class="note-headline-light note-headline-meta">
           <span class="system-note-message"> <slot></slot> </span>
           <a
-            v-if="note.createdAt"
             class="note-timestamp system-note-separator gl-display-block gl-mb-2"
             :href="`#note_${noteAnchorId}`"
           >
-            </a>
-          </div>
+            <time-ago-tooltip :time="note.createdAt" tooltip-placement="bottom" />
+          </a>
         </span>
       </div>
       <div class="gl-display-flex">
