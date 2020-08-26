@@ -32,6 +32,8 @@ RSpec.describe CleanupContainerRepositoryWorker, :clean_gitlab_redis_shared_stat
 
       it_behaves_like 'an idempotent worker' do
         before do
+          stub_container_registry_config(enabled: true, api_url: 'http://test', key: 'spec/fixtures/x509_certificate_pk.key')
+
           allow_next_instance_of(ContainerRegistry::Client) do |client|
             allow(client).to receive(:supports_tag_delete?).and_return(true)
             allow(client).to receive(:repository_tags).and_return(manifest)
@@ -67,6 +69,8 @@ RSpec.describe CleanupContainerRepositoryWorker, :clean_gitlab_redis_shared_stat
 
       it_behaves_like 'an idempotent worker' do
         before do
+          stub_container_registry_config(enabled: true, api_url: 'http://test', key: 'spec/fixtures/x509_certificate_pk.key')
+
           allow_next_instance_of(ContainerRegistry::Client) do |client|
             allow(client).to receive(:supports_tag_delete?).and_return(true)
             allow(client).to receive(:repository_tags).and_return(manifest)

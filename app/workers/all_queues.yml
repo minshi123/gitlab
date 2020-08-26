@@ -97,7 +97,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: true
   :tags: []
 - :name: container_repository:delete_container_repository
   :feature_category: :container_registry
@@ -1358,7 +1358,7 @@
   :tags: []
 - :name: flush_counter_increments
   :feature_category: :not_owned
-  :has_external_dependencies: 
+  :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1450,7 +1450,7 @@
   :urgency: :high
   :resource_boundary: :unknown
   :weight: 5
-  :idempotent: 
+  :idempotent:
   :tags: []
 - :name: merge_request_mergeability_check
   :feature_category: :source_code_management
