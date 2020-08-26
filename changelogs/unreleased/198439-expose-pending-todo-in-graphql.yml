@@ -1,0 +1,6 @@
+---
+title: Allow clients to query for pending todos for the currently logged in user in
+  GraphQL for Designs, Issues, Merge Requests, or Epics (Epics are EE-only)
+merge_request: 40555
+author:
+type: added
