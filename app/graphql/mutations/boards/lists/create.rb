@@ -39,6 +39,7 @@ module Mutations
 
         private
 
+        # Overridden in EE
         def authorize_list_type_resource!(board, params)
           return unless params[:label_id]
 
@@ -57,6 +58,7 @@ module Mutations
           create_list_service.execute(board)
         end
 
+        # Overridden in EE
         def create_list_params(args)
           params = args.slice(*mutually_exclusive_args).with_indifferent_access
           params[:label_id] = GitlabSchema.parse_gid(params[:label_id]).model_id if params[:label_id]
@@ -64,6 +66,7 @@ module Mutations
           params
         end
 
+        # Overridden in EE
         def mutually_exclusive_args
           [:backlog, :label_id]
         end
@@ -71,3 +74,5 @@ module Mutations
     end
   end
 end
+
+Mutations::Boards::Lists::Create.prepend_if_ee('::EE::Mutations::Boards::Lists::Create')
