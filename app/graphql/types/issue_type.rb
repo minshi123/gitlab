@@ -7,6 +7,7 @@ module Types
     connection_type_class(Types::CountableConnectionType)
 
     implements(Types::Notes::NoteableType)
+    implements(Types::PendingTodo)
 
     authorize :read_issue
 

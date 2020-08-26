@@ -8985,6 +8985,20 @@
               "deprecationReason": null
             },
             {
+              "name": "pendingTodo",
+              "description": "Pending todo for the current user",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Todo",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "project",
               "description": "The project the design belongs to",
               "args": [
@@ -9090,6 +9104,11 @@
             {
               "kind": "INTERFACE",
               "name": "DesignFields",
+              "ofType": null
+            },
+            {
+              "kind": "INTERFACE",
+              "name": "PendingTodo",
               "ofType": null
             }
           ],
@@ -13676,6 +13695,20 @@
               "deprecationReason": null
             },
             {
+              "name": "pendingTodo",
+              "description": "Pending todo for the current user",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Todo",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "reference",
               "description": "Internal reference of the epic. Returned in shortened format by default",
               "args": [
@@ -13928,6 +13961,11 @@
             {
               "kind": "INTERFACE",
               "name": "Noteable",
+              "ofType": null
+            },
+            {
+              "kind": "INTERFACE",
+              "name": "PendingTodo",
               "ofType": null
             }
           ],
@@ -14960,6 +14998,20 @@
               "deprecationReason": null
             },
             {
+              "name": "pendingTodo",
+              "description": "Pending todo for the current user",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Todo",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "reference",
               "description": "Internal reference of the issue. Returned in shortened format by default",
               "args": [
@@ -15292,6 +15344,11 @@
             {
               "kind": "INTERFACE",
               "name": "Noteable",
+              "ofType": null
+            },
+            {
+              "kind": "INTERFACE",
+              "name": "PendingTodo",
               "ofType": null
             }
           ],
@@ -19537,6 +19594,20 @@
               "deprecationReason": null
             },
             {
+              "name": "pendingTodo",
+              "description": "Pending todo for the current user",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Todo",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "reference",
               "description": "Internal reference of the issue. Returned in shortened format by default",
               "args": [
@@ -19855,6 +19926,11 @@
             {
               "kind": "INTERFACE",
               "name": "Noteable",
+              "ofType": null
+            },
+            {
+              "kind": "INTERFACE",
+              "name": "PendingTodo",
               "ofType": null
             }
           ],
@@ -24289,6 +24365,20 @@
               "deprecationReason": null
             },
             {
+              "name": "pendingTodo",
+              "description": "Pending todo for the current user",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Todo",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "pipelines",
               "description": "Pipelines for the merge request",
               "args": [
@@ -24866,6 +24956,11 @@
             {
               "kind": "INTERFACE",
               "name": "Noteable",
+              "ofType": null
+            },
+            {
+              "kind": "INTERFACE",
+              "name": "PendingTodo",
               "ofType": null
             }
           ],
@@ -31233,6 +31328,57 @@
           ],
           "enumValues": null,
           "possibleTypes": null
+        },
+        {
+          "kind": "INTERFACE",
+          "name": "PendingTodo",
+          "description": null,
+          "fields": [
+            {
+              "name": "pendingTodo",
+              "description": "Pending todo for the current user",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Todo",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "Design",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Epic",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "EpicIssue",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Issue",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "MergeRequest",
+              "ofType": null
+            }
+          ]
         },
         {
           "kind": "OBJECT",
@@ -45057,7 +45203,7 @@
             },
             {
               "name": "author",
-              "description": "The owner of this todo",
+              "description": "The author of this todo",
               "args": [
 
               ],

@@ -3214,7 +3214,7 @@ type DeleteJobsResponse {
 """
 A single design
 """
-type Design implements DesignFields & Noteable {
+type Design implements DesignFields & Noteable & PendingTodo {
   """
   The diff refs for this design
   """
@@ -3309,6 +3309,11 @@ type Design implements DesignFields & Noteable {
   The total count of user-created notes for this design
   """
   notesCount: Int!
+
+  """
+  Pending todo for the current user
+  """
+  pendingTodo: Todo
 
   """
   The project the design belongs to
@@ -4609,7 +4614,7 @@ type EnvironmentEdge {
 """
 Represents an epic.
 """
-type Epic implements Noteable {
+type Epic implements Noteable & PendingTodo {
   """
   Author of the epic
   """
@@ -4918,6 +4923,11 @@ type Epic implements Noteable {
   ): UserConnection
 
   """
+  Pending todo for the current user
+  """
+  pendingTodo: Todo
+
+  """
   Internal reference of the epic. Returned in shortened format by default
   """
   reference(
@@ -5151,7 +5161,7 @@ type EpicHealthStatus {
 """
 Relationship between an epic and an issue
 """
-type EpicIssue implements Noteable {
+type EpicIssue implements Noteable & PendingTodo {
   """
   Alert associated to this issue
   """
@@ -5376,6 +5386,11 @@ type EpicIssue implements Noteable {
     """
     last: Int
   ): UserConnection
+
+  """
+  Pending todo for the current user
+  """
+  pendingTodo: Todo
 
   """
   Internal reference of the issue. Returned in shortened format by default
@@ -6875,7 +6890,7 @@ enum IssuableState {
   opened
 }
 
-type Issue implements Noteable {
+type Issue implements Noteable & PendingTodo {
   """
   Alert associated to this issue
   """
@@ -7095,6 +7110,11 @@ type Issue implements Noteable {
     """
     last: Int
   ): UserConnection
+
+  """
+  Pending todo for the current user
+  """
+  pendingTodo: Todo
 
   """
   Internal reference of the issue. Returned in shortened format by default
@@ -8456,7 +8476,7 @@ type MemberInterfaceEdge {
   node: MemberInterface
 }
 
-type MergeRequest implements Noteable {
+type MergeRequest implements Noteable & PendingTodo {
   """
   Indicates if members of the target project can push to the fork
   """
@@ -8746,6 +8766,11 @@ type MergeRequest implements Noteable {
     """
     last: Int
   ): UserConnection
+
+  """
+  Pending todo for the current user
+  """
+  pendingTodo: Todo
 
   """
   Pipelines for the merge request
@@ -10437,6 +10462,13 @@ type PageInfo {
   When paginating backwards, the cursor to continue.
   """
   startCursor: String
+}
+
+interface PendingTodo {
+  """
+  Pending todo for the current user
+  """
+  pendingTodo: Todo
 }
 
 type Pipeline {
@@ -15288,7 +15320,7 @@ type Todo {
   action: TodoActionEnum!
 
   """
-  The owner of this todo
+  The author of this todo
   """
   author: User!
 
