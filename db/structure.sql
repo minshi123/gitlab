@@ -13929,7 +13929,8 @@ CREATE TABLE public.packages_packages (
     updated_at timestamp with time zone NOT NULL,
     name character varying NOT NULL,
     version character varying,
-    package_type smallint NOT NULL
+    package_type smallint NOT NULL,
+    creator_id integer
 );
 
 CREATE SEQUENCE public.packages_packages_id_seq
@@ -20284,6 +20285,8 @@ CREATE INDEX index_packages_package_files_file_store_is_null ON public.packages_
 CREATE INDEX index_packages_package_files_on_file_store ON public.packages_package_files USING btree (file_store);
 
 CREATE INDEX index_packages_package_files_on_package_id_and_file_name ON public.packages_package_files USING btree (package_id, file_name);
+
+CREATE INDEX index_packages_packages_on_creator_id ON public.packages_packages USING btree (creator_id);
 
 CREATE INDEX index_packages_packages_on_name_trigram ON public.packages_packages USING gin (name public.gin_trgm_ops);
 
